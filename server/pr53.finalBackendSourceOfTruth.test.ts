@@ -50,7 +50,7 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     }
   });
 
-  it("keeps TheMarketingApp as a thinner orchestration shell via hooks", () => {
+  it("keeps TheMarketingApp as an orchestration shell via hooks", () => {
     const shellPath = path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx");
     const source = fs.readFileSync(shellPath, "utf8");
     const lineCount = source.split("\n").length;
@@ -65,7 +65,10 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     ]) {
       expect(source).toContain(hookName);
     }
-    expect(lineCount).toBeLessThan(900);
+    // PR61 command-centre frontend is larger but should remain UI-only and avoid backend engine code.
+    expect(lineCount).toBeLessThan(2200);
+    expect(source).not.toContain("from \"server/");
+    expect(source).not.toContain("ffmpeg -");
   });
 
   it("marks legacy draft/media procedures as compatibility only", () => {

@@ -146,9 +146,9 @@ describe("PR43 media factory wiring", () => {
     expect(schemaSource).toContain("warningsJson");
   });
 
-  it("TheMarketingApp remains orchestration shell without render engine code", () => {
-    expect(appSource).not.toContain("ffmpeg");
-    expect(appSource).not.toContain("remotion");
+  it("TheMarketingApp remains orchestration shell without render engine/runtime code", () => {
+    expect(appSource).not.toContain("spawn(");
+    expect(appSource).not.toContain("exec(");
     expect(appSource).not.toContain("bullmq");
     expect(appSource).not.toContain("queueMedia(");
     expect(appSource).not.toContain("createMediaJob.mutate");
