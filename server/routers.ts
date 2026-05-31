@@ -354,6 +354,65 @@ import {
 import { getMarketingBackendReadiness as getMarketingBackendReadinessService } from "./modules/marketing/backend-readiness";
 import { getMarketingConnectorReadiness as getMarketingConnectorReadinessService } from "./modules/marketing/connector-readiness";
 import { runAutonomousMarketingCampaign as runAutonomousMarketingCampaignService } from "./modules/marketing/autonomous-campaign";
+import {
+  buildMarketingGeniusPromptContext as buildMarketingGeniusPromptContextService,
+  listMarketingAngleFrameworks as listMarketingAngleFrameworksService,
+  listMarketingCtaLibrary as listMarketingCtaLibraryService,
+  listMarketingHookFrameworks as listMarketingHookFrameworksService,
+  listMarketingNicheCampaignTemplates as listMarketingNicheCampaignTemplatesService,
+  recommendMarketingPlaybook as recommendMarketingPlaybookService,
+} from "./modules/marketing/genius-brain";
+import {
+  getMarketingBrandMemory as getMarketingBrandMemoryService,
+  updateBrandMemoryFromManualNotes as updateMarketingBrandMemoryFromManualNotesService,
+  updateBrandMemoryFromResults as updateMarketingBrandMemoryFromResultsService,
+  upsertMarketingBrandMemory as upsertMarketingBrandMemoryService,
+} from "./modules/marketing/brand-memory";
+import {
+  getMarketingPlatformSpecialist as getMarketingPlatformSpecialistService,
+  listMarketingPlatformSpecialists as listMarketingPlatformSpecialistsService,
+  recommendSpecialistsForCampaign as recommendMarketingPlatformSpecialistsService,
+  scoreMarketingPlatformFit as scoreMarketingPlatformFitService,
+} from "./modules/marketing/platform-specialists";
+import {
+  detectMarketingContentGaps as detectMarketingContentGapsService,
+  getMarketingCompetitorContext as getMarketingCompetitorContextService,
+  getMarketingTrendContext as getMarketingTrendContextService,
+  listMarketingCompetitorSignals as listMarketingCompetitorSignalsService,
+  listMarketingTrendSignals as listMarketingTrendSignalsService,
+  recordMarketingCompetitorSignal as recordMarketingCompetitorSignalService,
+  recordMarketingTrendSignal as recordMarketingTrendSignalService,
+} from "./modules/marketing/market-intelligence";
+import {
+  createMarketingExperiment as createMarketingExperimentService,
+  diagnoseMarketingUnderperformance as diagnoseMarketingUnderperformanceService,
+  explainMarketingWinLoss as explainMarketingWinLossService,
+  getMarketingLearningInsights as getMarketingLearningInsightsService,
+  recordMarketingExperimentVariant as recordMarketingExperimentVariantService,
+  recommendNextMarketingActions as recommendNextMarketingActionsService,
+  scoreMarketingExperiment as scoreMarketingExperimentService,
+} from "./modules/marketing/result-learning";
+import {
+  getMarketingCreativeScorecard as getMarketingCreativeScorecardService,
+  improveMarketingCreative as improveMarketingCreativeService,
+  scoreMarketingCreative as scoreMarketingCreativeService,
+} from "./modules/marketing/creative-scoring";
+import {
+  buildMarketingCaptionStylePlan as buildMarketingCaptionStylePlanService,
+  buildMarketingThumbnailPlan as buildMarketingThumbnailPlanService,
+  buildMarketingVideoPacingPlan as buildMarketingVideoPacingPlanService,
+  listMarketingMediaTemplates as listMarketingMediaTemplatesService,
+  recommendMarketingMediaTemplate as recommendMarketingMediaTemplateService,
+  validateMarketingMediaExcellence as validateMarketingMediaExcellenceService,
+} from "./modules/marketing/media-excellence";
+import {
+  analyzeMarketingCampaignBrief as analyzeMarketingCampaignBriefService,
+  detectMarketingBriefWeaknesses as detectMarketingBriefWeaknessesService,
+  generateMarketingManagerGuidance as generateMarketingManagerGuidanceService,
+  recommendCampaignStructure as recommendCampaignStructureService,
+  recommendMarketingNextSteps as recommendMarketingNextStepsFromManagerService,
+} from "./modules/marketing/campaign-manager-brain";
+import { getMarketingCommandCentreState as getMarketingCommandCentreStateService } from "./modules/marketing/command-centre";
 
 // Allowed MIME types for document and avatar uploads
 const ALLOWED_UPLOAD_MIME_TYPES = [
@@ -10674,6 +10733,536 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }))
       .query(async ({ input }) => {
         return getMarketingConnectorReadinessService(input);
+      }),
+
+    getMarketingCommandCentreState: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        campaignId: z.number().int().positive().optional(),
+        goalHint: z.string().max(600).optional(),
+        audienceHint: z.string().max(600).optional(),
+        platformsHint: z.array(z.string().min(1).max(120)).max(12).optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingCommandCentreStateService(input);
+      }),
+
+    listMarketingHookFrameworks: adminUnlockedProcedure.query(async () => {
+      return listMarketingHookFrameworksService();
+    }),
+
+    listMarketingAngleFrameworks: adminUnlockedProcedure.query(async () => {
+      return listMarketingAngleFrameworksService();
+    }),
+
+    listMarketingCtaLibrary: adminUnlockedProcedure.query(async () => {
+      return listMarketingCtaLibraryService();
+    }),
+
+    listMarketingNicheCampaignTemplates: adminUnlockedProcedure.query(async () => {
+      return listMarketingNicheCampaignTemplatesService();
+    }),
+
+    recommendMarketingPlaybook: adminUnlockedProcedure
+      .input(z.object({
+        platform: z.string().min(1).max(120),
+        goal: z.string().min(1).max(600),
+        audience: z.string().max(600).optional(),
+        campaignType: z.string().max(120).optional(),
+      }))
+      .query(async ({ input }) => {
+        return recommendMarketingPlaybookService(input);
+      }),
+
+    getMarketingBrandMemory: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingBrandMemoryService(input);
+      }),
+
+    upsertMarketingBrandMemory: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        brandName: z.string().min(1).max(220),
+        positioningStatement: z.string().max(2000).optional(),
+        targetPersonas: z.array(z.unknown()).optional(),
+        objections: z.array(z.unknown()).optional(),
+        proofPoints: z.array(z.unknown()).optional(),
+        tabooClaims: z.array(z.unknown()).optional(),
+        toneRules: z.array(z.unknown()).optional(),
+        competitorNotes: z.array(z.unknown()).optional(),
+        winningHooks: z.array(z.unknown()).optional(),
+        winningCtas: z.array(z.unknown()).optional(),
+        winningPlatforms: z.array(z.unknown()).optional(),
+        contentDoDont: z.record(z.string(), z.unknown()).optional(),
+        sourceLabels: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return upsertMarketingBrandMemoryService(input);
+      }),
+
+    updateMarketingBrandMemoryFromResults: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return updateMarketingBrandMemoryFromResultsService(input);
+      }),
+
+    updateMarketingBrandMemoryFromManualNotes: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        notes: z.object({
+          brandName: z.string().max(220).optional(),
+          positioningStatement: z.string().max(2000).optional(),
+          targetPersonas: z.array(z.unknown()).optional(),
+          objections: z.array(z.unknown()).optional(),
+          proofPoints: z.array(z.unknown()).optional(),
+          tabooClaims: z.array(z.unknown()).optional(),
+          toneRules: z.array(z.unknown()).optional(),
+          competitorNotes: z.array(z.unknown()).optional(),
+          contentDoDont: z.record(z.string(), z.unknown()).optional(),
+        }),
+      }))
+      .mutation(async ({ input }) => {
+        return updateMarketingBrandMemoryFromManualNotesService(input);
+      }),
+
+    listMarketingPlatformSpecialists: adminUnlockedProcedure.query(async () => {
+      return listMarketingPlatformSpecialistsService();
+    }),
+
+    getMarketingPlatformSpecialist: adminUnlockedProcedure
+      .input(z.object({ id: z.string().min(1).max(120) }))
+      .query(async ({ input }) => {
+        return getMarketingPlatformSpecialistService(input);
+      }),
+
+    recommendMarketingPlatformSpecialists: adminUnlockedProcedure
+      .input(z.object({
+        platforms: z.array(z.string().min(1).max(120)).min(1),
+        goal: z.string().min(1).max(600),
+        contentTypes: z.array(z.string().min(1).max(120)).optional(),
+      }))
+      .query(async ({ input }) => {
+        return recommendMarketingPlatformSpecialistsService(input);
+      }),
+
+    scoreMarketingPlatformFit: adminUnlockedProcedure
+      .input(z.object({
+        specialistId: z.string().min(1).max(120),
+        contentFormat: z.string().min(1).max(120),
+        contentLengthHint: z.string().max(2000).optional(),
+        hasCta: z.boolean(),
+        hasProof: z.boolean(),
+      }))
+      .query(async ({ input }) => {
+        return scoreMarketingPlatformFitService(input);
+      }),
+
+    recordMarketingTrendSignal: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().min(1).max(80),
+        niche: z.string().max(180).optional(),
+        topic: z.string().min(1).max(220),
+        signalType: z.string().min(1).max(120),
+        signalText: z.string().min(1).max(6000),
+        sourceType: z.enum(["manual", "imported", "connector", "scraper"]),
+        sourceUrl: z.string().url().optional(),
+        confidence: z.enum(["low", "medium", "high"]).optional(),
+        expiresAt: z.string().datetime().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return recordMarketingTrendSignalService({
+          ...input,
+          expiresAt: input.expiresAt ? new Date(input.expiresAt) : undefined,
+        });
+      }),
+
+    listMarketingTrendSignals: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().max(80).optional(),
+        limit: z.number().int().positive().max(200).optional(),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingTrendSignalsService(input);
+      }),
+
+    getMarketingTrendContext: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().max(80).optional(),
+        lookbackDays: z.number().int().positive().max(365).optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingTrendContextService(input);
+      }),
+
+    recordMarketingCompetitorSignal: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        competitorName: z.string().min(1).max(220),
+        platform: z.string().min(1).max(80),
+        signalType: z.string().min(1).max(120),
+        signalText: z.string().min(1).max(6000),
+        sourceType: z.enum(["manual", "imported", "connector", "scraper"]),
+        sourceUrl: z.string().url().optional(),
+        confidence: z.enum(["low", "medium", "high"]).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return recordMarketingCompetitorSignalService(input);
+      }),
+
+    listMarketingCompetitorSignals: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().max(80).optional(),
+        competitorName: z.string().max(220).optional(),
+        limit: z.number().int().positive().max(200).optional(),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingCompetitorSignalsService(input);
+      }),
+
+    getMarketingCompetitorContext: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().max(80).optional(),
+        lookbackDays: z.number().int().positive().max(365).optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingCompetitorContextService(input);
+      }),
+
+    detectMarketingContentGaps: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().min(1).max(80),
+      }))
+      .query(async ({ input }) => {
+        return detectMarketingContentGapsService(input);
+      }),
+
+    createMarketingExperiment: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+        name: z.string().min(1).max(220),
+        hypothesis: z.string().max(4000).optional(),
+        sourceType: z.enum(["manual", "connector", "imported", "api"]).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return createMarketingExperimentService(input);
+      }),
+
+    recordMarketingExperimentVariant: adminUnlockedProcedure
+      .input(z.object({
+        experimentId: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        variantKey: z.string().min(1).max(80),
+        hook: z.string().max(3000).optional(),
+        cta: z.string().max(1200).optional(),
+        platform: z.string().max(80).optional(),
+        impressions: z.number().int().min(0).optional(),
+        clicks: z.number().int().min(0).optional(),
+        conversions: z.number().int().min(0).optional(),
+        sourceType: z.enum(["manual", "connector", "imported", "api"]).optional(),
+        evidence: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return recordMarketingExperimentVariantService(input);
+      }),
+
+    scoreMarketingExperiment: adminUnlockedProcedure
+      .input(z.object({
+        experimentId: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+      }))
+      .query(async ({ input }) => {
+        return scoreMarketingExperimentService(input);
+      }),
+
+    getMarketingLearningInsights: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingLearningInsightsService(input);
+      }),
+
+    diagnoseMarketingUnderperformance: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive(),
+      }))
+      .query(async ({ input }) => {
+        return diagnoseMarketingUnderperformanceService(input);
+      }),
+
+    recommendNextMarketingActions: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive(),
+        goal: z.string().min(1).max(600),
+        audience: z.string().min(1).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1),
+      }))
+      .query(async ({ input }) => {
+        return recommendNextMarketingActionsService(input);
+      }),
+
+    explainMarketingWinLoss: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive(),
+      }))
+      .query(async ({ input }) => {
+        return explainMarketingWinLossService(input);
+      }),
+
+    scoreMarketingCreative: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().min(1).max(120),
+        contentType: z.string().min(1).max(120),
+        goal: z.string().min(1).max(600),
+        hook: z.string().max(3000).optional(),
+        body: z.string().max(12000).optional(),
+        cta: z.string().max(1200).optional(),
+        claims: z.array(z.string().max(1000)).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+        hasVisualAsset: z.boolean().optional(),
+        priorFatigueSignals: z.number().int().min(0).max(100).optional(),
+      }))
+      .query(async ({ input }) => {
+        return scoreMarketingCreativeService(input);
+      }),
+
+    improveMarketingCreative: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().min(1).max(120),
+        contentType: z.string().min(1).max(120),
+        goal: z.string().min(1).max(600),
+        hook: z.string().max(3000).optional(),
+        body: z.string().max(12000).optional(),
+        cta: z.string().max(1200).optional(),
+        claims: z.array(z.string().max(1000)).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+        hasVisualAsset: z.boolean().optional(),
+        priorFatigueSignals: z.number().int().min(0).max(100).optional(),
+      }))
+      .query(async ({ input }) => {
+        return improveMarketingCreativeService(input);
+      }),
+
+    getMarketingCreativeScorecard: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        platform: z.string().min(1).max(120),
+        contentType: z.string().min(1).max(120),
+        goal: z.string().min(1).max(600),
+        hook: z.string().max(3000).optional(),
+        body: z.string().max(12000).optional(),
+        cta: z.string().max(1200).optional(),
+        claims: z.array(z.string().max(1000)).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+        hasVisualAsset: z.boolean().optional(),
+        priorFatigueSignals: z.number().int().min(0).max(100).optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingCreativeScorecardService(input);
+      }),
+
+    listMarketingMediaTemplates: adminUnlockedProcedure.query(async () => {
+      return listMarketingMediaTemplatesService();
+    }),
+
+    recommendMarketingMediaTemplate: adminUnlockedProcedure
+      .input(z.object({
+        platform: z.string().min(1).max(120),
+        contentType: z.string().min(1).max(120),
+        includesAvatar: z.boolean().optional(),
+        includesBeforeAfter: z.boolean().optional(),
+      }))
+      .query(async ({ input }) => {
+        return recommendMarketingMediaTemplateService(input);
+      }),
+
+    validateMarketingMediaExcellence: adminUnlockedProcedure
+      .input(z.object({
+        hasRenderedOutput: z.boolean(),
+        hasCaptionTrack: z.boolean(),
+        hasLogoSafeOverlay: z.boolean(),
+        musicLicenseStatus: z.enum(["approved", "missing", "unknown"]).optional(),
+        voiceQualityStatus: z.enum(["ok", "noisy", "missing"]).optional(),
+      }))
+      .query(async ({ input }) => {
+        return validateMarketingMediaExcellenceService(input);
+      }),
+
+    buildMarketingVideoPacingPlan: adminUnlockedProcedure
+      .input(z.object({
+        durationSeconds: z.number().int().positive().max(7200),
+        platform: z.string().min(1).max(120),
+        hasVoiceover: z.boolean(),
+        hasMusic: z.boolean(),
+      }))
+      .query(async ({ input }) => {
+        return buildMarketingVideoPacingPlanService(input);
+      }),
+
+    buildMarketingThumbnailPlan: adminUnlockedProcedure
+      .input(z.object({
+        platform: z.string().min(1).max(120),
+        keyMessage: z.string().min(1).max(500),
+        hasLogo: z.boolean(),
+      }))
+      .query(async ({ input }) => {
+        return buildMarketingThumbnailPlanService(input);
+      }),
+
+    buildMarketingCaptionStylePlan: adminUnlockedProcedure
+      .input(z.object({
+        platform: z.string().min(1).max(120),
+        voiceTone: z.string().max(120).optional(),
+      }))
+      .query(async ({ input }) => {
+        return buildMarketingCaptionStylePlanService(input);
+      }),
+
+    analyzeMarketingCampaignBrief: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        goal: z.string().min(1).max(600),
+        audience: z.string().min(1).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1),
+        cta: z.string().max(1200).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+      }))
+      .query(async ({ input }) => {
+        return analyzeMarketingCampaignBriefService(input);
+      }),
+
+    generateMarketingManagerGuidance: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        goal: z.string().min(1).max(600),
+        audience: z.string().min(1).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1),
+        cta: z.string().max(1200).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+      }))
+      .query(async ({ input }) => {
+        return generateMarketingManagerGuidanceService(input);
+      }),
+
+    getMarketingManagerGuidance: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        goal: z.string().min(1).max(600),
+        audience: z.string().min(1).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1),
+        cta: z.string().max(1200).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+      }))
+      .query(async ({ input }) => {
+        return generateMarketingManagerGuidanceService(input);
+      }),
+
+    detectMarketingBriefWeaknesses: adminUnlockedProcedure
+      .input(z.object({
+        goal: z.string().min(1).max(600),
+        audience: z.string().min(1).max(600),
+        platform: z.array(z.string().min(1).max(120)).min(1),
+        cta: z.string().max(1200).optional(),
+        proofPoints: z.array(z.string().max(1000)).optional(),
+      }))
+      .query(async ({ input }) => {
+        return detectMarketingBriefWeaknessesService(input);
+      }),
+
+    recommendCampaignStructure: adminUnlockedProcedure
+      .input(z.object({
+        goal: z.string().min(1).max(600),
+        platform: z.array(z.string().min(1).max(120)).min(1),
+        audience: z.string().min(1).max(600),
+      }))
+      .query(async ({ input }) => {
+        return recommendCampaignStructureService(input);
+      }),
+
+    recommendMarketingNextSteps: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+        goal: z.string().min(1).max(600),
+        audience: z.string().min(1).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1),
+      }))
+      .query(async ({ input }) => {
+        return recommendMarketingNextStepsFromManagerService(input);
       }),
 
     getLeads: adminUnlockedProcedure.query(async () => {

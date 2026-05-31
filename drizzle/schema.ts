@@ -1885,6 +1885,173 @@ export const marketingAgentTasks = mysqlTable("marketingAgentTasks", {
 export type MarketingAgentTask = typeof marketingAgentTasks.$inferSelect;
 export type InsertMarketingAgentTask = typeof marketingAgentTasks.$inferInsert;
 
+export const marketingBrandMemory = mysqlTable("marketingBrandMemory", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  brandName: varchar("brandName", { length: 220 }).notNull().default("Brand"),
+  positioningStatement: text("positioningStatement"),
+  targetPersonasJson: text("targetPersonasJson"),
+  objectionsJson: text("objectionsJson"),
+  proofPointsJson: text("proofPointsJson"),
+  tabooClaimsJson: text("tabooClaimsJson"),
+  toneRulesJson: text("toneRulesJson"),
+  competitorNotesJson: text("competitorNotesJson"),
+  winningHooksJson: text("winningHooksJson"),
+  winningCtasJson: text("winningCtasJson"),
+  winningPlatformsJson: text("winningPlatformsJson"),
+  contentDoDontJson: text("contentDoDontJson"),
+  sourceLabelsJson: text("sourceLabelsJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingBrandMemory = typeof marketingBrandMemory.$inferSelect;
+export type InsertMarketingBrandMemory = typeof marketingBrandMemory.$inferInsert;
+
+export const marketingTrendSignals = mysqlTable("marketingTrendSignals", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  platform: varchar("platform", { length: 80 }).notNull(),
+  niche: varchar("niche", { length: 180 }),
+  topic: varchar("topic", { length: 220 }).notNull(),
+  signalType: varchar("signalType", { length: 120 }).notNull(),
+  signalText: text("signalText").notNull(),
+  sourceType: varchar("sourceType", { length: 30 }).notNull().default("manual"),
+  sourceUrl: text("sourceUrl"),
+  confidence: varchar("confidence", { length: 20 }).notNull().default("low"),
+  capturedAt: timestamp("capturedAt").defaultNow().notNull(),
+  expiresAt: timestamp("expiresAt"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingTrendSignal = typeof marketingTrendSignals.$inferSelect;
+export type InsertMarketingTrendSignal = typeof marketingTrendSignals.$inferInsert;
+
+export const marketingCompetitorSignals = mysqlTable("marketingCompetitorSignals", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  competitorName: varchar("competitorName", { length: 220 }).notNull(),
+  platform: varchar("platform", { length: 80 }).notNull(),
+  signalType: varchar("signalType", { length: 120 }).notNull(),
+  signalText: text("signalText").notNull(),
+  sourceType: varchar("sourceType", { length: 30 }).notNull().default("manual"),
+  sourceUrl: text("sourceUrl"),
+  confidence: varchar("confidence", { length: 20 }).notNull().default("low"),
+  capturedAt: timestamp("capturedAt").defaultNow().notNull(),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingCompetitorSignal = typeof marketingCompetitorSignals.$inferSelect;
+export type InsertMarketingCompetitorSignal = typeof marketingCompetitorSignals.$inferInsert;
+
+export const marketingContentGapSignals = mysqlTable("marketingContentGapSignals", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  platform: varchar("platform", { length: 80 }).notNull(),
+  gapType: varchar("gapType", { length: 120 }).notNull(),
+  gapText: text("gapText").notNull(),
+  confidence: varchar("confidence", { length: 20 }).notNull().default("low"),
+  sourceSummary: text("sourceSummary"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingContentGapSignal = typeof marketingContentGapSignals.$inferSelect;
+export type InsertMarketingContentGapSignal = typeof marketingContentGapSignals.$inferInsert;
+
+export const marketingExperimentRuns = mysqlTable("marketingExperimentRuns", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  name: varchar("name", { length: 220 }).notNull(),
+  hypothesis: text("hypothesis"),
+  status: varchar("status", { length: 30 }).notNull().default("draft"),
+  sourceType: varchar("sourceType", { length: 30 }).notNull().default("manual"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingExperimentRun = typeof marketingExperimentRuns.$inferSelect;
+export type InsertMarketingExperimentRun = typeof marketingExperimentRuns.$inferInsert;
+
+export const marketingExperimentVariants = mysqlTable("marketingExperimentVariants", {
+  id: int("id").autoincrement().primaryKey(),
+  experimentId: int("experimentId").notNull(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  variantKey: varchar("variantKey", { length: 80 }).notNull(),
+  hook: text("hook"),
+  cta: text("cta"),
+  platform: varchar("platform", { length: 80 }),
+  impressions: int("impressions").notNull().default(0),
+  clicks: int("clicks").notNull().default(0),
+  conversions: int("conversions").notNull().default(0),
+  sourceType: varchar("sourceType", { length: 30 }).notNull().default("manual"),
+  evidenceJson: text("evidenceJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingExperimentVariant = typeof marketingExperimentVariants.$inferSelect;
+export type InsertMarketingExperimentVariant = typeof marketingExperimentVariants.$inferInsert;
+
+export const marketingLearningInsights = mysqlTable("marketingLearningInsights", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  insightType: varchar("insightType", { length: 120 }).notNull(),
+  insightText: text("insightText").notNull(),
+  sourceType: varchar("sourceType", { length: 30 }).notNull().default("manual"),
+  confidence: varchar("confidence", { length: 20 }).notNull().default("low"),
+  evidenceSummary: text("evidenceSummary"),
+  nextAction: text("nextAction"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingLearningInsight = typeof marketingLearningInsights.$inferSelect;
+export type InsertMarketingLearningInsight = typeof marketingLearningInsights.$inferInsert;
+
+export const marketingBestPerformers = mysqlTable("marketingBestPerformers", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  performerType: varchar("performerType", { length: 80 }).notNull(),
+  performerKey: varchar("performerKey", { length: 220 }).notNull(),
+  score: varchar("score", { length: 40 }).notNull().default("0"),
+  confidence: varchar("confidence", { length: 20 }).notNull().default("low"),
+  sourceType: varchar("sourceType", { length: 30 }).notNull().default("manual"),
+  evidenceSummary: text("evidenceSummary"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingBestPerformer = typeof marketingBestPerformers.$inferSelect;
+export type InsertMarketingBestPerformer = typeof marketingBestPerformers.$inferInsert;
+
 export const marketingBeastModeRuns = mysqlTable("marketingBeastModeRuns", {
   id: int("id").autoincrement().primaryKey(),
   tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),

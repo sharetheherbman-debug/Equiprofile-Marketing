@@ -16,6 +16,13 @@ export const PROVIDER_FIELDS = [
 
 type SocialConnection = { platform: string; status: string; accountName?: string | null };
 const SOCIAL_STATUS_COMPAT_MARKERS = ["export_only", "not_connected", "setup_needed", "ready_for_posting", "token_expired", "permission_missing"] as const;
+type ProviderSettingsApiEntry = {
+  provider: string;
+  configured: boolean;
+  keyMasked: string | null;
+  settings?: Record<string, string>;
+};
+type ProviderSettingsApiResponse = Record<string, ProviderSettingsApiEntry>;
 
 function socialStatusLabel(status: string): string {
   if (status === "ready_for_approval_posting") return "Connected";
@@ -25,6 +32,11 @@ function socialStatusLabel(status: string): string {
   if (status === "permission_missing") return "Permission missing";
   if (status === "setup_needed") return "Needs setup";
   return "Export manually";
+}
+
+function formatReadinessStatus(status: string | undefined): string {
+  if (!status) return "setup_needed";
+  return status;
 }
 
 export function normalizeSocialConnections(value: unknown): SocialConnection[] {
@@ -40,8 +52,8 @@ export function normalizeSocialConnections(value: unknown): SocialConnection[] {
 
 function obfuscateSecret(value: string): string {
   if (!value) return "";
-  if (value.length <= 4) return "••••";
-  return `${value.slice(0, 2)}••••${value.slice(-2)}`;
+  if (value.length <= 4) return "****";
+  return `${value.slice(0, 2)}****${value.slice(-2)}`;
 }
 
 export function MarketingAppSettings({
@@ -55,17 +67,22 @@ export function MarketingAppSettings({
   tenantId: string;
   workspaceId: string;
 }) {
+  const hostAppId = "equiprofile";
   const utils = trpc.useUtils();
   const providerSettingsQuery = trpc.admin.listAIProviderSettings.useQuery();
   const diagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, { refetchInterval: 30_000 });
   const socialConnectionsQuery = trpc.admin.listMarketingSocialConnections.useQuery({ tenantId, workspaceId });
   const providerReadinessQuery = trpc.admin.getMarketingProviderReadiness.useQuery({ tenantId, workspaceId });
   const taskCapabilityMapQuery = trpc.admin.getMarketingTaskCapabilityMap.useQuery({ tenantId, workspaceId, mode: quality });
+  const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
+  const connectorReadinessQuery = trpc.admin.getMarketingConnectorReadiness.useQuery({ tenantId, workspaceId });
+
   const syncCapabilitiesMutation = trpc.admin.syncMarketingProviderCapabilities.useMutation({
     onSuccess: async () => {
       toast.success("Provider capabilities synced");
       await providerReadinessQuery.refetch();
       await taskCapabilityMapQuery.refetch();
+      await backendReadinessQuery.refetch();
     },
     onError: (error) => toast.error("Capability sync failed", { description: error.message }),
   });
@@ -75,6 +92,8 @@ export function MarketingAppSettings({
       toast.success("Marketing settings saved");
       await utils.admin.listAIProviderSettings.invalidate();
       await utils.admin.getAIDiagnostics.invalidate();
+      await utils.admin.getMarketingBackendReadiness.invalidate();
+      await utils.admin.getMarketingConnectorReadiness.invalidate();
     },
     onError: (error) => toast.error("Could not save settings", { description: error.message }),
   });
@@ -85,15 +104,21 @@ export function MarketingAppSettings({
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
 
+  const providerSettings = (providerSettingsQuery.data ?? {}) as ProviderSettingsApiResponse;
+  const providerSettingsById = useMemo(() => {
+    const map: Record<string, ProviderSettingsApiEntry> = {};
+    for (const [key, value] of Object.entries(providerSettings)) {
+      map[key.toLowerCase()] = value;
+    }
+    return map;
+  }, [providerSettings]);
+
   useEffect(() => {
-    const rows = ((providerSettingsQuery.data as Array<{ key: string; value?: string | null }> | undefined) ?? []).reduce<Record<string, string>>(
-      (accumulator, row) => {
-        accumulator[row.key] = row.value ?? "";
-        return accumulator;
-      },
-      {},
-    );
-    setValues(rows);
+    const initial = PROVIDER_FIELDS.reduce<Record<string, string>>((accumulator, field) => {
+      accumulator[field.key] = "";
+      return accumulator;
+    }, {});
+    setValues(initial);
   }, [providerSettingsQuery.data]);
 
   const groupedFields = useMemo(() => {
@@ -104,7 +129,7 @@ export function MarketingAppSettings({
     }, {});
   }, []);
 
-  const providerHealth = (((diagnosticsQuery.data as { providerHealth?: Array<{ provider: string; liveReady?: boolean }> } | undefined)?.providerHealth) ?? []);
+  const providerHealth = (((diagnosticsQuery.data as { providerHealth?: Array<{ provider: string; liveReady?: boolean; configured?: boolean }> } | undefined)?.providerHealth) ?? []);
   const socialConnections = useMemo(
     () => normalizeSocialConnections(socialConnectionsQuery.data),
     [socialConnectionsQuery.data],
@@ -138,7 +163,7 @@ export function MarketingAppSettings({
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-stone-900">Settings</h2>
-          <p className="text-sm text-stone-500">Quiet, marketing-only configuration for The Marketing App. Dashboard AI settings stay separate.</p>
+            <p className="text-sm text-stone-500">Quiet, marketing-only configuration for The Marketing App. Dashboard AI settings stay separate.</p>
           </div>
           <Button type="button" className="rounded-2xl" onClick={saveSettings} disabled={saveProviderSettings.isPending}>
             {saveProviderSettings.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
@@ -217,7 +242,7 @@ export function MarketingAppSettings({
           <div className="mt-4 space-y-3">
             {socialConnectionsQuery.isLoading ? (
               <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-xs text-stone-500">
-                Loading social connection status…
+                Loading social connection status...
               </div>
             ) : null}
             {socialConnectionsQuery.isError ? (
@@ -246,6 +271,36 @@ export function MarketingAppSettings({
             ))}
           </div>
         </div>
+
+        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <h3 className="text-sm font-semibold text-stone-900">Backend readiness truth</h3>
+          {backendReadinessQuery.isError ? (
+            <p className="mt-2 text-xs text-amber-700">Readiness endpoint unavailable. Status defaults to setup_needed.</p>
+          ) : null}
+          <div className="mt-3 grid gap-2 md:grid-cols-2 text-xs text-stone-700">
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Overall: {formatReadinessStatus((backendReadinessQuery.data as { status?: string } | undefined)?.status)}</div>
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">FFmpeg: {(backendReadinessQuery.data as { ffmpegAvailability?: boolean } | undefined)?.ffmpegAvailability ? "ready" : "setup_needed"}</div>
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Remotion: {(backendReadinessQuery.data as { remotionAvailability?: boolean } | undefined)?.remotionAvailability ? "ready" : "setup_needed"}</div>
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Publishing: {formatReadinessStatus((backendReadinessQuery.data as { publishingReadiness?: string } | undefined)?.publishingReadiness)}</div>
+          </div>
+          <div className="mt-3 text-xs text-stone-600 space-y-1">
+            {(((backendReadinessQuery.data as { blockingIssues?: string[] } | undefined)?.blockingIssues) ?? []).slice(0, 4).map((item) => (
+              <p key={item}>- {item}</p>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <h3 className="text-sm font-semibold text-stone-900">Connector readiness truth</h3>
+          <div className="mt-3 space-y-2">
+            {(((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string; reason: string }> } | undefined)?.platforms) ?? []).map((item) => (
+              <div key={item.platform} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700">
+                <span>{item.platform}</span>
+                <span>{item.status}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {Object.entries(groupedFields).map(([group, fields]) => (
@@ -260,6 +315,12 @@ export function MarketingAppSettings({
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {fields.map((field) => {
               const health = providerHealth.find((entry) => entry.provider === field.id);
+              const settingsEntry = providerSettingsById[field.id] ?? null;
+              const readiness = health?.liveReady
+                ? "ready"
+                : settingsEntry?.configured
+                  ? "degraded"
+                  : "setup_needed";
               return (
                 <div key={field.key} className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -268,7 +329,7 @@ export function MarketingAppSettings({
                       <p className="text-xs text-stone-500">{field.canTest ? "Connection test available" : "Stored for asset sourcing"}</p>
                     </div>
                     <Badge className="rounded-full border border-stone-200 bg-white px-2 py-0.5 text-xs text-stone-600">
-                      {health?.liveReady ? "ready" : "setup_needed"}
+                      {readiness}
                     </Badge>
                   </div>
 
@@ -280,7 +341,7 @@ export function MarketingAppSettings({
                     className="mt-3"
                   />
                   <p className="mt-2 text-xs text-stone-500">
-                    Saved value: {values[field.key] ? obfuscateSecret(values[field.key]) : "Not set"}
+                    Saved value: {settingsEntry?.keyMasked ? obfuscateSecret(settingsEntry.keyMasked) : "Not set"}
                   </p>
 
                   {field.canTest ? (
@@ -318,7 +379,11 @@ export function MarketingAppSettings({
 
         {showDiagnostics ? (
           <pre className="mt-4 overflow-x-auto rounded-2xl bg-stone-950 p-4 text-xs text-stone-100">
-            {JSON.stringify(diagnosticsQuery.data ?? {}, null, 2)}
+            {JSON.stringify({
+              diagnostics: diagnosticsQuery.data ?? {},
+              backendReadiness: backendReadinessQuery.data ?? { status: "setup_needed" },
+              connectorReadiness: connectorReadinessQuery.data ?? { status: "setup_needed" },
+            }, null, 2)}
           </pre>
         ) : null}
       </div>
