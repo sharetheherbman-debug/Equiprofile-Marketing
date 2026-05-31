@@ -24,10 +24,10 @@ export type FinalDeliveryMode =
   | "campaign_pack"
   | "export_only";
 
-export type SceneSourceType = "stock" | "generated" | "upload" | "text_card";
-export type SceneMediaKind = "image" | "video" | "text_card";
+export type SceneSourceType = "stock" | "generated" | "upload" | "text_card" | "avatar";
+export type SceneMediaKind = "image" | "video" | "text_card" | "avatar";
 
-export type SceneStatus = "pending" | "asset_selected" | "needs_review" | "ready" | "error";
+export type SceneStatus = "pending" | "asset_selected" | "needs_review" | "ready" | "error" | "blocked" | "failed";
 
 export type StudioPlanStatus =
   | "brief"

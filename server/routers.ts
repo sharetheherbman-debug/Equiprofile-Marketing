@@ -301,6 +301,50 @@ import {
   updateVisualQaRecord,
   isVideoTarget,
 } from "./modules/marketing/visual-qa";
+import {
+  generateMarketingStudioPlanFromPrompt as generateMarketingStudioPlanFromPromptService,
+  generateMarketingStudioScenePlan as generateMarketingStudioScenePlanService,
+  generateMarketingStudioScript as generateMarketingStudioScriptService,
+} from "./modules/marketing/studio-generation";
+import {
+  archiveMarketingBrandAvatar as archiveMarketingBrandAvatarService,
+  archiveMarketingVoiceProfile,
+  buildMarketingAudioMixPolicy,
+  buildMarketingAvatarPromptContext as buildMarketingAvatarPromptContextService,
+  createMarketingAvatarAsset as createMarketingAvatarAssetService,
+  createMarketingAvatarLipsyncJob as createMarketingAvatarLipsyncJobService,
+  createMarketingBrandAvatar as createMarketingBrandAvatarService,
+  createMarketingMusicGenerationJob as createMarketingMusicGenerationJobService,
+  createMarketingVoiceProfile,
+  generateMarketingVoicePreview as generateMarketingVoicePreviewService,
+  getActiveMarketingBrandAvatar as getActiveMarketingBrandAvatarService,
+  getMarketingAudioLicenseMetadata as getMarketingAudioLicenseMetadataService,
+  getMarketingAvatarJobStatus as getMarketingAvatarJobStatusService,
+  listMarketingAudioBeds as listMarketingAudioBedsService,
+  listMarketingBrandAvatars as listMarketingBrandAvatarsService,
+  listMarketingVoiceProfiles as listMarketingVoiceProfilesService,
+  selectMarketingBackgroundAudio as selectMarketingBackgroundAudioService,
+  setDefaultMarketingVoiceProfile as setDefaultMarketingVoiceProfileService,
+  updateMarketingBrandAvatar as updateMarketingBrandAvatarService,
+  updateMarketingVoiceProfile,
+} from "./modules/marketing/avatar-voice-music";
+import {
+  createMarketingAttributionLink as createMarketingAttributionLinkService,
+  getMarketingResultsSummary as getMarketingResultsSummaryService,
+  importMarketingManualMetrics as importMarketingManualMetricsService,
+  listMarketingAttributionLinks as listMarketingAttributionLinksService,
+  listMarketingCampaignResults as listMarketingCampaignResultsService,
+  recordConnectorMetric as recordConnectorMetricService,
+  recordMarketingConversionEvent as recordMarketingConversionEventService,
+} from "./modules/marketing/results-conversion";
+import {
+  cancelMarketingAgentRun as cancelMarketingAgentRunService,
+  createMarketingAgentRun as createMarketingAgentRunService,
+  getMarketingAgentRun as getMarketingAgentRunService,
+  listMarketingAgentRuns as listMarketingAgentRunsService,
+  runMarketingAgentTask as runMarketingAgentTaskService,
+} from "./modules/marketing/agent-workforce";
+import { getMarketingBackendReadiness as getMarketingBackendReadinessService } from "./modules/marketing/backend-readiness";
 
 // Allowed MIME types for document and avatar uploads
 const ALLOWED_UPLOAD_MIME_TYPES = [
@@ -4921,19 +4965,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           requestedDurationSeconds,
           userPrompt: input.originalUserPrompt,
         });
-        const equine = capability.equineContextPreserved;
 
-        const generatedScenes = capability.needsScenePlan
-          ? buildStudioScenes(input.originalUserPrompt, equine)
-          : [];
-        const requiredAssets = capability.needsScenePlan
-          ? (equine
-            ? ["Horse stable footage", "Equestrian team b-roll", "EquiProfile UI/supporting visuals", "CTA end card"]
-            : ["Scene visuals", "Brand-safe CTA frame"])
-          : [];
+        const generated = await generateMarketingStudioPlanFromPromptService({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          qualityMode: input.qualityMode,
+          contentType,
+          platform: input.platform,
+          originalUserPrompt: input.originalUserPrompt,
+          brief: input.brief,
+          audience: input.audience,
+          goal: input.goal,
+          durationTargetSeconds: requestedDurationSeconds,
+          existingScript: input.script,
+          existingScenes: input.scenes?.length
+            ? input.scenes.map((scene, index) => normalizeStudioScene({ ...scene, id: scene.id ?? nanoid() }, index + 1))
+            : undefined,
+        });
 
         return {
           status: "planned" as const,
+          generationStatus: generated.status,
           capability,
           plan: {
             id: nanoid(),
@@ -4941,19 +4994,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             hostAppId: input.hostAppId,
             contentType,
             originalUserPrompt: input.originalUserPrompt,
-            goal: input.goal ?? "",
-            audience: input.audience ?? "",
+            goal: generated.goal ?? input.goal ?? "",
+            audience: generated.audience ?? input.audience ?? "",
             platform: input.platform ?? "",
             durationTargetSeconds: requestedDurationSeconds,
             outputFormat: capability.finalDeliveryMode === "assembled_video" ? "Assembled video plan" : "Structured marketing plan",
-            brief: input.brief ?? `Plan for ${input.originalUserPrompt}`,
-            script: input.script ?? "",
-            scenes: input.scenes?.length
-              ? input.scenes.map((scene, index) => normalizeStudioScene({ ...scene, id: scene.id ?? nanoid() }, index + 1))
-              : generatedScenes,
-            requiredAssets,
+            brief: generated.brief || input.brief || `Plan for ${input.originalUserPrompt}`,
+            script: generated.script || input.script || "",
+            scenes: generated.scenePlan,
+            requiredAssets: generated.requiredAssets,
             voiceoverRequired: capability.needsVoiceover,
-            voiceoverScript: input.script ?? "",
+            voiceoverScript: generated.voiceoverScript || input.script || "",
             voiceId: null,
             voiceProvider: null,
             voiceAssetId: null,
@@ -4966,9 +5017,92 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             captionStatus: "pending",
             brandOverlayRequired: capability.needsBrandOverlay,
             renderMode: capability.finalDeliveryMode,
-            status: capability.needsScenePlan ? "scene_plan" : "brief",
+            status: generated.status === "setup_needed" || generated.status === "provider_unavailable"
+              ? "brief"
+              : capability.needsScenePlan
+                ? "scene_plan"
+                : "brief",
           },
+          providerRouteMetadata: generated.providerRouteMetadata,
         };
+      }),
+
+    generateMarketingStudioScript: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          contentType: z.enum(MARKETING_STUDIO_CONTENT_TYPES),
+          platform: z.string().min(1).max(120).optional(),
+          originalUserPrompt: z.string().min(3).max(6000),
+          brief: z.string().max(8000).optional(),
+          audience: z.string().max(500).optional(),
+          goal: z.string().max(500).optional(),
+          durationTargetSeconds: z.number().min(1).max(3600).optional(),
+          brandContext: z.record(z.string(), z.unknown()).optional(),
+          existingScript: z.string().max(12000).optional(),
+          existingScenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        return generateMarketingStudioScriptService({
+          ...input,
+          existingScenes: input.existingScenes?.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+        });
+      }),
+
+    generateMarketingStudioScenePlan: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          contentType: z.enum(MARKETING_STUDIO_CONTENT_TYPES),
+          platform: z.string().min(1).max(120).optional(),
+          originalUserPrompt: z.string().min(3).max(6000),
+          brief: z.string().max(8000).optional(),
+          audience: z.string().max(500).optional(),
+          goal: z.string().max(500).optional(),
+          durationTargetSeconds: z.number().min(1).max(3600).optional(),
+          brandContext: z.record(z.string(), z.unknown()).optional(),
+          existingScript: z.string().max(12000).optional(),
+          existingScenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        return generateMarketingStudioScenePlanService({
+          ...input,
+          existingScenes: input.existingScenes?.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+        });
+      }),
+
+    generateMarketingStudioPlanFromPrompt: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          contentType: z.enum(MARKETING_STUDIO_CONTENT_TYPES),
+          platform: z.string().min(1).max(120).optional(),
+          originalUserPrompt: z.string().min(3).max(6000),
+          brief: z.string().max(8000).optional(),
+          audience: z.string().max(500).optional(),
+          goal: z.string().max(500).optional(),
+          durationTargetSeconds: z.number().min(1).max(3600).optional(),
+          brandContext: z.record(z.string(), z.unknown()).optional(),
+          existingScript: z.string().max(12000).optional(),
+          existingScenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        return generateMarketingStudioPlanFromPromptService({
+          ...input,
+          existingScenes: input.existingScenes?.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+        });
       }),
 
     createMarketingRenderJob: adminUnlockedProcedure
@@ -5037,6 +5171,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const captionVtt = generateVttCaptions(timeline);
         const captionMode = input.captionMode ?? "script";
         const captionFormat = input.captionFormat ?? "srt";
+        const audioMixPolicy = buildMarketingAudioMixPolicy({
+          hasVoiceover: Boolean(input.audioUrl || input.voiceAssetId),
+          hasBackgroundMusic: false,
+          musicLicenseOk: false,
+        });
         const brandOverlay = await buildMarketingBrandOverlay({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
@@ -5076,6 +5215,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             backgroundMusicUrl: null,
             voiceProvider: null,
             voiceModel: null,
+            mixPolicy: audioMixPolicy,
           },
           brandOverlay,
         });
@@ -5263,6 +5403,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             voiceProvider: input.voiceProvider ?? existing.audio.voiceProvider,
             voiceModel: input.voiceModel ?? existing.audio.voiceModel,
             status: input.audioUrl || input.voiceAssetId ? "queued" : existing.audio.status,
+            mixPolicy: buildMarketingAudioMixPolicy({
+              hasVoiceover: Boolean(input.audioUrl ?? existing.audio.audioUrl ?? input.voiceAssetId ?? existing.audio.voiceAssetId),
+              hasBackgroundMusic: Boolean(input.backgroundMusicUrl ?? existing.audio.backgroundMusicUrl),
+              musicLicenseOk: false,
+            }),
           },
           captions: {
             ...existing.captions,
@@ -8279,6 +8424,161 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return { success: true, previousRenderJobId: existing.id, renderJobId: created.id };
       }),
 
+    retryMarketingRenderJob: adminUnlockedProcedure
+      .input(z.object({
+        renderJobId: z.string().min(1),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+      }))
+      .mutation(async ({ input }) => {
+        const existing = await getMarketingRenderJobById(input.renderJobId);
+        if (!existing || existing.tenantId !== input.tenantId || existing.workspaceId !== input.workspaceId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        }
+        const created = await createMarketingRenderJobRecord({
+          tenantId: existing.tenantId,
+          workspaceId: existing.workspaceId,
+          hostAppId: existing.hostAppId,
+          brandKitId: existing.brandKitId,
+          overlayTemplate: existing.overlayTemplate,
+          planId: existing.planId,
+          campaignId: existing.campaignId,
+          campaignItemId: existing.campaignItemId,
+          status: "queued",
+          reviewStatus: "needs_review",
+          contentType: existing.contentType,
+          originalUserPrompt: existing.originalUserPrompt,
+          renderMode: existing.renderMode,
+          durationTargetSeconds: existing.durationTargetSeconds,
+          timeline: existing.timeline,
+          captions: existing.captions,
+          audio: existing.audio,
+          brandOverlay: existing.brandOverlay,
+        });
+        await enqueueMarketingRenderJob(created.id);
+        return { success: true, previousRenderJobId: existing.id, renderJobId: created.id };
+      }),
+
+    approveMarketingRenderOutput: adminUnlockedProcedure
+      .input(z.object({
+        renderJobId: z.string().min(1),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        reason: z.string().max(4000).nullable().optional(),
+        manualOverride: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const job = await getMarketingRenderJobById(input.renderJobId);
+        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        }
+        if (!job.outputMediaAssetId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot approve render output without output media asset." });
+        }
+        if (job.audio.backgroundMusicUrl && !input.manualOverride) {
+          const rawTimeline = JSON.stringify(job.timeline).toLowerCase();
+          if (rawTimeline.includes("license_missing")) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Music license metadata missing; manual override required." });
+          }
+        }
+        const latest = await getLatestMarketingReviewForTarget({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          targetType: "render_job",
+          targetId: input.renderJobId,
+        });
+        if (!latest?.checklist && !input.manualOverride) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Run deterministic QA before approval." });
+        }
+        const recordId = await createMarketingReviewRecordEntry({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          targetType: "render_job",
+          targetId: input.renderJobId,
+          status: "approved",
+          reviewerUserId: ctx.user.id,
+          reason: input.reason ?? null,
+          reviewedAt: new Date().toISOString(),
+          metadata: input.manualOverride
+            ? {
+              manualOverride: {
+                used: true,
+                action: "approve",
+                reason: input.reason ?? "",
+                latestStatus: latest?.status ?? null,
+                latestQaPass: latest?.qaScore?.pass ?? null,
+              },
+            }
+            : null,
+          checklist: latest?.checklist ?? null,
+          qaScore: latest?.qaScore ?? null,
+        });
+        await updateMarketingRenderJobRecord({ id: job.id, reviewStatus: "approved" });
+        await setMarketingTargetReviewStatus({ targetType: "render_job", targetId: input.renderJobId, status: "approved" });
+        return { success: true, id: recordId };
+      }),
+
+    rejectMarketingRenderOutput: adminUnlockedProcedure
+      .input(z.object({
+        renderJobId: z.string().min(1),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        reason: z.string().min(1).max(4000),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const job = await getMarketingRenderJobById(input.renderJobId);
+        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        }
+        const recordId = await createMarketingReviewRecordEntry({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          targetType: "render_job",
+          targetId: input.renderJobId,
+          status: "rejected",
+          reviewerUserId: ctx.user.id,
+          reason: input.reason,
+          reviewedAt: new Date().toISOString(),
+        });
+        await updateMarketingRenderJobRecord({ id: job.id, reviewStatus: "rejected" });
+        await setMarketingTargetReviewStatus({ targetType: "render_job", targetId: input.renderJobId, status: "rejected" });
+        return { success: true, id: recordId };
+      }),
+
+    requestMarketingRenderChanges: adminUnlockedProcedure
+      .input(z.object({
+        renderJobId: z.string().min(1),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        reason: z.string().min(1).max(4000),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const job = await getMarketingRenderJobById(input.renderJobId);
+        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        }
+        const recordId = await createMarketingReviewRecordEntry({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          targetType: "render_job",
+          targetId: input.renderJobId,
+          status: "changes_requested",
+          reviewerUserId: ctx.user.id,
+          reason: input.reason,
+          reviewedAt: new Date().toISOString(),
+        });
+        await updateMarketingRenderJobRecord({ id: job.id, reviewStatus: "changes_requested" });
+        await setMarketingTargetReviewStatus({ targetType: "render_job", targetId: input.renderJobId, status: "changes_requested" });
+        return { success: true, id: recordId };
+      }),
+
     searchStockMedia: adminUnlockedProcedure
       .input(z.object({
         provider: z.enum(["pexels", "pixabay"]),
@@ -8711,6 +9011,258 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     // ── Brand Profile (Update 1) ──────────────────────────────────────────────
+
+    listMarketingBrandAvatars: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingBrandAvatarsService(input);
+      }),
+
+    getActiveMarketingBrandAvatar: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getActiveMarketingBrandAvatarService(input);
+      }),
+
+    createMarketingBrandAvatar: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        brandProfileId: z.number().int().positive().optional(),
+        brandKitId: z.number().int().positive().optional(),
+        name: z.string().min(1).max(200),
+        role: z.string().max(120).optional(),
+        personality: z.string().max(2000).optional(),
+        visualDescription: z.string().max(2000).optional(),
+        wardrobeRules: z.string().max(2000).optional(),
+        backgroundRules: z.string().max(2000).optional(),
+        referenceAssetId: z.number().int().positive().optional(),
+        referenceAssetUrl: z.string().max(2000).optional(),
+        promptTemplate: z.string().max(4000).optional(),
+        negativePrompt: z.string().max(2000).optional(),
+        consistencySeed: z.string().max(80).optional(),
+        preferredVoiceProfileId: z.number().int().positive().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await createMarketingBrandAvatarService(input);
+        return { id };
+      }),
+
+    updateMarketingBrandAvatar: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        patch: z.record(z.string(), z.unknown()),
+      }))
+      .mutation(async ({ input }) => {
+        await updateMarketingBrandAvatarService(input);
+        return { success: true };
+      }),
+
+    archiveMarketingBrandAvatar: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .mutation(async ({ input }) => {
+        await archiveMarketingBrandAvatarService(input);
+        return { success: true };
+      }),
+
+    createMarketingAvatarAsset: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        prompt: z.string().min(3).max(6000),
+        campaignId: z.number().int().positive().optional(),
+        campaignItemId: z.number().int().positive().optional(),
+        referenceAssetId: z.number().int().positive().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return createMarketingAvatarAssetService({ ...input, userId: ctx.user.id });
+      }),
+
+    createMarketingAvatarLipsyncJob: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        avatarAssetId: z.number().int().positive(),
+        audioAssetId: z.number().int().positive(),
+        campaignId: z.number().int().positive().optional(),
+        campaignItemId: z.number().int().positive().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return createMarketingAvatarLipsyncJobService({ ...input, userId: ctx.user.id });
+      }),
+
+    getMarketingAvatarJobStatus: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingAvatarJobStatusService(input);
+      }),
+
+    listMarketingVoiceProfiles: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingVoiceProfilesService(input);
+      }),
+
+    createMarketingVoiceProfile: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        name: z.string().min(1).max(160),
+        provider: z.string().min(1).max(40),
+        providerVoiceId: z.string().max(255).optional(),
+        language: z.string().max(40).optional(),
+        accent: z.string().max(80).optional(),
+        styleMetadata: z.record(z.string(), z.unknown()).optional(),
+        sampleText: z.string().max(8000).optional(),
+        licensing: z.record(z.string(), z.unknown()).optional(),
+        usagePolicy: z.record(z.string(), z.unknown()).optional(),
+        status: z.enum(["active", "archived", "setup_needed"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await createMarketingVoiceProfile(input);
+        return { id };
+      }),
+
+    updateMarketingVoiceProfile: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        patch: z.record(z.string(), z.unknown()),
+      }))
+      .mutation(async ({ input }) => {
+        await updateMarketingVoiceProfile(input);
+        return { success: true };
+      }),
+
+    archiveMarketingVoiceProfile: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .mutation(async ({ input }) => {
+        await archiveMarketingVoiceProfile(input);
+        return { success: true };
+      }),
+
+    generateMarketingVoicePreview: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        voiceProfileId: z.number().int().positive(),
+        previewText: z.string().min(3).max(4000),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return generateMarketingVoicePreviewService({ ...input, userId: ctx.user.id });
+      }),
+
+    setDefaultMarketingVoiceProfile: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .mutation(async ({ input }) => {
+        await setDefaultMarketingVoiceProfileService(input);
+        return { success: true };
+      }),
+
+    listMarketingAudioBeds: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingAudioBedsService(input);
+      }),
+
+    createMarketingMusicGenerationJob: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        title: z.string().min(1).max(220),
+        mood: z.string().max(80).optional(),
+        tempo: z.string().max(60).optional(),
+        durationSeconds: z.number().int().min(1).max(3600).optional(),
+        prompt: z.string().min(3).max(6000),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        return createMarketingMusicGenerationJobService({ ...input, userId: ctx.user.id });
+      }),
+
+    selectMarketingBackgroundAudio: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .mutation(async ({ input }) => {
+        return selectMarketingBackgroundAudioService(input);
+      }),
+
+    getMarketingAudioLicenseMetadata: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingAudioLicenseMetadataService(input);
+      }),
+
+    buildMarketingAudioMixPolicy: adminUnlockedProcedure
+      .input(z.object({
+        hasVoiceover: z.boolean(),
+        hasBackgroundMusic: z.boolean(),
+        voiceoverDurationSeconds: z.number().nullable().optional(),
+        musicDurationSeconds: z.number().nullable().optional(),
+        musicLicenseOk: z.boolean().optional(),
+      }))
+      .query(async ({ input }) => {
+        return buildMarketingAudioMixPolicy(input);
+      }),
 
     getBrandProfile: adminUnlockedProcedure
       .input(z.object({ tenantId: z.string().min(1).max(100).default("global") }).optional())
@@ -9854,6 +10406,181 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             error: err instanceof Error ? err.message : String(err),
           };
         }
+      }),
+
+    createMarketingAttributionLink: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+        campaignItemId: z.number().int().positive().optional(),
+        destinationUrl: z.string().url().max(2000),
+        utmSource: z.string().max(120).optional(),
+        utmMedium: z.string().max(120).optional(),
+        utmCampaign: z.string().max(120).optional(),
+        utmContent: z.string().max(120).optional(),
+        utmTerm: z.string().max(120).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return createMarketingAttributionLinkService(input);
+      }),
+
+    listMarketingAttributionLinks: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingAttributionLinksService(input);
+      }),
+
+    recordMarketingConversionEvent: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+        campaignItemId: z.number().int().positive().optional(),
+        eventType: z.string().min(1).max(80),
+        source: z.string().min(1).max(30),
+        contactRef: z.string().max(255).optional(),
+        revenueValue: z.string().max(120).optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await recordMarketingConversionEventService(input);
+        return { id };
+      }),
+
+    listMarketingCampaignResults: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingCampaignResultsService(input);
+      }),
+
+    importMarketingManualMetrics: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive(),
+        campaignItemId: z.number().int().positive().optional(),
+        platform: z.string().min(1).max(80),
+        metricType: z.string().min(1).max(80),
+        metricValue: z.number(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await importMarketingManualMetricsService(input);
+        return { id, source: "manual" as const };
+      }),
+
+    importMarketingConnectorMetrics: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive(),
+        campaignItemId: z.number().int().positive().optional(),
+        platform: z.string().min(1).max(80),
+        metricType: z.string().min(1).max(80),
+        metricValue: z.number(),
+        sourceRef: z.string().min(1).max(255),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await recordConnectorMetricService(input);
+        return { id, source: "connector" as const };
+      }),
+
+    getMarketingResultsSummary: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingResultsSummaryService(input);
+      }),
+
+    createMarketingAgentRun: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+        agentRole: z.enum(["StrategyAgent", "CopyAgent", "MediaAgent", "AvatarVoiceAgent", "QaAgent", "SchedulerAgent", "ResultsAgent"]),
+        inputJson: z.record(z.string(), z.unknown()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await createMarketingAgentRunService(input);
+        return { id };
+      }),
+
+    listMarketingAgentRuns: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return listMarketingAgentRunsService(input);
+      }),
+
+    getMarketingAgentRun: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingAgentRunService(input);
+      }),
+
+    runMarketingAgentTask: adminUnlockedProcedure
+      .input(z.object({
+        runId: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        taskType: z.string().min(1).max(80),
+        prompt: z.string().min(3).max(12000),
+      }))
+      .mutation(async ({ input }) => {
+        return runMarketingAgentTaskService(input);
+      }),
+
+    cancelMarketingAgentRun: adminUnlockedProcedure
+      .input(z.object({
+        id: z.number().int().positive(),
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .mutation(async ({ input }) => {
+        return cancelMarketingAgentRunService(input);
+      }),
+
+    getMarketingBackendReadiness: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingBackendReadinessService(input);
       }),
 
     getLeads: adminUnlockedProcedure.query(async () => {

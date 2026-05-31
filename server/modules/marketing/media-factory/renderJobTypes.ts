@@ -64,7 +64,7 @@ export interface MarketingTimelineScene {
     sourceMetadata: Record<string, unknown> | null;
     selectedAt: string | null;
     selectionReason: string | null;
-    status: "pending" | "asset_selected" | "ready" | "needs_review" | "error";
+    status: "pending" | "asset_selected" | "ready" | "needs_review" | "error" | "blocked" | "failed";
   };
 }
 
@@ -140,6 +140,21 @@ export interface MarketingRenderJob {
     backgroundMusicUrl: string | null;
     voiceProvider: string | null;
     voiceModel: string | null;
+    mixPolicy?: {
+      voiceoverGainDb: number;
+      backgroundMusicGainDb: number;
+      ducking: {
+        enabled: boolean;
+        thresholdDb: number;
+        ratio: number;
+        attackMs: number;
+        releaseMs: number;
+      };
+      introFadeMs: number;
+      outroFadeMs: number;
+      safeLoudnessTargetLufs: number;
+      warnings: string[];
+    };
   };
   brandOverlay: MarketingBrandOverlay;
   outputMediaAssetId: number | null;
