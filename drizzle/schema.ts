@@ -1694,6 +1694,197 @@ export const marketingReviewRecords = mysqlTable("marketingReviewRecords", {
 export type MarketingReviewRecord = typeof marketingReviewRecords.$inferSelect;
 export type InsertMarketingReviewRecord = typeof marketingReviewRecords.$inferInsert;
 
+export const marketingAvatarJobs = mysqlTable("marketingAvatarJobs", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  campaignItemId: int("campaignItemId"),
+  renderJobId: int("renderJobId"),
+  task: varchar("task", { length: 40 }).notNull(), // avatar_generation | avatar_lipsync
+  provider: varchar("provider", { length: 40 }),
+  modelId: varchar("modelId", { length: 255 }),
+  routeStatus: varchar("routeStatus", { length: 30 }).notNull().default("setup_needed"),
+  status: varchar("status", { length: 30 }).notNull().default("setup_needed"),
+  jobId: varchar("jobId", { length: 140 }),
+  sourceMediaAssetId: int("sourceMediaAssetId"),
+  audioMediaAssetId: int("audioMediaAssetId"),
+  outputMediaAssetId: int("outputMediaAssetId"),
+  outputUrl: text("outputUrl"),
+  metadataJson: text("metadataJson"),
+  errorMessage: text("errorMessage"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
+export type MarketingAvatarJob = typeof marketingAvatarJobs.$inferSelect;
+export type InsertMarketingAvatarJob = typeof marketingAvatarJobs.$inferInsert;
+
+export const marketingVoiceProfiles = mysqlTable("marketingVoiceProfiles", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  name: varchar("name", { length: 160 }).notNull(),
+  provider: varchar("provider", { length: 40 }).notNull(),
+  providerVoiceId: varchar("providerVoiceId", { length: 255 }),
+  language: varchar("language", { length: 40 }).notNull().default("en"),
+  accent: varchar("accent", { length: 80 }),
+  styleMetadataJson: text("styleMetadataJson"),
+  sampleText: text("sampleText"),
+  previewAssetId: int("previewAssetId"),
+  previewUrl: text("previewUrl"),
+  licensingJson: text("licensingJson"),
+  usagePolicyJson: text("usagePolicyJson"),
+  isDefault: boolean("isDefault").notNull().default(false),
+  status: varchar("status", { length: 30 }).notNull().default("setup_needed"), // active | archived | setup_needed
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingVoiceProfile = typeof marketingVoiceProfiles.$inferSelect;
+export type InsertMarketingVoiceProfile = typeof marketingVoiceProfiles.$inferInsert;
+
+export const marketingAudioBeds = mysqlTable("marketingAudioBeds", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  providerSource: varchar("providerSource", { length: 30 }).notNull(), // generated | stock | uploaded | library
+  task: varchar("task", { length: 40 }).notNull().default("background_audio_selection"),
+  title: varchar("title", { length: 220 }).notNull(),
+  mood: varchar("mood", { length: 80 }),
+  tempo: varchar("tempo", { length: 60 }),
+  durationSeconds: int("durationSeconds"),
+  licenseType: varchar("licenseType", { length: 80 }),
+  licenseAttribution: text("licenseAttribution"),
+  commercialUseAllowed: boolean("commercialUseAllowed"),
+  sourceUrl: text("sourceUrl"),
+  providerAssetId: varchar("providerAssetId", { length: 255 }),
+  mediaAssetId: int("mediaAssetId"),
+  publicUrl: text("publicUrl"),
+  metadataJson: text("metadataJson"),
+  status: varchar("status", { length: 30 }).notNull().default("setup_needed"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingAudioBed = typeof marketingAudioBeds.$inferSelect;
+export type InsertMarketingAudioBed = typeof marketingAudioBeds.$inferInsert;
+
+export const marketingCampaignResults = mysqlTable("marketingCampaignResults", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId").notNull(),
+  campaignItemId: int("campaignItemId"),
+  platform: varchar("platform", { length: 80 }).notNull(),
+  metricType: varchar("metricType", { length: 80 }).notNull(),
+  metricValue: varchar("metricValue", { length: 120 }).notNull(),
+  source: varchar("source", { length: 20 }).notNull().default("manual"), // manual | connector | imported
+  sourceRef: varchar("sourceRef", { length: 255 }),
+  capturedAt: timestamp("capturedAt").defaultNow().notNull(),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingCampaignResult = typeof marketingCampaignResults.$inferSelect;
+export type InsertMarketingCampaignResult = typeof marketingCampaignResults.$inferInsert;
+
+export const marketingConversionEvents = mysqlTable("marketingConversionEvents", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  campaignItemId: int("campaignItemId"),
+  eventType: varchar("eventType", { length: 80 }).notNull(),
+  source: varchar("source", { length: 30 }).notNull(),
+  contactRef: varchar("contactRef", { length: 255 }),
+  revenueValue: varchar("revenueValue", { length: 120 }),
+  metadataJson: text("metadataJson"),
+  capturedAt: timestamp("capturedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingConversionEvent = typeof marketingConversionEvents.$inferSelect;
+export type InsertMarketingConversionEvent = typeof marketingConversionEvents.$inferInsert;
+
+export const marketingAttributionLinks = mysqlTable("marketingAttributionLinks", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  campaignItemId: int("campaignItemId"),
+  code: varchar("code", { length: 80 }).notNull(),
+  shortUrl: text("shortUrl"),
+  destinationUrl: text("destinationUrl").notNull(),
+  utmSource: varchar("utmSource", { length: 120 }),
+  utmMedium: varchar("utmMedium", { length: 120 }),
+  utmCampaign: varchar("utmCampaign", { length: 120 }),
+  utmContent: varchar("utmContent", { length: 120 }),
+  utmTerm: varchar("utmTerm", { length: 120 }),
+  clickCount: int("clickCount").notNull().default(0),
+  lastClickedAt: timestamp("lastClickedAt"),
+  metadataJson: text("metadataJson"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingAttributionLink = typeof marketingAttributionLinks.$inferSelect;
+export type InsertMarketingAttributionLink = typeof marketingAttributionLinks.$inferInsert;
+
+export const marketingAgentRuns = mysqlTable("marketingAgentRuns", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  agentRole: varchar("agentRole", { length: 60 }).notNull(),
+  status: varchar("status", { length: 30 }).notNull().default("queued"),
+  inputJson: text("inputJson"),
+  outputJson: text("outputJson"),
+  errorMessage: text("errorMessage"),
+  startedAt: timestamp("startedAt"),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingAgentRun = typeof marketingAgentRuns.$inferSelect;
+export type InsertMarketingAgentRun = typeof marketingAgentRuns.$inferInsert;
+
+export const marketingAgentTasks = mysqlTable("marketingAgentTasks", {
+  id: int("id").autoincrement().primaryKey(),
+  runId: int("runId").notNull(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  campaignId: int("campaignId"),
+  agentRole: varchar("agentRole", { length: 60 }).notNull(),
+  taskType: varchar("taskType", { length: 80 }).notNull(),
+  status: varchar("status", { length: 30 }).notNull().default("queued"),
+  provider: varchar("provider", { length: 40 }),
+  modelId: varchar("modelId", { length: 255 }),
+  routeJson: text("routeJson"),
+  inputJson: text("inputJson"),
+  outputJson: text("outputJson"),
+  errorMessage: text("errorMessage"),
+  startedAt: timestamp("startedAt"),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingAgentTask = typeof marketingAgentTasks.$inferSelect;
+export type InsertMarketingAgentTask = typeof marketingAgentTasks.$inferInsert;
+
 export const marketingBeastModeRuns = mysqlTable("marketingBeastModeRuns", {
   id: int("id").autoincrement().primaryKey(),
   tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
@@ -2543,7 +2734,10 @@ export const brandAvatars = mysqlTable("brandAvatars", {
   id: int("id").autoincrement().primaryKey(),
   tenantType: varchar("tenantType", { length: 50 }).notNull().default("individual"),
   tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
   brandProfileId: int("brandProfileId"),
+  brandKitId: int("brandKitId"),
   name: varchar("name", { length: 200 }).notNull(),
   role: varchar("role", { length: 120 }),
   visualDescription: text("visualDescription"),
@@ -2553,9 +2747,11 @@ export const brandAvatars = mysqlTable("brandAvatars", {
   wardrobeRules: text("wardrobeRules"),
   backgroundRules: text("backgroundRules"),
   referenceAssetId: int("referenceAssetId"),
+  referenceAssetUrl: text("referenceAssetUrl"),
   promptTemplate: text("promptTemplate"),
   negativePrompt: text("negativePrompt"),
   consistencySeed: varchar("consistencySeed", { length: 80 }),
+  preferredVoiceProfileId: int("preferredVoiceProfileId"),
   // status: active | archived
   status: varchar("status", { length: 20 }).notNull().default("active"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

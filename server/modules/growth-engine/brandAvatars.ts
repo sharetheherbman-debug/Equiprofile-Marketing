@@ -19,7 +19,10 @@ async function resolveDb(): Promise<Db> {
 export type BrandAvatarInput = {
   tenantType?: string;
   tenantId: string;
+  workspaceId?: string;
+  hostAppId?: string;
   brandProfileId?: number;
+  brandKitId?: number;
   name: string;
   role?: string;
   visualDescription?: string;
@@ -29,33 +32,53 @@ export type BrandAvatarInput = {
   wardrobeRules?: string;
   backgroundRules?: string;
   referenceAssetId?: number;
+  referenceAssetUrl?: string;
   promptTemplate?: string;
   negativePrompt?: string;
   consistencySeed?: string;
+  preferredVoiceProfileId?: number;
   status?: "active" | "archived";
 };
 
-export async function listBrandAvatars(tenantId: string) {
+export async function listBrandAvatars(tenantId: string, workspaceId = "default", hostAppId?: string) {
   const db = await resolveDb();
   if (!db) return [];
+
+  const conditions = [
+    eq(brandAvatars.tenantId, tenantId),
+    eq(brandAvatars.workspaceId, workspaceId),
+    eq(brandAvatars.status, "active"),
+  ];
+  if (hostAppId) {
+    conditions.push(eq(brandAvatars.hostAppId, hostAppId));
+  }
 
   const rows = await db
     .select()
     .from(brandAvatars)
-    .where(and(eq(brandAvatars.tenantId, tenantId), eq(brandAvatars.status, "active")))
+    .where(and(...conditions))
     .orderBy(desc(brandAvatars.createdAt));
 
   return rows.map(mapAvatarRow);
 }
 
-export async function getActiveBrandAvatar(tenantId: string) {
+export async function getActiveBrandAvatar(tenantId: string, workspaceId = "default", hostAppId?: string) {
   const db = await resolveDb();
   if (!db) return null;
+
+  const conditions = [
+    eq(brandAvatars.tenantId, tenantId),
+    eq(brandAvatars.workspaceId, workspaceId),
+    eq(brandAvatars.status, "active"),
+  ];
+  if (hostAppId) {
+    conditions.push(eq(brandAvatars.hostAppId, hostAppId));
+  }
 
   const [row] = await db
     .select()
     .from(brandAvatars)
-    .where(and(eq(brandAvatars.tenantId, tenantId), eq(brandAvatars.status, "active")))
+    .where(and(...conditions))
     .orderBy(desc(brandAvatars.createdAt))
     .limit(1);
 
@@ -70,7 +93,10 @@ export async function createBrandAvatar(input: BrandAvatarInput) {
   const result = await db.insert(brandAvatars).values({
     tenantType: input.tenantType ?? "individual",
     tenantId: input.tenantId,
+    workspaceId: input.workspaceId ?? "default",
+    hostAppId: input.hostAppId ?? "equiprofile",
     brandProfileId: input.brandProfileId ?? null,
+    brandKitId: input.brandKitId ?? null,
     name: input.name,
     role: input.role ?? null,
     visualDescription: input.visualDescription ?? null,
@@ -80,9 +106,11 @@ export async function createBrandAvatar(input: BrandAvatarInput) {
     wardrobeRules: input.wardrobeRules ?? null,
     backgroundRules: input.backgroundRules ?? null,
     referenceAssetId: input.referenceAssetId ?? null,
+    referenceAssetUrl: input.referenceAssetUrl ?? null,
     promptTemplate: input.promptTemplate ?? null,
     negativePrompt: input.negativePrompt ?? null,
     consistencySeed: input.consistencySeed ?? null,
+    preferredVoiceProfileId: input.preferredVoiceProfileId ?? null,
     status: input.status ?? "active",
   });
 
@@ -139,7 +167,10 @@ function mapAvatarRow(row: typeof brandAvatars.$inferSelect) {
     id: row.id,
     tenantType: row.tenantType,
     tenantId: row.tenantId,
+    workspaceId: row.workspaceId,
+    hostAppId: row.hostAppId,
     brandProfileId: row.brandProfileId,
+    brandKitId: row.brandKitId,
     name: row.name,
     role: row.role,
     visualDescription: row.visualDescription,
@@ -149,9 +180,11 @@ function mapAvatarRow(row: typeof brandAvatars.$inferSelect) {
     wardrobeRules: row.wardrobeRules,
     backgroundRules: row.backgroundRules,
     referenceAssetId: row.referenceAssetId,
+    referenceAssetUrl: row.referenceAssetUrl,
     promptTemplate: row.promptTemplate,
     negativePrompt: row.negativePrompt,
     consistencySeed: row.consistencySeed,
+    preferredVoiceProfileId: row.preferredVoiceProfileId,
     status: row.status as "active" | "archived",
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),

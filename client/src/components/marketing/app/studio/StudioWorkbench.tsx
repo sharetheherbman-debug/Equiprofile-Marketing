@@ -192,6 +192,17 @@ export function StudioWorkbench({
   const renderJob = useMarketingRenderJob({ tenantId, workspaceId, hostAppId });
   const sceneMedia = useMarketingSceneMedia({ tenantId, workspaceId, hostAppId });
   const voiceoverMutation = trpc.admin.createMarketingVoiceover.useMutation();
+  const studioScriptMutation = trpc.admin.generateMarketingStudioScript?.useMutation
+    ? trpc.admin.generateMarketingStudioScript.useMutation()
+    : {
+      mutateAsync: async () => ({
+        brief: plan?.brief ?? "",
+        script: plan?.script ?? "",
+        voiceoverScript: plan?.voiceoverScript ?? plan?.script ?? "",
+        scenePlan: plan?.scenes ?? [],
+        requiredAssets: plan?.requiredAssets ?? [],
+      }),
+    };
   const captionsMutation = trpc.admin.generateMarketingCaptions.useMutation();
   const brandKitQuery = trpc.admin.getMarketingBrandKit.useQuery({ tenantId, workspaceId, hostAppId });
   const overlayTemplatesQuery = trpc.admin.listMarketingBrandOverlayTemplates.useQuery();
@@ -253,27 +264,39 @@ export function StudioWorkbench({
     });
   }
 
-  function handleGenerateScript() {
+  async function handleGenerateScript() {
+    if (!plan || !selectedType) return;
     setIsGeneratingScript(true);
-    // Placeholder: real generation will be wired in PR42
-    setTimeout(() => {
+    try {
+      const generated = await studioScriptMutation.mutateAsync({
+        tenantId,
+        workspaceId,
+        hostAppId,
+        qualityMode: "standard",
+        contentType: selectedType.id as MarketingContentType,
+        platform: plan.platform || undefined,
+        originalUserPrompt: plan.originalUserPrompt || initialPrompt || selectedType.label,
+        brief: plan.brief || undefined,
+        audience: plan.audience || undefined,
+        goal: plan.goal || undefined,
+        durationTargetSeconds: plan.durationTargetSeconds,
+        existingScript: plan.script || undefined,
+        existingScenes: plan.scenes,
+      });
       setPlan((current) => {
         if (!current) return current;
-        const scriptText =
-          current.brief ||
-          `Script for ${selectedType?.label ?? "your content"}: ${current.originalUserPrompt || "No prompt provided"}`;
-        const promptSource = current.originalUserPrompt || current.brief || scriptText;
         return {
           ...current,
-          script: scriptText,
-          scenes: buildScenePlanFromPrompt(promptSource),
-          requiredAssets: isEquinePrompt(promptSource)
-            ? ["Horse stable footage", "Rider/trainer b-roll", "EquiProfile UI references", "Brand CTA frame"]
-            : current.requiredAssets,
+          brief: generated.brief || current.brief,
+          script: generated.script || current.script,
+          voiceoverScript: generated.voiceoverScript || current.voiceoverScript,
+          scenes: generated.scenePlan?.length ? generated.scenePlan : current.scenes,
+          requiredAssets: generated.requiredAssets?.length ? generated.requiredAssets : current.requiredAssets,
         };
       });
+    } finally {
       setIsGeneratingScript(false);
-    }, 500);
+    }
   }
 
   function handleNext() {
