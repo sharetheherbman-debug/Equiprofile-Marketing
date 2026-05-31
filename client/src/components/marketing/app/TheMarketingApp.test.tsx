@@ -44,6 +44,19 @@ vi.mock("@/lib/trpc", () => ({
           isPending: false,
         }),
       },
+      generateMarketingStudioScript: {
+        useMutation: () => ({
+          mutateAsync: async () => ({
+            status: "setup_needed",
+            brief: "",
+            script: "",
+            voiceoverScript: "",
+            scenePlan: [],
+            requiredAssets: [],
+          }),
+          isPending: false,
+        }),
+      },
       generateMarketingCaptions: {
         useMutation: () => ({
           mutateAsync: async () => ({ status: "generated", srt: "1", vtt: "WEBVTT", mode: "script" }),

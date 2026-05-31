@@ -29,6 +29,7 @@ import { getRuntimeConfig } from "../dynamicConfig";
 import { resolve } from "path";
 import path from "path";
 import fs from "fs";
+import { resolveMarketingAttributionClick } from "../modules/marketing/results-conversion";
 
 // Module-level server reference used by the graceful-shutdown handler below.
 // Set inside server.listen() callback once the port is bound.
@@ -496,6 +497,27 @@ async function startServer() {
   // Build info endpoint (cached) with rate limiting
   app.get("/build", healthLimiter, (req, res) => {
     res.json(cachedBuildInfo);
+  });
+
+  // Attribution redirect (truthful click tracking)
+  app.get("/m/:code", async (req, res) => {
+    const code = String(req.params.code ?? "").trim();
+    if (!code) {
+      return res.status(404).json({ error: "Attribution code not found" });
+    }
+
+    const result = await resolveMarketingAttributionClick({
+      code,
+      userAgent: typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : null,
+      referrer: typeof req.headers.referer === "string" ? req.headers.referer : null,
+      ip: req.ip ?? null,
+    });
+
+    if (result.status !== "ok" || !result.destinationUrl) {
+      return res.status(404).json({ error: "Attribution code not found" });
+    }
+
+    return res.redirect(302, result.destinationUrl);
   });
 
   // Health check endpoint (detailed)

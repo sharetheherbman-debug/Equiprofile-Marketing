@@ -306,6 +306,7 @@ export type GenerateMarketingStudioScriptInput = {
   goal?: string;
   durationTargetSeconds?: number;
   brandContext?: Record<string, unknown>;
+  performanceContext?: Record<string, unknown>;
   existingScript?: string;
   existingScenes?: MarketingStudioScene[];
 };
@@ -347,6 +348,7 @@ export async function generateMarketingStudioScript(input: GenerateMarketingStud
     `Brief: ${input.brief ?? ""}`,
     `Duration target seconds: ${input.durationTargetSeconds ?? 30}`,
     `Brand context JSON: ${JSON.stringify(input.brandContext ?? {})}`,
+    `Performance context JSON (use with confidence/source labels only): ${JSON.stringify(input.performanceContext ?? { status: "insufficient_data" })}`,
   ].join("\n");
 
   const executed = await executeRoutedTextTask({

@@ -32,7 +32,7 @@ export type MediaAssetInput = {
   campaignId?: number;
   draftId?: string;
   jobId?: string;
-  type: "image" | "video" | "avatar" | "voice" | "thumbnail" | "document" | "other";
+  type: "image" | "video" | "avatar" | "voice" | "audio" | "thumbnail" | "document" | "other";
   provider?: string;
   task?: string;
   status?: "created" | "processing" | "completed" | "failed" | "deleted";

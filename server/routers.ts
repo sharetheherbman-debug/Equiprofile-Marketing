@@ -330,13 +330,20 @@ import {
 } from "./modules/marketing/avatar-voice-music";
 import {
   createMarketingAttributionLink as createMarketingAttributionLinkService,
+  detectMarketingWinningPatterns as detectMarketingWinningPatternsService,
+  getMarketingPerformanceContext as getMarketingPerformanceContextService,
   getMarketingResultsSummary as getMarketingResultsSummaryService,
   importMarketingManualMetrics as importMarketingManualMetricsService,
   listMarketingAttributionLinks as listMarketingAttributionLinksService,
   listMarketingCampaignResults as listMarketingCampaignResultsService,
   recordConnectorMetric as recordConnectorMetricService,
   recordMarketingConversionEvent as recordMarketingConversionEventService,
+  scoreMarketingCampaignPerformance as scoreMarketingCampaignPerformanceService,
 } from "./modules/marketing/results-conversion";
+import {
+  getMarketingMediaJobResolverStatus as getMarketingMediaJobResolverStatusService,
+  resolveQueuedMarketingMediaJobs as resolveQueuedMarketingMediaJobsService,
+} from "./modules/marketing/media-job-resolver";
 import {
   cancelMarketingAgentRun as cancelMarketingAgentRunService,
   createMarketingAgentRun as createMarketingAgentRunService,
@@ -345,6 +352,8 @@ import {
   runMarketingAgentTask as runMarketingAgentTaskService,
 } from "./modules/marketing/agent-workforce";
 import { getMarketingBackendReadiness as getMarketingBackendReadinessService } from "./modules/marketing/backend-readiness";
+import { getMarketingConnectorReadiness as getMarketingConnectorReadinessService } from "./modules/marketing/connector-readiness";
+import { runAutonomousMarketingCampaign as runAutonomousMarketingCampaignService } from "./modules/marketing/autonomous-campaign";
 
 // Allowed MIME types for document and avatar uploads
 const ALLOWED_UPLOAD_MIME_TYPES = [
@@ -5042,6 +5051,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           goal: z.string().max(500).optional(),
           durationTargetSeconds: z.number().min(1).max(3600).optional(),
           brandContext: z.record(z.string(), z.unknown()).optional(),
+          performanceContext: z.record(z.string(), z.unknown()).optional(),
           existingScript: z.string().max(12000).optional(),
           existingScenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).optional(),
         }),
@@ -5068,6 +5078,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           goal: z.string().max(500).optional(),
           durationTargetSeconds: z.number().min(1).max(3600).optional(),
           brandContext: z.record(z.string(), z.unknown()).optional(),
+          performanceContext: z.record(z.string(), z.unknown()).optional(),
           existingScript: z.string().max(12000).optional(),
           existingScenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).optional(),
         }),
@@ -5094,6 +5105,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           goal: z.string().max(500).optional(),
           durationTargetSeconds: z.number().min(1).max(3600).optional(),
           brandContext: z.record(z.string(), z.unknown()).optional(),
+          performanceContext: z.record(z.string(), z.unknown()).optional(),
           existingScript: z.string().max(12000).optional(),
           existingScenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).optional(),
         }),
@@ -9123,6 +9135,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return getMarketingAvatarJobStatusService(input);
       }),
 
+    resolveQueuedMarketingMediaJobs: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .mutation(async ({ input }) => {
+        return resolveQueuedMarketingMediaJobsService(input);
+      }),
+
+    getMarketingMediaJobResolverStatus: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingMediaJobResolverStatusService(input);
+      }),
+
     listMarketingVoiceProfiles: adminUnlockedProcedure
       .input(z.object({
         tenantId: z.string().min(1).max(100).default("global"),
@@ -10445,7 +10477,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         campaignId: z.number().int().positive().optional(),
         campaignItemId: z.number().int().positive().optional(),
         eventType: z.string().min(1).max(80),
-        source: z.string().min(1).max(30),
+        source: z.enum(["manual", "attribution", "connector", "imported", "api"]),
+        sourceRef: z.string().max(255).optional(),
         contactRef: z.string().max(255).optional(),
         revenueValue: z.string().max(120).optional(),
         metadata: z.record(z.string(), z.unknown()).optional(),
@@ -10512,6 +10545,39 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return getMarketingResultsSummaryService(input);
       }),
 
+    getMarketingPerformanceScore: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .query(async ({ input }) => {
+        return scoreMarketingCampaignPerformanceService(input);
+      }),
+
+    getMarketingWinningPatterns: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .query(async ({ input }) => {
+        return detectMarketingWinningPatternsService(input);
+      }),
+
+    getMarketingPerformanceContext: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        campaignId: z.number().int().positive().optional(),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingPerformanceContextService(input);
+      }),
+
     createMarketingAgentRun: adminUnlockedProcedure
       .input(z.object({
         tenantId: z.string().min(1).max(100).default("global"),
@@ -10561,6 +10627,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return runMarketingAgentTaskService(input);
       }),
 
+    runAutonomousMarketingCampaign: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        goal: z.string().min(3).max(600),
+        audience: z.string().min(2).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
+        durationDays: z.number().int().min(1).max(365),
+        contentTypes: z.array(z.string().min(1).max(120)).min(1).max(20),
+        requireApproval: z.boolean().default(true),
+        exportOnly: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        return runAutonomousMarketingCampaignService(input);
+      }),
+
     cancelMarketingAgentRun: adminUnlockedProcedure
       .input(z.object({
         id: z.number().int().positive(),
@@ -10581,6 +10665,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }))
       .query(async ({ input }) => {
         return getMarketingBackendReadinessService(input);
+      }),
+
+    getMarketingConnectorReadiness: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingConnectorReadinessService(input);
       }),
 
     getLeads: adminUnlockedProcedure.query(async () => {
