@@ -192,17 +192,7 @@ export function StudioWorkbench({
   const renderJob = useMarketingRenderJob({ tenantId, workspaceId, hostAppId });
   const sceneMedia = useMarketingSceneMedia({ tenantId, workspaceId, hostAppId });
   const voiceoverMutation = trpc.admin.createMarketingVoiceover.useMutation();
-  const studioScriptMutation = trpc.admin.generateMarketingStudioScript?.useMutation
-    ? trpc.admin.generateMarketingStudioScript.useMutation()
-    : {
-      mutateAsync: async () => ({
-        brief: plan?.brief ?? "",
-        script: plan?.script ?? "",
-        voiceoverScript: plan?.voiceoverScript ?? plan?.script ?? "",
-        scenePlan: plan?.scenes ?? [],
-        requiredAssets: plan?.requiredAssets ?? [],
-      }),
-    };
+  const studioScriptMutation = trpc.admin.generateMarketingStudioScript.useMutation();
   const captionsMutation = trpc.admin.generateMarketingCaptions.useMutation();
   const brandKitQuery = trpc.admin.getMarketingBrandKit.useQuery({ tenantId, workspaceId, hostAppId });
   const overlayTemplatesQuery = trpc.admin.listMarketingBrandOverlayTemplates.useQuery();

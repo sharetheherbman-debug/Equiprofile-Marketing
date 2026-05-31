@@ -25,20 +25,6 @@ export async function resolveMarketingProviderRoute(input: {
   modelId?: string;
 }) : Promise<MarketingRouteDecision> {
   const taskConfig = getMarketingTaskCapabilityEntry(input.task);
-  if (input.task === "scene_planning") {
-    return {
-      status: "ready",
-      reason: "Long-form video is routed to Media Factory assembled_video only.",
-      selected: {
-        provider: "media_factory",
-        modelId: "assembled_video",
-        category: "video",
-        canonicalTask: taskConfig.canonicalTask,
-        routeType: "media_factory_assembled_video",
-      },
-      candidates: [],
-    };
-  }
 
   const models = await listMarketingProviderModels({ tenantId: input.tenantId, workspaceId: input.workspaceId });
   const preference = input.policy.mode === "elite" ? taskConfig.elitePreference : taskConfig.standardPreference;

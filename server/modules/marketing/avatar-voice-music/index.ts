@@ -34,6 +34,12 @@ function asProviderName(value: string): MarketingProviderName {
   return "qwen";
 }
 
+function hasRealOutputMedia(asset: { publicUrl?: string | null; localPath?: string | null; status?: string | null } | null): boolean {
+  if (!asset) return false;
+  if (asset.status !== "completed") return false;
+  return Boolean((asset.publicUrl && asset.publicUrl.trim()) || (asset.localPath && asset.localPath.trim()));
+}
+
 export type MarketingAvatarStatus = "queued" | "processing" | "completed" | "failed" | "cancelled" | "setup_needed";
 
 export async function listMarketingBrandAvatars(input: { tenantId: string; workspaceId: string; hostAppId: string }) {
@@ -434,6 +440,24 @@ export async function getMarketingAvatarJobStatus(input: { id: number; tenantId:
       outputUrl: row.outputUrl,
     };
   }
+  if (row.status === "completed" && !hasRealOutputMedia(outputAsset)) {
+    await db
+      .update(marketingAvatarJobs)
+      .set({
+        status: "failed",
+        errorMessage: "completed state without real output URL/path is invalid",
+        updatedAt: new Date(),
+      })
+      .where(eq(marketingAvatarJobs.id, row.id));
+    return {
+      id: row.id,
+      status: "failed" as MarketingAvatarStatus,
+      reason: "completed state without real output URL/path is invalid",
+      mediaAssetId: row.outputMediaAssetId,
+      jobId: row.jobId,
+      outputUrl: row.outputUrl,
+    };
+  }
 
   return {
     id: row.id,
@@ -635,11 +659,12 @@ export async function generateMarketingVoicePreview(input: {
     userId: input.userId,
     type: "voice",
     provider: route.selected.provider,
-    task: "text_to_speech",
+    task: "voiceover",
     jobId,
     status: "processing",
     generationPrompt: input.previewText,
     outputMetadata: {
+      voicePreview: true,
       voiceProfileId: profile.id,
       providerVoiceId: profile.providerVoiceId,
       route,
@@ -737,9 +762,9 @@ export async function createMarketingMusicGenerationJob(input: {
   const media = await createMediaAsset({
     tenantId: input.tenantId,
     userId: input.userId,
-    type: "voice",
+    type: "audio",
     provider: route.selected.provider,
-    task: "text_to_speech",
+    task: "music_generation",
     jobId,
     status: "processing",
     generationPrompt: input.prompt,
@@ -767,7 +792,7 @@ export async function createMarketingMusicGenerationJob(input: {
     commercialUseAllowed: null,
     mediaAssetId: media.id,
     publicUrl: null,
-    status: "setup_needed",
+    status: "queued",
     metadataJson: JSON.stringify({
       jobId,
       manual_review_required: true,

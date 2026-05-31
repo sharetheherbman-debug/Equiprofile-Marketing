@@ -8,6 +8,8 @@ import {
   type MarketingTask,
 } from "../provider-capabilities";
 import { listMarketingVoiceProfiles, listMarketingAudioBeds } from "../avatar-voice-music";
+import { getMarketingConnectorReadiness } from "../connector-readiness";
+import { getMarketingMediaJobResolverStatus } from "../media-job-resolver";
 
 export type MarketingBackendReadinessStatus = "ready" | "setup_needed" | "partial" | "blocked" | "failed";
 
@@ -74,6 +76,17 @@ export async function getMarketingBackendReadiness(input: {
     workspaceId: input.workspaceId,
     hostAppId: input.hostAppId,
   });
+  const [connectorReadiness, mediaResolver] = await Promise.all([
+    getMarketingConnectorReadiness({
+      tenantId: input.tenantId,
+      workspaceId: input.workspaceId,
+    }),
+    getMarketingMediaJobResolverStatus({
+      tenantId: input.tenantId,
+      workspaceId: input.workspaceId,
+      hostAppId: input.hostAppId,
+    }),
+  ]);
 
   const blockedIssues: string[] = [];
   const warnings: string[] = [];
@@ -89,6 +102,9 @@ export async function getMarketingBackendReadiness(input: {
   }
   if (!voices.length) {
     warnings.push("No voice profiles configured yet.");
+  }
+  if (connectorReadiness.counts.readyForPosting === 0) {
+    warnings.push("No platform connector is fully ready for posting; export-first is active.");
   }
 
   const routeBlockedCount = taskRoutes.filter((item) => item.status === "setup_needed" || item.status === "provider_unavailable" || item.status === "budget_blocked").length;
@@ -145,7 +161,13 @@ export async function getMarketingBackendReadiness(input: {
       ? "ready" as MarketingBackendReadinessStatus
       : "setup_needed" as MarketingBackendReadinessStatus,
     schedulingExportReadiness: "ready" as MarketingBackendReadinessStatus,
-    publishingReadiness: "setup_needed" as MarketingBackendReadinessStatus,
+    publishingReadiness: connectorReadiness.status === "ready"
+      ? "ready" as MarketingBackendReadinessStatus
+      : connectorReadiness.status === "partial"
+        ? "partial" as MarketingBackendReadinessStatus
+        : "setup_needed" as MarketingBackendReadinessStatus,
+    connectorReadiness,
+    mediaJobResolverReadiness: mediaResolver,
     resultsConversionReadiness: "partial" as MarketingBackendReadinessStatus,
     agentWorkforceReadiness: statusFromFlags({
       ready: taskRoutes.some((route) => route.task === "campaign_strategy" && route.status === "ready"),
