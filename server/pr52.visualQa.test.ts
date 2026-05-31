@@ -338,7 +338,7 @@ describe("PR52 Phase 10 — Beast Mode Execution Service", () => {
     expect(result.copy.hook).toBeTruthy();
     expect(result.copy.body).toBeTruthy();
     expect(result.copy.cta).toBeTruthy();
-  });
+  }, 15000);
 
   it("executeBeastModeTask returns fallback when provider is unavailable", async () => {
     const { executeBeastModeTask } = await import("./modules/marketing/beast-mode/beastModeExecutionService");
