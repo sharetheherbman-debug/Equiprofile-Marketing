@@ -114,6 +114,16 @@ import { ENV } from "./_core/env";
 let _db: ReturnType<typeof drizzle> | null = null;
 let _tablesEnsured = false;
 let _ensureTablesPromise: Promise<void> | null = null;
+let _testDbUnavailable = false;
+let _testDbUnavailableLogged = false;
+
+function isTestRuntime(): boolean {
+  return process.env.NODE_ENV === "test" || process.env.VITEST === "true";
+}
+
+function shouldSuppressTestDbNoise(): boolean {
+  return isTestRuntime() && process.env.TEST_DATABASE_STRICT !== "true";
+}
 
 // Helper to fix localhost to IPv4 address
 function fixDatabaseUrl(url: string): string {
@@ -1291,6 +1301,149 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
       CONSTRAINT \`marketingAgentTasks_id\` PRIMARY KEY(\`id\`)
     )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingBrandMemory\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`brandName\` varchar(220) NOT NULL DEFAULT 'Brand',
+      \`positioningStatement\` text,
+      \`targetPersonasJson\` text,
+      \`objectionsJson\` text,
+      \`proofPointsJson\` text,
+      \`tabooClaimsJson\` text,
+      \`toneRulesJson\` text,
+      \`competitorNotesJson\` text,
+      \`winningHooksJson\` text,
+      \`winningCtasJson\` text,
+      \`winningPlatformsJson\` text,
+      \`contentDoDontJson\` text,
+      \`sourceLabelsJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingBrandMemory_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingTrendSignals\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`platform\` varchar(80) NOT NULL,
+      \`niche\` varchar(180),
+      \`topic\` varchar(220) NOT NULL,
+      \`signalType\` varchar(120) NOT NULL,
+      \`signalText\` text NOT NULL,
+      \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual',
+      \`sourceUrl\` text,
+      \`confidence\` varchar(20) NOT NULL DEFAULT 'low',
+      \`capturedAt\` timestamp NOT NULL DEFAULT (now()),
+      \`expiresAt\` timestamp NULL,
+      \`metadataJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingTrendSignals_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingCompetitorSignals\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`competitorName\` varchar(220) NOT NULL,
+      \`platform\` varchar(80) NOT NULL,
+      \`signalType\` varchar(120) NOT NULL,
+      \`signalText\` text NOT NULL,
+      \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual',
+      \`sourceUrl\` text,
+      \`confidence\` varchar(20) NOT NULL DEFAULT 'low',
+      \`capturedAt\` timestamp NOT NULL DEFAULT (now()),
+      \`metadataJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingCompetitorSignals_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingContentGapSignals\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`platform\` varchar(80) NOT NULL,
+      \`gapType\` varchar(120) NOT NULL,
+      \`gapText\` text NOT NULL,
+      \`confidence\` varchar(20) NOT NULL DEFAULT 'low',
+      \`sourceSummary\` text,
+      \`metadataJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingContentGapSignals_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingExperimentRuns\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`campaignId\` int,
+      \`name\` varchar(220) NOT NULL,
+      \`hypothesis\` text,
+      \`status\` varchar(30) NOT NULL DEFAULT 'draft',
+      \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual',
+      \`metadataJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingExperimentRuns_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingExperimentVariants\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`experimentId\` int NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`variantKey\` varchar(80) NOT NULL,
+      \`hook\` text,
+      \`cta\` text,
+      \`platform\` varchar(80),
+      \`impressions\` int NOT NULL DEFAULT 0,
+      \`clicks\` int NOT NULL DEFAULT 0,
+      \`conversions\` int NOT NULL DEFAULT 0,
+      \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual',
+      \`evidenceJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingExperimentVariants_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingLearningInsights\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`campaignId\` int,
+      \`insightType\` varchar(120) NOT NULL,
+      \`insightText\` text NOT NULL,
+      \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual',
+      \`confidence\` varchar(20) NOT NULL DEFAULT 'low',
+      \`evidenceSummary\` text,
+      \`nextAction\` text,
+      \`metadataJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingLearningInsights_id\` PRIMARY KEY(\`id\`)
+    )`,
+    `CREATE TABLE IF NOT EXISTS \`marketingBestPerformers\` (
+      \`id\` int AUTO_INCREMENT NOT NULL,
+      \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
+      \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default',
+      \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile',
+      \`campaignId\` int,
+      \`performerType\` varchar(80) NOT NULL,
+      \`performerKey\` varchar(220) NOT NULL,
+      \`score\` varchar(40) NOT NULL DEFAULT '0',
+      \`confidence\` varchar(20) NOT NULL DEFAULT 'low',
+      \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual',
+      \`evidenceSummary\` text,
+      \`metadataJson\` text,
+      \`createdAt\` timestamp NOT NULL DEFAULT (now()),
+      \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT \`marketingBestPerformers_id\` PRIMARY KEY(\`id\`)
+    )`,
     `CREATE TABLE IF NOT EXISTS \`marketingBeastModeRuns\` (
       \`id\` int AUTO_INCREMENT NOT NULL,
       \`tenantId\` varchar(100) NOT NULL DEFAULT 'global',
@@ -1929,11 +2082,15 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       try {
         await db.execute(sql.raw(stmt));
       } catch (tableError) {
-        console.error(`[Database] Failed to create table '${tableName}':`, tableError);
+        if (!shouldSuppressTestDbNoise()) {
+          console.error(`[Database] Failed to create table '${tableName}':`, tableError);
+        }
         throw tableError;
       }
     }
-    console.log("[Database] All required tables verified/created");
+    if (!shouldSuppressTestDbNoise()) {
+      console.log("[Database] All required tables verified/created");
+    }
 
     // Column migrations — add missing columns to existing tables.
     // Uses ALTER TABLE … ADD COLUMN IF NOT EXISTS (supported by MariaDB 10.0+).
@@ -2203,6 +2360,117 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       `ALTER TABLE \`marketingBeastModeVariants\` ADD COLUMN IF NOT EXISTS \`reviewStatus\` varchar(30) NOT NULL DEFAULT 'needs_review'`,
       `ALTER TABLE \`marketingBeastModeVariants\` ADD COLUMN IF NOT EXISTS \`exportStatus\` varchar(30) NOT NULL DEFAULT 'draft'`,
       `ALTER TABLE \`marketingBeastModeVariants\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`brandName\` varchar(220) NOT NULL DEFAULT 'Brand'`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`positioningStatement\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`targetPersonasJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`objectionsJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`proofPointsJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`tabooClaimsJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`toneRulesJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`competitorNotesJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`winningHooksJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`winningCtasJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`winningPlatformsJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`contentDoDontJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`sourceLabelsJson\` text`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingBrandMemory\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`platform\` varchar(80) NOT NULL DEFAULT 'Unknown'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`niche\` varchar(180)`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`topic\` varchar(220) NOT NULL DEFAULT 'topic'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`signalType\` varchar(120) NOT NULL DEFAULT 'trend'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`signalText\` text`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`sourceUrl\` text`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`confidence\` varchar(20) NOT NULL DEFAULT 'low'`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`capturedAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`expiresAt\` timestamp NULL`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingTrendSignals\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`competitorName\` varchar(220) NOT NULL DEFAULT 'Competitor'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`platform\` varchar(80) NOT NULL DEFAULT 'Unknown'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`signalType\` varchar(120) NOT NULL DEFAULT 'content_signal'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`signalText\` text`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`sourceUrl\` text`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`confidence\` varchar(20) NOT NULL DEFAULT 'low'`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`capturedAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingCompetitorSignals\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`platform\` varchar(80) NOT NULL DEFAULT 'Unknown'`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`gapType\` varchar(120) NOT NULL DEFAULT 'topic_gap'`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`gapText\` text`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`confidence\` varchar(20) NOT NULL DEFAULT 'low'`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`sourceSummary\` text`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingContentGapSignals\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`campaignId\` int`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`name\` varchar(220) NOT NULL DEFAULT 'Experiment'`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`hypothesis\` text`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`status\` varchar(30) NOT NULL DEFAULT 'draft'`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual'`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingExperimentRuns\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`experimentId\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`variantKey\` varchar(80) NOT NULL DEFAULT 'A'`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`hook\` text`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`cta\` text`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`platform\` varchar(80)`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`impressions\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`clicks\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`conversions\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual'`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`evidenceJson\` text`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingExperimentVariants\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`campaignId\` int`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`insightType\` varchar(120) NOT NULL DEFAULT 'learning'`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`insightText\` text`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual'`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`confidence\` varchar(20) NOT NULL DEFAULT 'low'`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`evidenceSummary\` text`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`nextAction\` text`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingLearningInsights\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`workspaceId\` varchar(120) NOT NULL DEFAULT 'default'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`hostAppId\` varchar(120) NOT NULL DEFAULT 'equiprofile'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`campaignId\` int`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`performerType\` varchar(80) NOT NULL DEFAULT 'hook'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`performerKey\` varchar(220) NOT NULL DEFAULT 'unknown'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`score\` varchar(40) NOT NULL DEFAULT '0'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`confidence\` varchar(20) NOT NULL DEFAULT 'low'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`sourceType\` varchar(30) NOT NULL DEFAULT 'manual'`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`evidenceSummary\` text`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`metadataJson\` text`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`createdAt\` timestamp NOT NULL DEFAULT (now())`,
+      `ALTER TABLE \`marketingBestPerformers\` ADD COLUMN IF NOT EXISTS \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP`,
       // PR52: visual QA columns (table created above if missing)
       `ALTER TABLE \`marketingVisualQaRecords\` ADD COLUMN IF NOT EXISTS \`expectedSubject\` text`,
       `ALTER TABLE \`marketingVisualQaRecords\` ADD COLUMN IF NOT EXISTS \`expectedBrand\` text`,
@@ -2220,10 +2488,14 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       try {
         await db.execute(sql.raw(stmt));
       } catch (colError) {
-        console.warn("[Database] Column migration failed (column may already exist):", colError);
+        if (!shouldSuppressTestDbNoise()) {
+          console.warn("[Database] Column migration failed (column may already exist):", colError);
+        }
       }
     }
-    console.log("[Database] Column migrations applied");
+    if (!shouldSuppressTestDbNoise()) {
+      console.log("[Database] Column migrations applied");
+    }
 
     // ENUM migrations — idempotent MODIFY COLUMN for ENUM columns that gained
     // new values in later migrations.  MODIFY COLUMN replaces the full ENUM
@@ -2300,34 +2572,55 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       `CREATE INDEX IF NOT EXISTS \`idx_mattribution_scope\` ON \`marketingAttributionLinks\` (\`tenantId\`, \`workspaceId\`, \`campaignId\`, \`code\`)`,
       `CREATE INDEX IF NOT EXISTS \`idx_magent_runs_scope\` ON \`marketingAgentRuns\` (\`tenantId\`, \`workspaceId\`, \`campaignId\`, \`status\`)`,
       `CREATE INDEX IF NOT EXISTS \`idx_magent_tasks_scope\` ON \`marketingAgentTasks\` (\`runId\`, \`tenantId\`, \`workspaceId\`, \`status\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mbrand_memory_scope\` ON \`marketingBrandMemory\` (\`tenantId\`, \`workspaceId\`, \`hostAppId\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mtrend_scope\` ON \`marketingTrendSignals\` (\`tenantId\`, \`workspaceId\`, \`platform\`, \`capturedAt\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mcompetitor_scope\` ON \`marketingCompetitorSignals\` (\`tenantId\`, \`workspaceId\`, \`platform\`, \`capturedAt\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mcontent_gaps_scope\` ON \`marketingContentGapSignals\` (\`tenantId\`, \`workspaceId\`, \`platform\`, \`gapType\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mexperiments_scope\` ON \`marketingExperimentRuns\` (\`tenantId\`, \`workspaceId\`, \`campaignId\`, \`status\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mexperiment_variants_scope\` ON \`marketingExperimentVariants\` (\`experimentId\`, \`tenantId\`, \`workspaceId\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mlearning_scope\` ON \`marketingLearningInsights\` (\`tenantId\`, \`workspaceId\`, \`campaignId\`, \`insightType\`)`,
+      `CREATE INDEX IF NOT EXISTS \`idx_mbest_scope\` ON \`marketingBestPerformers\` (\`tenantId\`, \`workspaceId\`, \`campaignId\`, \`performerType\`)`,
     ];
     for (const stmt of indexMigrations) {
       try {
         await db.execute(sql.raw(stmt));
       } catch (idxError) {
-        console.warn("[Database] Index migration warning (index may already exist):", idxError);
+        if (!shouldSuppressTestDbNoise()) {
+          console.warn("[Database] Index migration warning (index may already exist):", idxError);
+        }
       }
     }
-    console.log("[Database] Index migrations applied");
+    if (!shouldSuppressTestDbNoise()) {
+      console.log("[Database] Index migrations applied");
+    }
 
     _tablesEnsured = true;
   } catch (error) {
-    console.error("[Database] Failed to ensure tables:", error);
+    if (!shouldSuppressTestDbNoise()) {
+      console.error("[Database] Failed to ensure tables:", error);
+    }
     // Don't set _tablesEnsured so it retries next time
   }
 }
 
 export async function getDb() {
+  if (_testDbUnavailable && shouldSuppressTestDbNoise()) {
+    return null;
+  }
   if (!_db && process.env.DATABASE_URL) {
     try {
       const fixedUrl = fixDatabaseUrl(process.env.DATABASE_URL);
 
       // Log database connection info (redacting password)
       const urlWithoutPassword = fixedUrl.replace(/:([^@]+)@/, ":****@");
-      console.log("[Database] Connecting to:", urlWithoutPassword);
+      if (!shouldSuppressTestDbNoise()) {
+        console.log("[Database] Connecting to:", urlWithoutPassword);
+      }
 
       _db = drizzle(fixedUrl);
-      console.log("[Database] Connection established");
+      if (!shouldSuppressTestDbNoise()) {
+        console.log("[Database] Connection established");
+      }
 
       // Ensure all required tables exist on first connection.
       // Use a shared promise so concurrent callers don't run ensureTables twice.
@@ -2335,8 +2628,19 @@ export async function getDb() {
         _ensureTablesPromise = ensureTables(_db);
       }
       await _ensureTablesPromise;
+      if (shouldSuppressTestDbNoise() && !_tablesEnsured) {
+        throw new Error("test_db_unavailable_after_ensure_tables");
+      }
     } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
+      if (shouldSuppressTestDbNoise()) {
+        _testDbUnavailable = true;
+        if (!_testDbUnavailableLogged) {
+          console.warn("[Database][test] Database unavailable, running DB-optional tests with setup_needed fallbacks.");
+          _testDbUnavailableLogged = true;
+        }
+      } else {
+        console.warn("[Database] Failed to connect:", error);
+      }
       _db = null;
     }
   }

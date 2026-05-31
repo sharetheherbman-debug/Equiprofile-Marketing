@@ -1,11 +1,16 @@
 import { createMarketingCampaignRecord } from "../../growth-engine";
-import {
-  createMarketingAgentRun,
-  getMarketingAgentRun,
-  runMarketingAgentTask,
-} from "../agent-workforce";
+import { createMarketingAgentRun, getMarketingAgentRun, runMarketingAgentTask } from "../agent-workforce";
+import { analyzeMarketingCampaignBrief, generateMarketingManagerGuidance, recommendCampaignStructure } from "../campaign-manager-brain";
+import { getMarketingCommandCentreState } from "../command-centre";
 import { getMarketingConnectorReadiness } from "../connector-readiness";
+import { scoreMarketingCreative } from "../creative-scoring";
+import { recommendMarketingPlaybook } from "../genius-brain";
+import { detectMarketingContentGaps, getMarketingCompetitorContext, getMarketingTrendContext } from "../market-intelligence";
+import { buildMarketingCaptionStylePlan, buildMarketingThumbnailPlan, buildMarketingVideoPacingPlan, recommendMarketingMediaTemplate, validateMarketingMediaExcellence } from "../media-excellence";
+import { buildPlatformSpecialistPromptContext, recommendSpecialistsForCampaign } from "../platform-specialists";
 import { getMarketingPerformanceContext } from "../results-conversion";
+import { buildBrandMemoryPromptContext, updateBrandMemoryFromResults } from "../brand-memory";
+import { getMarketingLearningInsights, recommendNextMarketingActions } from "../result-learning";
 
 type AutonomousRole =
   | "StrategyAgent"
@@ -31,7 +36,7 @@ export function buildAutonomousCampaignPlan(input: {
   durationDays: number;
   exportOnly: boolean;
   requireApproval: boolean;
-  performanceContextHint?: string;
+  contextSummary: string;
 }): AutonomousStep[] {
   const platformLine = input.platforms.join(", ");
   const typeLine = input.contentTypes.join(", ");
@@ -43,17 +48,17 @@ export function buildAutonomousCampaignPlan(input: {
     {
       role: "StrategyAgent",
       taskType: "campaign_strategy",
-      prompt: `Build campaign strategy for goal: ${input.goal}. Audience: ${input.audience}. Platforms: ${platformLine}. Duration: ${input.durationDays} days. ${reviewLine}`,
+      prompt: `Build campaign strategy for goal: ${input.goal}. Audience: ${input.audience}. Platforms: ${platformLine}. Duration: ${input.durationDays} days. ${reviewLine} Context: ${input.contextSummary}`,
     },
     {
       role: "CopyAgent",
       taskType: "scriptwriting",
-      prompt: `Generate hook/copy/script options for content types: ${typeLine}. Keep platform fit for ${platformLine}. Include CTA variants and risk notes.`,
+      prompt: `Generate hook/copy/script options for content types: ${typeLine}. Keep platform fit for ${platformLine}. Include CTA variants, compliance notes, and proof requirements.`,
     },
     {
       role: "MediaAgent",
       taskType: "scene_planning",
-      prompt: "Generate scene/media plan with required assets, source type, and fallback flags where setup is missing.",
+      prompt: "Generate scene/media plan with required assets, source type, and fallback flags where setup is missing. Include media template recommendation metadata.",
     },
     {
       role: "AvatarVoiceAgent",
@@ -74,7 +79,7 @@ export function buildAutonomousCampaignPlan(input: {
     {
       role: "ResultsAgent",
       taskType: "campaign_strategy",
-      prompt: `Attach learning loop recommendations from performance context. ${input.performanceContextHint ?? "If insufficient data, explicitly state that."}`,
+      prompt: "Attach learning loop recommendations, winning-pattern caveats, and next-best actions with confidence labels.",
     },
   ];
 }
@@ -113,6 +118,7 @@ export function summarizeAutonomousCampaignRun(input: {
   runSummaries: Array<{ runId: number; role: AutonomousRole; status: string; reason?: string | null; taskId?: number | null }>;
   connectorReadiness: Awaited<ReturnType<typeof getMarketingConnectorReadiness>>;
   performanceContext: Awaited<ReturnType<typeof getMarketingPerformanceContext>>;
+  intelligence: Record<string, unknown>;
 }) {
   const blockers = input.runSummaries
     .filter((item) => item.status !== "completed")
@@ -129,6 +135,7 @@ export function summarizeAutonomousCampaignRun(input: {
     reviewTasks: createAutonomousReviewTasks({ runSummaries: input.runSummaries }),
     blockers,
     performanceContext: input.performanceContext,
+    intelligence: input.intelligence,
     exportOnlyEnforced: input.connectorReadiness.status !== "ready",
   };
 }
@@ -161,17 +168,46 @@ export async function runAutonomousMarketingCampaign(input: {
     status: "draft",
   });
 
-  const performanceContext = await getMarketingPerformanceContext({
-    tenantId: input.tenantId,
-    workspaceId: input.workspaceId,
-    hostAppId: input.hostAppId,
-    campaignId,
-  });
-  const connectorReadiness = await getMarketingConnectorReadiness({
-    tenantId: input.tenantId,
-    workspaceId: input.workspaceId,
-  });
+  const [
+    performanceContext,
+    connectorReadiness,
+    trendContext,
+    competitorContext,
+    gapContext,
+    specialistContext,
+    geniusContext,
+    playbook,
+    brandMemory,
+    managerBrief,
+    managerGuidance,
+    structure,
+    learningInsights,
+  ] = await Promise.all([
+    getMarketingPerformanceContext({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, campaignId }),
+    getMarketingConnectorReadiness({ tenantId: input.tenantId, workspaceId: input.workspaceId }),
+    getMarketingTrendContext({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, platform: input.platforms[0] }),
+    getMarketingCompetitorContext({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, platform: input.platforms[0] }),
+    detectMarketingContentGaps({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, platform: input.platforms[0] ?? "LinkedIn" }),
+    recommendSpecialistsForCampaign({ platforms: input.platforms, goal: input.goal, contentTypes: input.contentTypes }),
+    buildPlatformSpecialistPromptContext({ platforms: input.platforms, goal: input.goal, contentTypes: input.contentTypes }),
+    recommendMarketingPlaybook({ platform: input.platforms[0] ?? "LinkedIn", goal: input.goal, audience: input.audience }),
+    buildBrandMemoryPromptContext({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId }),
+    analyzeMarketingCampaignBrief({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, goal: input.goal, audience: input.audience, platforms: input.platforms }),
+    generateMarketingManagerGuidance({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, goal: input.goal, audience: input.audience, platforms: input.platforms }),
+    recommendCampaignStructure({ goal: input.goal, platform: input.platforms, audience: input.audience }),
+    getMarketingLearningInsights({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, campaignId }),
+  ]);
+
   const effectiveExportOnly = exportOnly || connectorReadiness.status !== "ready";
+
+  const contextSummary = [
+    `performance:${performanceContext.status}/${performanceContext.confidence}`,
+    `trend:${trendContext.status}`,
+    `competitor:${competitorContext.status}`,
+    `contentGaps:${gapContext.status}`,
+    `specialists:${specialistContext.status}`,
+    `brandMemory:${brandMemory.status}`,
+  ].join(" | ");
 
   const plan = buildAutonomousCampaignPlan({
     goal: input.goal,
@@ -181,7 +217,7 @@ export async function runAutonomousMarketingCampaign(input: {
     durationDays: input.durationDays,
     exportOnly: effectiveExportOnly,
     requireApproval,
-    performanceContextHint: `Performance context status: ${performanceContext.status} (confidence: ${performanceContext.confidence}).`,
+    contextSummary,
   });
 
   const runSummaries: Array<{ runId: number; role: AutonomousRole; status: string; reason?: string | null; taskId?: number | null }> = [];
@@ -199,6 +235,14 @@ export async function runAutonomousMarketingCampaign(input: {
         requireApproval,
         exportOnly: effectiveExportOnly,
         stepRole: step.role,
+        managerGuidance,
+        structure,
+        geniusPlaybook: playbook,
+        brandMemory,
+        trendContext,
+        competitorContext,
+        contentGapContext: gapContext,
+        performanceContext,
       },
     });
 
@@ -221,6 +265,61 @@ export async function runAutonomousMarketingCampaign(input: {
     });
   }
 
+  const creativeScore = await scoreMarketingCreative({
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    platform: input.platforms[0] ?? "LinkedIn",
+    contentType: input.contentTypes[0] ?? "social_post",
+    goal: input.goal,
+    hook: input.goal,
+    body: managerGuidance.guidance.join(" "),
+    cta: "Review and approve draft",
+    claims: [],
+    proofPoints: [],
+    hasVisualAsset: false,
+  });
+
+  const mediaTemplate = recommendMarketingMediaTemplate({
+    platform: input.platforms[0] ?? "LinkedIn",
+    contentType: input.contentTypes[0] ?? "social_post",
+  });
+  const pacingPlan = buildMarketingVideoPacingPlan({
+    durationSeconds: Math.max(20, Math.floor((input.durationDays * 30) / 7)),
+    platform: input.platforms[0] ?? "LinkedIn",
+    hasVoiceover: true,
+    hasMusic: true,
+  });
+  const captionPlan = buildMarketingCaptionStylePlan({ platform: input.platforms[0] ?? "LinkedIn" });
+  const thumbnailPlan = buildMarketingThumbnailPlan({ platform: input.platforms[0] ?? "LinkedIn", keyMessage: input.goal, hasLogo: brandMemory.status === "ok" });
+  const mediaValidation = validateMarketingMediaExcellence({
+    hasRenderedOutput: false,
+    hasCaptionTrack: true,
+    hasLogoSafeOverlay: true,
+    musicLicenseStatus: "unknown",
+    voiceQualityStatus: "ok",
+  });
+
+  await updateBrandMemoryFromResults({ tenantId: input.tenantId, workspaceId: input.workspaceId, hostAppId: input.hostAppId, campaignId }).catch(() => null);
+
+  const nextActions = await recommendNextMarketingActions({
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    campaignId,
+  });
+
+  const commandCentre = await getMarketingCommandCentreState({
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    qualityMode: input.qualityMode,
+    campaignId,
+    goalHint: input.goal,
+    audienceHint: input.audience,
+    platformsHint: input.platforms,
+  });
+
   const persistedRuns = await persistAutonomousCampaignOutputs({
     tenantId: input.tenantId,
     workspaceId: input.workspaceId,
@@ -234,9 +333,31 @@ export async function runAutonomousMarketingCampaign(input: {
       runSummaries,
       connectorReadiness,
       performanceContext,
+      intelligence: {
+        managerBrief,
+        managerGuidance,
+        structure,
+        specialistContext,
+        geniusContext,
+        playbook,
+        brandMemory,
+        trendContext,
+        competitorContext,
+        gapContext,
+        learningInsights,
+        creativeScore,
+        mediaTemplate,
+        pacingPlan,
+        captionPlan,
+        thumbnailPlan,
+        mediaValidation,
+        nextActions,
+        commandCentre,
+      },
     }),
     persistedRuns,
     requireApproval,
     exportOnly: effectiveExportOnly,
+    directPostingEnabled: false,
   };
 }

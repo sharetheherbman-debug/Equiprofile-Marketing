@@ -11,6 +11,8 @@ import {
   type MarketingTask,
   type MarketingProviderName,
 } from "../provider-capabilities";
+import { buildBrandMemoryPromptContext } from "../brand-memory";
+import { buildMarketingGeniusPromptContext } from "../genius-brain";
 
 export type MarketingStudioGenerationStatus = "generated" | "setup_needed" | "provider_unavailable" | "failed";
 
@@ -307,6 +309,8 @@ export type GenerateMarketingStudioScriptInput = {
   durationTargetSeconds?: number;
   brandContext?: Record<string, unknown>;
   performanceContext?: Record<string, unknown>;
+  brandMemoryContext?: Record<string, unknown>;
+  geniusPlaybookContext?: Record<string, unknown>;
   existingScript?: string;
   existingScenes?: MarketingStudioScene[];
 };
@@ -337,6 +341,20 @@ export type MarketingStudioScriptGenerationResult = {
 };
 
 export async function generateMarketingStudioScript(input: GenerateMarketingStudioScriptInput): Promise<MarketingStudioScriptGenerationResult> {
+  const [derivedBrandMemoryContext, derivedGeniusContext] = await Promise.all([
+    buildBrandMemoryPromptContext({
+      tenantId: input.tenantId,
+      workspaceId: input.workspaceId,
+      hostAppId: input.hostAppId,
+    }).catch(() => ({ status: "setup_needed", notes: ["brand_memory_unavailable"] })),
+    Promise.resolve(buildMarketingGeniusPromptContext({
+      platform: input.platform ?? "LinkedIn",
+      goal: input.goal ?? input.originalUserPrompt,
+      audience: input.audience,
+      campaignType: input.contentType,
+    })).catch(() => ({ status: "setup_needed", notes: ["genius_context_unavailable"] })),
+  ]);
+
   const prompt = [
     "You are generating a marketing studio script payload.",
     "Return JSON only with keys: title, brief, script, voiceoverScript, requiredAssets, platformNotes, cta, hashtags, complianceNotes.",
@@ -349,6 +367,8 @@ export async function generateMarketingStudioScript(input: GenerateMarketingStud
     `Duration target seconds: ${input.durationTargetSeconds ?? 30}`,
     `Brand context JSON: ${JSON.stringify(input.brandContext ?? {})}`,
     `Performance context JSON (use with confidence/source labels only): ${JSON.stringify(input.performanceContext ?? { status: "insufficient_data" })}`,
+    `Brand memory context JSON: ${JSON.stringify(input.brandMemoryContext ?? derivedBrandMemoryContext)}`,
+    `Genius playbook context JSON: ${JSON.stringify(input.geniusPlaybookContext ?? derivedGeniusContext)}`,
   ].join("\n");
 
   const executed = await executeRoutedTextTask({
