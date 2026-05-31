@@ -214,3 +214,129 @@ describe("PR42A marketing app stabilization", () => {
     expect(adminCampaignsSource).not.toContain("MarketingStudioV2");
   });
 });
+
+describe("PR61 desktop marketing command centre frontend", () => {
+  it("renders a desktop-first command centre shell", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Desktop Marketing Command Centre");
+    expect(source).toContain("Campaign Command Box");
+    expect(source).toContain("Fleet-ready");
+  });
+
+  it("keeps active route wired to TheMarketingApp -> StudioHome -> StudioWorkbench", () => {
+    const adminCampaigns = fs.readFileSync(
+      path.join(repoRoot, "client/src/pages/AdminCampaigns.tsx"),
+      "utf8",
+    );
+    const appShell = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    const studioHome = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/studio/StudioHome.tsx"),
+      "utf8",
+    );
+
+    expect(adminCampaigns).toContain("TheMarketingApp");
+    expect(appShell).toContain("StudioHome");
+    expect(studioHome).toContain("StudioWorkbench");
+  });
+
+  it("includes quick actions that populate the command form and includes 1-minute video", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("function applyQuickAction");
+    expect(source).toContain("setCommandForm");
+    expect(source).toContain("1-minute stable-owner video ad");
+    expect(source).toContain("Assembled video workflow");
+  });
+
+  it("renders readiness strip and truthful backend state labels", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Readiness / Capability Strip");
+    expect(source).toContain("setup_needed");
+    expect(source).toContain("waiting_for_backend");
+    expect(source).toContain("insufficient_data");
+  });
+
+  it("renders required workspace tabs", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    for (const tab of [
+      "Strategy",
+      "Creative",
+      "Media Studio",
+      "Review / QA",
+      "Schedule / Export",
+      "Results / Learning",
+      "Settings / Readiness",
+    ]) {
+      expect(source).toContain(tab);
+    }
+  });
+
+  it("renders desktop right-side large preview panel with sticky layout", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Preview / Intelligence");
+    expect(source).toContain("lg:grid-cols-[minmax(0,1fr)_500px]");
+    expect(source).toContain("sticky top-4 h-fit");
+  });
+
+  it("renders agent timeline and approval queue panels", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Agent Mission Timeline");
+    expect(source).toContain("Approval queue");
+    expect(source).toContain("review required");
+  });
+
+  it("keeps settings masked and resilient, without exposing raw provider secrets", () => {
+    const settingsSource = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/MarketingAppSettings.tsx"),
+      "utf8",
+    );
+    expect(settingsSource).toContain("keyMasked");
+    expect(settingsSource).toContain("obfuscateSecret");
+    expect(settingsSource).toContain("setup_needed");
+    expect(settingsSource).not.toContain("value={settingsEntry?.keyMasked}");
+  });
+
+  it("does not reactivate legacy marketing routes", () => {
+    const appSource = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    const adminCampaigns = fs.readFileSync(
+      path.join(repoRoot, "client/src/pages/AdminCampaigns.tsx"),
+      "utf8",
+    );
+    expect(appSource).not.toContain("MarketingStudioV2");
+    expect(appSource).not.toContain("MarketingAppChat");
+    expect(appSource).not.toContain("MarketingAppPreview");
+    expect(adminCampaigns).not.toContain("MarketingStudioV2");
+  });
+
+  it("uses a min-w-0 desktop workspace container to reduce horizontal overflow risk", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("max-w-[1600px]");
+    expect(source).toContain("min-w-0");
+  });
+});

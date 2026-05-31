@@ -140,19 +140,16 @@ describe("Phase 1 — Architecture document", () => {
 
 // ── 2. TheMarketingApp is a thin shell ────────────────────────────────────────
 describe("Phase 2 — Thin shell", () => {
-  it("TheMarketingApp delegates create section to StudioHome instead of embedding MarketingAppChat directly", () => {
+  it("TheMarketingApp delegates creative workspace to StudioHome in command-centre tabs instead of embedding MarketingAppChat directly", () => {
     const source = fs.readFileSync(
       path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
       "utf8",
     );
-    // StudioHome must be imported
+    // StudioHome must be imported and mounted in the Creative tab.
     expect(source).toContain("StudioHome");
-    // The create section block must reference StudioHome, not MarketingAppChat directly
-    const createBlock = source.slice(source.indexOf('activeSection === "create"'));
-    const blockEnd = createBlock.indexOf(": null}");
-    const block = createBlock.slice(0, blockEnd);
-    expect(block).toContain("StudioHome");
-    expect(block).not.toContain("<MarketingAppChat");
+    const creativeTab = source.slice(source.indexOf('<TabsContent value="creative"'));
+    expect(creativeTab).toContain("<StudioHome");
+    expect(creativeTab).not.toContain("<MarketingAppChat");
   });
 
   it("TheMarketingApp source does not directly embed MarketingAppChat in the create section JSX", () => {
