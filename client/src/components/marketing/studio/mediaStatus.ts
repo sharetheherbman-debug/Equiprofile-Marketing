@@ -2,11 +2,13 @@ import type { StudioMediaState } from "./types";
 
 export function isPlayableMimeType(mimeType?: string | null) {
   const mime = String(mimeType ?? "").toLowerCase();
+  if (!mime || mime === "text/plain") return false;
   return mime.startsWith("video/") || mime.startsWith("image/") || mime.startsWith("audio/");
 }
 
-export function hasPlayablePublicAsset(asset: { publicUrl?: string | null; mimeType?: string | null }) {
-  return Boolean(asset.publicUrl) && isPlayableMimeType(asset.mimeType);
+export function hasPlayablePublicAsset(asset: { publicUrl?: string | null; localPath?: string | null; mimeType?: string | null }) {
+  const hasLocation = Boolean(asset.publicUrl) || Boolean(asset.localPath);
+  return hasLocation && isPlayableMimeType(asset.mimeType);
 }
 
 export function mergeStudioMediaState(

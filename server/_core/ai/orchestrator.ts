@@ -36,6 +36,7 @@ import { getRuntimeConfig } from "../../dynamicConfig";
 import { buildPlatformReadiness, getQueueStatus, listSocialConnections } from "../../modules/growth-engine";
 import { STORAGE_ROOT, deleteAssetFile, ensureStorageDirs, writeTempFile } from "../storage/localMediaStorage";
 import fs from "fs/promises";
+import type { ProviderOutputResultType } from "./outputNormalization";
 
 const mediaTasks = new Set<AITask>([
   "text_to_image",
@@ -375,6 +376,13 @@ function materializeAttemptInput(
   return next;
 }
 
+function mediaAssetStatusFromResultType(resultType: ProviderOutputResultType): "processing" | "completed" | "failed" {
+  if (resultType === "job_pending") return "processing";
+  if (resultType === "failed" || resultType === "prompt_only" || resultType === "video_plan") return "failed";
+  if (resultType === "image" || resultType === "video" || resultType === "audio") return "completed";
+  return "failed";
+}
+
 async function upsertMediaAssetByJob(opts: {
   jobId: string;
   task: AITask;
@@ -644,7 +652,8 @@ export async function executeAITask(request: AIExecutionRequest): Promise<AIExec
           },
         });
 
-        const lifecycleState = persisted.resultType === "job_pending" ? "processing" : "completed";
+        const mediaAssetStatus = mediaAssetStatusFromResultType(persisted.resultType);
+        const lifecycleState = mediaAssetStatus === "processing" ? "processing" : mediaAssetStatus === "completed" ? "completed" : "failed";
         await updateGenerationLifecycle({
           jobId: job.id,
           state: lifecycleState,
@@ -666,21 +675,18 @@ export async function executeAITask(request: AIExecutionRequest): Promise<AIExec
             tenantType: capturedTenantScope?.tenantType ?? "individual",
             userId: capturedTenantScope?.initiatedByUserId,
             provider: result.provider,
-            status: persisted.resultType === "failed"
-              ? "failed"
-              : persisted.resultType === "job_pending"
-                ? "processing"
-                : "completed",
+            status: mediaAssetStatus,
             localPath: persisted.localPath,
             publicUrl: persisted.publicUrl,
             mimeType: persisted.mimeType,
             prompt: typeof capturedInput.prompt === "string" ? capturedInput.prompt : undefined,
             draftId: typeof capturedInput.draftId === "string" ? capturedInput.draftId : undefined,
-            errorMessage: persisted.errorMessage,
+            errorMessage: mediaAssetStatus === "completed" ? persisted.errorMessage : (persisted.errorMessage ?? `non_playable_result_type_${persisted.resultType}`),
             outputMetadata: {
               provider: result.provider,
               model: result.model,
               resultType: persisted.resultType,
+              mediaTruth: mediaAssetStatus === "completed" ? "playable" : "not_playable",
               providerJobId: persisted.providerJobId,
               providerStatus: persisted.providerStatus ?? (typeof providerOutput.providerStatus === "string" ? providerOutput.providerStatus : null),
               remoteUrl: persisted.remoteUrl,

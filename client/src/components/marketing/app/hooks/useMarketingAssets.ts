@@ -62,7 +62,7 @@ export function useMarketingAssets(workspace: MarketingWorkspaceConfig) {
   const canApplyBrand = Boolean(
     selectedAsset &&
     typeof selectedAsset.id === "number" &&
-    hasPlayablePublicAsset({ publicUrl: selectedAsset.publicUrl, mimeType: selectedAsset.mimeType }),
+    hasPlayablePublicAsset({ publicUrl: selectedAsset.publicUrl, localPath: selectedAsset.localPath, mimeType: selectedAsset.mimeType }),
   );
 
   return {
