@@ -72,12 +72,23 @@ describe("PR63A creation capability truth contract", () => {
     }
 
     expect(byId.get("image_ad")?.status).toBe("setup_needed");
+    expect(byId.get("image_ad")?.outputGuarantee).toBe("setup_needed");
+    expect(byId.get("image_ad")?.viewerContract?.viewer).toBe("setup_blocker");
     expect(byId.get("video_ad_30s")?.status).toBe("planned_only");
+    expect(byId.get("video_ad_30s")?.outputGuarantee).toBe("package_only");
+    expect(byId.get("video_ad_30s")?.viewerContract?.viewer).toBe("deliverable_package");
     expect(byId.get("assembled_video_3m")?.status).toBe("planned_only");
+    expect(byId.get("assembled_video_3m")?.outputGuarantee).toBe("plan_only");
+    expect(byId.get("assembled_video_3m")?.viewerContract?.viewer).toBe("video_plan");
     expect(byId.get("assembled_video_3m")?.missingSetup.join(" ")).toContain("FFmpeg/Remotion");
     expect(byId.get("avatar_video")?.status).toBe("setup_needed");
+    expect(byId.get("avatar_video")?.executionLevel).toBe("blocked");
+    expect(byId.get("avatar_video")?.proofRequired.length).toBeGreaterThan(0);
+    expect(byId.get("signup_campaign")?.outputGuarantee).toBe("package_only");
+    expect(byId.get("signup_campaign")?.viewerContract?.viewer).toBe("deliverable_package");
 
     expect(byId.get("social_post")?.status).toBe("not_wired");
+    expect(byId.get("social_post")?.outputGuarantee).toBe("not_wired");
     expect(byId.get("email_campaign")?.status).toBe("not_wired");
     expect(byId.get("blog_seo")?.status).toBe("not_wired");
     expect(byId.get("weekly_content_pack")?.status).toBe("not_wired");
@@ -96,6 +107,50 @@ describe("PR63A creation capability truth contract", () => {
     expect(settings).toContain('isTaskReady("music_generation")');
     expect(settings).toContain('isTaskReady("avatar_generation")');
     expect(settings).toContain("mediaFactoryConfigStatus");
+    expect(settings).toContain("Output guarantee truth");
+    expect(settings).toContain("getMarketingCreationCapabilities");
+  });
+
+  it("TheMarketingApp groups capability cards by truthful output guarantees", () => {
+    const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
+    expect(app).toContain("Ready now");
+    expect(app).toContain("Package / plan only");
+    expect(app).toContain("Needs setup");
+    expect(app).toContain("Future / not wired");
+    expect(app).toContain("Setup / blocker output");
+    expect(app).toContain("Plan-only output");
+    expect(app).toContain('disabled={group.title === "Future / not wired"}');
+  });
+
+  it("keeps avatar capability as queued/setup truth without claiming playable preview", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities", () => ({
+      defaultWorkspaceBudgetPolicy: vi.fn(() => ({ mode: "standard" })),
+      resolveMarketingProviderRoute: vi.fn(async ({ task }: { task: string }) => ({
+        status: "ready",
+        reason: null,
+        selected: { provider: "qwen", modelId: `${task}-model` },
+        candidates: [],
+      })),
+    }));
+    vi.doMock("./modules/marketing/backend-readiness", () => ({
+      getMarketingBackendReadiness: vi.fn(async () => ({
+        mediaFactoryConfigStatus: "ready",
+        schedulingExportReadiness: "ready",
+      })),
+    }));
+
+    const { getMarketingCreationCapabilities } = await import("./modules/marketing/creation-capabilities");
+    const result = await getMarketingCreationCapabilities({
+      tenantId: "global",
+      workspaceId: "default",
+      hostAppId: "equiprofile",
+      qualityMode: "standard",
+    });
+    const avatar = result.capabilities.find((item) => item.id === "avatar_video");
+    expect(avatar?.outputGuarantee).toBe("queued_media");
+    expect(avatar?.viewerContract.viewer).toBe("media_job");
+    expect(avatar?.canPreview).toBe(false);
+    expect(avatar?.canGenerate).toBe(false);
   });
 });
 

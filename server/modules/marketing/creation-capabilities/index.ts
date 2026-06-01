@@ -16,6 +16,35 @@ type ExpectedOutput =
   | "audio_bed"
   | "export_pack"
   | "unknown";
+type OutputGuarantee =
+  | "playable_media"
+  | "package_only"
+  | "plan_only"
+  | "queued_media"
+  | "setup_needed"
+  | "not_wired"
+  | "broken";
+type ViewerContractViewer =
+  | "image_asset"
+  | "deliverable_package"
+  | "video_plan"
+  | "media_job"
+  | "setup_blocker"
+  | "not_wired"
+  | "results_summary";
+type DeliverableKind =
+  | "social"
+  | "email"
+  | "signup_campaign"
+  | "image"
+  | "video_plan"
+  | "rendered_video"
+  | "avatar"
+  | "voice"
+  | "music"
+  | "analytics"
+  | "unknown";
+type ExecutionLevel = "first_class" | "partial" | "queued_only" | "future" | "blocked";
 
 export type MarketingCreationCapability = {
   id: string;
@@ -25,6 +54,18 @@ export type MarketingCreationCapability = {
   primaryProcedure: string | null;
   requiredTasks: MarketingTask[];
   expectedOutput: ExpectedOutput;
+  outputGuarantee: OutputGuarantee;
+  viewerContract: {
+    viewer: ViewerContractViewer;
+    schemaVersion: "v1";
+    primaryDataPath: string;
+    emptyState: string;
+    successState: string;
+    blockerState: string;
+  };
+  deliverableKind: DeliverableKind;
+  executionLevel: ExecutionLevel;
+  proofRequired: string[];
   canGenerate: boolean;
   canPreview: boolean;
   canExport: boolean;
@@ -48,6 +89,8 @@ type Definition = {
   primaryProcedure: string | null;
   requiredTasks: MarketingTask[];
   expectedOutput: ExpectedOutput;
+  deliverableKind: DeliverableKind;
+  proofRequired: string[];
   supportLevel: "first_class" | "route_only" | "not_wired";
 };
 
@@ -59,6 +102,8 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: "generateMarketingImageAsset",
     requiredTasks: ["image_generation"],
     expectedOutput: "image_asset",
+    deliverableKind: "image",
+    proofRequired: ["publicUrl", "mimeType:image/*", "mediaAsset.status=completed"],
     supportLevel: "first_class",
   },
   {
@@ -68,6 +113,14 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: "generateMarketingAdPackage",
     requiredTasks: ["scriptwriting", "scene_planning"],
     expectedOutput: "video_plan",
+    deliverableKind: "video_plan",
+    proofRequired: [
+      "campaignItems.length>0",
+      "reviewItems.created",
+      "scheduleDrafts.created",
+      "exportPack",
+      "rendered_video_requires_publicUrl",
+    ],
     supportLevel: "first_class",
   },
   {
@@ -77,6 +130,14 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: "generateMarketingVideoPackage",
     requiredTasks: ["scriptwriting", "scene_planning"],
     expectedOutput: "video_plan",
+    deliverableKind: "video_plan",
+    proofRequired: [
+      "scenePlan.length>0",
+      "mediaRequirements",
+      "renderJob.status=completed",
+      "mimeType:video/*",
+      "publicUrl",
+    ],
     supportLevel: "first_class",
   },
   {
@@ -86,6 +147,13 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: "generateMarketingCampaignPackage",
     requiredTasks: ["campaign_strategy", "platform_copywriting"],
     expectedOutput: "campaign_package",
+    deliverableKind: "signup_campaign",
+    proofRequired: [
+      "campaignItems.length>0",
+      "reviewItems.created",
+      "scheduleDrafts.created",
+      "exportPack",
+    ],
     supportLevel: "first_class",
   },
   {
@@ -95,6 +163,8 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: null,
     requiredTasks: ["platform_copywriting"],
     expectedOutput: "unknown",
+    deliverableKind: "social",
+    proofRequired: ["first_class_procedure", "viewer_contract"],
     supportLevel: "not_wired",
   },
   {
@@ -104,6 +174,8 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: null,
     requiredTasks: ["email_generation"],
     expectedOutput: "unknown",
+    deliverableKind: "email",
+    proofRequired: ["first_class_procedure", "viewer_contract"],
     supportLevel: "not_wired",
   },
   {
@@ -113,6 +185,8 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: null,
     requiredTasks: ["blog_seo_generation"],
     expectedOutput: "unknown",
+    deliverableKind: "unknown",
+    proofRequired: ["first_class_procedure", "viewer_contract"],
     supportLevel: "not_wired",
   },
   {
@@ -122,6 +196,8 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: null,
     requiredTasks: ["campaign_strategy", "platform_copywriting"],
     expectedOutput: "unknown",
+    deliverableKind: "social",
+    proofRequired: ["first_class_procedure", "viewer_contract"],
     supportLevel: "not_wired",
   },
   {
@@ -131,9 +207,28 @@ const CREATION_DEFINITIONS: Definition[] = [
     primaryProcedure: "createMarketingAvatarAsset",
     requiredTasks: ["avatar_generation", "avatar_lipsync", "voiceover"],
     expectedOutput: "avatar_video",
+    deliverableKind: "avatar",
+    proofRequired: ["mediaAsset.status=completed", "mimeType:video/*", "publicUrl"],
     supportLevel: "route_only",
   },
 ];
+
+function buildViewerContract(input: {
+  viewer: ViewerContractViewer;
+  primaryDataPath: string;
+  emptyState: string;
+  successState: string;
+  blockerState: string;
+}): MarketingCreationCapability["viewerContract"] {
+  return {
+    viewer: input.viewer,
+    schemaVersion: "v1",
+    primaryDataPath: input.primaryDataPath,
+    emptyState: input.emptyState,
+    successState: input.successState,
+    blockerState: input.blockerState,
+  };
+}
 
 function routeReasonsToMissingSetup(routeSummary: MarketingCreationCapability["routeSummary"]): string[] {
   return routeSummary
@@ -191,6 +286,17 @@ export async function getMarketingCreationCapabilities(input: {
         primaryProcedure: definition.primaryProcedure,
         requiredTasks: definition.requiredTasks,
         expectedOutput: definition.expectedOutput,
+        outputGuarantee: "not_wired",
+        viewerContract: buildViewerContract({
+          viewer: "not_wired",
+          primaryDataPath: "creationStatusNotice",
+          emptyState: "No first-class output available.",
+          successState: "n/a",
+          blockerState: "Creation type is not wired yet.",
+        }),
+        deliverableKind: definition.deliverableKind,
+        executionLevel: "future",
+        proofRequired: definition.proofRequired,
         canGenerate: false,
         canPreview: false,
         canExport: false,
@@ -216,6 +322,17 @@ export async function getMarketingCreationCapabilities(input: {
         primaryProcedure: definition.primaryProcedure,
         requiredTasks: definition.requiredTasks,
         expectedOutput: definition.expectedOutput,
+        outputGuarantee: ready ? "playable_media" : "setup_needed",
+        viewerContract: buildViewerContract({
+          viewer: ready ? "image_asset" : "setup_blocker",
+          primaryDataPath: ready ? "imageGenerationResult" : "creationStatusNotice",
+          emptyState: "No image generated yet.",
+          successState: "Playable image URL is available.",
+          blockerState: "Image provider route is not ready.",
+        }),
+        deliverableKind: definition.deliverableKind,
+        executionLevel: ready ? "first_class" : "blocked",
+        proofRequired: definition.proofRequired,
         canGenerate: ready,
         canPreview: ready,
         canExport: false,
@@ -244,6 +361,17 @@ export async function getMarketingCreationCapabilities(input: {
         primaryProcedure: definition.primaryProcedure,
         requiredTasks: definition.requiredTasks,
         expectedOutput: definition.expectedOutput,
+        outputGuarantee: allRoutesReady ? "package_only" : "setup_needed",
+        viewerContract: buildViewerContract({
+          viewer: allRoutesReady ? "deliverable_package" : "setup_blocker",
+          primaryDataPath: allRoutesReady ? "lastDeliverablePackage" : "creationStatusNotice",
+          emptyState: "No ad package generated yet.",
+          successState: "Package includes script, scene plan, and review/export metadata.",
+          blockerState: "Script and scene routes are required.",
+        }),
+        deliverableKind: definition.deliverableKind,
+        executionLevel: allRoutesReady ? "partial" : "blocked",
+        proofRequired: definition.proofRequired,
         canGenerate: allRoutesReady,
         canPreview: allRoutesReady,
         canExport: allRoutesReady,
@@ -274,6 +402,17 @@ export async function getMarketingCreationCapabilities(input: {
         primaryProcedure: definition.primaryProcedure,
         requiredTasks: definition.requiredTasks,
         expectedOutput: definition.expectedOutput,
+        outputGuarantee: allRoutesReady ? "plan_only" : "setup_needed",
+        viewerContract: buildViewerContract({
+          viewer: allRoutesReady ? "video_plan" : "setup_blocker",
+          primaryDataPath: allRoutesReady ? "lastDeliverablePackage" : "creationStatusNotice",
+          emptyState: "No assembled-video plan generated yet.",
+          successState: "Scene plan and media requirements are generated.",
+          blockerState: "Render dependencies or planning routes are missing.",
+        }),
+        deliverableKind: definition.deliverableKind,
+        executionLevel: allRoutesReady ? "partial" : "blocked",
+        proofRequired: definition.proofRequired,
         canGenerate: allRoutesReady,
         canPreview: allRoutesReady,
         canExport: allRoutesReady,
@@ -302,6 +441,29 @@ export async function getMarketingCreationCapabilities(input: {
         primaryProcedure: definition.primaryProcedure,
         requiredTasks: definition.requiredTasks,
         expectedOutput: definition.expectedOutput,
+        outputGuarantee: scheduleStorageBroken
+          ? "broken"
+          : allRoutesReady
+            ? "package_only"
+            : "setup_needed",
+        viewerContract: buildViewerContract({
+          viewer: scheduleStorageBroken
+            ? "setup_blocker"
+            : allRoutesReady
+              ? "deliverable_package"
+              : "setup_blocker",
+          primaryDataPath: allRoutesReady ? "lastDeliverablePackage" : "creationStatusNotice",
+          emptyState: "No campaign package generated yet.",
+          successState: "Campaign items + review/export/schedule package is persisted.",
+          blockerState: "Campaign strategy/copy routes or schedule storage are not ready.",
+        }),
+        deliverableKind: definition.deliverableKind,
+        executionLevel: scheduleStorageBroken
+          ? "blocked"
+          : allRoutesReady
+            ? "first_class"
+            : "blocked",
+        proofRequired: definition.proofRequired,
         canGenerate: allRoutesReady && !scheduleStorageBroken,
         canPreview: allRoutesReady && !scheduleStorageBroken,
         canExport: allRoutesReady && !scheduleStorageBroken,
@@ -329,7 +491,18 @@ export async function getMarketingCreationCapabilities(input: {
       primaryProcedure: definition.primaryProcedure,
       requiredTasks: definition.requiredTasks,
       expectedOutput: definition.expectedOutput,
-      canGenerate: allRoutesReady,
+      outputGuarantee: allRoutesReady ? "queued_media" : "setup_needed",
+      viewerContract: buildViewerContract({
+        viewer: allRoutesReady ? "media_job" : "setup_blocker",
+        primaryDataPath: allRoutesReady ? "mediaJobs" : "creationStatusNotice",
+        emptyState: "No avatar media job queued yet.",
+        successState: "Avatar job is queued and must resolve to playable media.",
+        blockerState: "Avatar/lipsync/voice routes are missing.",
+      }),
+      deliverableKind: definition.deliverableKind,
+      executionLevel: allRoutesReady ? "queued_only" : "blocked",
+      proofRequired: definition.proofRequired,
+      canGenerate: false,
       canPreview: false,
       canExport: false,
       canSchedule: false,
