@@ -402,11 +402,12 @@ describe("PR54A-3 route/publishing truth", () => {
 describe("PR64C tooling truth endpoint contract", () => {
   it("keeps admin router wired to tooling truth endpoint", () => {
     const routers = readFileSync(resolve(process.cwd(), "server/routers.ts"), "utf8");
+    const service = readFileSync(resolve(process.cwd(), "server/modules/marketing/provider-capabilities/providerToolingTruthService.ts"), "utf8");
     expect(routers).toContain("getMarketingProviderToolingTruth");
-    expect(routers).toContain("providers");
-    expect(routers).toContain("taskRoutes");
-    expect(routers).toContain("publishing");
-    expect(routers).toContain("attribution");
+    expect(service).toContain("providers");
+    expect(service).toContain("taskRoutes");
+    expect(service).toContain("publishing");
+    expect(service).toContain("attribution");
   });
 });
 
