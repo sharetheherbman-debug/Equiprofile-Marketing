@@ -44,8 +44,13 @@ function socialStatusLabel(status: string): string {
 }
 
 function formatReadinessStatus(status: string | undefined): string {
-  if (!status) return "setup_needed";
-  return status;
+  if (!status) return "Needs setup";
+  if (status === "setup_needed") return "Needs setup";
+  if (status === "ready_for_posting") return "Ready for publishing";
+  if (status === "ready") return "Ready";
+  if (status === "partial") return "Partially ready";
+  if (status === "provider_unavailable") return "Provider unavailable";
+  return status.replace(/_/g, " ");
 }
 
 export function normalizeSocialConnections(value: unknown): SocialConnection[] {
@@ -82,6 +87,7 @@ export function MarketingAppSettings({
   const diagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, { refetchInterval: 30_000 });
   const socialConnectionsQuery = trpc.admin.listMarketingSocialConnections.useQuery({ tenantId, workspaceId });
   const providerReadinessQuery = trpc.admin.getMarketingProviderReadiness.useQuery({ tenantId, workspaceId });
+  const providerToolingTruthQuery = trpc.admin.getMarketingProviderToolingTruth.useQuery({ tenantId, workspaceId, hostAppId, mode: quality });
   const taskCapabilityMapQuery = trpc.admin.getMarketingTaskCapabilityMap.useQuery({ tenantId, workspaceId, mode: quality });
   const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
   const connectorReadinessQuery = trpc.admin.getMarketingConnectorReadiness.useQuery({ tenantId, workspaceId });
@@ -102,6 +108,14 @@ export function MarketingAppSettings({
     onError: (error) => toast.error("Capability sync failed", { description: error.message }),
   });
   const testTaskRouteMutation = trpc.admin.testMarketingProviderTaskRoute.useMutation();
+  const runFullProviderTestMutation = trpc.admin.runFullProviderTest.useMutation({
+    onSuccess: async () => {
+      toast.success("Provider tests completed");
+      await providerToolingTruthQuery.refetch();
+      await providerReadinessQuery.refetch();
+    },
+    onError: (error) => toast.error("Provider tests failed", { description: error.message }),
+  });
   const saveProviderSettings = trpc.admin.saveAIProviderSettings.useMutation({
     onSuccess: async () => {
       toast.success("Marketing settings saved");
@@ -161,6 +175,7 @@ export function MarketingAppSettings({
   const isTaskReady = (task: string) => routeStatus(task) === "ready";
   const connectorPlatforms = (((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string }> } | undefined)?.platforms) ?? []);
   const hasPublishingConnectorReady = connectorPlatforms.some((item) => item.status === "ready_for_posting" || item.status === "ready");
+  const routeMapNeedsSetup = taskCapabilityRows.some((row) => row.status !== "ready");
   const creationCapabilities = ((((creationCapabilitiesQuery.data as { capabilities?: CreationCapabilitySummary[] } | undefined)?.capabilities) ?? []) as CreationCapabilitySummary[]);
   const capabilityById = useMemo(() => {
     const map = new Map<string, CreationCapabilitySummary>();
@@ -329,7 +344,7 @@ export function MarketingAppSettings({
                   {!isReady ? <p className="mt-1 text-xs text-amber-700">Next: {item.nextAction}</p> : null}
                 </div>
                 <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] ${isReady ? "border-emerald-300 bg-white text-emerald-700" : "border-amber-300 bg-white text-amber-700"}`}>
-                  {isReady ? "ready" : "setup_needed"}
+                  {isReady ? "Ready" : "Needs setup"}
                 </span>
               </div>
             );
@@ -374,9 +389,24 @@ export function MarketingAppSettings({
               <h3 className="text-sm font-semibold text-stone-900">Provider readiness</h3>
               <p className="text-xs text-stone-500">Avatar / voice / music / image / video / visual QA diagnostics.</p>
             </div>
-            <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => syncCapabilitiesMutation.mutate({ tenantId, workspaceId, forceRefresh: true })}>
-              Sync capabilities
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => runFullProviderTestMutation.mutate()} disabled={runFullProviderTestMutation.isPending}>
+                {runFullProviderTestMutation.isPending ? <Loader2 className="mr-2 size-3 animate-spin" /> : null}
+                Test all providers
+              </Button>
+              <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => syncCapabilitiesMutation.mutate({ tenantId, workspaceId, forceRefresh: true })}>
+                Sync all capabilities
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                onClick={() => testTaskRouteMutation.mutate({ tenantId, workspaceId, task: "campaign_strategy", executeLive: false, mode: quality })}
+              >
+                Test route map
+              </Button>
+            </div>
           </div>
           <div className="mt-3 grid gap-2 md:grid-cols-3">
             {Object.entries((providerReadinessQuery.data as { readinessByCapability?: Record<string, string> } | undefined)?.readinessByCapability ?? {}).map(([key, value]) => (
@@ -390,28 +420,17 @@ export function MarketingAppSettings({
         <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-stone-900">Task capability map</h3>
-              <p className="text-xs text-stone-500">Route diagnostics from persisted provider registry.</p>
+              <h3 className="text-sm font-semibold text-stone-900">Route map summary</h3>
+              <p className="text-xs text-stone-500">{routeMapNeedsSetup ? "Some tasks still need provider sync or setup." : "All required routes are ready."}</p>
             </div>
           </div>
           <div className="mt-3 space-y-2">
             {(((taskCapabilityMapQuery.data as { tasks?: Array<{ task: string; status: string }> } | undefined)?.tasks) ?? []).slice(0, 8).map((task) => (
               <div key={task.task} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700">
-                <span>{task.task}</span>
-                <Badge className="rounded-full border border-stone-200 bg-white px-2 py-0.5 text-xs text-stone-600">{task.status}</Badge>
+                <span>{task.task.replace(/_/g, " ")}</span>
+                <Badge className="rounded-full border border-stone-200 bg-white px-2 py-0.5 text-xs text-stone-600">{formatReadinessStatus(task.status)}</Badge>
               </div>
             ))}
-          </div>
-          <div className="mt-3">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="rounded-full"
-              onClick={() => testTaskRouteMutation.mutate({ tenantId, workspaceId, task: "avatar_generation", executeLive: false, mode: quality })}
-            >
-              Test avatar route
-            </Button>
           </div>
         </div>
 
@@ -475,9 +494,22 @@ export function MarketingAppSettings({
             {(((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string; reason: string }> } | undefined)?.platforms) ?? []).map((item) => (
               <div key={item.platform} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700">
                 <span>{item.platform}</span>
-                <span>{item.status}</span>
+                <span>{formatReadinessStatus(item.status)}</span>
               </div>
             ))}
+          </div>
+          <p className="mt-3 text-xs text-stone-500">
+            Missing connector access keeps publishing in export/manual mode until a valid connection with scopes is confirmed.
+          </p>
+        </div>
+
+        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          <h3 className="text-sm font-semibold text-stone-900">Results and attribution</h3>
+          <div className="mt-3 grid gap-2 text-xs text-stone-700">
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Redirect route: {(providerToolingTruthQuery.data as { attribution?: { redirectRouteAvailable?: boolean } } | undefined)?.attribution?.redirectRouteAvailable ? "Available" : "Needs setup"}</div>
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Click tracking: {(providerToolingTruthQuery.data as { attribution?: { clickTrackingAvailable?: boolean } } | undefined)?.attribution?.clickTrackingAvailable ? "Available" : "Needs setup"}</div>
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Conversion recording: {(providerToolingTruthQuery.data as { attribution?: { conversionRecordingAvailable?: boolean } } | undefined)?.attribution?.conversionRecordingAvailable ? "Available" : "Needs setup"}</div>
+            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Manual metrics import: {(providerToolingTruthQuery.data as { attribution?: { manualMetricsAvailable?: boolean } } | undefined)?.attribution?.manualMetricsAvailable ? "Available" : "Needs setup"}</div>
           </div>
         </div>
       </div>
@@ -562,6 +594,7 @@ export function MarketingAppSettings({
               diagnostics: diagnosticsQuery.data ?? {},
               backendReadiness: backendReadinessQuery.data ?? { status: "setup_needed" },
               connectorReadiness: connectorReadinessQuery.data ?? { status: "setup_needed" },
+              providerToolingTruth: providerToolingTruthQuery.data ?? { status: "setup_needed" },
             }, null, 2)}
           </pre>
         ) : null}

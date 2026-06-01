@@ -1036,7 +1036,7 @@ export function MarketingAppBrandPanel({
 
         <div className="rounded-2xl border border-dashed border-stone-200 bg-stone-50 p-4">
           <p className="text-sm font-medium text-stone-900">Logo upload</p>
-          <p className="mt-1 text-sm text-stone-500">Direct upload is setup-needed in this environment; use existing image assets for logo selection.</p>
+          <p className="mt-1 text-sm text-stone-500">Upload your logo in Assets first, then select it here to save it as the active Brand Kit logo.</p>
         </div>
 
         <div className="flex flex-wrap gap-2">

@@ -270,6 +270,7 @@ import {
   MARKETING_TASKS,
   defaultWorkspaceBudgetPolicy,
   getMarketingProviderReadinessSummary,
+  getMarketingProviderToolingTruth,
   listMarketingProviderModels,
   listMarketingTaskCapabilityEntries,
   resolveMarketingProviderRoute,
@@ -7468,6 +7469,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return getMarketingProviderReadinessSummary({
           tenantId: input?.tenantId ?? "global",
           workspaceId: input?.workspaceId ?? "default",
+        });
+      }),
+
+    getMarketingProviderToolingTruth: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        mode: z.enum(BEAST_MODE_MODES).default("standard"),
+      }).optional())
+      .query(async ({ input }) => {
+        return getMarketingProviderToolingTruth({
+          tenantId: input?.tenantId ?? "global",
+          workspaceId: input?.workspaceId ?? "default",
+          hostAppId: input?.hostAppId ?? "equiprofile",
+          mode: input?.mode ?? "standard",
         });
       }),
 

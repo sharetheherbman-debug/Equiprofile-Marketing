@@ -271,6 +271,15 @@ describe("PR61 desktop marketing command centre frontend", () => {
     expect(source).toContain("insufficient_data");
   });
 
+  it("shows AI-first studio greeting and campaign example prompts", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Hi, what are we marketing today?");
+    expect(source).toContain("Create a 7-day Facebook signup campaign for EquiProfile");
+  });
+
   it("renders required Studio workspace tabs", () => {
     const source = fs.readFileSync(
       path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
@@ -320,6 +329,15 @@ describe("PR61 desktop marketing command centre frontend", () => {
     expect(settingsSource).toContain("obfuscateSecret");
     expect(settingsSource).toContain("setup_needed");
     expect(settingsSource).not.toContain("value={settingsEntry?.keyMasked}");
+  });
+
+  it("keeps developer diagnostics collapsed in settings", () => {
+    const settingsSource = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/MarketingAppSettings.tsx"),
+      "utf8",
+    );
+    expect(settingsSource).toContain("Collapsed by default.");
+    expect(settingsSource).toContain("Developer Diagnostics");
   });
 
   it("does not reactivate legacy marketing routes", () => {

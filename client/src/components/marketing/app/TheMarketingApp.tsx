@@ -1556,8 +1556,18 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
 
             {/* Composer card */}
             <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-              <h2 className="text-lg font-semibold text-stone-900">{selectedCreationTypeLabel}</h2>
-              <p className="mt-0.5 text-xs text-stone-500">{selectedCreationCapability?.description}</p>
+              <p className="text-lg font-semibold text-stone-900">Hi, what are we marketing today?</p>
+              <p className="mt-1 text-xs text-stone-600">Brand: {workspace.brandName}</p>
+              <p className="mt-2 text-xs text-stone-500">Examples:</p>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-stone-600">
+                <li>Create a 7-day Facebook signup campaign for EquiProfile</li>
+                <li>Get me 50 signups from stable owners this month</li>
+                <li>Create a Facebook relaunch campaign for inactive trials</li>
+                <li>Create an avatar-led product intro for EquiProfile</li>
+              </ul>
+              <div className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-600">
+                <span className="font-medium text-stone-900">{selectedCreationTypeLabel}</span> · {selectedCreationCapability?.description}
+              </div>
 
               <div className="mt-4 grid gap-4 xl:grid-cols-2">
                 <label className="space-y-1">
@@ -1565,7 +1575,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                   <Input
                     value={commandForm.goal}
                     onChange={(event) => setCommandForm((current) => ({ ...current, goal: event.target.value }))}
-                    placeholder="Get me 50 signups this month from stable owners"
+                    placeholder="Create a 7-day Facebook signup campaign for EquiProfile"
                   />
                 </label>
                 <label className="space-y-1">
