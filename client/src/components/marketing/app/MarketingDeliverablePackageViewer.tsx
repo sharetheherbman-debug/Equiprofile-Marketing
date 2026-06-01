@@ -29,14 +29,19 @@ export function MarketingDeliverablePackageViewer({ deliverablePackage }: { deli
   const exportChecklist = Array.isArray((deliverablePackage.exportPack as Record<string, unknown> | undefined)?.checklist)
     ? ((deliverablePackage.exportPack as Record<string, unknown>).checklist as unknown[]).map((item) => String(item))
     : [];
-  const nextAction = setupNeeded ? "Resolve setup blockers before approval/export." : "Run human review and export checklist.";
+  const nextAction = setupNeeded ? "Resolve blockers before approval/export." : "Run human review and export checklist.";
+  const scheduleState = scheduleDrafts.length ? "Schedule drafts ready" : "No schedule draft yet";
+  const connectorState = blockers.length ? "Connector setup still required for direct posting" : "Connector requirements satisfied or export-first workflow selected";
+  const trackingState = Boolean((deliverablePackage as Record<string, any>)?.attribution?.trackingUrl)
+    ? "Tracking link attached"
+    : "Tracking link pending";
 
   return (
     <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="marketing-deliverable-package-viewer">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-stone-900">Package summary</h3>
         <span className={`rounded-full border px-2 py-0.5 text-[11px] ${setupNeeded ? "border-amber-300 bg-amber-50 text-amber-700" : "border-emerald-300 bg-emerald-50 text-emerald-700"}`}>
-          {setupNeeded ? "setup_needed" : "ready_for_review"}
+          {setupNeeded ? "Needs setup" : "Ready for review"}
         </span>
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -72,6 +77,9 @@ export function MarketingDeliverablePackageViewer({ deliverablePackage }: { deli
           <p className="mt-2">Review items: {reviewItems.length}</p>
           <p className="mt-1">Schedule drafts: {scheduleDrafts.length}</p>
           <p className="mt-1">Render status: {renderStatus}</p>
+          <p className="mt-1">Schedule/export: {scheduleState}</p>
+          <p className="mt-1">Publishing: {connectorState}</p>
+          <p className="mt-1">Tracking: {trackingState}</p>
           <p className="mt-1">Export checklist:</p>
           <ul className="mt-1 list-disc pl-4">
             {(exportChecklist.length ? exportChecklist : ["No checklist yet"]).map((item, index) => (
@@ -95,6 +103,18 @@ export function MarketingDeliverablePackageViewer({ deliverablePackage }: { deli
       {isAssembled && (deliverablePackage.exportPack as any)?.renderStatus !== "completed" ? (
         <p className="mt-3 text-xs text-stone-500">No fake video is shown because render output is missing.</p>
       ) : null}
+
+      <details className="mt-4 rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
+        <summary className="cursor-pointer font-medium text-stone-800">Details / Diagnostics</summary>
+        <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-[11px] text-stone-700">
+          {JSON.stringify({
+            packageType: deliverablePackage.packageType ?? null,
+            status: deliverablePackage.status ?? null,
+            blockers,
+            renderStatus,
+          }, null, 2)}
+        </pre>
+      </details>
     </section>
   );
 }

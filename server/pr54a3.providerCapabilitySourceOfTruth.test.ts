@@ -208,6 +208,122 @@ describe("PR54A-3 provider stores", () => {
 });
 
 describe("PR54A-3 route/publishing truth", () => {
+  it("matches campaign_strategy through canonical strategy support", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "qwen",
+          modelId: "qwen-strategy",
+          supportedTasks: ["strategy" as any],
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+      ]),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const decision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "campaign_strategy",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+
+    expect(decision.status).toBe("ready");
+    expect(decision.selected?.modelId).toBe("qwen-strategy");
+    expect(decision.canonicalTask).toBe("strategy");
+  });
+
+  it("maps marketing tasks to canonical tasks for copy and image routes", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "qwen",
+          modelId: "qwen-copy",
+          supportedTasks: ["copywriting" as any],
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+        createModel({
+          provider: "huggingface",
+          modelId: "hf-image",
+          category: "image",
+          costTier: "free",
+          supportedTasks: ["text_to_image" as any],
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+      ]),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const copyDecision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "platform_copywriting",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+    const imageDecision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "image_generation",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+
+    expect(copyDecision.status).toBe("ready");
+    expect(copyDecision.canonicalTask).toBe("copywriting");
+    expect(imageDecision.status).toBe("ready");
+    expect(imageDecision.canonicalTask).toBe("text_to_image");
+  });
+
+  it("allows avatar_generation only when avatar_video route is ready", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "genx",
+          modelId: "genx-avatar",
+          category: "video",
+          supportedTasks: ["avatar_video" as any],
+          setupStatus: "setup_needed",
+          isAvailable: false,
+        }),
+      ]),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const blockedDecision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "avatar_generation",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+    expect(blockedDecision.status).toBe("setup_needed");
+
+    vi.resetModules();
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "genx",
+          modelId: "genx-avatar-ready",
+          category: "video",
+          supportedTasks: ["avatar_video" as any],
+          setupStatus: "ready",
+          isAvailable: true,
+          costTier: "standard",
+        }),
+      ]),
+    }));
+
+    const modReady = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const readyDecision = await modReady.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "avatar_generation",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+    expect(readyDecision.status).toBe("ready");
+  });
+
   it("standard mode blocks premium GenX when explicit fallback is not allowed", async () => {
     vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
       listMarketingProviderModels: vi.fn(async () => [
@@ -280,6 +396,17 @@ describe("PR54A-3 route/publishing truth", () => {
 
     expect(result.success).toBe(false);
     expect(Boolean(result.platformPostId ?? result.uploadId)).toBe(false);
+  });
+});
+
+describe("PR64C tooling truth endpoint contract", () => {
+  it("keeps admin router wired to tooling truth endpoint", () => {
+    const routers = readFileSync(resolve(process.cwd(), "server/routers.ts"), "utf8");
+    expect(routers).toContain("getMarketingProviderToolingTruth");
+    expect(routers).toContain("providers");
+    expect(routers).toContain("taskRoutes");
+    expect(routers).toContain("publishing");
+    expect(routers).toContain("attribution");
   });
 });
 

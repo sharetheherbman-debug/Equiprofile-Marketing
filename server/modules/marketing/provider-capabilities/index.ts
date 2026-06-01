@@ -9,3 +9,4 @@ export * from "./marketingTaskCapabilityMatrix";
 export * from "./marketingBudgetPolicy";
 export * from "./marketingProviderReadinessService";
 export * from "./marketingProviderRouteResolver";
+export * from "./providerToolingTruthService";
