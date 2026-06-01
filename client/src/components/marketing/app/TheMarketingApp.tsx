@@ -415,8 +415,16 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     cancelScheduleDraftMutation,
     exportScheduleDraftPackMutation,
   } = useMarketingCalendar(workspace);
+
+  // Lazy-load conditions — non-essential diagnostics/intelligence queries are only
+  // enabled when the user explicitly opens the relevant context, keeping the
+  // initial creation flow fast and decoupled from backend diagnostics.
+  const lazyDiagnosticsEnabled = showSettingsDialog || workspaceTab === "details";
+  const lazyCreativeEnabled = workspaceTab === "creative";
+  const lazyMediaEnabled = workspaceTab === "media";
+
   const approvals = trpc.admin.listApprovalQueue.useQuery({ tenantId: workspace.tenantId });
-  const diagnostics = trpc.admin.getAIDiagnostics.useQuery(undefined, { refetchInterval: 30_000 });
+  const diagnostics = trpc.admin.getAIDiagnostics.useQuery(undefined, { enabled: lazyCreativeEnabled || lazyDiagnosticsEnabled });
   const createMarketingStudioPlan = trpc.admin.createMarketingStudioPlan.useMutation({
     onSuccess: async (data) => {
       const result = data as { capability?: { finalDeliveryMode?: string } };
@@ -444,11 +452,11 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   );
   const connectorReadinessQuery = trpc.admin.getMarketingConnectorReadiness.useQuery(
     { tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id },
-    { refetchInterval: 30_000 },
+    { enabled: lazyDiagnosticsEnabled },
   );
   const mediaResolverStatusQuery = trpc.admin.getMarketingMediaJobResolverStatus.useQuery(
     { tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id },
-    { refetchInterval: 30_000 },
+    { enabled: lazyDiagnosticsEnabled || lazyMediaEnabled },
   );
   const resolveQueuedMediaMutation = trpc.admin.resolveQueuedMarketingMediaJobs.useMutation({
     onSuccess: async () => {
@@ -469,48 +477,60 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       audienceHint: commandForm.audience,
       platformsHint: commandForm.platforms,
     },
-    { refetchInterval: 30_000 },
+    { enabled: lazyDiagnosticsEnabled },
   );
-  const performanceContextQuery = trpc.admin.getMarketingPerformanceContext.useQuery({
-    tenantId: workspace.tenantId,
-    workspaceId: workspace.marketing_workspace_id,
-    hostAppId: workspace.host_app_id,
-    campaignId: selectedCampaignId ? Number(selectedCampaignId) : undefined,
-  });
-  const winningPatternsQuery = trpc.admin.getMarketingWinningPatterns.useQuery({
-    tenantId: workspace.tenantId,
-    workspaceId: workspace.marketing_workspace_id,
-    hostAppId: workspace.host_app_id,
-    campaignId: selectedCampaignId ? Number(selectedCampaignId) : undefined,
-  });
-  const learningInsightsQuery = trpc.admin.getMarketingLearningInsights.useQuery({
-    tenantId: workspace.tenantId,
-    workspaceId: workspace.marketing_workspace_id,
-    hostAppId: workspace.host_app_id,
-    campaignId: selectedCampaignId ? Number(selectedCampaignId) : undefined,
-  });
+  const performanceContextQuery = trpc.admin.getMarketingPerformanceContext.useQuery(
+    {
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      campaignId: selectedCampaignId ? Number(selectedCampaignId) : undefined,
+    },
+    { enabled: lazyDiagnosticsEnabled },
+  );
+  const winningPatternsQuery = trpc.admin.getMarketingWinningPatterns.useQuery(
+    {
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      campaignId: selectedCampaignId ? Number(selectedCampaignId) : undefined,
+    },
+    { enabled: lazyDiagnosticsEnabled },
+  );
+  const learningInsightsQuery = trpc.admin.getMarketingLearningInsights.useQuery(
+    {
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      campaignId: selectedCampaignId ? Number(selectedCampaignId) : undefined,
+    },
+    { enabled: lazyDiagnosticsEnabled },
+  );
   const playbookQuery = trpc.admin.recommendMarketingPlaybook.useQuery(
     {
       platform: commandForm.platforms[0] ?? "LinkedIn",
       goal: commandForm.goal || "Campaign growth",
       audience: commandForm.audience || workspace.defaultAudience,
     },
-    { enabled: Boolean(commandForm.goal.trim() && commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.goal.trim() && commandForm.platforms.length) },
   );
-  const specialistsQuery = trpc.admin.listMarketingPlatformSpecialists.useQuery();
+  const specialistsQuery = trpc.admin.listMarketingPlatformSpecialists.useQuery(undefined, { enabled: lazyDiagnosticsEnabled });
   const recommendedSpecialistsQuery = trpc.admin.recommendMarketingPlatformSpecialists.useQuery(
     {
       platforms: commandForm.platforms,
       goal: commandForm.goal || "Campaign growth",
       contentTypes: commandForm.contentTypes.map((contentType) => CONTENT_TYPE_TO_BACKEND[contentType]),
     },
-    { enabled: Boolean(commandForm.goal.trim() && commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.goal.trim() && commandForm.platforms.length) },
   );
-  const brandMemoryQuery = trpc.admin.getMarketingBrandMemory.useQuery({
-    tenantId: workspace.tenantId,
-    workspaceId: workspace.marketing_workspace_id,
-    hostAppId: workspace.host_app_id,
-  });
+  const brandMemoryQuery = trpc.admin.getMarketingBrandMemory.useQuery(
+    {
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+    },
+    { enabled: lazyDiagnosticsEnabled },
+  );
   const trendContextQuery = trpc.admin.getMarketingTrendContext.useQuery(
     {
       tenantId: workspace.tenantId,
@@ -519,7 +539,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       platform: commandForm.platforms[0],
       lookbackDays: 30,
     },
-    { enabled: Boolean(commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.platforms.length) },
   );
   const competitorContextQuery = trpc.admin.getMarketingCompetitorContext.useQuery(
     {
@@ -529,7 +549,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       platform: commandForm.platforms[0],
       lookbackDays: 30,
     },
-    { enabled: Boolean(commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.platforms.length) },
   );
   const contentGapQuery = trpc.admin.detectMarketingContentGaps.useQuery(
     {
@@ -538,7 +558,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       hostAppId: workspace.host_app_id,
       platform: commandForm.platforms[0] ?? "LinkedIn",
     },
-    { enabled: Boolean(commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.platforms.length) },
   );
   const managerGuidanceQuery = trpc.admin.generateMarketingManagerGuidance.useQuery(
     {
@@ -549,7 +569,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       audience: commandForm.audience || workspace.defaultAudience,
       platforms: commandForm.platforms,
     },
-    { enabled: Boolean(commandForm.goal.trim() && commandForm.audience.trim() && commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.goal.trim() && commandForm.audience.trim() && commandForm.platforms.length) },
   );
   const managerNextStepsQuery = trpc.admin.recommendMarketingNextSteps.useQuery(
     {
@@ -561,7 +581,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       audience: commandForm.audience || workspace.defaultAudience,
       platforms: commandForm.platforms,
     },
-    { enabled: Boolean(commandForm.goal.trim() && commandForm.audience.trim() && commandForm.platforms.length) },
+    { enabled: lazyDiagnosticsEnabled && Boolean(commandForm.goal.trim() && commandForm.audience.trim() && commandForm.platforms.length) },
   );
   const creativeScoreQuery = trpc.admin.scoreMarketingCreative.useQuery(
     {
@@ -578,7 +598,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       proofPoints: [],
       hasVisualAsset: false,
     },
-    { enabled: Boolean(commandForm.goal.trim() && commandForm.platforms.length) },
+    { enabled: (lazyDiagnosticsEnabled || lazyCreativeEnabled) && Boolean(commandForm.goal.trim() && commandForm.platforms.length) },
   );
   const runAutonomousCampaignMutation = trpc.admin.runAutonomousMarketingCampaign.useMutation({
     onSuccess: async (result) => {
@@ -1643,6 +1663,12 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                   </TabsContent>
 
                   <TabsContent value="details" className="space-y-4">
+                    {/* Loading placeholder — diagnostics load when this tab is opened */}
+                    {(connectorReadinessQuery.isLoading || performanceContextQuery.isLoading) ? (
+                      <p className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-xs text-stone-500">
+                        Open diagnostics to load advanced readiness data.
+                      </p>
+                    ) : null}
                     {/* Advanced diagnostics — collapsed by default */}
                     <details className="rounded-2xl border border-stone-200 bg-stone-50">
                       <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-stone-700">

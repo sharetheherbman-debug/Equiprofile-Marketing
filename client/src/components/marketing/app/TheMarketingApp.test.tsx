@@ -524,4 +524,59 @@ describe("PR62D frontend Studio creation flow", () => {
     expect(source).toContain("data-testid=\"preview-panel\"");
     expect(source).toContain("sticky top-4 h-fit");
   });
+
+  it("diagnostic/intelligence queries are lazy-loaded behind lazyDiagnosticsEnabled", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // Lazy condition variables must be defined
+    expect(source).toContain("lazyDiagnosticsEnabled");
+    expect(source).toContain("lazyCreativeEnabled");
+    expect(source).toContain("lazyMediaEnabled");
+    // Each non-essential query must carry an enabled guard
+    expect(source).toContain("enabled: lazyDiagnosticsEnabled");
+    expect(source).toContain("enabled: lazyCreativeEnabled || lazyDiagnosticsEnabled");
+    expect(source).toContain("enabled: lazyDiagnosticsEnabled || lazyMediaEnabled");
+    // The lazy guard must reference Settings dialog and details tab
+    expect(source).toContain("showSettingsDialog || workspaceTab === \"details\"");
+  });
+
+  it("main creation screen does not depend on diagnostics queries for its initial render", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // Creation menu and generate button are present
+    expect(source).toContain("creation-menu");
+    expect(source).toContain("data-testid=\"generate-button\"");
+    // The lazy conditions are declared before the creation menu in the file
+    const lazyIdx = source.indexOf("lazyDiagnosticsEnabled");
+    const creationMenuIdx = source.indexOf("creation-menu");
+    expect(lazyIdx).toBeGreaterThan(0);
+    expect(lazyIdx).toBeLessThan(creationMenuIdx);
+  });
+
+  it("details tab shows diagnostic loading placeholder when data is not yet available", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Open diagnostics to load advanced readiness data.");
+  });
+
+  it("details tab still contains Advanced Diagnostics and readiness strip sections", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Advanced Diagnostics");
+    expect(source).toContain("Readiness / Capability Strip");
+    expect(source).toContain("Strategy context");
+    // Details tab content is inside the workspace tabs section
+    const detailsTabIdx = source.indexOf('value="details"');
+    const diagnosticsIdx = source.indexOf("Advanced Diagnostics");
+    expect(detailsTabIdx).toBeGreaterThan(0);
+    expect(diagnosticsIdx).toBeGreaterThan(detailsTabIdx);
+  });
 });
