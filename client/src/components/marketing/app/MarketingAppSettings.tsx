@@ -23,6 +23,15 @@ type ProviderSettingsApiEntry = {
   settings?: Record<string, string>;
 };
 type ProviderSettingsApiResponse = Record<string, ProviderSettingsApiEntry>;
+type CreationCapabilitySummary = {
+  id: string;
+  label: string;
+  outputGuarantee?: string;
+  viewerContract?: { viewer?: string; successState?: string; blockerState?: string };
+  status?: string;
+  missingSetup?: string[];
+  blockers?: string[];
+};
 
 function socialStatusLabel(status: string): string {
   if (status === "ready_for_approval_posting") return "Connected";
@@ -76,6 +85,12 @@ export function MarketingAppSettings({
   const taskCapabilityMapQuery = trpc.admin.getMarketingTaskCapabilityMap.useQuery({ tenantId, workspaceId, mode: quality });
   const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
   const connectorReadinessQuery = trpc.admin.getMarketingConnectorReadiness.useQuery({ tenantId, workspaceId });
+  const creationCapabilitiesQuery = trpc.admin.getMarketingCreationCapabilities.useQuery({
+    tenantId,
+    workspaceId,
+    hostAppId,
+    qualityMode: quality,
+  });
 
   const syncCapabilitiesMutation = trpc.admin.syncMarketingProviderCapabilities.useMutation({
     onSuccess: async () => {
@@ -94,6 +109,7 @@ export function MarketingAppSettings({
       await utils.admin.getAIDiagnostics.invalidate();
       await utils.admin.getMarketingBackendReadiness.invalidate();
       await utils.admin.getMarketingConnectorReadiness.invalidate();
+      await utils.admin.getMarketingCreationCapabilities.invalidate();
     },
     onError: (error) => toast.error("Could not save settings", { description: error.message }),
   });
@@ -145,6 +161,12 @@ export function MarketingAppSettings({
   const isTaskReady = (task: string) => routeStatus(task) === "ready";
   const connectorPlatforms = (((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string }> } | undefined)?.platforms) ?? []);
   const hasPublishingConnectorReady = connectorPlatforms.some((item) => item.status === "ready_for_posting" || item.status === "ready");
+  const creationCapabilities = ((((creationCapabilitiesQuery.data as { capabilities?: CreationCapabilitySummary[] } | undefined)?.capabilities) ?? []) as CreationCapabilitySummary[]);
+  const capabilityById = useMemo(() => {
+    const map = new Map<string, CreationCapabilitySummary>();
+    for (const row of creationCapabilities) map.set(row.id, row);
+    return map;
+  }, [creationCapabilities]);
 
   function saveSettings() {
     saveProviderSettings.mutate({
@@ -173,6 +195,33 @@ export function MarketingAppSettings({
       <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="setup-wizard">
         <h2 className="text-xl font-semibold text-stone-900">Setup Checklist</h2>
         <p className="mt-1 text-sm text-stone-500">Complete these steps to unlock each creation type.</p>
+        <div className="mt-4 rounded-2xl border border-stone-200 bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-600">Output guarantee truth</p>
+          <div className="mt-2 grid gap-2 md:grid-cols-2">
+            {["image_ad", "video_ad_30s", "assembled_video_3m", "signup_campaign", "avatar_video"].map((id) => {
+              const capability = capabilityById.get(id);
+              if (!capability) {
+                return (
+                  <div key={id} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-600">
+                    {id}: waiting_for_backend
+                  </div>
+                );
+              }
+              const blocker = capability.missingSetup?.[0] ?? capability.blockers?.[0] ?? capability.viewerContract?.blockerState ?? "No blocker recorded.";
+              const summary = capability.status === "ready"
+                ? capability.viewerContract?.successState ?? "Ready"
+                : blocker;
+              return (
+                <div key={id} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700">
+                  <p className="font-medium text-stone-900">{capability.label}</p>
+                  <p className="mt-1">Output: {capability.outputGuarantee ?? "unknown"}</p>
+                  <p className="mt-1">Viewer: {capability.viewerContract?.viewer ?? "unknown"}</p>
+                  <p className="mt-1 text-stone-600">{summary}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
         <div className="mt-4 space-y-3">
           {[
             {

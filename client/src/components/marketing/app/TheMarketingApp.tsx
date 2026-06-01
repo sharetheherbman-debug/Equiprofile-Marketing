@@ -78,6 +78,23 @@ type ImageGenerationResult = {
 };
 
 type CreationCapabilityStatus = "ready" | "setup_needed" | "planned_only" | "not_wired" | "broken";
+type CreationOutputGuarantee =
+  | "playable_media"
+  | "package_only"
+  | "plan_only"
+  | "queued_media"
+  | "setup_needed"
+  | "not_wired"
+  | "broken";
+type CreationViewerType =
+  | "image_asset"
+  | "deliverable_package"
+  | "video_plan"
+  | "media_job"
+  | "setup_blocker"
+  | "not_wired"
+  | "results_summary";
+type CreationExecutionLevel = "first_class" | "partial" | "queued_only" | "future" | "blocked";
 type CreationCapability = {
   id: string;
   label: string;
@@ -85,6 +102,18 @@ type CreationCapability = {
   status: CreationCapabilityStatus;
   primaryProcedure: string | null;
   expectedOutput: "image_asset" | "campaign_package" | "video_plan" | "rendered_video" | "avatar_video" | "voice_preview" | "audio_bed" | "export_pack" | "unknown";
+  outputGuarantee: CreationOutputGuarantee;
+  viewerContract: {
+    viewer: CreationViewerType;
+    schemaVersion: "v1";
+    primaryDataPath: string;
+    emptyState: string;
+    successState: string;
+    blockerState: string;
+  };
+  deliverableKind: "social" | "email" | "signup_campaign" | "image" | "video_plan" | "rendered_video" | "avatar" | "voice" | "music" | "unknown" | string;
+  executionLevel: CreationExecutionLevel;
+  proofRequired: string[];
   canGenerate: boolean;
   canPreview: boolean;
   canExport: boolean;
@@ -112,6 +141,18 @@ function fallbackCapabilityForType(type: (typeof CREATION_TYPES)[number]): Creat
     status: "setup_needed",
     primaryProcedure: null,
     expectedOutput: "unknown",
+    outputGuarantee: "setup_needed",
+    viewerContract: {
+      viewer: "setup_blocker",
+      schemaVersion: "v1",
+      primaryDataPath: "creationStatusNotice",
+      emptyState: "Capability contract is loading.",
+      successState: "n/a",
+      blockerState: "waiting_for_backend",
+    },
+    deliverableKind: "unknown",
+    executionLevel: "blocked",
+    proofRequired: [],
     canGenerate: false,
     canPreview: false,
     canExport: false,
@@ -120,6 +161,32 @@ function fallbackCapabilityForType(type: (typeof CREATION_TYPES)[number]): Creat
     blockers: [],
     notes: ["Capability contract is loading."],
   };
+}
+
+function formatOutputGuaranteeLabel(value: CreationOutputGuarantee): string {
+  switch (value) {
+    case "playable_media": return "Playable media";
+    case "package_only": return "Package only";
+    case "plan_only": return "Plan only";
+    case "queued_media": return "Queued media";
+    case "setup_needed": return "Setup needed";
+    case "not_wired": return "Not wired";
+    case "broken": return "Blocked";
+    default: return value;
+  }
+}
+
+function creationActionLabel(value: CreationOutputGuarantee): string {
+  switch (value) {
+    case "playable_media": return "Generate media";
+    case "package_only": return "Generate package";
+    case "plan_only": return "Create plan";
+    case "queued_media": return "Queue / check setup";
+    case "setup_needed": return "Setup needed";
+    case "not_wired": return "Not wired";
+    case "broken": return "Blocked";
+    default: return "Generate";
+  }
 }
 
 function getReadinessBadge(status?: string): { label: string; classes: string } {
@@ -1182,6 +1249,18 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       setWorkspaceTab("preview");
       return;
     }
+    if (!selectedCreationCapability.canGenerate) {
+      setCreationStatusNotice({
+        status: selectedCreationCapability.status,
+        title: `${selectedCreationCapability.label} cannot execute from Studio yet`,
+        reason: selectedCreationCapability.blockers[0]
+          ?? selectedCreationCapability.missingSetup[0]
+          ?? selectedCreationCapability.viewerContract.blockerState
+          ?? "This capability is not executable from the primary Studio flow yet.",
+      });
+      setWorkspaceTab("preview");
+      return;
+    }
 
     setCreationStatusNotice(null);
     switch (selectedCreationType) {
@@ -1216,18 +1295,38 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       ?? CREATION_TYPES.map((type) => fallbackCapabilityForType(type))
   ) as CreationCapability[];
   const creationCapabilities = capabilityRows;
-  const primaryCreationCapabilities = creationCapabilities.filter((row) => row.status !== "not_wired");
-  const notReadyCreationCapabilities = creationCapabilities.filter((row) => row.status === "not_wired");
+  const readyNowCapabilities = creationCapabilities.filter((row) => row.outputGuarantee === "playable_media");
+  const packagePlanCapabilities = creationCapabilities.filter((row) =>
+    row.outputGuarantee === "package_only" || row.outputGuarantee === "plan_only",
+  );
+  const needsSetupCapabilities = creationCapabilities.filter((row) =>
+    row.outputGuarantee === "setup_needed" || row.outputGuarantee === "queued_media" || row.outputGuarantee === "broken",
+  );
+  const futureCapabilities = creationCapabilities.filter((row) => row.outputGuarantee === "not_wired");
+  const primaryCreationCapabilities = [...readyNowCapabilities, ...packagePlanCapabilities, ...needsSetupCapabilities];
   const selectedCreationCapability =
     creationCapabilities.find((row) => row.id === selectedCreationType)
     ?? creationCapabilities[0]
     ?? fallbackCapabilityForType(CREATION_TYPES[0]);
   useEffect(() => {
     if (!creationCapabilities.some((row) => row.id === selectedCreationType)) {
-      const fallback = primaryCreationCapabilities[0]?.id ?? creationCapabilities[0]?.id ?? "image_ad";
+      const ranked =
+        readyNowCapabilities.find((row) => row.canGenerate)
+        ?? packagePlanCapabilities.find((row) => row.canGenerate)
+        ?? needsSetupCapabilities[0]
+        ?? primaryCreationCapabilities[0]
+        ?? creationCapabilities[0];
+      const fallback = ranked?.id ?? "image_ad";
       setSelectedCreationType(fallback);
     }
-  }, [creationCapabilities, primaryCreationCapabilities, selectedCreationType]);
+  }, [
+    creationCapabilities,
+    needsSetupCapabilities,
+    packagePlanCapabilities,
+    primaryCreationCapabilities,
+    readyNowCapabilities,
+    selectedCreationType,
+  ]);
   const commandCentre = (commandCentreQuery.data as Record<string, any> | undefined) ?? undefined;
   const autonomousRun = (lastAutonomousRun ?? null) as Record<string, any> | null;
   const autonomousRunSummaries = (autonomousRun?.runSummaries as Array<Record<string, any>> | undefined) ?? [];
@@ -1316,12 +1415,29 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
 
   const readinessBadge = getReadinessBadge(backendReadiness?.status);
   const selectedCreationTypeLabel = selectedCreationCapability?.label ?? "Content";
-  const selectedCreationBlocked = selectedCreationCapability.status === "setup_needed"
-    || selectedCreationCapability.status === "broken"
-    || selectedCreationCapability.status === "not_wired";
-  const generateButtonLabel = selectedCreationCapability.status === "planned_only"
-    ? `Generate ${selectedCreationTypeLabel} (plan/package)`
-    : `Generate ${selectedCreationTypeLabel}`;
+  const selectedCreationBlocked =
+    !selectedCreationCapability.canGenerate
+    || selectedCreationCapability.outputGuarantee === "setup_needed"
+    || selectedCreationCapability.outputGuarantee === "not_wired"
+    || selectedCreationCapability.outputGuarantee === "broken";
+  const generateButtonLabel = `${creationActionLabel(selectedCreationCapability.outputGuarantee)}: ${selectedCreationTypeLabel}`;
+  const hasPlayableImageOutput = Boolean(
+    imageGenerationResult?.status === "completed"
+    && imageGenerationResult.publicUrl
+    && imageGenerationResult.mimeType?.startsWith("image/"),
+  );
+  const hasDeliverablePackageOutput = Boolean(lastDeliverablePackage);
+  const hasPlanOnlyOutput = Boolean(
+    lastDeliverablePackage
+    && (selectedCreationCapability.outputGuarantee === "plan_only"
+      || lastDeliverablePackage.packageType === "assembled_video_3m"),
+  );
+  const setupBlockerReason =
+    creationStatusNotice?.reason
+    ?? imageGenerationResult?.reason
+    ?? selectedCreationCapability.missingSetup[0]
+    ?? selectedCreationCapability.blockers[0]
+    ?? selectedCreationCapability.viewerContract.blockerState;
 
   return (
     <main
@@ -1377,68 +1493,62 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
           {/* ── Left: Creation Menu ── */}
           <nav className="creation-menu flex flex-col gap-1 rounded-3xl border border-stone-200 bg-white p-3 shadow-sm lg:h-fit">
             <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">Create</p>
-            {primaryCreationCapabilities.map((type) => (
-              <button
-                key={type.id}
-                type="button"
-                data-creation-type={type.id}
-                onClick={() => {
-                  setSelectedCreationType(type.id);
-                  if (type.id === "image_ad") setCommandForm((c) => ({ ...c, goal: "Create a premium image ad for EquiProfile targeting stable owners." }));
-                  else if (type.id === "video_ad_30s") setCommandForm((c) => ({ ...c, goal: "Create a 30-second Facebook and Instagram ad for EquiProfile to get stable owners to start a free trial.", platforms: ["Facebook", "Instagram"] }));
-                  else if (type.id === "assembled_video_3m") setCommandForm((c) => ({ ...c, goal: "Create a 3-minute marketing video for EquiProfile explaining why stable owners should use it.", platforms: ["YouTube Shorts"] }));
-                  else if (type.id === "signup_campaign") setCommandForm((c) => ({ ...c, goal: "Get me 50 signups this month from stable owners.", platforms: ["Facebook", "Instagram", "Email"] }));
-                }}
-                className={`rounded-2xl px-3 py-2.5 text-left transition-colors ${
-                  selectedCreationType === type.id
-                    ? "bg-stone-900 text-white"
-                    : "text-stone-700 hover:bg-stone-50"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-medium">{type.label}</p>
-                  <span className={`rounded-full border px-2 py-0.5 text-[10px] ${
-                    type.status === "ready"
-                      ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                      : type.status === "planned_only"
-                        ? "border-amber-300 bg-amber-50 text-amber-700"
-                        : type.status === "setup_needed"
-                          ? "border-stone-300 bg-stone-100 text-stone-700"
-                          : "border-red-300 bg-red-50 text-red-700"
-                  }`}>
-                    {type.status === "planned_only" ? "Plan/package only" : formatStatusLabel(type.status)}
-                  </span>
-                </div>
-                <p className={`mt-0.5 text-[10px] leading-tight ${selectedCreationType === type.id ? "text-white/70" : "text-stone-400"}`}>{type.description}</p>
-              </button>
-            ))}
-            {notReadyCreationCapabilities.length ? (
-              <div className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2">
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-stone-500">Not ready yet</p>
-                <div className="mt-2 space-y-1.5">
-                  {notReadyCreationCapabilities.map((type) => (
+            {[
+              { title: "Ready now", rows: readyNowCapabilities, tone: "border-emerald-200 bg-emerald-50 text-emerald-700" },
+              { title: "Package / plan only", rows: packagePlanCapabilities, tone: "border-amber-200 bg-amber-50 text-amber-700" },
+              { title: "Needs setup", rows: needsSetupCapabilities, tone: "border-stone-200 bg-stone-50 text-stone-700" },
+              { title: "Future / not wired", rows: futureCapabilities, tone: "border-stone-200 bg-stone-50 text-stone-600" },
+            ].map((group) => (
+              group.rows.length ? (
+                <div key={group.title} className="mt-2 space-y-1.5">
+                  <p className="px-2 text-[10px] font-semibold uppercase tracking-wide text-stone-500">{group.title}</p>
+                  {group.rows.map((type) => (
                     <button
                       key={type.id}
                       type="button"
-                      className="w-full rounded-xl border border-stone-200 bg-white px-2 py-1.5 text-left text-[11px] text-stone-600"
+                      data-creation-type={type.id}
+                      disabled={group.title === "Future / not wired"}
                       onClick={() => {
                         setSelectedCreationType(type.id);
-                        setCreationStatusNotice({
-                          status: "not_wired",
-                          title: `${type.label} is not wired yet`,
-                          reason: type.blockers[0] ?? "No first-class procedure/viewer contract exists yet.",
-                        });
+                        if (type.id === "image_ad") setCommandForm((c) => ({ ...c, goal: "Create a premium image ad for EquiProfile targeting stable owners." }));
+                        else if (type.id === "video_ad_30s") setCommandForm((c) => ({ ...c, goal: "Create a 30-second Facebook and Instagram ad for EquiProfile to get stable owners to start a free trial.", platforms: ["Facebook", "Instagram"] }));
+                        else if (type.id === "assembled_video_3m") setCommandForm((c) => ({ ...c, goal: "Create a 3-minute marketing video for EquiProfile explaining why stable owners should use it.", platforms: ["YouTube Shorts"] }));
+                        else if (type.id === "signup_campaign") setCommandForm((c) => ({ ...c, goal: "Get me 50 signups this month from stable owners.", platforms: ["Facebook", "Instagram", "Email"] }));
+                        if (group.title === "Future / not wired") {
+                          setCreationStatusNotice({
+                            status: "not_wired",
+                            title: `${type.label} is not wired yet`,
+                            reason: type.blockers[0] ?? "No first-class procedure/viewer contract exists yet.",
+                          });
+                        }
                       }}
+                      className={`rounded-2xl border px-3 py-2.5 text-left transition-colors ${
+                        selectedCreationType === type.id
+                          ? "border-stone-900 bg-stone-900 text-white"
+                          : `${group.tone} hover:bg-white`
+                      } ${group.title === "Future / not wired" ? "opacity-80" : ""}`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-medium text-stone-700">{type.label}</span>
-                        <span className="rounded-full border border-stone-200 bg-stone-100 px-2 py-0.5 text-[10px] text-stone-600">Not wired</span>
+                        <p className="text-xs font-medium">{type.label}</p>
+                        <span className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                          selectedCreationType === type.id
+                            ? "border-white/30 bg-white/15 text-white"
+                            : "border-stone-300 bg-white text-stone-600"
+                        }`}>
+                          {formatStatusLabel(type.status)}
+                        </span>
+                      </div>
+                      <p className={`mt-0.5 text-[10px] leading-tight ${selectedCreationType === type.id ? "text-white/70" : "text-stone-500"}`}>{type.description}</p>
+                      <div className={`mt-1.5 space-y-0.5 text-[10px] ${selectedCreationType === type.id ? "text-white/80" : "text-stone-500"}`}>
+                        <p>Output: {formatOutputGuaranteeLabel(type.outputGuarantee)}</p>
+                        <p>Expected: {type.expectedOutput}</p>
+                        <p>{type.status === "ready" ? type.viewerContract.successState : (type.missingSetup[0] ?? type.blockers[0] ?? type.viewerContract.blockerState)}</p>
                       </div>
                     </button>
                   ))}
                 </div>
-              </div>
-            ) : null}
+              ) : null
+            ))}
           </nav>
 
           {/* ── Center: Composer + workspace ── */}
@@ -1942,78 +2052,28 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             <p className="mt-0.5 text-xs text-stone-500">Generated output appears here.</p>
 
             <div className="mt-4 space-y-3">
-              {creationStatusNotice ? (
-                <div className={`rounded-2xl border p-4 ${
-                  creationStatusNotice.status === "setup_needed"
-                    ? "border-amber-200 bg-amber-50"
-                    : creationStatusNotice.status === "broken"
-                      ? "border-red-200 bg-red-50"
-                      : "border-stone-200 bg-stone-50"
-                }`}>
-                  <p className={`text-sm font-medium ${
-                    creationStatusNotice.status === "setup_needed"
-                      ? "text-amber-800"
-                      : creationStatusNotice.status === "broken"
-                        ? "text-red-800"
-                        : "text-stone-800"
-                  }`}>
-                    {creationStatusNotice.title}
-                  </p>
-                  <p className={`mt-1 text-xs ${
-                    creationStatusNotice.status === "setup_needed"
-                      ? "text-amber-700"
-                      : creationStatusNotice.status === "broken"
-                        ? "text-red-700"
-                        : "text-stone-600"
-                  }`}>
-                    {creationStatusNotice.reason}
-                  </p>
-                </div>
-              ) : null}
-
-              {/* Image ad output */}
-              {imageGenerationResult?.publicUrl && imageGenerationResult.mimeType?.startsWith("image/") ? (
-                <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
-                  <img src={imageGenerationResult.publicUrl} alt="Generated image ad" className="h-64 w-full object-cover" />
-                </div>
-              ) : imageGenerationResult?.status === "setup_needed" ? (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                  <p className="text-sm font-medium text-amber-800">Setup needed</p>
-                  <p className="mt-1 text-xs text-amber-700">{imageGenerationResult.reason ?? imageGenerationResult.setupNeeded[0] ?? "Configure an image provider in Settings."}</p>
-                  <Button type="button" size="sm" variant="outline" className="mt-2 rounded-full text-xs" onClick={() => setShowSettingsDialog(true)}>
-                    Open Settings
-                  </Button>
-                </div>
-              ) : imageGenerationResult?.status === "failed" ? (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
-                  <p className="text-sm font-medium text-red-800">Generation failed</p>
-                  <p className="mt-1 text-xs text-red-700">{imageGenerationResult.errorMessage ?? imageGenerationResult.reason ?? "No playable output returned."}</p>
-                </div>
-              ) : null}
-
-              {/* Deliverable package summary */}
-              {lastDeliverablePackage ? (
-                <div className="space-y-2">
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs">
-                    <p className="font-medium text-stone-800">Package ready</p>
-                    <p className="mt-1 text-stone-600">Type: {String(lastDeliverablePackage.packageType ?? "unknown")}</p>
-                    <p className="mt-0.5 text-stone-600">Status: {String(lastDeliverablePackage.status ?? "draft")}</p>
-                    <p className="mt-0.5 text-stone-600">Goal: {String(lastDeliverablePackage.goal ?? commandForm.goal)}</p>
-                    <p className="mt-0.5 text-stone-600">Audience: {String(lastDeliverablePackage.audience ?? commandForm.audience)}</p>
-                    {(lastDeliverablePackage.setupNeeded as boolean) ? (
-                      <p className="mt-1 font-medium text-amber-700">⚠ Setup needed — see blockers in Preview tab</p>
-                    ) : (
-                      <p className="mt-1 font-medium text-emerald-700">✓ Ready for review</p>
-                    )}
+              {/* A. Playable media output */}
+              {hasPlayableImageOutput ? (
+                <section className="space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Playable media output</p>
+                  <div className="overflow-hidden rounded-xl border border-emerald-200 bg-white">
+                    <img src={imageGenerationResult?.publicUrl ?? ""} alt="Generated image ad" className="h-64 w-full object-cover" />
                   </div>
-                  {/* Assembled video no-fake-video notice */}
-                  {lastDeliverablePackage.packageType === "assembled_video_3m" && (lastDeliverablePackage.exportPack as any)?.renderStatus !== "completed" ? (
-                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
-                      <p className="font-medium text-stone-800">Assembled video — not rendered</p>
-                      <p className="mt-1">Render status: {String((lastDeliverablePackage.exportPack as any)?.renderStatus ?? "not_rendered")}</p>
-                      <p className="mt-1 text-stone-500">No fake video is shown because render output is missing.</p>
-                    </div>
-                  ) : null}
+                  <p className="text-xs text-emerald-700">Playable image asset is available and previewable.</p>
+                </section>
+              ) : null}
+
+              {/* B. Deliverable package output */}
+              {hasDeliverablePackageOutput ? (
+                <section className="space-y-2 rounded-2xl border border-stone-200 bg-stone-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-stone-700">Deliverable package output</p>
+                  <p className="text-xs text-stone-600">Type: {String(lastDeliverablePackage?.packageType ?? "unknown")}</p>
+                  <p className="text-xs text-stone-600">Status: {String(lastDeliverablePackage?.status ?? "draft")}</p>
+                  <p className="text-xs text-stone-600">
+                    Review items: {Array.isArray(lastDeliverablePackage?.reviewItems) ? lastDeliverablePackage.reviewItems.length : 0}
+                    {" · "}
+                    Schedule drafts: {Array.isArray(lastDeliverablePackage?.scheduleDrafts) ? lastDeliverablePackage.scheduleDrafts.length : 0}
+                  </p>
                   <Button
                     type="button"
                     variant="outline"
@@ -2021,9 +2081,66 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                     className="w-full rounded-2xl text-xs"
                     onClick={() => setWorkspaceTab("preview")}
                   >
-                    View full package →
+                    View full package details
                   </Button>
-                </div>
+                </section>
+              ) : null}
+
+              {/* C. Plan-only output */}
+              {hasPlanOnlyOutput ? (
+                <section className="rounded-2xl border border-amber-200 bg-amber-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Plan-only output</p>
+                  <p className="mt-1 text-xs text-amber-700">
+                    This output is a script/scene/render plan. It is not a rendered playable video yet.
+                  </p>
+                  <p className="mt-1 text-xs text-amber-700">
+                    Render status: {String((lastDeliverablePackage?.exportPack as Record<string, unknown> | undefined)?.renderStatus ?? "not_rendered")}
+                  </p>
+                </section>
+              ) : null}
+
+              {/* D. Setup/blocker output */}
+              {(!hasPlayableImageOutput && !hasDeliverablePackageOutput) && (
+                selectedCreationCapability.outputGuarantee === "setup_needed"
+                || selectedCreationCapability.outputGuarantee === "queued_media"
+                || selectedCreationCapability.outputGuarantee === "broken"
+                || imageGenerationResult?.status === "setup_needed"
+                || imageGenerationResult?.status === "failed"
+                || Boolean(creationStatusNotice)
+              ) ? (
+                <section className={`rounded-2xl border p-4 ${
+                  selectedCreationCapability.outputGuarantee === "broken" || imageGenerationResult?.status === "failed"
+                    ? "border-red-200 bg-red-50"
+                    : "border-amber-200 bg-amber-50"
+                }`}>
+                  <p className={`text-sm font-medium ${
+                    selectedCreationCapability.outputGuarantee === "broken" || imageGenerationResult?.status === "failed"
+                      ? "text-red-800"
+                      : "text-amber-800"
+                  }`}>
+                    Setup / blocker output
+                  </p>
+                  <p className={`mt-1 text-xs ${
+                    selectedCreationCapability.outputGuarantee === "broken" || imageGenerationResult?.status === "failed"
+                      ? "text-red-700"
+                      : "text-amber-700"
+                  }`}>
+                    {setupBlockerReason ?? "This flow is currently blocked until required setup is complete."}
+                  </p>
+                  <Button type="button" size="sm" variant="outline" className="mt-2 rounded-full text-xs" onClick={() => setShowSettingsDialog(true)}>
+                    Open Settings
+                  </Button>
+                </section>
+              ) : null}
+
+              {/* E. Not-wired output */}
+              {selectedCreationCapability.outputGuarantee === "not_wired" ? (
+                <section className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                  <p className="text-sm font-medium text-stone-800">Not-wired output</p>
+                  <p className="mt-1 text-xs text-stone-600">
+                    {selectedCreationCapability.blockers[0] ?? selectedCreationCapability.viewerContract.blockerState}
+                  </p>
+                </section>
               ) : null}
 
               {/* Pre-generation state */}

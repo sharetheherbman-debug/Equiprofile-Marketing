@@ -70,6 +70,16 @@ export type ComposeMarketingDeliverableInput = {
   requireApproval?: boolean;
 };
 
+export class UnsupportedDeliverablePackageTypeError extends Error {
+  readonly packageType: string;
+
+  constructor(packageType: string) {
+    super(`Unsupported deliverable package type: ${packageType}`);
+    this.name = "UnsupportedDeliverablePackageTypeError";
+    this.packageType = packageType;
+  }
+}
+
 function fallbackHooks(goal: string, audience: string) {
   return [
     `${audience}: stop losing time to manual updates`,
@@ -546,7 +556,7 @@ export async function composeMarketingDeliverablePackage(input: ComposeMarketing
   if (input.packageType === "signup_campaign") return composeSignupCampaignPackage(input);
   if (input.packageType === "video_ad_30s") return composeThirtySecondAdPackage(input);
   if (input.packageType === "image_ad") return composeImageAdPackage(input);
-  return composeSignupCampaignPackage({ ...input, packageType: "signup_campaign" });
+  throw new UnsupportedDeliverablePackageTypeError(input.packageType);
 }
 
 export async function createCampaignItemsFromDeliverablePackage(input: {

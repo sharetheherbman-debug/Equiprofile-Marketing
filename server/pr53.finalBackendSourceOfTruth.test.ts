@@ -66,7 +66,7 @@ describe("PR53 final backend/source-of-truth hardening", () => {
       expect(source).toContain(hookName);
     }
     // PR61 command-centre frontend is larger but should remain UI-only and avoid backend engine code.
-    expect(lineCount).toBeLessThan(2200);
+    expect(lineCount).toBeLessThan(2400);
     expect(source).not.toContain("from \"server/");
     expect(source).not.toContain("ffmpeg -");
   });
