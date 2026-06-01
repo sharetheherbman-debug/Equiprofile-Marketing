@@ -1,0 +1,198 @@
+[
+  {
+    "title": "Implement autonomous deliverable composer",
+    "whyNeeded": "Current autonomous run persists campaign and agent metadata but does not guarantee complete campaign item deliverables.",
+    "filesLikelyAffected": [
+      "server/modules/marketing/autonomous-campaign/index.ts",
+      "server/modules/growth-engine/persistence.ts",
+      "server/modules/marketing/campaign-engine/*",
+      "server/routers.ts"
+    ],
+    "dependencies": [
+      "Normalized deliverable schema",
+      "Campaign item persistence contract"
+    ],
+    "acceptanceCriteria": [
+      "Each autonomous run writes campaign items for strategy/copy/script/scene/media/QA/export components.",
+      "Each item contains review status and source metadata.",
+      "UI can render package without parsing agent logs."
+    ],
+    "priority": "P0",
+    "estimatedComplexity": "large"
+  },
+  {
+    "title": "Create one-click image ad generation flow",
+    "whyNeeded": "Core user journey cannot be considered live-ready without deterministic image-ad output path.",
+    "filesLikelyAffected": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "client/src/components/marketing/app/studio/StudioWorkbench.tsx",
+      "server/routers.ts",
+      "server/modules/marketing/studio-generation/index.ts"
+    ],
+    "dependencies": [
+      "Provider route readiness",
+      "Media job persistence",
+      "Playable output validation"
+    ],
+    "acceptanceCriteria": [
+      "Prompt -> image job -> playable asset -> preview card -> review item.",
+      "setup_needed shown only when route/config is missing.",
+      "No completed state without playable image asset."
+    ],
+    "priority": "P0",
+    "estimatedComplexity": "medium"
+  },
+  {
+    "title": "Create one-click 30-second ad package flow",
+    "whyNeeded": "Main commercial outcome requires full ad package, not only script or planning metadata.",
+    "filesLikelyAffected": [
+      "server/modules/marketing/studio-generation/index.ts",
+      "server/modules/marketing/autonomous-campaign/index.ts",
+      "server/modules/marketing/media-factory/*",
+      "client/src/components/marketing/app/TheMarketingApp.tsx"
+    ],
+    "dependencies": [
+      "Deliverable composer",
+      "Media asset resolver",
+      "QA and review gates"
+    ],
+    "acceptanceCriteria": [
+      "Outputs include strategy, hooks, copy, CTA, script, scene plan, media requirements, captions, QA and schedule draft.",
+      "Package persists as campaign items and appears in UI.",
+      "Blocked steps are explicit and do not fake completion."
+    ],
+    "priority": "P0",
+    "estimatedComplexity": "large"
+  },
+  {
+    "title": "Harden media asset invariants in persistence layer",
+    "whyNeeded": "Status/url/mime drift is still possible if upstream calls misuse updateMediaAsset.",
+    "filesLikelyAffected": [
+      "server/modules/growth-engine/mediaAssets.ts",
+      "server/_core/ai/mediaResolver.ts",
+      "server/modules/marketing/media-job-resolver/index.ts"
+    ],
+    "dependencies": [
+      "Unified media status contract"
+    ],
+    "acceptanceCriteria": [
+      "Asset cannot be persisted as completed unless playable URL/path + valid MIME are present.",
+      "Invalid completed patches are rejected or auto-demoted to failed.",
+      "Tests cover all invalid combinations."
+    ],
+    "priority": "P0",
+    "estimatedComplexity": "medium"
+  },
+  {
+    "title": "Simplify settings into guided setup wizard",
+    "whyNeeded": "Current diagnostics are accurate but too technical for operators trying to go live quickly.",
+    "filesLikelyAffected": [
+      "client/src/components/marketing/app/MarketingAppSettings.tsx",
+      "client/src/components/marketing/app/TheMarketingApp.tsx"
+    ],
+    "dependencies": [
+      "Backend readiness and connector readiness endpoints"
+    ],
+    "acceptanceCriteria": [
+      "Wizard lists exact next action per provider/connector/dependency.",
+      "Secrets remain masked.",
+      "Raw diagnostics are optional advanced mode only."
+    ],
+    "priority": "P1",
+    "estimatedComplexity": "medium"
+  },
+  {
+    "title": "Add end-to-end smoke tests for production journeys",
+    "whyNeeded": "Current suite validates contracts well but not complete user-facing deliverables.",
+    "filesLikelyAffected": [
+      "server/*.test.ts",
+      "client/src/components/marketing/app/*.test.tsx",
+      "client/src/components/marketing/app/studio/*.test.tsx"
+    ],
+    "dependencies": [
+      "Deliverable composer",
+      "Deterministic fixture providers"
+    ],
+    "acceptanceCriteria": [
+      "Tests cover image ad, 30-second ad package, full campaign package and export draft generation.",
+      "Tests verify no fake completed media or posted states."
+    ],
+    "priority": "P0",
+    "estimatedComplexity": "large"
+  },
+  {
+    "title": "Unify modern creation path and deprecate legacy compatibility endpoints",
+    "whyNeeded": "Legacy-compatible routes increase ambiguity and maintenance overhead.",
+    "filesLikelyAffected": [
+      "server/routers.ts",
+      "client/src/components/marketing/app/TheMarketingApp.tsx"
+    ],
+    "dependencies": [
+      "Primary creation workflow maturity"
+    ],
+    "acceptanceCriteria": [
+      "Primary UI uses one canonical create flow.",
+      "Legacy endpoints are isolated from product UX and clearly marked internal/deprecated."
+    ],
+    "priority": "P2",
+    "estimatedComplexity": "medium"
+  },
+  {
+    "title": "Strengthen campaign package rendering in frontend",
+    "whyNeeded": "Users need direct deliverable cards, not agent/task log interpretation.",
+    "filesLikelyAffected": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "client/src/components/marketing/app/MarketingAppPanels.tsx",
+      "client/src/components/marketing/app/studio/*"
+    ],
+    "dependencies": [
+      "Deliverable composer output schema"
+    ],
+    "acceptanceCriteria": [
+      "UI renders package sections: strategy/hook/copy/script/scenes/assets/QA/review/export.",
+      "Each section shows complete/blocked/setup_needed truth states."
+    ],
+    "priority": "P1",
+    "estimatedComplexity": "large"
+  },
+  {
+    "title": "Improve connector adapter implementations (real posting)",
+    "whyNeeded": "Export-first is safe but live posting requires complete token/scope/API integrations.",
+    "filesLikelyAffected": [
+      "server/modules/marketing/social-publishing/adapters/*",
+      "server/modules/marketing/connector-readiness/index.ts"
+    ],
+    "dependencies": [
+      "Platform credentials",
+      "Scope validation",
+      "Webhook/event handling"
+    ],
+    "acceptanceCriteria": [
+      "Each platform adapter validates payload and connection, and returns real post/upload IDs on success.",
+      "No adapter returns fake success IDs."
+    ],
+    "priority": "P1",
+    "estimatedComplexity": "large"
+  },
+  {
+    "title": "Finalize 60-second assembled video production pipeline",
+    "whyNeeded": "Product promise includes full short-video production, not only planning scaffolds.",
+    "filesLikelyAffected": [
+      "server/modules/marketing/media-factory/*",
+      "server/modules/marketing/studio-generation/index.ts",
+      "client/src/components/marketing/app/studio/*"
+    ],
+    "dependencies": [
+      "FFmpeg/Remotion availability",
+      "scene-to-render linkage",
+      "voice/music/caption orchestration"
+    ],
+    "acceptanceCriteria": [
+      "Scene plan maps to timeline slots with asset fill and audio/caption overlays.",
+      "Render completes only with output asset present.",
+      "UI exposes deterministic progress and blockers."
+    ],
+    "priority": "P0",
+    "estimatedComplexity": "large"
+  }
+]

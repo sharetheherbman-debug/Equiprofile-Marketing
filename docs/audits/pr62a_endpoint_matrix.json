@@ -1,0 +1,552 @@
+[
+  {
+    "procedureName": "getMarketingCommandCentreState",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Aggregates downstream statuses including setup_needed/insufficient_data.",
+    "failureBehavior": "Endpoint failure surfaces to frontend as waiting_for_backend state.",
+    "tests": [
+      "client/src/components/marketing/app/TheMarketingApp.test.tsx"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "runAutonomousMarketingCampaign",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Records blocked/setup-needed statuses per agent step and enforces export-first when connectors not ready.",
+    "failureBehavior": "Returns partial summary with blockers; does not fake completion.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "partial"
+  },
+  {
+    "procedureName": "getMarketingBackendReadiness",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns setup_needed/partial/blocked based on providers, connectors, binaries, and routes.",
+    "failureBehavior": "Frontend shows waiting_for_backend if query fails.",
+    "tests": [
+      "server/pr55.marketingBackendCompletion.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingConnectorReadiness",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns per-platform setup states (missing_token, missing_scopes, setup_needed, etc).",
+    "failureBehavior": "Returns setup_needed status if connector state unavailable.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "generateMarketingStudioScript",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Returns status setup_needed/provider_unavailable with fallback metadata.",
+    "failureBehavior": "No silent fallback in frontend mutation wiring; request surfaces truthful status.",
+    "tests": [
+      "server/pr55.marketingBackendCompletion.test.ts",
+      "client/src/components/marketing/app/studio/studioWorkbench.test.tsx"
+    ],
+    "status": "partial"
+  },
+  {
+    "procedureName": "generateMarketingStudioScenePlan",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Returns fallback scene plan with fallback_used when route unavailable.",
+    "failureBehavior": "Returns setup_needed/provider_unavailable; no fake generated state.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "partial"
+  },
+  {
+    "procedureName": "createMarketingStudioPlan",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Preserves generationStatus from studio generation service.",
+    "failureBehavior": "Returns planned status plus route/generation metadata; does not claim produced media.",
+    "tests": [
+      "client/src/components/marketing/app/TheMarketingApp.test.tsx"
+    ],
+    "status": "partial"
+  },
+  {
+    "procedureName": "createMarketingRenderJob",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Returns setup_needed for missing dependencies or non-assembled plans.",
+    "failureBehavior": "Render status remains truthful; no completed-without-output path intended.",
+    "tests": [
+      "server/marketingMediaFactory.wiring.test.ts",
+      "server/marketingMediaFactory.core.test.ts"
+    ],
+    "status": "partial"
+  },
+  {
+    "procedureName": "getMarketingRenderJob",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Exposes job status including setup_needed.",
+    "failureBehavior": "Not-found and backend errors are surfaced to client.",
+    "tests": [
+      "client/src/components/marketing/app/studio/useMarketingRenderJob.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "cancelMarketingRenderJob",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Returns cancel record state; no fake completion.",
+    "tests": [
+      "server/marketingMediaFactory.wiring.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "resolveQueuedMarketingMediaJobs",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Returns setup_needed bucket when resolver/provider DB path unavailable.",
+    "failureBehavior": "Idempotent summary; does not mark completed without real output URL/path.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingMediaJobResolverStatus",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns setup_needed when resolver cannot query jobs.",
+    "failureBehavior": "Returns status object with reason instead of fake ready.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingPerformanceContext",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns insufficient_data when samples are low or metrics missing.",
+    "failureBehavior": "Returns low-confidence guidance instead of synthetic performance claims.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingWinningPatterns",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns insufficient_data warning when evidence is sparse.",
+    "failureBehavior": "No invented patterns on empty data.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingLearningInsights",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns setup_needed when DB unavailable; insufficient_data when no insights.",
+    "failureBehavior": "No fake high-confidence learning.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "recommendMarketingPlaybook",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Returns recommendation based on static framework library.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "listMarketingPlatformSpecialists",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Returns curated specialist list.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "recommendMarketingPlatformSpecialists",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Returns specialist matches; no fake performance guarantees.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingBrandMemory",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns setup-needed-like empty/default states when unavailable.",
+    "failureBehavior": "No synthetic proof points are injected by default.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingTrendContext",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns setup_needed or insufficient_data when trend signals absent.",
+    "failureBehavior": "No fake trend data.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingCompetitorContext",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns setup_needed or insufficient_data with missing signals.",
+    "failureBehavior": "No fake competitor claims.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "detectMarketingContentGaps",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns insufficient_data when there is no evidence to derive gaps.",
+    "failureBehavior": "No invented gap detections.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "scoreMarketingCreative",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns warnings and manual review recommendations when evidence is weak.",
+    "failureBehavior": "No auto-approval path.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "generateMarketingManagerGuidance",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Guidance still available from playbook/specialists even with low data.",
+    "failureBehavior": "No fake performance evidence is asserted as fact.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "recommendMarketingNextSteps",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Can return insufficient_data suggestions when baseline is missing.",
+    "failureBehavior": "Falls back to generic next actions rather than fabricated metrics.",
+    "tests": [
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingProviderReadiness",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns readiness matrix and setup states by provider/task.",
+    "failureBehavior": "Readiness query errors surface to settings panel.",
+    "tests": [
+      "server/pr54a3.providerCapabilitySourceOfTruth.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingTaskCapabilityMap",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Reports setup_needed/provider_unavailable route states.",
+    "failureBehavior": "No fake route-ready status.",
+    "tests": [
+      "server/pr54.modelIntelligenceConnector.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "syncMarketingProviderCapabilities",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Sync result indicates availability/setup state for discovered models.",
+    "failureBehavior": "Sync failures are surfaced in diagnostics/readiness.",
+    "tests": [
+      "server/pr54a3.providerCapabilitySourceOfTruth.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "testMarketingProviderTaskRoute",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Explicitly returns setup-needed/provider-unavailable route test results.",
+    "failureBehavior": "No mocked success when route is blocked.",
+    "tests": [
+      "server/pr54.modelIntelligenceConnector.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "createMarketingCampaign",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Validation/database failures bubble to client.",
+    "tests": [
+      "client/src/components/marketing/app/hooks/useMarketingCampaigns.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "createMarketingCampaignItem",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Mutation failure surfaces.",
+    "tests": [
+      "server/routers.ts marketing campaign item handlers"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "createScheduleDraftsFromCampaign",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Supports export-only schedule creation when connectors are not ready.",
+    "failureBehavior": "No direct-posting fake success.",
+    "tests": [
+      "client/src/components/marketing/app/hooks/useMarketingCampaigns.ts"
+    ],
+    "status": "partial"
+  },
+  {
+    "procedureName": "listMarketingScheduleDrafts",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Returns empty list or errors; no fake drafts.",
+    "tests": [
+      "client/src/components/marketing/app/hooks/useMarketingCalendar.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "approveMarketingOutput",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Approval flow depends on QA/review statuses.",
+    "failureBehavior": "Blocks invalid approvals and records review event.",
+    "tests": [
+      "server/pr49.reviewGate.test.ts",
+      "client/src/components/marketing/app/hooks/useMarketingReviewActions.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "rejectMarketingOutput",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Persists rejection review metadata.",
+    "tests": [
+      "server/pr49.reviewGate.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "requestMarketingOutputChanges",
+    "exists": true,
+    "frontendUsed": true,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Persists changes-requested review metadata.",
+    "tests": [
+      "server/pr49.reviewGate.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "createMarketingAttributionLink",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "N/A",
+    "failureBehavior": "Returns DB/setup failures transparently.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "recordMarketingConversionEvent",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Requires source classification; setup-needed on DB unavailable.",
+    "failureBehavior": "Rejects invalid connector attribution metadata.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "getMarketingResultsSummary",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": true,
+    "setupNeededBehavior": "Returns source-separated totals with low-data warnings.",
+    "failureBehavior": "No fake metrics totals.",
+    "tests": [
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "publishMarketingDraftNow",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Returns export_only when connector or payload readiness fails.",
+    "failureBehavior": "Persists success only when platformPostId/uploadId exists.",
+    "tests": [
+      "server/pr53.finalBackendSourceOfTruth.test.ts",
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "status": "working"
+  },
+  {
+    "procedureName": "generateMarketingDraft",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Returns provider_missing/provider_unavailable statuses.",
+    "failureBehavior": "Legacy-compatible fallback path; not primary command-centre flow.",
+    "tests": [
+      "server/marketingStudio.product.test.ts"
+    ],
+    "status": "scaffold"
+  },
+  {
+    "procedureName": "createMediaJob",
+    "exists": true,
+    "frontendUsed": false,
+    "returnsUserDeliverable": false,
+    "returnsOnlyMetadata": false,
+    "setupNeededBehavior": "Can return setup-needed for missing provider capabilities and dependencies.",
+    "failureBehavior": "Marked legacy compatibility in router comments.",
+    "tests": [
+      "server/marketingMediaFactory.wiring.test.ts"
+    ],
+    "status": "scaffold"
+  }
+]

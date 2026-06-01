@@ -1,0 +1,405 @@
+[
+  {
+    "name": "Active route chain (AdminCampaigns -> TheMarketingApp -> StudioHome -> StudioWorkbench)",
+    "category": "frontend-routing",
+    "status": "complete",
+    "evidenceFiles": [
+      "client/src/pages/AdminCampaigns.tsx",
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "client/src/components/marketing/app/studio/StudioHome.tsx"
+    ],
+    "evidenceFunctions": [
+      "AdminCampaigns",
+      "TheMarketingApp",
+      "StudioHome"
+    ],
+    "userImpact": "Users can reach the intended Marketing App workspace.",
+    "requiredFix": "None.",
+    "priority": "P3"
+  },
+  {
+    "name": "Legacy marketing routes quarantined",
+    "category": "frontend-safety",
+    "status": "complete",
+    "evidenceFiles": [
+      "client/src/components/marketing/legacy/quarantine/MarketingStudioV2.tsx",
+      "client/src/components/marketing/legacy/quarantine/MarketingAppChat.tsx",
+      "client/src/components/marketing/legacy/quarantine/MarketingAppPreview.tsx",
+      "server/pr53.finalBackendSourceOfTruth.test.ts"
+    ],
+    "evidenceFunctions": [
+      "PR53 legacy quarantine assertions"
+    ],
+    "userImpact": "Reduces accidental regression to deprecated flows.",
+    "requiredFix": "None.",
+    "priority": "P3"
+  },
+  {
+    "name": "Provider capability durable tables",
+    "category": "backend-schema",
+    "status": "working",
+    "evidenceFiles": [
+      "drizzle/schema.ts",
+      "server/db.ts",
+      "server/modules/marketing/provider-capabilities/providerModelStore.ts",
+      "server/modules/marketing/provider-capabilities/providerHealthStore.ts"
+    ],
+    "evidenceFunctions": [
+      "marketingProviderModels",
+      "marketingProviderHealthChecks"
+    ],
+    "userImpact": "Provider routing has persisted source-of-truth inventory.",
+    "requiredFix": "Continue hardening task-to-model correctness and live validation.",
+    "priority": "P1"
+  },
+  {
+    "name": "Publishing truth guard (real platform ID required)",
+    "category": "publishing-truth",
+    "status": "working",
+    "evidenceFiles": [
+      "server/routers.ts",
+      "server/modules/marketing/social-publishing/adapters/basePublisherStub.ts"
+    ],
+    "evidenceFunctions": [
+      "publishMarketingDraftNow",
+      "publishApprovedDraft"
+    ],
+    "userImpact": "Prevents fake posted state.",
+    "requiredFix": "Add real adapter implementations where connectors are ready.",
+    "priority": "P0"
+  },
+  {
+    "name": "Command centre aggregate endpoint",
+    "category": "backend-contract",
+    "status": "working",
+    "evidenceFiles": [
+      "server/modules/marketing/command-centre/index.ts",
+      "server/routers.ts"
+    ],
+    "evidenceFunctions": [
+      "getMarketingCommandCentreState"
+    ],
+    "userImpact": "Frontend can aggregate readiness/intelligence in one call.",
+    "requiredFix": "Attach concrete deliverable package summaries.",
+    "priority": "P1"
+  },
+  {
+    "name": "Autonomous campaign run foundation",
+    "category": "autonomy",
+    "status": "partial",
+    "evidenceFiles": [
+      "server/modules/marketing/autonomous-campaign/index.ts",
+      "server/modules/marketing/agent-workforce/index.ts",
+      "server/routers.ts"
+    ],
+    "evidenceFunctions": [
+      "runAutonomousMarketingCampaign",
+      "runMarketingAgentTask"
+    ],
+    "userImpact": "Creates runs/tasks and intelligence, but not guaranteed full user deliverable package.",
+    "requiredFix": "Add deliverable composer that writes campaign items/assets/review/schedule bundle.",
+    "priority": "P0"
+  },
+  {
+    "name": "Campaign item composition from autonomous pipeline",
+    "category": "campaign-engine",
+    "status": "missing",
+    "evidenceFiles": [
+      "server/modules/marketing/autonomous-campaign/index.ts",
+      "server/modules/growth-engine/persistence.ts"
+    ],
+    "evidenceFunctions": [
+      "runAutonomousMarketingCampaign",
+      "createMarketingCampaignItemRecord"
+    ],
+    "userImpact": "Users do not receive complete campaign item packages from one autonomous run.",
+    "requiredFix": "Write campaign item records during autonomous run with normalized deliverable schema.",
+    "priority": "P0"
+  },
+  {
+    "name": "Studio script and scene plan generation",
+    "category": "studio-generation",
+    "status": "partial",
+    "evidenceFiles": [
+      "server/modules/marketing/studio-generation/index.ts",
+      "server/routers.ts",
+      "client/src/components/marketing/app/studio/StudioWorkbench.tsx"
+    ],
+    "evidenceFunctions": [
+      "generateMarketingStudioScript",
+      "generateMarketingStudioScenePlan",
+      "createMarketingStudioPlan"
+    ],
+    "userImpact": "Structured plans exist, but not always converted into finished deliverables automatically.",
+    "requiredFix": "Bind generated plan to deliverable writer and media pipeline by default.",
+    "priority": "P0"
+  },
+  {
+    "name": "Scene-planning task routing correctness",
+    "category": "provider-routing",
+    "status": "working",
+    "evidenceFiles": [
+      "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts",
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "evidenceFunctions": [
+      "scene_planning mapping",
+      "scene planning routing test"
+    ],
+    "userImpact": "Scene planning resolves through text-capable route rather than assembled-video renderer route.",
+    "requiredFix": "None immediate.",
+    "priority": "P2"
+  },
+  {
+    "name": "Media normalization and playable-output guard",
+    "category": "media-truth",
+    "status": "working",
+    "evidenceFiles": [
+      "server/_core/ai/outputNormalization.ts",
+      "server/_core/ai/mediaResolver.ts",
+      "server/_core/ai/mediaResolver.test.ts"
+    ],
+    "evidenceFunctions": [
+      "normalizeProviderOutput",
+      "resolvePendingMediaAssets"
+    ],
+    "userImpact": "Reduces false completed states for non-playable provider responses.",
+    "requiredFix": "Extend invariant enforcement at persistence boundary.",
+    "priority": "P0"
+  },
+  {
+    "name": "Media asset persistence invariant enforcement",
+    "category": "media-truth",
+    "status": "partial",
+    "evidenceFiles": [
+      "server/modules/growth-engine/mediaAssets.ts"
+    ],
+    "evidenceFunctions": [
+      "updateMediaAsset"
+    ],
+    "userImpact": "Status/url/mime consistency can still drift if called incorrectly.",
+    "requiredFix": "Enforce completed=>playable URL/path+mime invariant in persistence layer.",
+    "priority": "P0"
+  },
+  {
+    "name": "Avatar/voice/music queued resolver",
+    "category": "media-jobs",
+    "status": "partial",
+    "evidenceFiles": [
+      "server/modules/marketing/media-job-resolver/index.ts",
+      "server/modules/marketing/avatar-voice-music/index.ts"
+    ],
+    "evidenceFunctions": [
+      "resolveQueuedMarketingMediaJobs",
+      "getMarketingMediaJobResolverStatus"
+    ],
+    "userImpact": "Truthful job status handling exists, but real outputs still depend on external providers.",
+    "requiredFix": "Add provider-specific processors and operational dashboards.",
+    "priority": "P1"
+  },
+  {
+    "name": "Music media taxonomy",
+    "category": "media-jobs",
+    "status": "working",
+    "evidenceFiles": [
+      "server/modules/marketing/avatar-voice-music/index.ts",
+      "server/pr56_59.autonomousBackend.test.ts"
+    ],
+    "evidenceFunctions": [
+      "createMarketingMusicGenerationJob"
+    ],
+    "userImpact": "Music jobs no longer masquerade as voice/text_to_speech assets.",
+    "requiredFix": "Keep capability matrix taxonomy aligned for music-specific providers.",
+    "priority": "P2"
+  },
+  {
+    "name": "Attribution click redirect flow",
+    "category": "results-loop",
+    "status": "working",
+    "evidenceFiles": [
+      "server/_core/index.ts",
+      "server/modules/marketing/results-conversion/index.ts"
+    ],
+    "evidenceFunctions": [
+      "GET /m/:code",
+      "resolveMarketingAttributionRedirect"
+    ],
+    "userImpact": "Real click increments and redirect path exist.",
+    "requiredFix": "Expand analytics views and anti-abuse controls.",
+    "priority": "P1"
+  },
+  {
+    "name": "Results scoring and winning pattern functions",
+    "category": "results-loop",
+    "status": "partial",
+    "evidenceFiles": [
+      "server/modules/marketing/results-conversion/index.ts",
+      "server/modules/marketing/result-learning/index.ts",
+      "server/routers.ts"
+    ],
+    "evidenceFunctions": [
+      "scoreMarketingCampaignPerformance",
+      "detectMarketingWinningPatterns",
+      "getMarketingLearningInsights"
+    ],
+    "userImpact": "Insights available, but product-level feedback loop to generation remains light.",
+    "requiredFix": "Bind scored insights into deliverable optimization and rerun recommendations.",
+    "priority": "P1"
+  },
+  {
+    "name": "Settings stability with masked secrets",
+    "category": "settings",
+    "status": "working",
+    "evidenceFiles": [
+      "client/src/components/marketing/app/MarketingAppSettings.tsx",
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "evidenceFunctions": [
+      "MarketingAppSettings",
+      "obfuscateSecret"
+    ],
+    "userImpact": "Settings load and avoid secret leakage.",
+    "requiredFix": "Add operator-friendly setup wizard.",
+    "priority": "P1"
+  },
+  {
+    "name": "DB test-noise suppression",
+    "category": "test-stability",
+    "status": "working",
+    "evidenceFiles": [
+      "server/db.ts",
+      "server/pr60.backendGeniusSettings.test.ts"
+    ],
+    "evidenceFunctions": [
+      "ensureDbAvailableForTest"
+    ],
+    "userImpact": "Tests avoid repetitive DB access-denied spam while retaining truthful fallback warnings.",
+    "requiredFix": "None.",
+    "priority": "P3"
+  },
+  {
+    "name": "Desktop command-centre shell",
+    "category": "frontend-ux",
+    "status": "working",
+    "evidenceFiles": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "client/src/components/marketing/app/TheMarketingApp.test.tsx"
+    ],
+    "evidenceFunctions": [
+      "TheMarketingApp"
+    ],
+    "userImpact": "Premium desktop shell exists with readiness strip, timeline, tabs, and preview.",
+    "requiredFix": "Shift from diagnostics-heavy to deliverable-first interaction.",
+    "priority": "P1"
+  },
+  {
+    "name": "Creation-first one-click image/ad/campaign UX",
+    "category": "frontend-ux",
+    "status": "partial",
+    "evidenceFiles": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "client/src/components/marketing/app/MarketingAppPanels.tsx"
+    ],
+    "evidenceFunctions": [
+      "runAutonomousCampaignMutation",
+      "createMarketingStudioPlan"
+    ],
+    "userImpact": "Users still encounter many readiness/setup states before concrete outputs.",
+    "requiredFix": "Add direct deliverable cards and deterministic output pipeline from command action.",
+    "priority": "P0"
+  },
+  {
+    "name": "1-minute assembled-video workflow messaging",
+    "category": "video-workflow",
+    "status": "working",
+    "evidenceFiles": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "server/routers.ts"
+    ],
+    "evidenceFunctions": [
+      "assembled_video notes",
+      "createMarketingRenderJob"
+    ],
+    "userImpact": "UI does not falsely claim single raw 60s clip generation.",
+    "requiredFix": "Increase automation from scene plan to render-ready timeline.",
+    "priority": "P1"
+  },
+  {
+    "name": "Connector readiness truth model",
+    "category": "connectors",
+    "status": "working",
+    "evidenceFiles": [
+      "server/modules/marketing/connector-readiness/index.ts",
+      "server/modules/marketing/backend-readiness/index.ts"
+    ],
+    "evidenceFunctions": [
+      "getMarketingConnectorReadiness",
+      "getMarketingBackendReadiness"
+    ],
+    "userImpact": "Export-first safety preserved until real connection readiness exists.",
+    "requiredFix": "Implement production adapter integrations per platform.",
+    "priority": "P0"
+  },
+  {
+    "name": "Provider-specific media execution reality (Qwen)",
+    "category": "providers",
+    "status": "partial",
+    "evidenceFiles": [
+      "server/_core/ai/providers/qwenProvider.ts"
+    ],
+    "evidenceFunctions": [
+      "executeQwenTask"
+    ],
+    "userImpact": "Text is strong; media requires additional native execution enablement.",
+    "requiredFix": "Finish native media execution path and production tests.",
+    "priority": "P1"
+  },
+  {
+    "name": "Frontend command-centre endpoint wiring",
+    "category": "integration",
+    "status": "working",
+    "evidenceFiles": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx"
+    ],
+    "evidenceFunctions": [
+      "trpc.admin.getMarketingCommandCentreState",
+      "trpc.admin.runAutonomousMarketingCampaign",
+      "trpc.admin.getMarketingBackendReadiness"
+    ],
+    "userImpact": "Frontend consumes key PR60 backend contracts.",
+    "requiredFix": "Attach richer deliverable payloads for direct rendering.",
+    "priority": "P1"
+  },
+  {
+    "name": "Legacy compatibility routes in active backend",
+    "category": "api-surface",
+    "status": "scaffold",
+    "evidenceFiles": [
+      "server/routers.ts"
+    ],
+    "evidenceFunctions": [
+      "createMarketingDraft",
+      "generateMarketingDraft",
+      "createMediaJob"
+    ],
+    "userImpact": "Increases ambiguity between modern and legacy generation paths.",
+    "requiredFix": "Clearly deprecate or isolate legacy-compatible endpoints from primary UX pathways.",
+    "priority": "P2"
+  },
+  {
+    "name": "Go-live confidence for image/ad/campaign outputs",
+    "category": "go-live",
+    "status": "broken",
+    "evidenceFiles": [
+      "server/modules/marketing/autonomous-campaign/index.ts",
+      "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "docs/audits/PR62A_FORENSIC_MARKETING_APP_AUDIT.md"
+    ],
+    "evidenceFunctions": [
+      "runAutonomousMarketingCampaign"
+    ],
+    "userImpact": "Core user promise remains unreliable despite broad backend contracts.",
+    "requiredFix": "Execute PR62 product recovery scope.",
+    "priority": "P0"
+  }
+]

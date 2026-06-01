@@ -1,0 +1,113 @@
+[
+  {
+    "blocker": "Autonomous run does not compose full campaign item deliverables",
+    "severity": "critical",
+    "category": "campaign-engine",
+    "evidence": [
+      "server/modules/marketing/autonomous-campaign/index.ts imports and calls createMarketingCampaignRecord, but not createMarketingCampaignItemRecord"
+    ],
+    "userImpact": "Users get run/task summaries without complete campaign output package.",
+    "fixRequired": "Add deliverable composer + campaign item writer in autonomous workflow.",
+    "blocksGoLive": true
+  },
+  {
+    "blocker": "No deterministic one-click image ad flow in primary command path",
+    "severity": "critical",
+    "category": "creation-flow",
+    "evidence": [
+      "Primary frontend flow uses createMarketingStudioPlan and runAutonomousMarketingCampaign; no dedicated guaranteed image-ad package endpoint in command-centre UX"
+    ],
+    "userImpact": "Core promise (generate image ad quickly) is unreliable.",
+    "fixRequired": "Introduce dedicated image-ad generation flow with persisted deliverable card.",
+    "blocksGoLive": true
+  },
+  {
+    "blocker": "No deterministic one-click 30-second ad package flow",
+    "severity": "critical",
+    "category": "creation-flow",
+    "evidence": [
+      "Studio/autonomous paths generate partial components but not guaranteed full package persistence"
+    ],
+    "userImpact": "Users cannot reliably obtain complete ad deliverable package from one request.",
+    "fixRequired": "Create package composer pipeline for 30s ad deliverables.",
+    "blocksGoLive": true
+  },
+  {
+    "blocker": "Media asset completion invariants are not enforced at persistence boundary",
+    "severity": "high",
+    "category": "media-truth",
+    "evidence": [
+      "server/modules/growth-engine/mediaAssets.ts updateMediaAsset accepts flexible patches without strict completed=>playable validation"
+    ],
+    "userImpact": "Inconsistent completed states can leak into UI under misuse paths.",
+    "fixRequired": "Enforce completed status constraints in persistence layer.",
+    "blocksGoLive": true
+  },
+  {
+    "blocker": "Creation UX remains diagnostics-heavy",
+    "severity": "high",
+    "category": "frontend-ux",
+    "evidence": [
+      "client/src/components/marketing/app/TheMarketingApp.tsx heavily surfaces readiness/timeline/waiting states"
+    ],
+    "userImpact": "Operators see setup/debug context before concrete outputs, reducing product usability.",
+    "fixRequired": "Move to creation-first UX with direct output cards and guided setup side-panel.",
+    "blocksGoLive": true
+  },
+  {
+    "blocker": "Connector posting still mostly unavailable without real credentials/scopes",
+    "severity": "high",
+    "category": "connectors",
+    "evidence": [
+      "server/modules/marketing/social-publishing/adapters/basePublisherStub.ts returns setup_needed and success:false",
+      "server/modules/marketing/connector-readiness/index.ts returns missing token/scope statuses"
+    ],
+    "userImpact": "Direct publish cannot be used broadly in live mode.",
+    "fixRequired": "Implement credential-backed platform adapters and readiness validation.",
+    "blocksGoLive": false
+  },
+  {
+    "blocker": "End-to-end production smoke tests for core journeys are missing",
+    "severity": "high",
+    "category": "test-coverage",
+    "evidence": [
+      "Current test suite passes but mostly validates contract/fallback behavior rather than complete user deliverables"
+    ],
+    "userImpact": "Regressions can ship while core creation experience remains broken.",
+    "fixRequired": "Add E2E-like deterministic tests for image ad, 30s ad, full campaign package.",
+    "blocksGoLive": true
+  },
+  {
+    "blocker": "Legacy-compatible generation endpoints remain in active API surface",
+    "severity": "medium",
+    "category": "api-surface",
+    "evidence": [
+      "server/routers.ts marks createMarketingDraft/generateMarketingDraft/createMediaJob as legacy compatibility"
+    ],
+    "userImpact": "Ambiguous generation pathways increase maintenance and integration confusion.",
+    "fixRequired": "Deprecate/isolate legacy endpoints from primary product flow.",
+    "blocksGoLive": false
+  },
+  {
+    "blocker": "Music capability mapping still piggybacks text_to_speech canonical task",
+    "severity": "medium",
+    "category": "provider-routing",
+    "evidence": [
+      "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts maps music_generation/background_audio_selection to text_to_speech"
+    ],
+    "userImpact": "Provider taxonomy can misrepresent dedicated music-generation readiness.",
+    "fixRequired": "Introduce first-class music task canonical mapping and provider capability labels.",
+    "blocksGoLive": false
+  },
+  {
+    "blocker": "Settings guidance remains technical for non-engineering operators",
+    "severity": "medium",
+    "category": "settings-ux",
+    "evidence": [
+      "client/src/components/marketing/app/MarketingAppSettings.tsx exposes detailed diagnostics and readiness blocks"
+    ],
+    "userImpact": "Slower onboarding and setup errors in operations teams.",
+    "fixRequired": "Add guided setup checklist and action-led instructions.",
+    "blocksGoLive": false
+  }
+]
