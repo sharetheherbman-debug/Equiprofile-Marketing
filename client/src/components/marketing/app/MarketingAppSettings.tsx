@@ -158,6 +158,101 @@ export function MarketingAppSettings({
 
   return (
     <section className="space-y-4" aria-label="Settings">
+      {/* Setup wizard checklist */}
+      <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="setup-wizard">
+        <h2 className="text-xl font-semibold text-stone-900">Setup Checklist</h2>
+        <p className="mt-1 text-sm text-stone-500">Complete these steps to unlock each creation type.</p>
+        <div className="mt-4 space-y-3">
+          {[
+            {
+              id: "text_gen",
+              label: "Text generation",
+              enables: "Image ad copy, scripts, campaign plans",
+              check: () => providerHealth.some((entry) => entry.liveReady),
+              nextAction: "Add a GenX or Qwen API key below.",
+            },
+            {
+              id: "image_gen",
+              label: "Image generation",
+              enables: "Image Ad creative",
+              check: () => providerHealth.some((entry) => entry.liveReady && entry.provider !== "pexels" && entry.provider !== "pixabay"),
+              nextAction: "Configure a GenX or Hugging Face key with image support.",
+            },
+            {
+              id: "ad_packages",
+              label: "Campaign / ad packages",
+              enables: "30-Second Video Ad, Signup Campaign",
+              check: () => Boolean((backendReadinessQuery.data as { status?: string } | undefined)?.status === "ready"),
+              nextAction: "Ensure text generation is ready and backend readiness reports ready.",
+            },
+            {
+              id: "video_planning",
+              label: "3-minute video package planning",
+              enables: "3-Minute Assembled Video (plan + script)",
+              check: () => Boolean((backendReadinessQuery.data as { status?: string } | undefined)?.status === "ready"),
+              nextAction: "Text generation must be ready for scene planning.",
+            },
+            {
+              id: "rendering",
+              label: "Media rendering / Remotion / FFmpeg",
+              enables: "Rendered video output",
+              check: () => Boolean((backendReadinessQuery.data as { remotionAvailability?: boolean } | undefined)?.remotionAvailability && (backendReadinessQuery.data as { ffmpegAvailability?: boolean } | undefined)?.ffmpegAvailability),
+              nextAction: "Install Remotion and FFmpeg on your server. Video plans generate without it.",
+            },
+            {
+              id: "stock_media",
+              label: "Stock media",
+              enables: "B-roll sourcing for video scenes",
+              check: () => providerHealth.some((entry) => entry.provider === "pexels" && entry.liveReady) || providerHealth.some((entry) => entry.provider === "pixabay" && entry.liveReady),
+              nextAction: "Add a Pexels or Pixabay API key.",
+            },
+            {
+              id: "voiceover",
+              label: "Voiceover",
+              enables: "Automated narration for assembled video",
+              check: () => false,
+              nextAction: "Voiceover provider not yet configured.",
+            },
+            {
+              id: "music",
+              label: "Music / audio",
+              enables: "Background music track for video",
+              check: () => false,
+              nextAction: "Music provider not yet configured.",
+            },
+            {
+              id: "export",
+              label: "Export / schedule",
+              enables: "Downloading packages and scheduling posts",
+              check: () => Boolean((backendReadinessQuery.data as { status?: string } | undefined)?.status === "ready"),
+              nextAction: "Backend must be ready to enable export.",
+            },
+            {
+              id: "publishing",
+              label: "Publishing connectors",
+              enables: "Direct posting to social platforms",
+              check: () => socialConnections.some((connection) => connection.status === "ready_for_posting" || connection.status === "ready_for_approval_posting"),
+              nextAction: "Connect a social account in the Social Connections section below.",
+            },
+          ].map((item) => {
+            const isReady = item.check();
+            return (
+              <div key={item.id} className={`flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${isReady ? "border-emerald-200 bg-emerald-50" : "border-stone-200 bg-stone-50"}`}>
+                <span className={`mt-0.5 text-base ${isReady ? "text-emerald-600" : "text-stone-400"}`}>{isReady ? "✓" : "○"}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-stone-900">{item.label}</p>
+                  <p className="text-xs text-stone-500">Enables: {item.enables}</p>
+                  {!isReady ? <p className="mt-1 text-xs text-amber-700">Next: {item.nextAction}</p> : null}
+                </div>
+                <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] ${isReady ? "border-emerald-300 bg-white text-emerald-700" : "border-amber-300 bg-white text-amber-700"}`}>
+                  {isReady ? "ready" : "setup_needed"}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
         <span className="sr-only">{SOCIAL_STATUS_COMPAT_MARKERS.join(" ")}</span>
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
