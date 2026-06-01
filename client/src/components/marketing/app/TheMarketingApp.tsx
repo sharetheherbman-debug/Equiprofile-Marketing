@@ -11,6 +11,7 @@ import { MarketingAppSettings } from "./MarketingAppSettings";
 import { MarketingAppAssetsPanel, MarketingAppBrandPanel, MarketingAppCalendarPanel, MarketingAppCampaignsPanel } from "./MarketingAppPanels";
 import { getAssetTitle } from "./marketingAppHelpers";
 import { StudioHome } from "./studio/StudioHome";
+import { MarketingDeliverablePackageViewer } from "./MarketingDeliverablePackageViewer";
 import { useMarketingAssets } from "./hooks/useMarketingAssets";
 import { useMarketingBrandKit } from "./hooks/useMarketingBrandKit";
 import { useMarketingCalendar } from "./hooks/useMarketingCalendar";
@@ -318,6 +319,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("strategy");
   const [approvalReasonDraft, setApprovalReasonDraft] = useState<Record<string, string>>({});
   const [lastAutonomousRun, setLastAutonomousRun] = useState<Record<string, unknown> | null>(null);
+  const [lastDeliverablePackage, setLastDeliverablePackage] = useState<Record<string, unknown> | null>(null);
   const [imageGenerationResult, setImageGenerationResult] = useState<ImageGenerationResult | null>(null);
   const [commandForm, setCommandForm] = useState<CommandFormState>({
     goal: "Get me 50 signups this month from stable owners.",
@@ -558,6 +560,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     onSuccess: async (result) => {
       const payload = (result as Record<string, unknown>) ?? null;
       setLastAutonomousRun(payload);
+      setLastDeliverablePackage((payload?.deliverablePackage as Record<string, unknown> | undefined) ?? null);
       toast.success("Autonomous campaign run created");
       if (typeof payload?.campaignId === "number") {
         setSelectedCampaignId(String(payload.campaignId));
@@ -574,6 +577,36 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     onError: (error) => {
       toast.error("Could not run autonomous campaign", { description: error.message });
     },
+  });
+  const generateAdPackageMutation = trpc.admin.generateMarketingAdPackage.useMutation({
+    onSuccess: async (result) => {
+      const payload = (result as Record<string, unknown>) ?? null;
+      setLastDeliverablePackage(payload);
+      if (typeof payload?.campaignId === "number") setSelectedCampaignId(String(payload.campaignId));
+      toast.success("30-second ad package generated");
+      await Promise.all([utils.admin.getMarketingCampaign.invalidate(), utils.admin.listMarketingCampaigns.invalidate()]);
+    },
+    onError: (error) => toast.error("Could not generate ad package", { description: error.message }),
+  });
+  const generateVideoPackageMutation = trpc.admin.generateMarketingVideoPackage.useMutation({
+    onSuccess: async (result) => {
+      const payload = (result as Record<string, unknown>) ?? null;
+      setLastDeliverablePackage(payload);
+      if (typeof payload?.campaignId === "number") setSelectedCampaignId(String(payload.campaignId));
+      toast.success("3-minute assembled video package generated");
+      await Promise.all([utils.admin.getMarketingCampaign.invalidate(), utils.admin.listMarketingCampaigns.invalidate()]);
+    },
+    onError: (error) => toast.error("Could not generate video package", { description: error.message }),
+  });
+  const generateCampaignPackageMutation = trpc.admin.generateMarketingCampaignPackage.useMutation({
+    onSuccess: async (result) => {
+      const payload = (result as Record<string, unknown>) ?? null;
+      setLastDeliverablePackage(payload);
+      if (typeof payload?.campaignId === "number") setSelectedCampaignId(String(payload.campaignId));
+      toast.success("Signup campaign package generated");
+      await Promise.all([utils.admin.getMarketingCampaign.invalidate(), utils.admin.listMarketingCampaigns.invalidate()]);
+    },
+    onError: (error) => toast.error("Could not generate campaign package", { description: error.message }),
   });
   const generateImageAdMutation = trpc.admin.generateMarketingImageAsset.useMutation({
     onSuccess: async (data) => {
@@ -963,6 +996,64 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
+  function handleGenerateThirtySecondAdPackage() {
+    if (!commandForm.goal.trim() || !commandForm.audience.trim() || !commandForm.platforms.length) {
+      toast.error("Add goal, audience, and platform first");
+      return;
+    }
+    generateAdPackageMutation.mutate({
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      goal: commandForm.goal,
+      audience: commandForm.audience,
+      platforms: commandForm.platforms,
+      durationSeconds: 30,
+      qualityMode: commandForm.qualityMode,
+      exportOnly: commandForm.exportOnly,
+      requireApproval: commandForm.requireApproval,
+    });
+  }
+
+  function handleGenerateAssembledVideoPackage() {
+    if (!commandForm.goal.trim() || !commandForm.audience.trim() || !commandForm.platforms.length) {
+      toast.error("Add goal, audience, and platform first");
+      return;
+    }
+    generateVideoPackageMutation.mutate({
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      goal: commandForm.goal,
+      audience: commandForm.audience,
+      platform: commandForm.platforms[0],
+      durationSeconds: 180,
+      qualityMode: commandForm.qualityMode,
+      exportOnly: commandForm.exportOnly,
+      requireApproval: commandForm.requireApproval,
+    });
+  }
+
+  function handleGenerateSignupCampaignPackage() {
+    if (!commandForm.goal.trim() || !commandForm.audience.trim() || !commandForm.platforms.length) {
+      toast.error("Add goal, audience, and platform first");
+      return;
+    }
+    generateCampaignPackageMutation.mutate({
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      goal: commandForm.goal,
+      audience: commandForm.audience,
+      platforms: commandForm.platforms,
+      durationDays: commandForm.durationDays,
+      qualityMode: commandForm.qualityMode,
+      exportOnly: commandForm.exportOnly,
+      requireApproval: commandForm.requireApproval,
+      targetOutcome: "50 monthly signups",
+    });
+  }
+
   const backendReadiness = (backendReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const connectorReadiness = (connectorReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const commandCentre = (commandCentreQuery.data as Record<string, any> | undefined) ?? undefined;
@@ -1210,6 +1301,15 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
               <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateImageAd} disabled={generateImageAdMutation.isPending}>
                 {generateImageAdMutation.isPending ? "Generating image ad..." : "Generate Image Ad"}
               </Button>
+              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateThirtySecondAdPackage} disabled={generateAdPackageMutation.isPending}>
+                {generateAdPackageMutation.isPending ? "Building 30s ad package..." : "Generate 30-second ad package"}
+              </Button>
+              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateAssembledVideoPackage} disabled={generateVideoPackageMutation.isPending}>
+                {generateVideoPackageMutation.isPending ? "Building 3-minute video package..." : "Generate 3-minute video package"}
+              </Button>
+              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateSignupCampaignPackage} disabled={generateCampaignPackageMutation.isPending}>
+                {generateCampaignPackageMutation.isPending ? "Building signup campaign package..." : "Generate signup campaign package"}
+              </Button>
               {backendReadiness?.status === "setup_needed" ? (
                 <Badge className="rounded-full border border-amber-300 bg-amber-50 text-amber-700">setup_needed</Badge>
               ) : null}
@@ -1241,6 +1341,8 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             </div>
           </div>
         </section>
+
+        <MarketingDeliverablePackageViewer deliverablePackage={lastDeliverablePackage ?? ((autonomousRun?.deliverablePackage as Record<string, unknown> | null) ?? null)} />
 
         <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
           <div className="mb-3 flex items-center justify-between">

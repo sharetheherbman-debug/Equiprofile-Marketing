@@ -273,6 +273,21 @@ describe("PR58 autonomous workforce orchestration", () => {
         tasks: [],
       })),
     }));
+    vi.doMock("./modules/marketing/deliverable-composer", () => ({
+      composeSignupCampaignPackage: vi.fn(async () => ({
+        packageId: "pkg_test",
+        campaignId: 91,
+        packageType: "signup_campaign",
+        setupNeeded: false,
+        blockers: [],
+        status: "completed",
+        campaignItems: [{ id: 1 }],
+        reviewItems: [{ id: 2, reviewStatus: "needs_review" }],
+        exportPack: { id: "exp" },
+        scheduleDrafts: [{ id: 3 }],
+        mediaJobs: [],
+      })),
+    }));
 
     const { runAutonomousMarketingCampaign } = await import("./modules/marketing/autonomous-campaign");
     const result = await runAutonomousMarketingCampaign({
