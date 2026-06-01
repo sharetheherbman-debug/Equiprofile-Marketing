@@ -171,6 +171,7 @@ import {
   deleteMediaAsset,
   permanentDeleteMediaAsset as deleteMediaAssetRow,
   listPendingMediaAssets,
+  repairBrokenCompletedMediaAssets,
   getQueueStatus,
   seedPlatformStrategyRules,
   getPlatformStrategyRules,
@@ -344,6 +345,7 @@ import {
   getMarketingMediaJobResolverStatus as getMarketingMediaJobResolverStatusService,
   resolveQueuedMarketingMediaJobs as resolveQueuedMarketingMediaJobsService,
 } from "./modules/marketing/media-job-resolver";
+import { generateMarketingImageAsset as generateMarketingImageAssetService } from "./modules/marketing/image-generation";
 import {
   cancelMarketingAgentRun as cancelMarketingAgentRunService,
   createMarketingAgentRun as createMarketingAgentRunService,
@@ -9558,6 +9560,44 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }
           throw new TRPCError({ code: "BAD_REQUEST", message: normalized.message });
         }
+      }),
+
+    // PR62B first-class Marketing App image generation flow. This returns playable image output when configured, or setup_needed/failed truthfully.
+    generateMarketingImageAsset: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          prompt: z.string().min(5).max(6000),
+          platform: z.string().min(1).max(120).optional(),
+          aspectRatio: z.string().min(2).max(40).optional(),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          campaignId: z.number().int().positive().nullable().optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        return generateMarketingImageAssetService({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          userId: ctx.user.id,
+          prompt: input.prompt,
+          platform: input.platform,
+          aspectRatio: input.aspectRatio,
+          qualityMode: input.qualityMode,
+          campaignId: input.campaignId ?? null,
+        });
+      }),
+
+    repairBrokenMarketingMediaAssets: adminUnlockedProcedure
+      .input(
+        z.object({
+          limit: z.number().int().min(1).max(5000).optional(),
+        }).optional(),
+      )
+      .mutation(async ({ input }) => {
+        return repairBrokenCompletedMediaAssets({ limit: input?.limit });
       }),
 
     // LEGACY COMPATIBILITY ONLY — assembled Studio/Campaign/Beast Mode flows must use Media Factory render jobs instead.

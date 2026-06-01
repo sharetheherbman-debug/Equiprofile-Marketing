@@ -139,7 +139,7 @@ export function getAssetTitle(asset: MarketingAssetRow): string {
 }
 
 export function getAssetStatus(asset: MarketingAssetRow): string {
-  if (hasPlayablePublicAsset({ publicUrl: asset.publicUrl, mimeType: asset.mimeType })) return "completed";
+  if (hasPlayablePublicAsset({ publicUrl: asset.publicUrl, localPath: asset.localPath, mimeType: asset.mimeType })) return "completed";
   return String(asset.status ?? "draft").toLowerCase();
 }
 

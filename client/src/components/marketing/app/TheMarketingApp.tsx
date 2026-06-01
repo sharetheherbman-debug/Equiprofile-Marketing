@@ -63,6 +63,19 @@ type CommandFormState = {
   durationDays: number;
 };
 
+type ImageGenerationResult = {
+  status: "completed" | "processing" | "queued" | "setup_needed" | "failed";
+  assetId: number | null;
+  jobId: string | null;
+  publicUrl: string | null;
+  mimeType: string | null;
+  provider: string | null;
+  model: string | null;
+  reason: string | null;
+  setupNeeded: string[];
+  errorMessage: string | null;
+};
+
 const MARKETING_PLATFORM_OPTIONS: MarketingPlatformOption[] = [
   "Facebook",
   "Instagram",
@@ -305,6 +318,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("strategy");
   const [approvalReasonDraft, setApprovalReasonDraft] = useState<Record<string, string>>({});
   const [lastAutonomousRun, setLastAutonomousRun] = useState<Record<string, unknown> | null>(null);
+  const [imageGenerationResult, setImageGenerationResult] = useState<ImageGenerationResult | null>(null);
   const [commandForm, setCommandForm] = useState<CommandFormState>({
     goal: "Get me 50 signups this month from stable owners.",
     audience: workspace.defaultAudience,
@@ -559,6 +573,40 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     },
     onError: (error) => {
       toast.error("Could not run autonomous campaign", { description: error.message });
+    },
+  });
+  const generateImageAdMutation = trpc.admin.generateMarketingImageAsset.useMutation({
+    onSuccess: async (data) => {
+      const result = data as ImageGenerationResult;
+      setImageGenerationResult(result);
+      if (typeof result.assetId === "number") {
+        setSelectedAssetId(result.assetId);
+      }
+      await utils.admin.listMediaAssets.invalidate();
+      if (result.status === "completed") {
+        toast.success("Image ad generated");
+      } else if (result.status === "setup_needed") {
+        toast.error("Image generation setup needed", { description: result.reason ?? result.setupNeeded[0] ?? "Configure an image provider first." });
+      } else if (result.status === "failed") {
+        toast.error("Image generation failed", { description: result.errorMessage ?? result.reason ?? "No playable image output was returned." });
+      } else {
+        toast.success("Image generation queued");
+      }
+    },
+    onError: (error) => {
+      setImageGenerationResult({
+        status: "failed",
+        assetId: null,
+        jobId: null,
+        publicUrl: null,
+        mimeType: null,
+        provider: null,
+        model: null,
+        reason: error.message,
+        setupNeeded: [],
+        errorMessage: error.message,
+      });
+      toast.error("Image generation failed", { description: error.message });
     },
   });
 
@@ -898,6 +946,23 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
+  function handleGenerateImageAd() {
+    if (!commandForm.goal.trim()) {
+      toast.error("Add an image ad prompt first");
+      return;
+    }
+    generateImageAdMutation.mutate({
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      prompt: commandForm.goal.trim(),
+      platform: commandForm.platforms[0],
+      aspectRatio: "1:1",
+      qualityMode: commandForm.qualityMode,
+      campaignId: selectedCampaignId ? Number(selectedCampaignId) : null,
+    });
+  }
+
   const backendReadiness = (backendReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const connectorReadiness = (connectorReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const commandCentre = (commandCentreQuery.data as Record<string, any> | undefined) ?? undefined;
@@ -1141,6 +1206,9 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             <div className="mt-5 flex flex-wrap gap-2">
               <Button type="button" className="rounded-2xl" onClick={handleRunAutonomousCampaign} disabled={runAutonomousCampaignMutation.isPending}>
                 {runAutonomousCampaignMutation.isPending ? "Running autonomous campaign..." : "Run autonomous campaign"}
+              </Button>
+              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateImageAd} disabled={generateImageAdMutation.isPending}>
+                {generateImageAdMutation.isPending ? "Generating image ad..." : "Generate Image Ad"}
               </Button>
               {backendReadiness?.status === "setup_needed" ? (
                 <Badge className="rounded-full border border-amber-300 bg-amber-50 text-amber-700">setup_needed</Badge>
@@ -1542,6 +1610,23 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                 <p className="mt-1 text-sm text-stone-700">{commandForm.goal || "No command goal set."}</p>
                 <p className="mt-1 text-xs text-stone-500">Audience: {commandForm.audience || "not set"}</p>
                 <p className="mt-1 text-xs text-stone-500">Platforms: {commandForm.platforms.join(", ") || "not set"}</p>
+              </div>
+              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
+                <p className="text-xs font-medium text-stone-800">Image ad generation</p>
+                <p className="mt-1 text-xs text-stone-600">
+                  Status: {formatStatusLabel(imageGenerationResult?.status ?? "waiting_for_backend")}
+                </p>
+                {imageGenerationResult?.publicUrl && imageGenerationResult.mimeType?.startsWith("image/") ? (
+                  <div className="mt-2 overflow-hidden rounded-xl border border-stone-200 bg-white">
+                    <img src={imageGenerationResult.publicUrl} alt="Generated image ad" className="h-44 w-full object-cover" />
+                  </div>
+                ) : null}
+                {imageGenerationResult?.status === "setup_needed" ? (
+                  <p className="mt-1 text-xs text-amber-700">{imageGenerationResult.reason ?? imageGenerationResult.setupNeeded[0] ?? "Image provider setup is required."}</p>
+                ) : null}
+                {imageGenerationResult?.status === "failed" ? (
+                  <p className="mt-1 text-xs text-red-700">{imageGenerationResult.errorMessage ?? imageGenerationResult.reason ?? "No playable output returned."}</p>
+                ) : null}
               </div>
               <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
                 <p className="text-xs font-medium text-stone-800">Assembled video workflow</p>

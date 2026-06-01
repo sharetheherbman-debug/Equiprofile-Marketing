@@ -137,6 +137,9 @@ export function MarketingAppAssetsPanel({
             const status = getAssetStatus(asset);
             const type = getAssetType(asset);
             const isSelected = selectedAssetId === assetId;
+            const canOpenAsset = Boolean(asset.publicUrl && status === "completed");
+            const promptPreview = String(asset.generationPrompt ?? "");
+            const shortPrompt = promptPreview.length > 96 ? `${promptPreview.slice(0, 96)}...` : promptPreview;
 
             return (
               <article
@@ -164,7 +167,13 @@ export function MarketingAppAssetsPanel({
                 <div className="mt-3 flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-semibold text-stone-900">{title}</h3>
-                    <p className="text-xs text-stone-500">{asset.generationPrompt ?? "Generated from the Create tab"}</p>
+                    {shortPrompt ? <p className="text-xs text-stone-500">{shortPrompt}</p> : <p className="text-xs text-stone-500">Generated from the Create tab</p>}
+                    {promptPreview.length > 96 ? (
+                      <details className="mt-1">
+                        <summary className="cursor-pointer text-[11px] text-stone-500">Prompt details</summary>
+                        <p className="mt-1 whitespace-pre-wrap text-[11px] text-stone-600">{promptPreview}</p>
+                      </details>
+                    ) : null}
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <Badge className="rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-xs text-stone-600">
@@ -177,12 +186,12 @@ export function MarketingAppAssetsPanel({
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                  {asset.publicUrl ? (
-                    <a href={asset.publicUrl} target="_blank" rel="noreferrer" className="rounded-full border border-stone-200 px-3 py-1.5 text-stone-700 hover:bg-stone-50">
+                  {canOpenAsset ? (
+                    <a href={asset.publicUrl ?? undefined} target="_blank" rel="noreferrer" className="rounded-full border border-stone-200 px-3 py-1.5 text-stone-700 hover:bg-stone-50">
                       Open
                     </a>
                   ) : null}
-                  {asset.publicUrl ? (
+                  {canOpenAsset ? (
                     <Button type="button" variant="outline" size="sm" className="rounded-full text-xs" onClick={() => onDownloadAsset(asset.publicUrl!)}>
                       Download
                     </Button>

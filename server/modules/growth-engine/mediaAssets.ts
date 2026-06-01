@@ -5,6 +5,7 @@
 
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { mediaAssets } from "../../../drizzle/schema";
+import { coerceInvalidCompletedMediaStatus, isPlayableMediaAsset } from "../../_core/ai/mediaPlayability";
 
 type Db = Awaited<ReturnType<typeof import("../../db")["getDb"]>>;
 
@@ -53,6 +54,10 @@ export type MediaAssetInput = {
 export async function createMediaAsset(input: MediaAssetInput) {
   const db = await resolveDb();
   if (!db) throw new Error("Database not available for media asset registry");
+  const coerced = coerceInvalidCompletedMediaStatus(input);
+  const status = (coerced.status ?? "created") as MediaAssetInput["status"];
+  const outputMetadata = coerced.outputMetadata ?? input.outputMetadata ?? {};
+  const errorMessage = coerced.errorMessage ?? input.errorMessage ?? null;
 
   const result = await db.insert(mediaAssets).values({
     tenantType: input.tenantType ?? "individual",
@@ -64,7 +69,7 @@ export async function createMediaAsset(input: MediaAssetInput) {
     type: input.type,
     provider: input.provider ?? null,
     task: input.task ?? null,
-    status: input.status ?? "created",
+    status: status ?? "created",
     localPath: input.localPath ?? null,
     publicUrl: input.publicUrl ?? null,
     thumbnailUrl: input.thumbnailUrl ?? null,
@@ -77,32 +82,58 @@ export async function createMediaAsset(input: MediaAssetInput) {
     generationSettingsJson: input.generationSettings
       ? JSON.stringify(input.generationSettings)
       : null,
-    outputMetadataJson: input.outputMetadata
-      ? JSON.stringify(input.outputMetadata)
+    outputMetadataJson: Object.keys(outputMetadata).length
+      ? JSON.stringify(outputMetadata)
       : null,
-    errorMessage: input.errorMessage ?? null,
+    errorMessage: errorMessage,
   });
 
   const id = result[0].insertId;
-  return { id, ...input };
+  return {
+    id,
+    ...input,
+    status,
+    outputMetadata,
+    errorMessage,
+  };
 }
 
 export async function updateMediaAsset(id: number, patch: Partial<MediaAssetInput>) {
   const db = await resolveDb();
   if (!db) throw new Error("Database not available for media asset registry");
+  const [existing] = await db
+    .select()
+    .from(mediaAssets)
+    .where(eq(mediaAssets.id, id))
+    .limit(1);
+  if (!existing) return;
+
+  const existingOutputMetadata = parseJson<Record<string, unknown>>(existing.outputMetadataJson, {});
+  const merged = coerceInvalidCompletedMediaStatus({
+    type: patch.type ?? existing.type,
+    task: patch.task ?? existing.task,
+    status: patch.status ?? existing.status,
+    localPath: patch.localPath ?? existing.localPath,
+    publicUrl: patch.publicUrl ?? existing.publicUrl,
+    mimeType: patch.mimeType ?? existing.mimeType,
+    outputMetadata: patch.outputMetadata ?? existingOutputMetadata,
+    errorMessage: patch.errorMessage ?? existing.errorMessage,
+  });
+  const shouldPersistStatus =
+    patch.status !== undefined || merged.status !== existing.status;
 
   await db
     .update(mediaAssets)
     .set({
-      ...(patch.status !== undefined && { status: patch.status }),
+      ...(shouldPersistStatus && { status: merged.status }),
       ...(patch.localPath !== undefined && { localPath: patch.localPath }),
       ...(patch.publicUrl !== undefined && { publicUrl: patch.publicUrl }),
       ...(patch.thumbnailUrl !== undefined && { thumbnailUrl: patch.thumbnailUrl }),
       ...(patch.mimeType !== undefined && { mimeType: patch.mimeType }),
       ...(patch.fileSizeBytes !== undefined && { fileSizeBytes: patch.fileSizeBytes }),
-      ...(patch.errorMessage !== undefined && { errorMessage: patch.errorMessage }),
-      ...(patch.outputMetadata !== undefined && {
-        outputMetadataJson: JSON.stringify(patch.outputMetadata),
+      ...((patch.errorMessage !== undefined || merged.errorMessage !== existing.errorMessage) && { errorMessage: merged.errorMessage ?? null }),
+      ...((patch.outputMetadata !== undefined || merged.outputMetadata !== existingOutputMetadata) && {
+        outputMetadataJson: JSON.stringify(merged.outputMetadata ?? existingOutputMetadata ?? {}),
       }),
       updatedAt: new Date(),
     })
@@ -206,6 +237,67 @@ export async function listPendingMediaAssets(opts: {
     .limit(opts.limit ?? 50);
 
   return rows.map(mapAssetRow);
+}
+
+export async function repairBrokenCompletedMediaAssets(input: { limit?: number } = {}) {
+  const db = await resolveDb();
+  if (!db) {
+    return { scanned: 0, repaired: 0, skipped: 0, examples: [] as Array<{ id: number; reason: string }> };
+  }
+
+  const rows = await db
+    .select()
+    .from(mediaAssets)
+    .where(eq(mediaAssets.status, "completed"))
+    .orderBy(desc(mediaAssets.updatedAt))
+    .limit(input.limit ?? 1000);
+
+  let repaired = 0;
+  let skipped = 0;
+  const examples: Array<{ id: number; reason: string }> = [];
+  const targetTypes = new Set(["image", "video", "audio", "avatar", "voice", "thumbnail"]);
+
+  for (const row of rows) {
+    if (!targetTypes.has(String(row.type ?? "").toLowerCase())) {
+      skipped += 1;
+      continue;
+    }
+
+    const parsed = mapAssetRow(row);
+    if (isPlayableMediaAsset(parsed)) {
+      skipped += 1;
+      continue;
+    }
+
+    const metadata = {
+      ...(parsed.outputMetadata ?? {}),
+      mediaTruth: "not_playable",
+      repairedBy: "PR62B_media_truth_repair",
+      repairedAt: new Date().toISOString(),
+    };
+
+    await db
+      .update(mediaAssets)
+      .set({
+        status: "failed",
+        errorMessage: "Marked not complete because no playable media URL or local path exists.",
+        outputMetadataJson: JSON.stringify(metadata),
+        updatedAt: new Date(),
+      })
+      .where(eq(mediaAssets.id, row.id));
+
+    repaired += 1;
+    if (examples.length < 10) {
+      examples.push({ id: row.id, reason: "missing_playable_url_or_local_path" });
+    }
+  }
+
+  return {
+    scanned: rows.length,
+    repaired,
+    skipped,
+    examples,
+  };
 }
 
 function mapAssetRow(row: typeof mediaAssets.$inferSelect) {

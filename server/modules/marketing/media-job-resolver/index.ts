@@ -5,6 +5,7 @@ import {
   marketingVoiceProfiles,
 } from "../../../../drizzle/schema";
 import { getMediaAssetById } from "../../growth-engine";
+import { isPlayableMediaAsset } from "../../../_core/ai/mediaPlayability";
 
 async function getDb() {
   const dbModule = await import("../../../db");
@@ -22,8 +23,7 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
 
 function hasRealOutput(asset: { status: string; publicUrl: string | null; localPath: string | null } | null): boolean {
   if (!asset) return false;
-  if (asset.status !== "completed") return false;
-  return Boolean((asset.publicUrl && asset.publicUrl.trim()) || (asset.localPath && asset.localPath.trim()));
+  return isPlayableMediaAsset(asset);
 }
 
 type ResolverBucket = "completed" | "failed" | "processing" | "setup_needed";

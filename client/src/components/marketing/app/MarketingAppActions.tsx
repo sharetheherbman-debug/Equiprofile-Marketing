@@ -56,7 +56,7 @@ export function AssetActions({
   const id = asset.id;
   const numericId = typeof id === "number" ? id : undefined;
   const url = asset.publicUrl ?? "";
-  const playable = hasPlayablePublicAsset({ publicUrl: asset.publicUrl, mimeType: asset.mimeType });
+  const playable = hasPlayablePublicAsset({ publicUrl: asset.publicUrl, localPath: (asset as { localPath?: string | null }).localPath, mimeType: asset.mimeType });
 
   return (
     <div className="flex flex-wrap gap-2" aria-label="Asset actions">
@@ -150,7 +150,7 @@ export function AssetCard({
   onCreateBranded?: (id: number) => void;
   onCopyUrl?: (url: string) => void;
 }) {
-  const playable = hasPlayablePublicAsset({ publicUrl: asset.publicUrl, mimeType: asset.mimeType });
+  const playable = hasPlayablePublicAsset({ publicUrl: asset.publicUrl, localPath: (asset as { localPath?: string | null }).localPath, mimeType: asset.mimeType });
   const statusText = playable
     ? "completed"
     : asset.status || asset.state || "pending";

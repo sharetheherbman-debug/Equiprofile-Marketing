@@ -88,7 +88,7 @@ async function failAsset(asset: PendingAsset, errorMessage: string, metadata: Re
     status: "failed",
     errorMessage,
     mimeType: typeof metadata.mimeType === "string" ? metadata.mimeType : undefined,
-    outputMetadata: metadataWith(asset, metadata),
+    outputMetadata: metadataWith(asset, { ...metadata, mediaTruth: "not_playable" }),
   });
   if (asset.jobId) {
     await updateGenerationLifecycle({
@@ -132,6 +132,7 @@ async function persistPlayableFile(asset: PendingAsset, providerJobId: string, d
       providerStatus: "completed",
       remoteUrl: remoteUrl ?? null,
       source: "app_genx_media_job",
+      mediaTruth: "playable",
     }),
   });
   if (asset.jobId) {
@@ -382,11 +383,11 @@ async function resolveOneAsset(asset: PendingAsset): Promise<ResolverResult> {
     jobId: asset.jobId ?? `resolver-${asset.id}`,
   });
 
-  const resolvedStatus = persisted.resultType === "failed" || persisted.resultType === "video_plan"
-    ? "failed"
-    : persisted.resultType === "job_pending"
-      ? "processing"
-      : "completed";
+  const resolvedStatus = persisted.resultType === "job_pending"
+    ? "processing"
+    : (persisted.resultType === "image" || persisted.resultType === "video" || persisted.resultType === "audio")
+      ? "completed"
+      : "failed";
 
   await updateMediaAsset(asset.id, {
     status: resolvedStatus,
@@ -400,6 +401,7 @@ async function resolveOneAsset(asset: PendingAsset): Promise<ResolverResult> {
       providerJobId,
       providerStatus: poll.providerStatus ?? "completed",
       resolvedAt: new Date().toISOString(),
+      mediaTruth: resolvedStatus === "completed" ? "playable" : "not_playable",
     },
   });
   if (asset.jobId) {

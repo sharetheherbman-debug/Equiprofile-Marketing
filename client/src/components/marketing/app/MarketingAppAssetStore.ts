@@ -7,6 +7,7 @@ export type MarketingAssetRow = {
   jobId?: string | null;
   type?: string | null;
   publicUrl?: string | null;
+  localPath?: string | null;
   mimeType?: string | null;
   generationPrompt?: string | null;
   errorMessage?: string | null;
@@ -55,7 +56,7 @@ export function useMarketingAppAssetStore({
   const latestPlayableAsset = useMemo(
     () =>
       nonDeletedAssets.find((asset) =>
-        hasPlayablePublicAsset({ publicUrl: asset.publicUrl, mimeType: asset.mimeType }),
+        hasPlayablePublicAsset({ publicUrl: asset.publicUrl, localPath: asset.localPath, mimeType: asset.mimeType }),
       ) ?? null,
     [nonDeletedAssets],
   );

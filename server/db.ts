@@ -116,6 +116,7 @@ let _tablesEnsured = false;
 let _ensureTablesPromise: Promise<void> | null = null;
 let _testDbUnavailable = false;
 let _testDbUnavailableLogged = false;
+let _mediaTruthRepairPromise: Promise<void> | null = null;
 
 function isTestRuntime(): boolean {
   return process.env.NODE_ENV === "test" || process.env.VITEST === "true";
@@ -2603,6 +2604,29 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
   }
 }
 
+async function runStartupMediaTruthRepairOnce(): Promise<void> {
+  if (_mediaTruthRepairPromise) {
+    await _mediaTruthRepairPromise;
+    return;
+  }
+
+  _mediaTruthRepairPromise = (async () => {
+    try {
+      const { repairBrokenCompletedMediaAssets } = await import("./modules/growth-engine/mediaAssets");
+      const result = await repairBrokenCompletedMediaAssets({ limit: 5000 });
+      if (!shouldSuppressTestDbNoise() && result.repaired > 0) {
+        console.log(`[Database] Media truth repair updated ${result.repaired} broken completed asset(s).`);
+      }
+    } catch (error) {
+      if (!shouldSuppressTestDbNoise()) {
+        console.warn("[Database] Media truth repair skipped:", error);
+      }
+    }
+  })();
+
+  await _mediaTruthRepairPromise;
+}
+
 export async function getDb() {
   if (_testDbUnavailable && shouldSuppressTestDbNoise()) {
     return null;
@@ -2631,6 +2655,7 @@ export async function getDb() {
       if (shouldSuppressTestDbNoise() && !_tablesEnsured) {
         throw new Error("test_db_unavailable_after_ensure_tables");
       }
+      await runStartupMediaTruthRepairOnce();
     } catch (error) {
       if (shouldSuppressTestDbNoise()) {
         _testDbUnavailable = true;
