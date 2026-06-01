@@ -77,6 +77,27 @@ type ImageGenerationResult = {
   errorMessage: string | null;
 };
 
+const CREATION_TYPES = [
+  { id: "image_ad", label: "Image Ad", description: "Premium image creative for social or display" },
+  { id: "video_ad_30s", label: "30-Second Video Ad", description: "Facebook, Instagram or YouTube short ad" },
+  { id: "assembled_video_3m", label: "3-Minute Assembled Video", description: "Long-form marketing video with scene plan" },
+  { id: "signup_campaign", label: "Signup Campaign", description: "Goal-driven campaign to drive conversions" },
+  { id: "social_post", label: "Social Post", description: "Single post for any platform" },
+  { id: "email_campaign", label: "Email Campaign", description: "Email sequence or newsletter" },
+  { id: "blog_seo", label: "Blog / SEO Article", description: "Long-form article for search" },
+  { id: "weekly_content_pack", label: "Weekly Content Pack", description: "Full week of multi-platform content" },
+  { id: "avatar_video", label: "Avatar Video", description: "AI avatar-led product intro" },
+] as const;
+
+function getReadinessBadge(status?: string): { label: string; classes: string } {
+  switch (status) {
+    case "ready": return { label: "Ready to create", classes: "border-emerald-300 bg-emerald-900/30 text-emerald-300" };
+    case "partial": return { label: "Partial setup", classes: "border-amber-300 bg-amber-900/30 text-amber-300" };
+    case "setup_needed": return { label: "Setup needed", classes: "border-red-300 bg-red-900/30 text-red-300" };
+    default: return { label: "Backend unavailable", classes: "border-stone-500 bg-stone-800/50 text-stone-400" };
+  }
+}
+
 const MARKETING_PLATFORM_OPTIONS: MarketingPlatformOption[] = [
   "Facebook",
   "Instagram",
@@ -317,6 +338,9 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
 
   const [quality, setQuality] = useState<QualityMode>("elite");
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("strategy");
+  const [selectedCreationType, setSelectedCreationType] = useState<string>("image_ad");
+  const [showSettingsDialog, setShowSettingsDialog] = useState<boolean>(false);
+  const [workspaceTab, setWorkspaceTab] = useState<string>("preview");
   const [approvalReasonDraft, setApprovalReasonDraft] = useState<Record<string, string>>({});
   const [lastAutonomousRun, setLastAutonomousRun] = useState<Record<string, unknown> | null>(null);
   const [lastDeliverablePackage, setLastDeliverablePackage] = useState<Record<string, unknown> | null>(null);
@@ -1054,6 +1078,26 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
+  function handleGenerate() {
+    switch (selectedCreationType) {
+      case "image_ad": handleGenerateImageAd(); break;
+      case "video_ad_30s": handleGenerateThirtySecondAdPackage(); break;
+      case "assembled_video_3m": handleGenerateAssembledVideoPackage(); break;
+      case "signup_campaign": handleGenerateSignupCampaignPackage(); break;
+      default: handleRunAutonomousCampaign(); break;
+    }
+    setWorkspaceTab("preview");
+  }
+
+  const isAnyGenerationPending =
+    generateImageAdMutation.isPending ||
+    generateAdPackageMutation.isPending ||
+    generateVideoPackageMutation.isPending ||
+    generateCampaignPackageMutation.isPending ||
+    runAutonomousCampaignMutation.isPending;
+
+  const hasGeneratedOutput = lastDeliverablePackage !== null || imageGenerationResult !== null;
+
   const backendReadiness = (backendReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const connectorReadiness = (connectorReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const commandCentre = (commandCentreQuery.data as Record<string, any> | undefined) ?? undefined;
@@ -1141,620 +1185,697 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     },
   ];
 
+
+  const readinessBadge = getReadinessBadge(backendReadiness?.status);
+  const selectedCreationTypeLabel = CREATION_TYPES.find((t) => t.id === selectedCreationType)?.label ?? "Content";
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0f1116] via-[#151925] to-[#f5f6f8] px-3 py-4 md:px-6 md:py-6" aria-label="The Marketing App">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4">
+    <main
+      className="creation-first-studio min-h-screen bg-stone-50 px-3 py-4 md:px-6 md:py-6"
+      aria-label="The Marketing App"
+    >
+      <div className="mx-auto flex w-full max-w-[1600px] min-w-0 flex-col gap-4">
+
+        {/* Back button */}
         {onBack ? (
           <button
             type="button"
             onClick={onBack}
-            className="w-fit rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white hover:bg-white/20"
+            className="w-fit rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs text-stone-700 hover:bg-stone-50"
           >
-            Back
+            ← Back
           </button>
         ) : null}
 
-        <section className="rounded-3xl border border-white/15 bg-[#111520]/90 p-5 text-white shadow-2xl backdrop-blur">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-white/60">The Marketing App</p>
-              <h1 className="mt-1 text-2xl font-semibold">Desktop Marketing Command Centre</h1>
-              <p className="mt-1 text-sm text-white/70">Autonomous campaign studio for your app fleet.</p>
-            </div>
-            <div className="flex flex-wrap gap-2 text-xs">
-              <Badge className="rounded-full border border-white/25 bg-white/10 text-white">Host app: {workspace.host_app_name}</Badge>
-              <Badge className="rounded-full border border-white/25 bg-white/10 text-white">Workspace: {workspace.marketing_workspace_id}</Badge>
-              <Badge className="rounded-full border border-white/25 bg-white/10 text-white">Fleet-ready</Badge>
-              <Badge className={`rounded-full border ${statusPillClass(backendReadiness?.status ?? "waiting_for_backend")}`}>
-                Backend: {formatStatusLabel(backendReadiness?.status ?? "waiting_for_backend")}
-              </Badge>
-              <Badge className={`rounded-full border ${commandForm.exportOnly ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-amber-300 bg-amber-50 text-amber-700"}`}>
-                {commandForm.exportOnly ? "Export-first" : "Direct publish requested"}
-              </Badge>
-            </div>
-          </div>
-        </section>
-
-        <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+        {/* ── Top Studio Header ── */}
+        <header className="rounded-3xl border border-white/15 bg-[#111520]/90 p-4 text-white shadow-2xl backdrop-blur">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-stone-900">Campaign Command Box</h2>
-                <p className="text-sm text-stone-500">Plan campaigns, scripts, scenes, media jobs and export-first schedules.</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/60">The Marketing App</p>
+                <h1 className="text-xl font-semibold">Studio — {workspace.host_app_name}</h1>
               </div>
-              <Badge className={`rounded-full border ${statusPillClass(commandCentre?.status ?? "waiting_for_backend")}`}>
-                {formatStatusLabel(commandCentre?.status ?? "waiting_for_backend")}
+              <Badge className={`rounded-full border ${commandForm.exportOnly ? "border-emerald-300 bg-emerald-900/30 text-emerald-300" : "border-amber-300 bg-amber-900/30 text-amber-300"}`}>
+                {commandForm.exportOnly ? "Export-first" : "Direct publish"}
               </Badge>
             </div>
-
-            <div className="mt-4 grid gap-4 xl:grid-cols-2">
-              <label className="space-y-1">
-                <span className="text-xs font-medium text-stone-600">Campaign goal</span>
-                <Input
-                  value={commandForm.goal}
-                  onChange={(event) => setCommandForm((current) => ({ ...current, goal: event.target.value }))}
-                  placeholder="Get me 50 signups this month"
-                />
-              </label>
-              <label className="space-y-1">
-                <span className="text-xs font-medium text-stone-600">Audience</span>
-                <Input
-                  value={commandForm.audience}
-                  onChange={(event) => setCommandForm((current) => ({ ...current, audience: event.target.value }))}
-                  placeholder="stable owners"
-                />
-              </label>
-              <label className="space-y-1">
-                <span className="text-xs font-medium text-stone-600">Host app / brand</span>
-                <Input value={workspace.host_app_name} readOnly />
-              </label>
-              <label className="space-y-1">
-                <span className="text-xs font-medium text-stone-600">Duration days</span>
-                <Input
-                  type="number"
-                  min={1}
-                  max={365}
-                  value={String(commandForm.durationDays)}
-                  onChange={(event) => setCommandForm((current) => ({ ...current, durationDays: Math.max(1, Number(event.target.value) || 30) }))}
-                />
-              </label>
-            </div>
-
-            <div className="mt-4 space-y-2">
-              <p className="text-xs font-medium text-stone-600">Platforms</p>
-              <div className="flex flex-wrap gap-2">
-                {MARKETING_PLATFORM_OPTIONS.map((platform) => (
-                  <button
-                    key={platform}
-                    type="button"
-                    onClick={() => togglePlatform(platform)}
-                    className={`rounded-full border px-3 py-1.5 text-xs ${
-                      commandForm.platforms.includes(platform)
-                        ? "border-stone-900 bg-stone-900 text-white"
-                        : "border-stone-200 bg-stone-50 text-stone-700"
-                    }`}
-                  >
-                    {platform}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4 space-y-2">
-              <p className="text-xs font-medium text-stone-600">Content types</p>
-              <div className="flex flex-wrap gap-2">
-                {CONTENT_TYPE_OPTIONS.map((contentType) => (
-                  <button
-                    key={contentType}
-                    type="button"
-                    onClick={() => toggleContentType(contentType)}
-                    className={`rounded-full border px-3 py-1.5 text-xs ${
-                      commandForm.contentTypes.includes(contentType)
-                        ? "border-stone-900 bg-stone-900 text-white"
-                        : "border-stone-200 bg-stone-50 text-stone-700"
-                    }`}
-                  >
-                    {contentType}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-4">
-              <div className="inline-flex rounded-xl border border-stone-200 bg-stone-50 p-1">
-                {(["standard", "elite"] as CommandQualityMode[]).map((mode) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => {
-                      setCommandForm((current) => ({ ...current, qualityMode: mode }));
-                      setQuality(mode);
-                    }}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-medium ${commandForm.qualityMode === mode ? "bg-stone-900 text-white" : "text-stone-600"}`}
-                  >
-                    {mode === "standard" ? "Standard" : "Elite"}
-                  </button>
-                ))}
-              </div>
-              <label className="inline-flex items-center gap-2 text-xs text-stone-700">
-                <input
-                  type="checkbox"
-                  checked={commandForm.exportOnly}
-                  onChange={(event) => setCommandForm((current) => ({ ...current, exportOnly: event.target.checked }))}
-                />
-                Export-only
-              </label>
-              <label className="inline-flex items-center gap-2 text-xs text-stone-700">
-                <input
-                  type="checkbox"
-                  checked={commandForm.requireApproval}
-                  onChange={(event) => setCommandForm((current) => ({ ...current, requireApproval: event.target.checked }))}
-                />
-                Require approval
-              </label>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Button type="button" className="rounded-2xl" onClick={handleRunAutonomousCampaign} disabled={runAutonomousCampaignMutation.isPending}>
-                {runAutonomousCampaignMutation.isPending ? "Running autonomous campaign..." : "Run autonomous campaign"}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Simple readiness badge */}
+              <Badge className={`rounded-full border ${readinessBadge.classes}`} data-testid="readiness-badge">
+                {readinessBadge.label}
+              </Badge>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20"
+                onClick={() => setShowSettingsDialog(true)}
+              >
+                Settings
               </Button>
-              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateImageAd} disabled={generateImageAdMutation.isPending}>
-                {generateImageAdMutation.isPending ? "Generating image ad..." : "Generate Image Ad"}
-              </Button>
-              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateThirtySecondAdPackage} disabled={generateAdPackageMutation.isPending}>
-                {generateAdPackageMutation.isPending ? "Building 30s ad package..." : "Generate 30-second ad package"}
-              </Button>
-              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateAssembledVideoPackage} disabled={generateVideoPackageMutation.isPending}>
-                {generateVideoPackageMutation.isPending ? "Building 3-minute video package..." : "Generate 3-minute video package"}
-              </Button>
-              <Button type="button" variant="outline" className="rounded-2xl" onClick={handleGenerateSignupCampaignPackage} disabled={generateCampaignPackageMutation.isPending}>
-                {generateCampaignPackageMutation.isPending ? "Building signup campaign package..." : "Generate signup campaign package"}
-              </Button>
-              {backendReadiness?.status === "setup_needed" ? (
-                <Badge className="rounded-full border border-amber-300 bg-amber-50 text-amber-700">setup_needed</Badge>
-              ) : null}
-              {backendReadinessQuery.isError ? (
-                <Badge className="rounded-full border border-stone-300 bg-stone-100 text-stone-700">waiting_for_backend</Badge>
-              ) : null}
             </div>
           </div>
+        </header>
 
-          <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-stone-900">Quick Actions</h3>
-            <p className="mt-1 text-xs text-stone-500">Click to populate the command form.</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {QUICK_ACTIONS.map((action) => (
-                <button
-                  key={action.id}
-                  type="button"
-                  className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs text-stone-700 hover:bg-stone-100"
-                  onClick={() => applyQuickAction(action.id)}
-                >
-                  {action.label}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
-              <p className="font-medium text-stone-700">Run status</p>
-              <p className="mt-1">{formatStatusLabel(autonomousRun?.status as string | undefined)}</p>
-              <p className="mt-1">Campaign: {String(autonomousRun?.campaignId ?? "no_results_yet")}</p>
-            </div>
-          </div>
-        </section>
+        {/* ── Main Studio Workspace ── */}
+        <div className="studio-workspace grid min-w-0 gap-4 lg:grid-cols-[220px_minmax(0,1fr)_500px]">
 
-        <MarketingDeliverablePackageViewer deliverablePackage={lastDeliverablePackage ?? ((autonomousRun?.deliverablePackage as Record<string, unknown> | null) ?? null)} />
-
-        <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-stone-900">Readiness / Capability Strip</h3>
-            <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => void backendReadinessQuery.refetch()}>
-              Refresh
-            </Button>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {readinessCards.map((card) => (
-              <details key={card.id} className="rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
-                  <span className="text-xs font-medium text-stone-800">{card.title}</span>
-                  <span className={`rounded-full border px-2 py-0.5 text-[11px] ${statusPillClass(card.status)}`}>
-                    {formatStatusLabel(card.status)}
-                  </span>
-                </summary>
-                <p className="mt-2 text-xs text-stone-600">{card.reason}</p>
-              </details>
+          {/* ── Left: Creation Menu ── */}
+          <nav className="creation-menu flex flex-col gap-1 rounded-3xl border border-stone-200 bg-white p-3 shadow-sm lg:h-fit">
+            <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">Create</p>
+            {CREATION_TYPES.map((type) => (
+              <button
+                key={type.id}
+                type="button"
+                data-creation-type={type.id}
+                onClick={() => {
+                  setSelectedCreationType(type.id);
+                  if (type.id === "image_ad") setCommandForm((c) => ({ ...c, goal: "Create a premium image ad for EquiProfile targeting stable owners." }));
+                  else if (type.id === "video_ad_30s") setCommandForm((c) => ({ ...c, goal: "Create a 30-second Facebook and Instagram ad for EquiProfile to get stable owners to start a free trial.", platforms: ["Facebook", "Instagram"] }));
+                  else if (type.id === "assembled_video_3m") setCommandForm((c) => ({ ...c, goal: "Create a 3-minute marketing video for EquiProfile explaining why stable owners should use it.", platforms: ["YouTube Shorts"] }));
+                  else if (type.id === "signup_campaign") setCommandForm((c) => ({ ...c, goal: "Get me 50 signups this month from stable owners.", platforms: ["Facebook", "Instagram", "Email"] }));
+                }}
+                className={`rounded-2xl px-3 py-2.5 text-left transition-colors ${
+                  selectedCreationType === type.id
+                    ? "bg-stone-900 text-white"
+                    : "text-stone-700 hover:bg-stone-50"
+                }`}
+              >
+                <p className="text-xs font-medium">{type.label}</p>
+                <p className={`mt-0.5 text-[10px] leading-tight ${selectedCreationType === type.id ? "text-white/70" : "text-stone-400"}`}>{type.description}</p>
+              </button>
             ))}
-          </div>
-        </section>
+          </nav>
 
-        <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-stone-900">Agent Mission Timeline</h3>
-          <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {(["StrategyAgent", "CopyAgent", "MediaAgent", "AvatarVoiceAgent", "QaAgent", "SchedulerAgent", "ResultsAgent"] as const).map((role) => {
-              const summary = autonomousRunSummaries.find((item) => item.role === role) ?? null;
-              const status = (summary?.status as string | undefined) ?? "waiting_for_backend";
-              return (
-                <article key={role} className="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium text-stone-800">{role}</p>
-                    <span className={`rounded-full border px-2 py-0.5 text-[11px] ${statusPillClass(status)}`}>
-                      {formatStatusLabel(status)}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-stone-600">Task: {String(summary?.taskType ?? "waiting_for_backend")}</p>
-                  <p className="mt-1 text-stone-500">Reason: {firstLine(summary?.reason, "No blocker recorded yet.")}</p>
-                  <Badge className="mt-2 rounded-full border border-amber-300 bg-amber-50 text-amber-700">review required</Badge>
-                </article>
-              );
-            })}
-          </div>
-        </section>
+          {/* ── Center: Composer + workspace ── */}
+          <div className="min-w-0 space-y-4">
 
-        <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_500px]">
-          <div className="min-w-0 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as WorkspaceTab)} className="w-full">
-              <TabsList className="mb-4 h-auto w-full flex-wrap justify-start gap-2 bg-transparent p-0">
-                <TabsTrigger value="strategy" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Strategy</TabsTrigger>
-                <TabsTrigger value="creative" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Creative</TabsTrigger>
-                <TabsTrigger value="media_studio" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Media Studio</TabsTrigger>
-                <TabsTrigger value="review_qa" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Review / QA</TabsTrigger>
-                <TabsTrigger value="schedule_export" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Schedule / Export</TabsTrigger>
-                <TabsTrigger value="results_learning" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Results / Learning</TabsTrigger>
-                <TabsTrigger value="settings_readiness" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Settings / Readiness</TabsTrigger>
-              </TabsList>
+            {/* Composer card */}
+            <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+              <h2 className="text-lg font-semibold text-stone-900">{selectedCreationTypeLabel}</h2>
+              <p className="mt-0.5 text-xs text-stone-500">{CREATION_TYPES.find((t) => t.id === selectedCreationType)?.description}</p>
 
-              <TabsContent value="strategy" className="space-y-4">
-                <div className="grid gap-4 xl:grid-cols-2">
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                    <h4 className="text-sm font-semibold text-stone-900">Selected playbook</h4>
-                    <p className="mt-2 text-xs text-stone-600">{firstLine((playbookQuery.data as any)?.playbook?.name, "setup_needed")}</p>
-                    <p className="mt-1 text-xs text-stone-500">{firstLine((playbookQuery.data as any)?.playbook?.whenToUse, "No playbook guidance yet.")}</p>
-                  </div>
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                    <h4 className="text-sm font-semibold text-stone-900">Platform specialists</h4>
-                    <p className="mt-2 text-xs text-stone-600">{((recommendedSpecialistsQuery.data as any)?.specialists ?? []).map((item: any) => item.name).slice(0, 3).join(", ") || "setup_needed"}</p>
-                    <p className="mt-1 text-xs text-stone-500">{firstLine((recommendedSpecialistsQuery.data as any)?.notes?.[0], "Specialist mapping available once platform hints are set.")}</p>
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">Brand memory + manager guidance</h4>
-                  <p className="mt-2 text-xs text-stone-600">Brand: {String((brandMemoryQuery.data as any)?.brandName ?? workspace.brandName)}</p>
-                  <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-stone-600">
-                    {guidanceRows.length ? guidanceRows.slice(0, 5).map((line) => <li key={line}>{line}</li>) : <li>setup_needed</li>}
-                  </ul>
-                </div>
-                {campaignsSectionHasError ? (
-                  <SectionErrorCard
-                    title="Campaign strategy panel unavailable."
-                    onRetry={() => {
-                      void marketingCampaigns.refetch();
-                      if (selectedCampaignId) void selectedCampaignDetails.refetch();
-                    }}
+              <div className="mt-4 grid gap-4 xl:grid-cols-2">
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-stone-600">What do you want to create?</span>
+                  <Input
+                    value={commandForm.goal}
+                    onChange={(event) => setCommandForm((current) => ({ ...current, goal: event.target.value }))}
+                    placeholder="Get me 50 signups this month from stable owners"
                   />
-                ) : (
-                  <MarketingAppCampaignsPanel
-                    form={campaignForm}
-                    campaigns={campaigns}
-                    selectedCampaign={selectedCampaign}
-                    assets={allAssets}
-                    beastMode={{
-                      form: beastModeForm,
-                      selectedRun: selectedBeastModeRunData,
-                      runs: beastModeRunList,
-                      onFormChange: (patch) => setBeastModeForm((current) => ({ ...current, ...patch })),
-                      onGenerate: handleGenerateBeastMode,
-                      onApproveVariant: handleApproveBeastModeVariant,
-                      onRejectVariant: handleRejectBeastModeVariant,
-                      onRequestVariantChanges: handleRequestBeastModeVariantChanges,
-                      onCreateRenderJobs: handleCreateBeastModeRenderJobs,
-                      onExportPack: handleExportBeastModePack,
-                    }}
-                    onFormChange={(patch) => setCampaignForm((current) => ({ ...current, ...patch }))}
-                    onCreateCampaign={handleCreateCampaign}
-                    onSelectCampaign={setSelectedCampaignId}
-                    onGenerateSevenDayPlan={handleGenerateSevenDayPlan}
-                    onGenerateWeeklyPack={handleGenerateWeeklyPack}
-                    onToggleAttachedAsset={handleToggleAttachedAsset}
-                    onExportCampaign={handleExportCampaign}
-                    onRunQa={handleRunCampaignItemQa}
-                    onApproveItem={handleApproveCampaignItem}
-                    onRejectItem={handleRejectCampaignItem}
-                    onRequestChanges={handleRequestCampaignItemChanges}
-                    onMarkItemExported={handleMarkCampaignItemExported}
-                    onCreateScheduleFromCampaign={(campaignId) => {
-                      createScheduleDraftsFromCampaignMutation.mutate({
-                        tenantId: workspace.tenantId,
-                        workspaceId: workspace.marketing_workspace_id,
-                        campaignId: Number(campaignId),
-                      });
-                    }}
+                </label>
+                <label className="space-y-1">
+                  <span className="text-xs font-medium text-stone-600">Audience</span>
+                  <Input
+                    value={commandForm.audience}
+                    onChange={(event) => setCommandForm((current) => ({ ...current, audience: event.target.value }))}
+                    placeholder="stable owners"
                   />
-                )}
-              </TabsContent>
+                </label>
+              </div>
 
-              <TabsContent value="creative" className="space-y-4">
-                {createSectionHasError ? (
-                  <SectionErrorCard
-                    title="Studio creative flow is temporarily unavailable."
-                    onRetry={() => {
-                      void diagnostics.refetch();
-                      void utils.admin.listApprovalQueue.invalidate();
-                    }}
-                  />
-                ) : (
-                  <StudioHome
-                    tenantId={workspace.tenantId}
-                    workspaceId={workspace.marketing_workspace_id}
-                    hostAppId={workspace.host_app_id}
-                    onWorkbenchDone={(plan) => {
-                      createMarketingStudioPlan.mutate({
-                        tenantId: workspace.tenantId,
-                        workspaceId: workspace.marketing_workspace_id,
-                        hostAppId: workspace.host_app_id,
-                        originalUserPrompt: plan.originalUserPrompt || `${plan.contentType} for ${plan.platform}`,
-                        contentType: plan.contentType,
-                        platform: plan.platform,
-                        requestedDurationSeconds: plan.durationTargetSeconds,
-                        qualityMode: quality,
-                        brief: plan.brief,
-                        audience: plan.audience,
-                        goal: plan.goal,
-                        script: plan.script,
-                        scenes: plan.scenes,
-                      });
-                    }}
-                  />
-                )}
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">Creative scoring + improvements</h4>
-                  <p className="mt-2 text-xs text-stone-600">Total score: {String((creativeScoreQuery.data as any)?.totalScore ?? "setup_needed")}</p>
-                  <p className="mt-1 text-xs text-stone-500">{((creativeScoreQuery.data as any)?.warnings ?? []).slice(0, 3).join(" | ") || "No warnings yet."}</p>
+              <div className="mt-4 space-y-2">
+                <p className="text-xs font-medium text-stone-600">Platforms</p>
+                <div className="flex flex-wrap gap-2">
+                  {MARKETING_PLATFORM_OPTIONS.map((platform) => (
+                    <button
+                      key={platform}
+                      type="button"
+                      onClick={() => togglePlatform(platform)}
+                      className={`rounded-full border px-3 py-1.5 text-xs ${
+                        commandForm.platforms.includes(platform)
+                          ? "border-stone-900 bg-stone-900 text-white"
+                          : "border-stone-200 bg-stone-50 text-stone-700"
+                      }`}
+                    >
+                      {platform}
+                    </button>
+                  ))}
                 </div>
-              </TabsContent>
+              </div>
 
-              <TabsContent value="media_studio" className="space-y-4">
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-sm font-semibold text-stone-900">Media resolver status</h4>
-                    <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => resolveQueuedMediaMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}>
-                      Resolve queued media jobs
-                    </Button>
-                  </div>
-                  <p className="mt-2 text-xs text-stone-600">Status: {formatStatusLabel((mediaResolverStatusQuery.data as any)?.status ?? "waiting_for_backend")}</p>
-                  <p className="mt-1 text-xs text-stone-500">{firstLine((mediaResolverStatusQuery.data as any)?.reason, "No resolver reason reported.")}</p>
+              <div className="mt-4 flex flex-wrap items-center gap-4">
+                <div className="inline-flex rounded-xl border border-stone-200 bg-stone-50 p-1">
+                  {(["standard", "elite"] as CommandQualityMode[]).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => {
+                        setCommandForm((current) => ({ ...current, qualityMode: mode }));
+                        setQuality(mode);
+                      }}
+                      className={`rounded-lg px-3 py-1.5 text-xs font-medium ${commandForm.qualityMode === mode ? "bg-stone-900 text-white" : "text-stone-600"}`}
+                    >
+                      {mode === "standard" ? "Standard" : "Elite"}
+                    </button>
+                  ))}
                 </div>
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">1-minute assembled-video workflow</h4>
-                  <p className="mt-2 text-xs text-stone-600">
-                    {campaignTargetIsOneMinute
-                      ? "Assembled video workflow active: scene plan, required media, captions, voice/music, render and QA states are tracked."
-                      : "Select a 1-minute content type to force assembled-video workflow."}
-                  </p>
-                  <p className="mt-1 text-xs text-stone-500">Raw AI clips stay short. 1-minute output requires assembled_video workflow.</p>
-                </div>
-                {assetsSectionHasError ? (
-                  <SectionErrorCard title="Media assets failed to load." onRetry={() => void assets.refetch()} />
-                ) : (
-                  <MarketingAppAssetsPanel
-                    assets={allAssets}
-                    activeFilter={assetFilter}
-                    searchTerm={assetSearch}
-                    selectedAssetId={selectedAssetId}
-                    onFilterChange={setAssetFilter}
-                    onSearchChange={setAssetSearch}
-                    onSelectAsset={(assetId) => {
-                      setSelectedAssetId(assetId);
-                      setAssetModalOpen(true);
-                    }}
-                    onDeleteAsset={handleDeleteAsset}
-                    onRegenerateAsset={handleRegenerateAsset}
-                    onDownloadAsset={(url) => triggerDownload(url, "marketing-asset")}
-                    onCreateBrandedAsset={(assetId) =>
-                      createBrandedMedia.mutate({
-                        rawAssetId: assetId,
-                        domainText: brandKit.domain,
-                        ctaText: brandKit.primaryCta,
-                        watermarkText: brandKit.brandName,
-                        aspectRatio: "16:9",
-                      })
-                    }
-                    onCopyUrl={handleCopyUrl}
-                    canRegenerate={false}
-                    canCreateBranded={false}
+                <label className="inline-flex items-center gap-2 text-xs text-stone-700">
+                  <input
+                    type="checkbox"
+                    checked={commandForm.exportOnly}
+                    onChange={(event) => setCommandForm((current) => ({ ...current, exportOnly: event.target.checked }))}
                   />
-                )}
-              </TabsContent>
+                  Export-first
+                </label>
+                <label className="inline-flex items-center gap-2 text-xs text-stone-700">
+                  <input
+                    type="checkbox"
+                    checked={commandForm.requireApproval}
+                    onChange={(event) => setCommandForm((current) => ({ ...current, requireApproval: event.target.checked }))}
+                  />
+                  Require approval
+                </label>
+              </div>
 
-              <TabsContent value="review_qa" className="space-y-4">
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">Approval queue</h4>
-                  <p className="mt-1 text-xs text-stone-500">No auto-approval. Every output must stay review-gated.</p>
-                  <div className="mt-3 space-y-3">
-                    {approvalQueueRows.length ? approvalQueueRows.map((item) => {
-                      const payload = (item.payload as Record<string, any> | undefined) ?? {};
-                      const allowedTargetTypes = ["campaign_item", "media_asset", "render_job", "schedule_draft", "export_pack", "beast_mode_variant", "beast_mode_pack"] as const;
-                      const payloadTargetType = String(payload.targetType ?? "campaign_item");
-                      const targetType = (allowedTargetTypes.find((value) => value === payloadTargetType) ?? "campaign_item") as typeof allowedTargetTypes[number];
-                      const targetId = String(payload.targetId ?? "");
-                      const reason = approvalReasonDraft[item.id as string] ?? "";
-                      const disabled = !targetId;
-                      return (
-                        <div key={String(item.id)} className="rounded-2xl border border-stone-200 bg-white p-3">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="text-xs font-medium text-stone-800">{String(item.task ?? "needs_review")}</p>
-                            <Badge className={`rounded-full border ${statusPillClass(String(item.status ?? "needs_review"))}`}>
-                              {formatStatusLabel(String(item.status ?? "needs_review"))}
-                            </Badge>
-                          </div>
-                          <p className="mt-1 text-xs text-stone-500">Target: {targetType} / {targetId || "waiting_for_backend"}</p>
-                          <Input
-                            value={reason}
-                            onChange={(event) => setApprovalReasonDraft((current) => ({ ...current, [String(item.id)]: event.target.value }))}
-                            placeholder="Reason for reject / request changes"
-                            className="mt-2"
-                          />
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <Button type="button" size="sm" variant="outline" className="rounded-full text-xs" disabled={disabled} onClick={() => approveOutputMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, targetType, targetId })}>
-                              Approve
-                            </Button>
-                            <Button type="button" size="sm" variant="outline" className="rounded-full text-xs" disabled={disabled || !reason.trim()} onClick={() => rejectOutputMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, targetType, targetId, reason })}>
-                              Reject
-                            </Button>
-                            <Button type="button" size="sm" variant="outline" className="rounded-full text-xs" disabled={disabled || !reason.trim()} onClick={() => requestChangesMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, targetType, targetId, reason })}>
-                              Request changes
-                            </Button>
+              <div className="mt-5">
+                <Button
+                  type="button"
+                  className="rounded-2xl px-6"
+                  onClick={handleGenerate}
+                  disabled={isAnyGenerationPending}
+                  data-testid="generate-button"
+                >
+                  {isAnyGenerationPending ? "Generating…" : `Generate ${selectedCreationTypeLabel}`}
+                </Button>
+              </div>
+
+              {/* Quick actions (secondary) */}
+              <div className="mt-4 border-t border-stone-100 pt-4">
+                <p className="text-xs font-medium text-stone-500">Quick start</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {QUICK_ACTIONS.map((action) => (
+                    <button
+                      key={action.id}
+                      type="button"
+                      className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs text-stone-700 hover:bg-stone-100"
+                      onClick={() => applyQuickAction(action.id)}
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* ── Post-generation workspace tabs ── */}
+            {hasGeneratedOutput ? (
+              <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="workspace-tabs">
+                <Tabs value={workspaceTab} onValueChange={setWorkspaceTab}>
+                  <TabsList className="mb-4 h-auto w-full flex-wrap justify-start gap-2 bg-transparent p-0">
+                    <TabsTrigger value="preview" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Preview</TabsTrigger>
+                    <TabsTrigger value="plan" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Plan</TabsTrigger>
+                    <TabsTrigger value="creative" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Creative</TabsTrigger>
+                    <TabsTrigger value="media" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Media</TabsTrigger>
+                    <TabsTrigger value="review" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Review</TabsTrigger>
+                    <TabsTrigger value="schedule_export" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Schedule / Export</TabsTrigger>
+                    <TabsTrigger value="details" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Details</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="preview" className="space-y-4">
+                    <MarketingDeliverablePackageViewer
+                      deliverablePackage={lastDeliverablePackage ?? ((autonomousRun?.deliverablePackage as Record<string, unknown> | null) ?? null)}
+                    />
+                    {imageGenerationResult?.publicUrl && imageGenerationResult.mimeType?.startsWith("image/") ? (
+                      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                        <img src={imageGenerationResult.publicUrl} alt="Generated image ad" className="w-full object-contain" />
+                      </div>
+                    ) : imageGenerationResult?.status === "setup_needed" ? (
+                      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                        <p className="text-sm font-medium text-amber-800">Image provider setup needed</p>
+                        <p className="mt-1 text-xs text-amber-700">{imageGenerationResult.reason ?? imageGenerationResult.setupNeeded[0] ?? "Configure an image provider in Settings to generate image ads."}</p>
+                      </div>
+                    ) : imageGenerationResult?.status === "failed" ? (
+                      <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                        <p className="text-sm font-medium text-red-800">Image generation failed</p>
+                        <p className="mt-1 text-xs text-red-700">{imageGenerationResult.errorMessage ?? imageGenerationResult.reason ?? "No playable image output was returned."}</p>
+                      </div>
+                    ) : null}
+                  </TabsContent>
+
+                  <TabsContent value="plan" className="space-y-4">
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                      <h4 className="text-sm font-semibold text-stone-900">Campaign plan</h4>
+                      <p className="mt-2 text-xs text-stone-600">Goal: {commandForm.goal || "—"}</p>
+                      <p className="mt-1 text-xs text-stone-600">Audience: {commandForm.audience || "—"}</p>
+                      <p className="mt-1 text-xs text-stone-600">Platforms: {commandForm.platforms.join(", ") || "—"}</p>
+                      <p className="mt-1 text-xs text-stone-600">Duration: {commandForm.durationDays} days</p>
+                    </div>
+                    {campaignsSectionHasError ? (
+                      <SectionErrorCard
+                        title="Campaign strategy panel unavailable."
+                        onRetry={() => {
+                          void marketingCampaigns.refetch();
+                          if (selectedCampaignId) void selectedCampaignDetails.refetch();
+                        }}
+                      />
+                    ) : (
+                      <MarketingAppCampaignsPanel
+                        form={campaignForm}
+                        campaigns={campaigns}
+                        selectedCampaign={selectedCampaign}
+                        assets={allAssets}
+                        beastMode={{
+                          form: beastModeForm,
+                          selectedRun: selectedBeastModeRunData,
+                          runs: beastModeRunList,
+                          onFormChange: (patch) => setBeastModeForm((current) => ({ ...current, ...patch })),
+                          onGenerate: handleGenerateBeastMode,
+                          onApproveVariant: handleApproveBeastModeVariant,
+                          onRejectVariant: handleRejectBeastModeVariant,
+                          onRequestVariantChanges: handleRequestBeastModeVariantChanges,
+                          onCreateRenderJobs: handleCreateBeastModeRenderJobs,
+                          onExportPack: handleExportBeastModePack,
+                        }}
+                        onFormChange={(patch) => setCampaignForm((current) => ({ ...current, ...patch }))}
+                        onCreateCampaign={handleCreateCampaign}
+                        onSelectCampaign={setSelectedCampaignId}
+                        onGenerateSevenDayPlan={handleGenerateSevenDayPlan}
+                        onGenerateWeeklyPack={handleGenerateWeeklyPack}
+                        onToggleAttachedAsset={handleToggleAttachedAsset}
+                        onExportCampaign={handleExportCampaign}
+                        onRunQa={handleRunCampaignItemQa}
+                        onApproveItem={handleApproveCampaignItem}
+                        onRejectItem={handleRejectCampaignItem}
+                        onRequestChanges={handleRequestCampaignItemChanges}
+                        onMarkItemExported={handleMarkCampaignItemExported}
+                        onCreateScheduleFromCampaign={(campaignId) => {
+                          createScheduleDraftsFromCampaignMutation.mutate({
+                            tenantId: workspace.tenantId,
+                            workspaceId: workspace.marketing_workspace_id,
+                            campaignId: Number(campaignId),
+                          });
+                        }}
+                      />
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="creative" className="space-y-4">
+                    {createSectionHasError ? (
+                      <SectionErrorCard
+                        title="Studio creative flow is temporarily unavailable."
+                        onRetry={() => {
+                          void diagnostics.refetch();
+                          void utils.admin.listApprovalQueue.invalidate();
+                        }}
+                      />
+                    ) : (
+                      <StudioHome
+                        tenantId={workspace.tenantId}
+                        workspaceId={workspace.marketing_workspace_id}
+                        hostAppId={workspace.host_app_id}
+                        onWorkbenchDone={(plan) => {
+                          createMarketingStudioPlan.mutate({
+                            tenantId: workspace.tenantId,
+                            workspaceId: workspace.marketing_workspace_id,
+                            hostAppId: workspace.host_app_id,
+                            originalUserPrompt: plan.originalUserPrompt || `${plan.contentType} for ${plan.platform}`,
+                            contentType: plan.contentType,
+                            platform: plan.platform,
+                            requestedDurationSeconds: plan.durationTargetSeconds,
+                            qualityMode: quality,
+                            brief: plan.brief,
+                            audience: plan.audience,
+                            goal: plan.goal,
+                            script: plan.script,
+                            scenes: plan.scenes,
+                          });
+                        }}
+                      />
+                    )}
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                      <h4 className="text-sm font-semibold text-stone-900">Creative scoring</h4>
+                      <p className="mt-2 text-xs text-stone-600">Total score: {String((creativeScoreQuery.data as any)?.totalScore ?? "setup_needed")}</p>
+                      <p className="mt-1 text-xs text-stone-500">{((creativeScoreQuery.data as any)?.warnings ?? []).slice(0, 3).join(" | ") || "No warnings yet."}</p>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="media" className="space-y-4">
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h4 className="text-sm font-semibold text-stone-900">Media resolver</h4>
+                        <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => resolveQueuedMediaMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}>
+                          Resolve queued jobs
+                        </Button>
+                      </div>
+                      <p className="mt-2 text-xs text-stone-600">Status: {formatStatusLabel((mediaResolverStatusQuery.data as any)?.status ?? "waiting_for_backend")}</p>
+                    </div>
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                      <h4 className="text-sm font-semibold text-stone-900">Assembled video workflow</h4>
+                      <p className="mt-2 text-xs text-stone-600">
+                        {campaignTargetIsOneMinute
+                          ? "Assembled video workflow active: scene plan, required media, captions, voice/music, render and QA states are tracked."
+                          : "Select a 1-minute content type to force assembled-video workflow."}
+                      </p>
+                    </div>
+                    {assetsSectionHasError ? (
+                      <SectionErrorCard title="Media assets failed to load." onRetry={() => void assets.refetch()} />
+                    ) : (
+                      <MarketingAppAssetsPanel
+                        assets={allAssets}
+                        activeFilter={assetFilter}
+                        searchTerm={assetSearch}
+                        selectedAssetId={selectedAssetId}
+                        onFilterChange={setAssetFilter}
+                        onSearchChange={setAssetSearch}
+                        onSelectAsset={(assetId) => {
+                          setSelectedAssetId(assetId);
+                          setAssetModalOpen(true);
+                        }}
+                        onDeleteAsset={handleDeleteAsset}
+                        onRegenerateAsset={handleRegenerateAsset}
+                        onDownloadAsset={(url) => triggerDownload(url, "marketing-asset")}
+                        onCreateBrandedAsset={(assetId) =>
+                          createBrandedMedia.mutate({
+                            rawAssetId: assetId,
+                            domainText: brandKit.domain,
+                            ctaText: brandKit.primaryCta,
+                            watermarkText: brandKit.brandName,
+                            aspectRatio: "16:9",
+                          })
+                        }
+                        onCopyUrl={handleCopyUrl}
+                        canRegenerate={false}
+                        canCreateBranded={false}
+                      />
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="review" className="space-y-4">
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                      <h4 className="text-sm font-semibold text-stone-900">Approval queue</h4>
+                      <p className="mt-1 text-xs text-stone-500">No auto-approval. Every output must stay review-gated.</p>
+                      <div className="mt-3 space-y-3">
+                        {approvalQueueRows.length ? approvalQueueRows.map((item) => {
+                          const payload = (item.payload as Record<string, any> | undefined) ?? {};
+                          const allowedTargetTypes = ["campaign_item", "media_asset", "render_job", "schedule_draft", "export_pack", "beast_mode_variant", "beast_mode_pack"] as const;
+                          const payloadTargetType = String(payload.targetType ?? "campaign_item");
+                          const targetType = (allowedTargetTypes.find((value) => value === payloadTargetType) ?? "campaign_item") as typeof allowedTargetTypes[number];
+                          const targetId = String(payload.targetId ?? "");
+                          const reason = approvalReasonDraft[item.id as string] ?? "";
+                          const disabled = !targetId;
+                          return (
+                            <div key={String(item.id)} className="rounded-2xl border border-stone-200 bg-white p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="text-xs font-medium text-stone-800">{String(item.task ?? "needs_review")}</p>
+                                <Badge className={`rounded-full border ${statusPillClass(String(item.status ?? "needs_review"))}`}>
+                                  {formatStatusLabel(String(item.status ?? "needs_review"))}
+                                </Badge>
+                              </div>
+                              <p className="mt-1 text-xs text-stone-500">review required: {targetType} / {targetId || "waiting_for_backend"}</p>
+                              <Input
+                                value={reason}
+                                onChange={(event) => setApprovalReasonDraft((current) => ({ ...current, [String(item.id)]: event.target.value }))}
+                                placeholder="Reason for reject / request changes"
+                                className="mt-2"
+                              />
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <Button type="button" size="sm" variant="outline" className="rounded-full text-xs" disabled={disabled} onClick={() => approveOutputMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, targetType, targetId })}>
+                                  Approve
+                                </Button>
+                                <Button type="button" size="sm" variant="outline" className="rounded-full text-xs" disabled={disabled || !reason.trim()} onClick={() => rejectOutputMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, targetType, targetId, reason })}>
+                                  Reject
+                                </Button>
+                                <Button type="button" size="sm" variant="outline" className="rounded-full text-xs" disabled={disabled || !reason.trim()} onClick={() => requestChangesMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, targetType, targetId, reason })}>
+                                  Request changes
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }) : (
+                          <p className="text-xs text-stone-500">No approvals pending yet.</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                      <h4 className="text-sm font-semibold text-stone-900">QA status</h4>
+                      <p className="mt-2 text-xs text-stone-600">Deterministic QA: {formatStatusLabel(backendReadiness?.qaReadiness)}</p>
+                      <p className="mt-1 text-xs text-stone-500">Visual QA: {formatStatusLabel(backendReadiness?.visualQaReadiness)}</p>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="schedule_export" className="space-y-4">
+                    {calendarSectionHasError ? (
+                      <SectionErrorCard title="Schedule / Export panel unavailable." onRetry={() => void scheduleDrafts.refetch()} />
+                    ) : (
+                      <MarketingAppCalendarPanel
+                        campaigns={campaigns}
+                        scheduleDrafts={mappedScheduleDrafts}
+                        onReschedule={(draftId, newDate) => {
+                          rescheduleScheduleDraftMutation.mutate({
+                            id: draftId,
+                            tenantId: workspace.tenantId,
+                            scheduledFor: newDate,
+                            reason: "Manual reschedule via command centre",
+                          });
+                        }}
+                        onCancel={(draftId) => {
+                          cancelScheduleDraftMutation.mutate({ id: draftId, tenantId: workspace.tenantId });
+                        }}
+                        onExportPack={() => {
+                          exportScheduleDraftPackMutation.mutate({
+                            tenantId: workspace.tenantId,
+                            workspaceId: workspace.marketing_workspace_id,
+                          });
+                        }}
+                      />
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="details" className="space-y-4">
+                    {/* Advanced diagnostics — collapsed by default */}
+                    <details className="rounded-2xl border border-stone-200 bg-stone-50">
+                      <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-stone-700">
+                        Advanced Diagnostics
+                      </summary>
+                      <div className="space-y-4 px-4 pb-4 pt-2">
+                        {/* Readiness / Capability Strip */}
+                        <div>
+                          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-600">Readiness / Capability Strip</h4>
+                          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                            {readinessCards.map((card) => (
+                              <details key={card.id} className="rounded-xl border border-stone-200 bg-white px-3 py-2">
+                                <summary className="flex cursor-pointer list-none items-center justify-between gap-2">
+                                  <span className="text-xs font-medium text-stone-800">{card.title}</span>
+                                  <span className={`rounded-full border px-2 py-0.5 text-[11px] ${statusPillClass(card.status)}`}>
+                                    {formatStatusLabel(card.status)}
+                                  </span>
+                                </summary>
+                                <p className="mt-2 text-xs text-stone-600">{card.reason}</p>
+                              </details>
+                            ))}
                           </div>
                         </div>
-                      );
-                    }) : (
-                      <p className="text-xs text-stone-500">No approvals pending yet.</p>
-                    )}
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">Deterministic + visual QA</h4>
-                  <p className="mt-2 text-xs text-stone-600">Deterministic QA status: {formatStatusLabel(backendReadiness?.qaReadiness)}</p>
-                  <p className="mt-1 text-xs text-stone-500">Visual QA status: {formatStatusLabel(backendReadiness?.visualQaReadiness)}</p>
-                </div>
-              </TabsContent>
 
-              <TabsContent value="schedule_export" className="space-y-4">
-                {calendarSectionHasError ? (
-                  <SectionErrorCard title="Schedule/export panel unavailable." onRetry={() => void scheduleDrafts.refetch()} />
-                ) : (
-                  <MarketingAppCalendarPanel
-                    campaigns={campaigns}
-                    scheduleDrafts={mappedScheduleDrafts}
-                    onReschedule={(draftId, newDate) => {
-                      rescheduleScheduleDraftMutation.mutate({
-                        id: draftId,
-                        tenantId: workspace.tenantId,
-                        scheduledFor: newDate,
-                        reason: "Manual reschedule via command centre",
-                      });
-                    }}
-                    onCancel={(draftId) => {
-                      cancelScheduleDraftMutation.mutate({ id: draftId, tenantId: workspace.tenantId });
-                    }}
-                    onExportPack={() => {
-                      exportScheduleDraftPackMutation.mutate({
-                        tenantId: workspace.tenantId,
-                        workspaceId: workspace.marketing_workspace_id,
-                      });
-                    }}
-                  />
-                )}
-              </TabsContent>
+                        {/* Agent Mission Timeline — only shown when has data or running */}
+                        {(isAnyGenerationPending || autonomousRunSummaries.length > 0) ? (
+                          <div>
+                            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-stone-600">Agent Mission Timeline</h4>
+                            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+                              {(["StrategyAgent", "CopyAgent", "MediaAgent", "AvatarVoiceAgent", "QaAgent", "SchedulerAgent", "ResultsAgent"] as const).map((role) => {
+                                const summary = autonomousRunSummaries.find((item) => item.role === role) ?? null;
+                                const status = (summary?.status as string | undefined) ?? "waiting_for_backend";
+                                return (
+                                  <article key={role} className="rounded-xl border border-stone-200 bg-white p-3 text-xs">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <p className="font-medium text-stone-800">{role}</p>
+                                      <span className={`rounded-full border px-2 py-0.5 text-[11px] ${statusPillClass(status)}`}>
+                                        {formatStatusLabel(status)}
+                                      </span>
+                                    </div>
+                                    <p className="mt-2 text-stone-600">Task: {String(summary?.taskType ?? "waiting_for_backend")}</p>
+                                    <p className="mt-1 text-stone-500">Reason: {firstLine(summary?.reason, "No blocker recorded yet.")}</p>
+                                    <Badge className="mt-2 rounded-full border border-amber-300 bg-amber-50 text-amber-700">review required</Badge>
+                                  </article>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ) : null}
 
-              <TabsContent value="results_learning" className="space-y-4">
-                <div className="grid gap-4 xl:grid-cols-2">
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                    <h4 className="text-sm font-semibold text-stone-900">Performance context</h4>
-                    <p className="mt-2 text-xs text-stone-600">Status: {formatStatusLabel((performanceContextQuery.data as any)?.status)}</p>
-                    <p className="mt-1 text-xs text-stone-500">Confidence: {String((performanceContextQuery.data as any)?.confidence ?? "no_results_yet")}</p>
-                  </div>
-                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                    <h4 className="text-sm font-semibold text-stone-900">Winning patterns</h4>
-                    <p className="mt-2 text-xs text-stone-600">Hooks: {((winningPatternsQuery.data as any)?.winningHooks ?? []).slice(0, 3).join(", ") || "insufficient_data"}</p>
-                    <p className="mt-1 text-xs text-stone-500">CTAs: {((winningPatternsQuery.data as any)?.winningCtaStyles ?? []).slice(0, 3).join(", ") || "insufficient_data"}</p>
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">Trend + competitor + content gaps</h4>
-                  <p className="mt-2 text-xs text-stone-600">Trend: {formatStatusLabel((trendContextQuery.data as any)?.status)}</p>
-                  <p className="mt-1 text-xs text-stone-600">Competitor: {formatStatusLabel((competitorContextQuery.data as any)?.status)}</p>
-                  <p className="mt-1 text-xs text-stone-600">Content gaps: {formatStatusLabel((contentGapQuery.data as any)?.status)}</p>
-                </div>
-                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <h4 className="text-sm font-semibold text-stone-900">Learning insights + next best action</h4>
-                  <p className="mt-2 text-xs text-stone-600">Insights status: {formatStatusLabel((learningInsightsQuery.data as any)?.status)}</p>
-                  <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-stone-600">
-                    {((managerNextStepsQuery.data as any)?.nextSteps ?? (managerNextStepsQuery.data as any)?.actions ?? []).slice(0, 5).map((step: string) => (
-                      <li key={step}>{step}</li>
-                    ))}
-                    {!((managerNextStepsQuery.data as any)?.nextSteps ?? (managerNextStepsQuery.data as any)?.actions ?? []).length ? <li>no_results_yet</li> : null}
-                  </ul>
-                </div>
-              </TabsContent>
+                        {/* Connector diagnostics */}
+                        <div>
+                          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-stone-600">Connectors</h4>
+                          <p className="text-xs text-stone-600">Status: {formatStatusLabel(connectorReadiness?.status ?? "waiting_for_backend")}</p>
+                          <p className="mt-1 text-xs text-stone-500">
+                            {connectorReadiness?.counts?.readyForPosting
+                              ? `${connectorReadiness.counts.readyForPosting} platform(s) ready for posting.`
+                              : "No platforms configured for direct posting."}
+                          </p>
+                        </div>
 
-              <TabsContent value="settings_readiness" className="space-y-4">
-                <MarketingAppSettings
-                  quality={quality}
-                  onQualityChange={(mode) => {
-                    setQuality(mode);
-                    setCommandForm((current) => ({ ...current, qualityMode: mode }));
-                  }}
-                  tenantId={workspace.tenantId}
-                  workspaceId={workspace.marketing_workspace_id}
-                />
-                <MarketingAppBrandPanel
-                  brandKit={brandKit}
-                  canApplyBrand={canApplyBrand}
-                  selectedAssetName={selectedAsset ? getAssetTitle(selectedAsset) : null}
-                  logoAssets={logoAssets}
-                  overlayTemplates={overlayTemplates}
-                  selectedLogoAssetId={brandKit.logoAssetId ?? null}
-                  isSaving={upsertBrandKitMutation.isPending || selectBrandLogoMutation.isPending}
-                  onBrandKitChange={(patch) => setBrandKit((current) => ({ ...current, ...patch }))}
-                  onSaveBrandKit={handleSaveBrandKit}
-                  onSelectLogoAsset={handleSelectLogoAsset}
-                  onApplyBrand={handleApplyBrand}
-                />
-              </TabsContent>
-            </Tabs>
+                        {/* Results / Learning */}
+                        <div>
+                          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-stone-600">Results / Learning</h4>
+                          <p className="text-xs text-stone-600">Performance: {formatStatusLabel((performanceContextQuery.data as any)?.status)}</p>
+                          <p className="mt-1 text-xs text-stone-600">Winning hooks: {((winningPatternsQuery.data as any)?.winningHooks ?? []).slice(0, 3).join(", ") || "insufficient_data"}</p>
+                          <p className="mt-1 text-xs text-stone-600">Trend: {formatStatusLabel((trendContextQuery.data as any)?.status)}</p>
+                        </div>
+
+                        {/* Run status */}
+                        <div>
+                          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-stone-600">Last run</h4>
+                          <p className="text-xs text-stone-600">Status: {formatStatusLabel(autonomousRun?.status as string | undefined)}</p>
+                          <p className="mt-1 text-xs text-stone-600">Campaign: {String(autonomousRun?.campaignId ?? "no_results_yet")}</p>
+                        </div>
+                      </div>
+                    </details>
+
+                    <details className="rounded-2xl border border-stone-200 bg-stone-50">
+                      <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-stone-700">
+                        Strategy context
+                      </summary>
+                      <div className="space-y-3 px-4 pb-4 pt-2">
+                        <div className="rounded-xl border border-stone-200 bg-white p-3">
+                          <h5 className="text-xs font-semibold text-stone-900">Selected playbook</h5>
+                          <p className="mt-1 text-xs text-stone-600">{firstLine((playbookQuery.data as any)?.playbook?.name, "setup_needed")}</p>
+                        </div>
+                        <div className="rounded-xl border border-stone-200 bg-white p-3">
+                          <h5 className="text-xs font-semibold text-stone-900">Brand memory</h5>
+                          <p className="mt-1 text-xs text-stone-600">Brand: {String((brandMemoryQuery.data as any)?.brandName ?? workspace.brandName)}</p>
+                          <ul className="mt-1 list-disc space-y-1 pl-4 text-xs text-stone-600">
+                            {guidanceRows.length ? guidanceRows.slice(0, 5).map((line) => <li key={line}>{line}</li>) : <li>setup_needed</li>}
+                          </ul>
+                        </div>
+                      </div>
+                    </details>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            ) : null}
+
           </div>
 
-          <aside className="sticky top-4 h-fit rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          {/* ── Right: Large Preview ── */}
+          <aside className="sticky top-4 h-fit min-w-0 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="preview-panel">
             <h3 className="text-sm font-semibold text-stone-900">Preview / Intelligence</h3>
-            <p className="mt-1 text-xs text-stone-500">Large desktop preview panel with concise intelligence.</p>
+            <p className="mt-0.5 text-xs text-stone-500">Generated output appears here.</p>
+
             <div className="mt-4 space-y-3">
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                <p className="text-xs font-medium text-stone-800">Selected output</p>
-                <p className="mt-1 text-sm text-stone-700">{commandForm.goal || "No command goal set."}</p>
-                <p className="mt-1 text-xs text-stone-500">Audience: {commandForm.audience || "not set"}</p>
-                <p className="mt-1 text-xs text-stone-500">Platforms: {commandForm.platforms.join(", ") || "not set"}</p>
-              </div>
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                <p className="text-xs font-medium text-stone-800">Image ad generation</p>
-                <p className="mt-1 text-xs text-stone-600">
-                  Status: {formatStatusLabel(imageGenerationResult?.status ?? "waiting_for_backend")}
-                </p>
-                {imageGenerationResult?.publicUrl && imageGenerationResult.mimeType?.startsWith("image/") ? (
-                  <div className="mt-2 overflow-hidden rounded-xl border border-stone-200 bg-white">
-                    <img src={imageGenerationResult.publicUrl} alt="Generated image ad" className="h-44 w-full object-cover" />
-                  </div>
-                ) : null}
-                {imageGenerationResult?.status === "setup_needed" ? (
-                  <p className="mt-1 text-xs text-amber-700">{imageGenerationResult.reason ?? imageGenerationResult.setupNeeded[0] ?? "Image provider setup is required."}</p>
-                ) : null}
-                {imageGenerationResult?.status === "failed" ? (
+              {/* Image ad output */}
+              {imageGenerationResult?.publicUrl && imageGenerationResult.mimeType?.startsWith("image/") ? (
+                <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
+                  <img src={imageGenerationResult.publicUrl} alt="Generated image ad" className="h-64 w-full object-cover" />
+                </div>
+              ) : imageGenerationResult?.status === "setup_needed" ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                  <p className="text-sm font-medium text-amber-800">Setup needed</p>
+                  <p className="mt-1 text-xs text-amber-700">{imageGenerationResult.reason ?? imageGenerationResult.setupNeeded[0] ?? "Configure an image provider in Settings."}</p>
+                  <Button type="button" size="sm" variant="outline" className="mt-2 rounded-full text-xs" onClick={() => setShowSettingsDialog(true)}>
+                    Open Settings
+                  </Button>
+                </div>
+              ) : imageGenerationResult?.status === "failed" ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <p className="text-sm font-medium text-red-800">Generation failed</p>
                   <p className="mt-1 text-xs text-red-700">{imageGenerationResult.errorMessage ?? imageGenerationResult.reason ?? "No playable output returned."}</p>
-                ) : null}
-              </div>
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                <p className="text-xs font-medium text-stone-800">Assembled video workflow</p>
-                <p className="mt-1 text-xs text-stone-600">
-                  {campaignTargetIsOneMinute ? "Assembled video workflow for 1-minute output is enabled." : "No 1-minute request selected yet."}
-                </p>
-                <p className="mt-1 text-xs text-stone-500">Render: {formatStatusLabel((mediaResolverStatusQuery.data as any)?.status)}</p>
-              </div>
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                <p className="text-xs font-medium text-stone-800">Creative + QA snapshot</p>
-                <p className="mt-1 text-xs text-stone-600">Creative score: {String((creativeScoreQuery.data as any)?.totalScore ?? "setup_needed")}</p>
-                <p className="mt-1 text-xs text-stone-600">QA: {formatStatusLabel(backendReadiness?.qaReadiness)}</p>
-                <p className="mt-1 text-xs text-stone-600">Visual QA: {formatStatusLabel(backendReadiness?.visualQaReadiness)}</p>
-                <p className="mt-1 text-xs text-stone-600">Publishing: {formatStatusLabel(backendReadiness?.publishingReadiness)}</p>
-              </div>
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
-                <p className="text-xs font-medium text-stone-800">Next action</p>
-                <p className="mt-1 text-xs text-stone-600">
-                  {firstLine(((managerNextStepsQuery.data as any)?.nextSteps ?? (managerNextStepsQuery.data as any)?.actions ?? [])[0], "no_results_yet")}
-                </p>
-              </div>
+                </div>
+              ) : null}
+
+              {/* Deliverable package summary */}
+              {lastDeliverablePackage ? (
+                <div className="space-y-2">
+                  <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs">
+                    <p className="font-medium text-stone-800">Package ready</p>
+                    <p className="mt-1 text-stone-600">Type: {String(lastDeliverablePackage.packageType ?? "unknown")}</p>
+                    <p className="mt-0.5 text-stone-600">Status: {String(lastDeliverablePackage.status ?? "draft")}</p>
+                    <p className="mt-0.5 text-stone-600">Goal: {String(lastDeliverablePackage.goal ?? commandForm.goal)}</p>
+                    <p className="mt-0.5 text-stone-600">Audience: {String(lastDeliverablePackage.audience ?? commandForm.audience)}</p>
+                    {(lastDeliverablePackage.setupNeeded as boolean) ? (
+                      <p className="mt-1 font-medium text-amber-700">⚠ Setup needed — see blockers in Preview tab</p>
+                    ) : (
+                      <p className="mt-1 font-medium text-emerald-700">✓ Ready for review</p>
+                    )}
+                  </div>
+                  {/* Assembled video no-fake-video notice */}
+                  {lastDeliverablePackage.packageType === "assembled_video_3m" && (lastDeliverablePackage.exportPack as any)?.renderStatus !== "completed" ? (
+                    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
+                      <p className="font-medium text-stone-800">Assembled video — not rendered</p>
+                      <p className="mt-1">Render status: {String((lastDeliverablePackage.exportPack as any)?.renderStatus ?? "not_rendered")}</p>
+                      <p className="mt-1 text-stone-500">No fake video is shown because render output is missing.</p>
+                    </div>
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-2xl text-xs"
+                    onClick={() => setWorkspaceTab("preview")}
+                  >
+                    View full package →
+                  </Button>
+                </div>
+              ) : null}
+
+              {/* Pre-generation state */}
+              {!hasGeneratedOutput && !isAnyGenerationPending ? (
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-center">
+                  <p className="text-sm text-stone-500">Select a creation type and click Generate to see output here.</p>
+                  <p className="mt-1 text-xs text-stone-400">
+                    {readinessBadge.label === "Setup needed" || readinessBadge.label === "Backend unavailable"
+                      ? "Open Settings to configure providers first."
+                      : "Backend is ready."}
+                  </p>
+                </div>
+              ) : null}
+
+              {/* Generation in progress */}
+              {isAnyGenerationPending ? (
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-center">
+                  <p className="text-sm font-medium text-stone-700">Generating {selectedCreationTypeLabel}…</p>
+                  <p className="mt-1 text-xs text-stone-500">This may take a few seconds.</p>
+                </div>
+              ) : null}
+
+              {/* Current goal / audience reminder */}
+              {(commandForm.goal || commandForm.audience) ? (
+                <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
+                  <p className="font-medium text-stone-700">Current request</p>
+                  {commandForm.goal ? <p className="mt-1">{commandForm.goal}</p> : null}
+                  {commandForm.audience ? <p className="mt-1 text-stone-500">For: {commandForm.audience}</p> : null}
+                </div>
+              ) : null}
             </div>
           </aside>
-        </section>
+
+        </div>
+
       </div>
 
+      {/* ── Settings Dialog ── */}
+      <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-1">
+            <MarketingAppSettings
+              quality={quality}
+              onQualityChange={(mode) => {
+                setQuality(mode);
+                setCommandForm((current) => ({ ...current, qualityMode: mode }));
+              }}
+              tenantId={workspace.tenantId}
+              workspaceId={workspace.marketing_workspace_id}
+            />
+            <MarketingAppBrandPanel
+              brandKit={brandKit}
+              canApplyBrand={canApplyBrand}
+              selectedAssetName={selectedAsset ? getAssetTitle(selectedAsset) : null}
+              logoAssets={logoAssets}
+              overlayTemplates={overlayTemplates}
+              selectedLogoAssetId={brandKit.logoAssetId ?? null}
+              isSaving={upsertBrandKitMutation.isPending || selectBrandLogoMutation.isPending}
+              onBrandKitChange={(patch) => setBrandKit((current) => ({ ...current, ...patch }))}
+              onSaveBrandKit={handleSaveBrandKit}
+              onSelectLogoAsset={handleSelectLogoAsset}
+              onApplyBrand={handleApplyBrand}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Asset preview modal ── */}
       <Dialog open={assetModalOpen} onOpenChange={setAssetModalOpen}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>

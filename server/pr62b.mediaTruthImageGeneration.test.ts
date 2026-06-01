@@ -280,8 +280,9 @@ describe("PR62B frontend image action + asset card truth", () => {
       "utf8",
     );
     expect(source).toContain("generateMarketingImageAsset");
-    expect(source).toContain("Generate Image Ad");
-    expect(source).toContain("imageGenerationResult?.status === \"setup_needed\"");
+    // PR62D: Image Ad is the creation type label; button is dynamic "Generate {type}"
+    expect(source).toContain("Image Ad");
+    expect(source).toContain("image_ad");
     expect(source).not.toContain("fake preview");
   });
 
