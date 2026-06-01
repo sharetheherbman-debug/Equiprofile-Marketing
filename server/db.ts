@@ -1493,8 +1493,8 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       \`createdAt\` timestamp NOT NULL DEFAULT (now()),
       \`updatedAt\` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
       CONSTRAINT \`marketingBeastModeVariants_id\` PRIMARY KEY(\`id\`),
-      KEY \`idx_marketingReviewRecords_scope\` (\`tenantId\`, \`workspaceId\`, \`hostAppId\`),
-      KEY \`idx_marketingReviewRecords_target\` (\`targetType\`, \`targetId\`)
+      KEY \`idx_mbm_variants_run\` (\`runId\`, \`platform\`, \`language\`),
+      KEY \`idx_mbm_variants_scope\` (\`tenantId\`, \`workspaceId\`, \`campaignId\`)
     )`,
     `CREATE TABLE IF NOT EXISTS \`marketingVisualQaRecords\` (
       \`id\` int AUTO_INCREMENT NOT NULL,
@@ -2652,8 +2652,9 @@ export async function getDb() {
         _ensureTablesPromise = ensureTables(_db);
       }
       await _ensureTablesPromise;
-      if (shouldSuppressTestDbNoise() && !_tablesEnsured) {
-        throw new Error("test_db_unavailable_after_ensure_tables");
+      if (!_tablesEnsured) {
+        _ensureTablesPromise = null;
+        throw new Error("database_table_ensure_failed");
       }
       await runStartupMediaTruthRepairOnce();
     } catch (error) {

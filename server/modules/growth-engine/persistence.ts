@@ -932,28 +932,44 @@ export async function createMarketingScheduleDraftRecord(input: {
 export async function listMarketingScheduleDraftRecords(input: { tenantId: string; workspaceId: string }) {
   const db = await resolveDb();
   if (!db) return [];
-  const rows = await db
-    .select()
-    .from(marketingScheduleDrafts)
-    .where(and(eq(marketingScheduleDrafts.tenantId, input.tenantId), eq(marketingScheduleDrafts.workspaceId, input.workspaceId)))
-    .orderBy(desc(marketingScheduleDrafts.scheduledFor))
-    .limit(400);
-  return rows.map((row) => ({
-    id: row.id,
-    tenantId: row.tenantId,
-    workspaceId: row.workspaceId,
-    campaignId: row.campaignId,
-    campaignItemId: row.campaignItemId,
-    platform: row.platform,
-    title: row.title,
-    content: row.content,
-    scheduledFor: row.scheduledFor.toISOString(),
-    status: row.status as MarketingScheduleDraftStatus,
-    reviewStatus: (row.reviewStatus ?? "needs_review") as MarketingReviewStatus,
-    metadataJson: row.metadataJson ?? null,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-  }));
+  try {
+    const rows = await db
+      .select()
+      .from(marketingScheduleDrafts)
+      .where(and(eq(marketingScheduleDrafts.tenantId, input.tenantId), eq(marketingScheduleDrafts.workspaceId, input.workspaceId)))
+      .orderBy(desc(marketingScheduleDrafts.scheduledFor))
+      .limit(400);
+    const toIso = (value: unknown, fallback: string): string => {
+      if (value instanceof Date) return value.toISOString();
+      if (typeof value === "string") {
+        const parsed = new Date(value);
+        if (!Number.isNaN(parsed.getTime())) return parsed.toISOString();
+      }
+      return fallback;
+    };
+    return rows.map((row) => ({
+      id: row.id,
+      tenantId: row.tenantId,
+      workspaceId: row.workspaceId,
+      campaignId: row.campaignId,
+      campaignItemId: row.campaignItemId,
+      platform: row.platform,
+      title: row.title,
+      content: row.content,
+      scheduledFor: toIso(row.scheduledFor, new Date().toISOString()),
+      status: row.status as MarketingScheduleDraftStatus,
+      reviewStatus: (row.reviewStatus ?? "needs_review") as MarketingReviewStatus,
+      metadataJson: row.metadataJson ?? null,
+      createdAt: toIso(row.createdAt, new Date().toISOString()),
+      updatedAt: toIso(row.updatedAt, new Date().toISOString()),
+    }));
+  } catch (error) {
+    const code = typeof error === "object" && error !== null ? String((error as { code?: unknown }).code ?? "") : "";
+    if (code === "ER_NO_SUCH_TABLE" || code === "ER_BAD_FIELD_ERROR") {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export async function updateMarketingScheduleDraftRecord(input: {

@@ -356,6 +356,7 @@ import {
 import { getMarketingBackendReadiness as getMarketingBackendReadinessService } from "./modules/marketing/backend-readiness";
 import { getMarketingConnectorReadiness as getMarketingConnectorReadinessService } from "./modules/marketing/connector-readiness";
 import { runAutonomousMarketingCampaign as runAutonomousMarketingCampaignService } from "./modules/marketing/autonomous-campaign";
+import { getMarketingCreationCapabilities as getMarketingCreationCapabilitiesService } from "./modules/marketing/creation-capabilities";
 import {
   composeAssembledVideoPackage as composeAssembledVideoPackageService,
   composeSignupCampaignPackage as composeSignupCampaignPackageService,
@@ -10840,6 +10841,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }))
       .query(async ({ input }) => {
         return getMarketingConnectorReadinessService(input);
+      }),
+
+    getMarketingCreationCapabilities: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+      }).optional())
+      .query(async ({ input }) => {
+        return getMarketingCreationCapabilitiesService({
+          tenantId: input?.tenantId ?? "global",
+          workspaceId: input?.workspaceId ?? "default",
+          hostAppId: input?.hostAppId ?? "equiprofile",
+          qualityMode: input?.qualityMode ?? "standard",
+        });
       }),
 
     getMarketingCommandCentreState: adminUnlockedProcedure

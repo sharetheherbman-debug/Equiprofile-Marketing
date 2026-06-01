@@ -134,6 +134,17 @@ export function MarketingAppSettings({
     () => normalizeSocialConnections(socialConnectionsQuery.data),
     [socialConnectionsQuery.data],
   );
+  const taskCapabilityRows = (((taskCapabilityMapQuery.data as { tasks?: Array<{ task: string; status: string; reason?: string | null }> } | undefined)?.tasks) ?? []);
+  const taskCapabilityByTask = useMemo(() => {
+    const map = new Map<string, { status: string; reason?: string | null }>();
+    for (const row of taskCapabilityRows) map.set(row.task, { status: row.status, reason: row.reason });
+    return map;
+  }, [taskCapabilityRows]);
+  const routeStatus = (task: string) => taskCapabilityByTask.get(task)?.status ?? "setup_needed";
+  const routeReason = (task: string, fallback: string) => taskCapabilityByTask.get(task)?.reason ?? fallback;
+  const isTaskReady = (task: string) => routeStatus(task) === "ready";
+  const connectorPlatforms = (((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string }> } | undefined)?.platforms) ?? []);
+  const hasPublishingConnectorReady = connectorPlatforms.some((item) => item.status === "ready_for_posting" || item.status === "ready");
 
   function saveSettings() {
     saveProviderSettings.mutate({
@@ -168,71 +179,95 @@ export function MarketingAppSettings({
               id: "text_gen",
               label: "Text generation",
               enables: "Image ad copy, scripts, campaign plans",
-              check: () => providerHealth.some((entry) => entry.liveReady),
-              nextAction: "Add a GenX or Qwen API key below.",
+              check: () => isTaskReady("campaign_strategy") || isTaskReady("platform_copywriting") || isTaskReady("scriptwriting"),
+              nextAction: routeReason("campaign_strategy", "Configure GenX, Qwen, or Hugging Face text routes."),
             },
             {
               id: "image_gen",
               label: "Image generation",
               enables: "Image Ad creative",
-              check: () => providerHealth.some((entry) => entry.liveReady && entry.provider !== "pexels" && entry.provider !== "pixabay"),
-              nextAction: "Configure a GenX or Hugging Face key with image support.",
+              check: () => isTaskReady("image_generation"),
+              nextAction: routeReason("image_generation", "Configure a provider/model route for image_generation."),
             },
             {
               id: "ad_packages",
               label: "Campaign / ad packages",
               enables: "30-Second Video Ad, Signup Campaign",
-              check: () => Boolean((backendReadinessQuery.data as { status?: string } | undefined)?.status === "ready"),
-              nextAction: "Ensure text generation is ready and backend readiness reports ready.",
+              check: () => isTaskReady("scriptwriting") && isTaskReady("scene_planning") && isTaskReady("campaign_strategy"),
+              nextAction: !isTaskReady("scriptwriting")
+                ? routeReason("scriptwriting", "Enable scriptwriting route.")
+                : !isTaskReady("scene_planning")
+                  ? routeReason("scene_planning", "Enable scene_planning route.")
+                  : routeReason("campaign_strategy", "Enable campaign_strategy route."),
             },
             {
               id: "video_planning",
               label: "3-minute video package planning",
               enables: "3-Minute Assembled Video (plan + script)",
-              check: () => Boolean((backendReadinessQuery.data as { status?: string } | undefined)?.status === "ready"),
-              nextAction: "Text generation must be ready for scene planning.",
+              check: () => isTaskReady("scriptwriting") && isTaskReady("scene_planning"),
+              nextAction: !isTaskReady("scene_planning")
+                ? routeReason("scene_planning", "Enable scene_planning route.")
+                : routeReason("scriptwriting", "Enable scriptwriting route."),
             },
             {
               id: "rendering",
               label: "Media rendering / Remotion / FFmpeg",
               enables: "Rendered video output",
-              check: () => Boolean((backendReadinessQuery.data as { remotionAvailability?: boolean } | undefined)?.remotionAvailability && (backendReadinessQuery.data as { ffmpegAvailability?: boolean } | undefined)?.ffmpegAvailability),
-              nextAction: "Install Remotion and FFmpeg on your server. Video plans generate without it.",
+              check: () => Boolean(
+                (backendReadinessQuery.data as { mediaFactoryConfigStatus?: string } | undefined)?.mediaFactoryConfigStatus === "ready"
+                && (backendReadinessQuery.data as { remotionAvailability?: boolean } | undefined)?.remotionAvailability
+                && (backendReadinessQuery.data as { ffmpegAvailability?: boolean } | undefined)?.ffmpegAvailability,
+              ),
+              nextAction: "Install/configure FFmpeg and Remotion so media_factory render jobs can complete.",
             },
             {
               id: "stock_media",
               label: "Stock media",
               enables: "B-roll sourcing for video scenes",
-              check: () => providerHealth.some((entry) => entry.provider === "pexels" && entry.liveReady) || providerHealth.some((entry) => entry.provider === "pixabay" && entry.liveReady),
-              nextAction: "Add a Pexels or Pixabay API key.",
+              check: () => ((backendReadinessQuery.data as { stockMediaConfigStatus?: string } | undefined)?.stockMediaConfigStatus === "ready"),
+              nextAction: "Add a Pexels and/or Pixabay API key and validate stock media readiness.",
+            },
+            {
+              id: "avatar",
+              label: "Avatar generation + lipsync",
+              enables: "Avatar-led video drafts",
+              check: () => isTaskReady("avatar_generation") && isTaskReady("avatar_lipsync"),
+              nextAction: !isTaskReady("avatar_generation")
+                ? routeReason("avatar_generation", "Enable avatar_generation route.")
+                : routeReason("avatar_lipsync", "Enable avatar_lipsync route."),
             },
             {
               id: "voiceover",
               label: "Voiceover",
               enables: "Automated narration for assembled video",
-              check: () => false,
-              nextAction: "Voiceover provider not yet configured.",
+              check: () => isTaskReady("voiceover"),
+              nextAction: routeReason("voiceover", "Enable voiceover route with a configured provider."),
             },
             {
               id: "music",
               label: "Music / audio",
               enables: "Background music track for video",
-              check: () => false,
-              nextAction: "Music provider not yet configured.",
+              check: () => isTaskReady("music_generation") && isTaskReady("background_audio_selection"),
+              nextAction: !isTaskReady("music_generation")
+                ? routeReason("music_generation", "Enable music_generation route.")
+                : routeReason("background_audio_selection", "Enable background_audio_selection route."),
             },
             {
               id: "export",
               label: "Export / schedule",
               enables: "Downloading packages and scheduling posts",
-              check: () => Boolean((backendReadinessQuery.data as { status?: string } | undefined)?.status === "ready"),
-              nextAction: "Backend must be ready to enable export.",
+              check: () => {
+                const status = (backendReadinessQuery.data as { schedulingExportReadiness?: string } | undefined)?.schedulingExportReadiness;
+                return status === "ready" || status === "partial";
+              },
+              nextAction: "Fix schedule/export storage blockers shown in backend readiness.",
             },
             {
               id: "publishing",
               label: "Publishing connectors",
               enables: "Direct posting to social platforms",
-              check: () => socialConnections.some((connection) => connection.status === "ready_for_posting" || connection.status === "ready_for_approval_posting"),
-              nextAction: "Connect a social account in the Social Connections section below.",
+              check: () => hasPublishingConnectorReady || socialConnections.some((connection) => connection.status === "ready_for_posting" || connection.status === "ready_for_approval_posting"),
+              nextAction: "Connect platform accounts with valid tokens/scopes. Export-first remains available while missing.",
             },
           ].map((item) => {
             const isReady = item.check();
