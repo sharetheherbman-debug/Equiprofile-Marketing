@@ -119,11 +119,13 @@ export async function updateMediaAsset(id: number, patch: Partial<MediaAssetInpu
     outputMetadata: patch.outputMetadata ?? existingOutputMetadata,
     errorMessage: patch.errorMessage ?? existing.errorMessage,
   });
+  const shouldPersistStatus =
+    patch.status !== undefined || merged.status !== existing.status;
 
   await db
     .update(mediaAssets)
     .set({
-      ...(patch.status !== undefined && { status: merged.status }),
+      ...(shouldPersistStatus && { status: merged.status }),
       ...(patch.localPath !== undefined && { localPath: patch.localPath }),
       ...(patch.publicUrl !== undefined && { publicUrl: patch.publicUrl }),
       ...(patch.thumbnailUrl !== undefined && { thumbnailUrl: patch.thumbnailUrl }),

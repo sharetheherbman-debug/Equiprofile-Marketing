@@ -9562,7 +9562,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
       }),
 
-    // LEGACY COMPATIBILITY ONLY — assembled Studio/Campaign/Beast Mode flows must use Media Factory render jobs instead.
+    // PR62B first-class Marketing App image generation flow. This returns playable image output when configured, or setup_needed/failed truthfully.
     generateMarketingImageAsset: adminUnlockedProcedure
       .input(
         z.object({

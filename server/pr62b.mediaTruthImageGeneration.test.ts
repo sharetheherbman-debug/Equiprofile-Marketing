@@ -124,6 +124,68 @@ describe("PR62B broken completed media repair", () => {
     expect(String(updates[0].payload.errorMessage)).toContain("no playable media URL or local path");
     expect(String(updates[0].payload.outputMetadataJson)).toContain("PR62B_media_truth_repair");
   });
+
+  it("updateMediaAsset persists guard-driven failed status when existing completed asset is not playable and patch.status is omitted", async () => {
+    const existingRow = {
+      id: 22,
+      type: "image",
+      status: "completed",
+      publicUrl: null,
+      localPath: null,
+      outputMetadataJson: JSON.stringify({ resultType: "prompt_only" }),
+      tenantType: "individual",
+      tenantId: "global",
+      userId: null,
+      campaignId: null,
+      draftId: null,
+      jobId: null,
+      provider: "qwen",
+      task: "text_to_image",
+      thumbnailUrl: null,
+      mimeType: null,
+      fileSizeBytes: null,
+      durationSeconds: null,
+      width: null,
+      height: null,
+      generationPrompt: "prompt",
+      generationSettingsJson: null,
+      errorMessage: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const updates: Array<Record<string, unknown>> = [];
+
+    vi.doMock("./db", () => ({
+      getDb: vi.fn(async () => ({
+        select: () => ({
+          from: () => ({
+            where: () => ({
+              limit: async () => [existingRow],
+            }),
+          }),
+        }),
+        update: () => ({
+          set: (payload: Record<string, unknown>) => {
+            updates.push(payload);
+            return {
+              where: (_clause: unknown) => true,
+            };
+          },
+        }),
+      })),
+    }));
+
+    const { updateMediaAsset } = await import("./modules/growth-engine/mediaAssets");
+    await updateMediaAsset(existingRow.id, {
+      outputMetadata: { resultType: "prompt_only" },
+    });
+
+    expect(updates.length).toBe(1);
+    expect(updates[0].status).toBe("failed");
+    expect(String(updates[0].errorMessage)).toContain("Marked not complete");
+    expect(String(updates[0].outputMetadataJson)).toContain("mediaTruth");
+    expect(String(updates[0].outputMetadataJson)).toContain("not_playable");
+  });
 });
 
 describe("PR62B generateMarketingImageAsset truth", () => {
@@ -231,5 +293,20 @@ describe("PR62B frontend image action + asset card truth", () => {
     expect(source).toContain("const canOpenAsset = Boolean(asset.publicUrl && status === \"completed\")");
     expect(source).toContain("Prompt details");
     expect(source).toContain("shortPrompt");
+  });
+
+  it("documents generateMarketingImageAsset as first-class PR62B flow (not legacy)", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "server/routers.ts"),
+      "utf8",
+    );
+    const marker = "generateMarketingImageAsset: adminUnlockedProcedure";
+    const markerIndex = source.indexOf(marker);
+    expect(markerIndex).toBeGreaterThan(-1);
+    const nearbyComment = source.slice(Math.max(0, markerIndex - 350), markerIndex);
+    expect(nearbyComment).toContain(
+      "PR62B first-class Marketing App image generation flow. This returns playable image output when configured, or setup_needed/failed truthfully.",
+    );
+    expect(nearbyComment).not.toContain("LEGACY COMPATIBILITY ONLY");
   });
 });
