@@ -13,6 +13,8 @@ import { generateMarketingStudioScript } from "../studio-generation";
 export type MarketingDeliverablePackageType =
   | "image_ad"
   | "social_ad"
+  | "social_post"
+  | "paid_social_ad"
   | "video_ad_30s"
   | "assembled_video_3m"
   | "signup_campaign"
@@ -551,11 +553,343 @@ export async function composeSignupCampaignPackage(input: ComposeMarketingDelive
   });
 }
 
+export async function generateMarketingSocialPostPackage(input: ComposeMarketingDeliverableInput) {
+  const campaignId = await ensureCampaignId(input);
+  const textRoute = await getTextRouteStatus(input);
+  const platformList = input.platforms.length ? input.platforms : ["Facebook"];
+  const postCount = Math.min(5, Math.max(3, platformList.length + 2));
+
+  const posts = Array.from({ length: postCount }).map((_, index) => {
+    const platform = platformList[index % platformList.length];
+    const hooks = fallbackHooks(input.goal, input.audience);
+    return {
+      platform,
+      hook: hooks[index % hooks.length],
+      caption: `${hooks[index % hooks.length]}. ${input.audience} are already using ${input.goal.toLowerCase().includes("equiprofile") ? "EquiProfile" : "it"} to stay ahead. ${input.platforms.includes("Email") ? "" : "#equestrian #stablemanagement #equiprofile"}`.trim(),
+      cta: "Start free trial",
+      hashtags: platform === "Instagram" || platform === "TikTok" ? ["#equestrian", "#stablemanagement", "#equiprofile"] : [],
+      proofNote: "Used by stable owners across the UK",
+    };
+  });
+
+  const packageData: MarketingDeliverablePackage = {
+    packageId: `pkg_${nanoid(12)}`,
+    campaignId,
+    packageType: "social_post",
+    goal: input.goal,
+    audience: input.audience,
+    platforms: platformList,
+    status: resolveDeliverablePackageStatus({
+      setupNeeded: textRoute.setupNeeded,
+      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      packageType: "social_post",
+      requireApproval: input.requireApproval,
+      hasPlayableMedia: false,
+      hasRenderedVideo: false,
+    }),
+    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
+    textGeneratedByModel: !textRoute.setupNeeded,
+    mediaGeneratedByModel: false,
+    fallbackUsed: textRoute.setupNeeded,
+    setupNeeded: textRoute.setupNeeded,
+    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+    strategy: `${postCount} platform-specific posts for ${platformList.join(", ")} targeting ${input.audience}.`,
+    hooks: posts.map((post) => post.hook),
+    adCopy: posts.map((post) => post.caption),
+    cta: "Start free trial",
+    script: posts.map((post, index) => `Post ${index + 1} (${post.platform}):\nHook: ${post.hook}\nCaption: ${post.caption}\nCTA: ${post.cta}`).join("\n\n"),
+    scenePlan: [],
+    visualPrompts: posts.map((post) => `Social post visual for ${post.platform}: ${input.goal}`),
+    mediaRequirements: posts.map((post) => `${post.platform} image or graphic`),
+    captionPlan: { posts, reviewChecklist: posts.map((post, index) => `Review post ${index + 1} (${post.platform})`) },
+    voiceoverPlan: {},
+    musicPlan: {},
+    brandOverlayPlan: {},
+    reviewItems: [],
+    exportPack: { checklist: ["Review all posts", "Approve captions", "Add visuals", "Schedule or export"] },
+    scheduleDrafts: [],
+    mediaJobs: [],
+    campaignItems: [],
+  };
+
+  return persistMarketingDeliverablePackage({
+    packageData,
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    sourcePrompt: input.goal,
+    qualityMode: input.qualityMode,
+    requireApproval: input.requireApproval,
+    exportOnly: input.exportOnly,
+    provider: textRoute.provider,
+    model: textRoute.model,
+  });
+}
+
+export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketingDeliverableInput) {
+  const campaignId = await ensureCampaignId(input);
+  const textRoute = await getTextRouteStatus(input);
+  const platformList = input.platforms.filter((platform) => ["Facebook", "Instagram", "LinkedIn"].includes(platform));
+  const platform = platformList[0] ?? input.platforms[0] ?? "Facebook";
+
+  const adVariants = [
+    {
+      variantLabel: "Variant A — Pain + proof",
+      primaryText: fallbackHooks(input.goal, input.audience)[0],
+      headline: "EquiProfile: Built for stable owners",
+      description: "Centralize your stable operations and grow with confidence.",
+      cta: "Start free trial",
+      audienceAngle: "Problem-aware stable owners",
+      offerNote: "Free 14-day trial. No credit card required.",
+    },
+    {
+      variantLabel: "Variant B — Social proof",
+      primaryText: fallbackHooks(input.goal, input.audience)[1],
+      headline: "Join stable owners already using EquiProfile",
+      description: "From horse records to marketing — all in one place.",
+      cta: "Get started",
+      audienceAngle: "Trust-driven horse owners",
+      offerNote: "Free 14-day trial. Export your data anytime.",
+    },
+    {
+      variantLabel: "Variant C — Direct CTA",
+      primaryText: fallbackHooks(input.goal, input.audience)[2],
+      headline: "Start your free EquiProfile trial today",
+      description: "Less admin. More time with your horses.",
+      cta: "Try free",
+      audienceAngle: "Action-ready stable managers",
+      offerNote: "No setup fees. Cancel anytime.",
+    },
+  ];
+
+  const packageData: MarketingDeliverablePackage = {
+    packageId: `pkg_${nanoid(12)}`,
+    campaignId,
+    packageType: "paid_social_ad",
+    goal: input.goal,
+    audience: input.audience,
+    platforms: input.platforms,
+    status: resolveDeliverablePackageStatus({
+      setupNeeded: textRoute.setupNeeded,
+      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      packageType: "paid_social_ad",
+      requireApproval: input.requireApproval,
+      hasPlayableMedia: false,
+      hasRenderedVideo: false,
+    }),
+    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
+    textGeneratedByModel: !textRoute.setupNeeded,
+    mediaGeneratedByModel: false,
+    fallbackUsed: textRoute.setupNeeded,
+    setupNeeded: textRoute.setupNeeded,
+    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+    strategy: `3 paid ad variants for ${platform} targeting ${input.audience}. Goal: ${input.goal}.`,
+    hooks: adVariants.map((variant) => variant.primaryText),
+    adCopy: adVariants.map((variant) => `${variant.headline}: ${variant.description} | CTA: ${variant.cta} | ${variant.offerNote}`),
+    cta: "Start free trial",
+    script: adVariants.map((variant) => `${variant.variantLabel}\nPrimary text: ${variant.primaryText}\nHeadline: ${variant.headline}\nDescription: ${variant.description}\nCTA: ${variant.cta}\nAudience: ${variant.audienceAngle}\nOffer: ${variant.offerNote}`).join("\n\n"),
+    scenePlan: [],
+    visualPrompts: adVariants.map((variant) => `${platform} ad creative: ${variant.audienceAngle} angle`),
+    mediaRequirements: adVariants.map((variant) => `${platform} ad image or video for ${variant.variantLabel}`),
+    captionPlan: { adVariants, reviewChecklist: adVariants.map((variant, index) => `Approve ${variant.variantLabel} (ad ${index + 1})`) },
+    voiceoverPlan: {},
+    musicPlan: {},
+    brandOverlayPlan: {},
+    reviewItems: [],
+    exportPack: { checklist: ["Review 3 ad variants", "Approve primary text", "Add creative assets", "Set budget and audience in Ads Manager"] },
+    scheduleDrafts: [],
+    mediaJobs: [],
+    campaignItems: [],
+  };
+
+  return persistMarketingDeliverablePackage({
+    packageData,
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    sourcePrompt: input.goal,
+    qualityMode: input.qualityMode,
+    requireApproval: input.requireApproval,
+    exportOnly: input.exportOnly,
+    provider: textRoute.provider,
+    model: textRoute.model,
+  });
+}
+
+export async function generateMarketingEmailCampaignPackage(input: ComposeMarketingDeliverableInput) {
+  const campaignId = await ensureCampaignId(input);
+  const textRoute = await getTextRouteStatus(input);
+  const emailCount = Math.min(5, Math.max(3, Math.ceil((input.durationDays ?? 7) / 3)));
+
+  const emails = [
+    {
+      emailIndex: 1,
+      subject: `[EquiProfile] Your stable deserves better — here's how`,
+      previewText: "Stop losing time to manual stable admin.",
+      body: `Hi [First Name],\n\nManaging a stable shouldn't mean drowning in paperwork.\n\nEquiProfile gives you horse records, scheduling, and marketing — all in one place.\n\n${fallbackHooks(input.goal, input.audience)[0]}\n\nStart your free 14-day trial today.`,
+      cta: "Start free trial",
+      timingSuggestion: "Day 1 — send immediately on signup",
+      complianceNote: "Include unsubscribe link. CAN-SPAM / GDPR compliant.",
+    },
+    {
+      emailIndex: 2,
+      subject: "Stable owners like you saved 5+ hours/week",
+      previewText: "Real results from real stable managers.",
+      body: `Hi [First Name],\n\nStable owners using EquiProfile report spending less time on admin and more time with their horses.\n\n${fallbackHooks(input.goal, input.audience)[1]}\n\nSee how it works — try it free today.`,
+      cta: "See how it works",
+      timingSuggestion: "Day 3 — follow-up with proof",
+      complianceNote: "Include unsubscribe link.",
+    },
+    {
+      emailIndex: 3,
+      subject: "Last chance: Your free EquiProfile trial",
+      previewText: "Don't miss out — trial ends soon.",
+      body: `Hi [First Name],\n\nYour free trial window is closing.\n\n${fallbackHooks(input.goal, input.audience)[2]}\n\nActivate your account now — it takes less than 2 minutes.`,
+      cta: "Activate now",
+      timingSuggestion: "Day 7 — urgency close",
+      complianceNote: "Include unsubscribe link.",
+    },
+  ];
+
+  const packageData: MarketingDeliverablePackage = {
+    packageId: `pkg_${nanoid(12)}`,
+    campaignId,
+    packageType: "email_campaign",
+    goal: input.goal,
+    audience: input.audience,
+    platforms: ["Email"],
+    status: resolveDeliverablePackageStatus({
+      setupNeeded: textRoute.setupNeeded,
+      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      packageType: "email_campaign",
+      requireApproval: input.requireApproval,
+      hasPlayableMedia: false,
+      hasRenderedVideo: false,
+    }),
+    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
+    textGeneratedByModel: !textRoute.setupNeeded,
+    mediaGeneratedByModel: false,
+    fallbackUsed: textRoute.setupNeeded,
+    setupNeeded: textRoute.setupNeeded,
+    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+    strategy: `${emailCount}-email nurture sequence for ${input.audience}. Goal: ${input.goal}.`,
+    hooks: emails.map((email) => email.subject),
+    adCopy: emails.map((email) => `${email.subject} | Preview: ${email.previewText} | CTA: ${email.cta}`),
+    cta: "Start free trial",
+    script: emails.map((email) => `Email ${email.emailIndex}: ${email.subject}\nPreview: ${email.previewText}\n\n${email.body}\n\nCTA: ${email.cta}\nTiming: ${email.timingSuggestion}\nCompliance: ${email.complianceNote}`).join("\n\n---\n\n"),
+    scenePlan: [],
+    visualPrompts: [],
+    mediaRequirements: ["Email header image optional"],
+    captionPlan: { emails, reviewChecklist: emails.map((email, index) => `Review email ${index + 1}: ${email.subject}`) },
+    voiceoverPlan: {},
+    musicPlan: {},
+    brandOverlayPlan: {},
+    reviewItems: [],
+    exportPack: { checklist: ["Review all email bodies", "Verify compliance notes", "Set up email platform", "Schedule send dates"] },
+    scheduleDrafts: [],
+    mediaJobs: [],
+    campaignItems: [],
+  };
+
+  return persistMarketingDeliverablePackage({
+    packageData,
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    sourcePrompt: input.goal,
+    qualityMode: input.qualityMode,
+    requireApproval: input.requireApproval,
+    exportOnly: input.exportOnly,
+    provider: textRoute.provider,
+    model: textRoute.model,
+  });
+}
+
+export async function generateMarketingWeeklyContentPackPackage(input: ComposeMarketingDeliverableInput) {
+  const campaignId = await ensureCampaignId(input);
+  const textRoute = await getTextRouteStatus(input);
+  const days = Math.min(7, Math.max(5, input.durationDays ?? 7));
+  const platformList = input.platforms.length ? input.platforms : ["Facebook", "Instagram"];
+  const hooks = fallbackHooks(input.goal, input.audience);
+
+  const dayPlan = Array.from({ length: days }).map((_, index) => {
+    const day = index + 1;
+    const platform = platformList[index % platformList.length];
+    const hook = hooks[index % hooks.length];
+    return {
+      day,
+      platform,
+      channel: platform,
+      contentFormat: day <= 2 ? "social_post" : day <= 4 ? "ad_creative" : "social_post",
+      body: `Day ${day} — ${platform}: ${hook}. Check out EquiProfile and start your free trial today.`,
+      cta: day % 3 === 0 ? "Start free trial" : day % 3 === 1 ? "Learn more" : "See how it works",
+      postingWindow: day <= 3 ? "Morning (8–10am)" : "Afternoon (12–2pm)",
+    };
+  });
+
+  const packageData: MarketingDeliverablePackage = {
+    packageId: `pkg_${nanoid(12)}`,
+    campaignId,
+    packageType: "weekly_content_pack",
+    goal: input.goal,
+    audience: input.audience,
+    platforms: platformList,
+    status: resolveDeliverablePackageStatus({
+      setupNeeded: textRoute.setupNeeded,
+      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      packageType: "weekly_content_pack",
+      requireApproval: input.requireApproval,
+      hasPlayableMedia: false,
+      hasRenderedVideo: false,
+    }),
+    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
+    textGeneratedByModel: !textRoute.setupNeeded,
+    mediaGeneratedByModel: false,
+    fallbackUsed: textRoute.setupNeeded,
+    setupNeeded: textRoute.setupNeeded,
+    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+    strategy: `${days}-day content plan across ${platformList.join(", ")} for ${input.audience}.`,
+    hooks: dayPlan.map((day) => day.body),
+    adCopy: dayPlan.map((day) => `Day ${day.day} (${day.platform}): ${day.body} | CTA: ${day.cta}`),
+    cta: "Start free trial",
+    script: dayPlan.map((day) => `Day ${day.day} — ${day.platform} (${day.postingWindow})\nFormat: ${day.contentFormat}\nContent: ${day.body}\nCTA: ${day.cta}`).join("\n\n"),
+    scenePlan: [],
+    visualPrompts: dayPlan.map((day) => `Day ${day.day} ${day.platform} visual: ${day.body}`),
+    mediaRequirements: dayPlan.map((day) => `Day ${day.day} ${day.platform} image`),
+    captionPlan: { dayPlan, reviewChecklist: dayPlan.map((day) => `Approve Day ${day.day} (${day.platform})`) },
+    voiceoverPlan: {},
+    musicPlan: {},
+    brandOverlayPlan: {},
+    reviewItems: [],
+    exportPack: { checklist: ["Review day-by-day plan", "Approve all posts", "Add visuals", "Schedule or export week"] },
+    scheduleDrafts: [],
+    mediaJobs: [],
+    campaignItems: [],
+  };
+
+  return persistMarketingDeliverablePackage({
+    packageData,
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    sourcePrompt: input.goal,
+    qualityMode: input.qualityMode,
+    requireApproval: input.requireApproval,
+    exportOnly: input.exportOnly,
+    provider: textRoute.provider,
+    model: textRoute.model,
+  });
+}
+
 export async function composeMarketingDeliverablePackage(input: ComposeMarketingDeliverableInput) {
   if (input.packageType === "assembled_video_3m") return composeAssembledVideoPackage(input);
   if (input.packageType === "signup_campaign") return composeSignupCampaignPackage(input);
   if (input.packageType === "video_ad_30s") return composeThirtySecondAdPackage(input);
   if (input.packageType === "image_ad") return composeImageAdPackage(input);
+  if (input.packageType === "social_post") return generateMarketingSocialPostPackage(input);
+  if (input.packageType === "paid_social_ad") return generateMarketingPaidSocialAdPackage(input);
+  if (input.packageType === "email_campaign") return generateMarketingEmailCampaignPackage(input);
+  if (input.packageType === "weekly_content_pack") return generateMarketingWeeklyContentPackPackage(input);
   throw new UnsupportedDeliverablePackageTypeError(input.packageType);
 }
 
@@ -663,22 +997,13 @@ export async function createCampaignItemsFromDeliverablePackage(input: {
   }
 
   if (input.packageData.packageType === "signup_campaign") {
-    itemRows.push(
-      {
-        type: "email",
-        platform: "Email",
-        title: "Signup sequence",
-        content: JSON.stringify((input.packageData.captionPlan as { emailSequence?: string[] }).emailSequence ?? [], null, 2),
-        metadata: metadataBase,
-      },
-      {
-        type: "blog",
-        platform: "Blog / SEO",
-        title: "Signup campaign longform",
-        content: "Publish educational signup-focused SEO content supporting the campaign CTA.",
-        metadata: metadataBase,
-      },
-    );
+    itemRows.push({
+      type: "email",
+      platform: "Email",
+      title: "Signup sequence",
+      content: JSON.stringify((input.packageData.captionPlan as { emailSequence?: string[] }).emailSequence ?? [], null, 2),
+      metadata: metadataBase,
+    });
   }
 
   const createdItems: Array<Record<string, unknown>> = [];

@@ -111,15 +111,16 @@ describe("PR63A creation capability truth contract", () => {
     expect(settings).toContain("getMarketingCreationCapabilities");
   });
 
-  it("TheMarketingApp groups capability cards by truthful output guarantees", () => {
+  it("TheMarketingApp keeps truthful output states without exposing diagnostic grouping in the primary menu", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
-    expect(app).toContain("Ready now");
-    expect(app).toContain("Package / plan only");
-    expect(app).toContain("Needs setup");
-    expect(app).toContain("Future / not wired");
     expect(app).toContain("Setup / blocker output");
     expect(app).toContain("Plan-only output");
-    expect(app).toContain('disabled={group.title === "Future / not wired"}');
+    expect(app).toContain("Advanced");
+    expect(app).toContain("futureCapabilities.length > 0");
+    expect(app).not.toContain('>{"Ready now"}<');
+    expect(app).not.toContain('>{"Package / plan only"}<');
+    expect(app).not.toContain('>{"Needs setup"}<');
+    expect(app).not.toContain('disabled={group.title === "Future / not wired"}');
   });
 
   it("keeps avatar capability as queued/setup truth without claiming playable preview", async () => {

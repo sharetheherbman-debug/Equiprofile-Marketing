@@ -362,6 +362,10 @@ import {
   composeAssembledVideoPackage as composeAssembledVideoPackageService,
   composeSignupCampaignPackage as composeSignupCampaignPackageService,
   composeThirtySecondAdPackage as composeThirtySecondAdPackageService,
+  generateMarketingEmailCampaignPackage as generateMarketingEmailCampaignPackageService,
+  generateMarketingPaidSocialAdPackage as generateMarketingPaidSocialAdPackageService,
+  generateMarketingSocialPostPackage as generateMarketingSocialPostPackageService,
+  generateMarketingWeeklyContentPackPackage as generateMarketingWeeklyContentPackPackageService,
 } from "./modules/marketing/deliverable-composer";
 import {
   buildMarketingGeniusPromptContext as buildMarketingGeniusPromptContextService,
@@ -10808,6 +10812,90 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return composeSignupCampaignPackageService({
           ...input,
           packageType: "signup_campaign",
+        });
+      }),
+
+    generateMarketingSocialPostPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string(),
+        workspaceId: z.string(),
+        hostAppId: z.string(),
+        goal: z.string(),
+        audience: z.string(),
+        platforms: z.array(z.string()),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+        durationDays: z.number().default(7),
+        campaignId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return generateMarketingSocialPostPackageService({
+          ...input,
+          packageType: "social_post",
+        });
+      }),
+
+    generateMarketingPaidSocialAdPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string(),
+        workspaceId: z.string(),
+        hostAppId: z.string(),
+        goal: z.string(),
+        audience: z.string(),
+        platforms: z.array(z.string()),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+        durationDays: z.number().default(7),
+        campaignId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return generateMarketingPaidSocialAdPackageService({
+          ...input,
+          packageType: "paid_social_ad",
+        });
+      }),
+
+    generateMarketingEmailCampaignPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string(),
+        workspaceId: z.string(),
+        hostAppId: z.string(),
+        goal: z.string(),
+        audience: z.string(),
+        platforms: z.array(z.string()).default(["Email"]),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+        durationDays: z.number().default(7),
+        campaignId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return generateMarketingEmailCampaignPackageService({
+          ...input,
+          packageType: "email_campaign",
+        });
+      }),
+
+    generateMarketingWeeklyContentPackPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string(),
+        workspaceId: z.string(),
+        hostAppId: z.string(),
+        goal: z.string(),
+        audience: z.string(),
+        platforms: z.array(z.string()),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+        durationDays: z.number().default(7),
+        campaignId: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return generateMarketingWeeklyContentPackPackageService({
+          ...input,
+          packageType: "weekly_content_pack",
         });
       }),
 

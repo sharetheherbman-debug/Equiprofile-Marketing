@@ -461,6 +461,14 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     requireApproval: true,
     durationDays: 30,
   });
+  const [campaignPlan, setCampaignPlan] = useState<{
+    goal: string;
+    channel: string;
+    duration: string;
+    suggestedCadence: string;
+    deliverables: string[];
+    requiredSetup: string[];
+  } | null>(null);
 
   const { brandKit, setBrandKit, overlayTemplates, upsertBrandKitMutation, selectBrandLogoMutation } = useMarketingBrandKit(workspace);
   const {
@@ -1212,6 +1220,43 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
+  function handlePlanCampaign() {
+    if (!commandForm.goal.trim()) {
+      toast.error("Describe what you want to create first");
+      return;
+    }
+    const lower = commandForm.goal.toLowerCase();
+    const days = lower.match(/(\d+)[-\s]?day/)?.[1] ?? String(commandForm.durationDays);
+    const channelList = commandForm.platforms.length ? commandForm.platforms.join(", ") : "Facebook";
+    const isSignup = /signup|sign up|sign-up|trial|convert|50 signup/.test(lower);
+    const isEmail = commandForm.platforms.includes("Email");
+    const deliverables: string[] = [];
+    if (commandForm.platforms.some((platform) => ["Facebook", "Instagram", "LinkedIn", "TikTok", "YouTube Shorts"].includes(platform))) {
+      deliverables.push(`${commandForm.platforms.filter((platform) => platform !== "Email").join(" + ")} posts`);
+      deliverables.push("Ad variants");
+    }
+    if (isEmail || commandForm.contentTypes.includes("Email Campaign")) deliverables.push("Email support sequence");
+    deliverables.push("Schedule draft");
+    deliverables.push("Export pack");
+    deliverables.push("Tracking links");
+    const requiredSetup: string[] = [];
+    if (!backendReadiness || backendReadiness.providerCapabilityReadiness?.status !== "ready") {
+      requiredSetup.push("AI provider sync needed for text generation");
+    }
+    if (commandForm.platforms.some((platform) => ["Facebook", "Instagram"].includes(platform))) {
+      requiredSetup.push("Facebook connector needed for direct posting (export available regardless)");
+    }
+    setCampaignPlan({
+      goal: isSignup ? `Get signups for ${workspace.brandName}` : commandForm.goal,
+      channel: channelList,
+      duration: `${days} days`,
+      suggestedCadence: Number(days) <= 7 ? "2–3 posts/day" : "1–2 posts/day",
+      deliverables,
+      requiredSetup,
+    });
+    setWorkspaceTab("plan");
+  }
+
   function handleGenerate() {
     if (creationCapabilitiesQuery.isLoading) {
       setCreationStatusNotice({
@@ -1286,7 +1331,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     generateCampaignPackageMutation.isPending ||
     runAutonomousCampaignMutation.isPending;
 
-  const hasGeneratedOutput = lastDeliverablePackage !== null || imageGenerationResult !== null;
+  const hasGeneratedOutput = campaignPlan !== null || lastDeliverablePackage !== null || imageGenerationResult !== null;
 
   const backendReadiness = (backendReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const connectorReadiness = (connectorReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
@@ -1493,62 +1538,58 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
           {/* ── Left: Creation Menu ── */}
           <nav className="creation-menu flex flex-col gap-1 rounded-3xl border border-stone-200 bg-white p-3 shadow-sm lg:h-fit">
             <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">Create</p>
-            {[
-              { title: "Ready now", rows: readyNowCapabilities, tone: "border-emerald-200 bg-emerald-50 text-emerald-700" },
-              { title: "Package / plan only", rows: packagePlanCapabilities, tone: "border-amber-200 bg-amber-50 text-amber-700" },
-              { title: "Needs setup", rows: needsSetupCapabilities, tone: "border-stone-200 bg-stone-50 text-stone-700" },
-              { title: "Future / not wired", rows: futureCapabilities, tone: "border-stone-200 bg-stone-50 text-stone-600" },
-            ].map((group) => (
-              group.rows.length ? (
-                <div key={group.title} className="mt-2 space-y-1.5">
-                  <p className="px-2 text-[10px] font-semibold uppercase tracking-wide text-stone-500">{group.title}</p>
-                  {group.rows.map((type) => (
+            {/* Primary creation types — no backend diagnostic grouping in the main flow */}
+            {[...readyNowCapabilities, ...packagePlanCapabilities, ...needsSetupCapabilities].map((type) => (
+              <button
+                key={type.id}
+                type="button"
+                data-creation-type={type.id}
+                onClick={() => {
+                  setSelectedCreationType(type.id);
+                  if (type.id === "image_ad") setCommandForm((c) => ({ ...c, goal: "Create a premium image ad for EquiProfile targeting stable owners." }));
+                  else if (type.id === "video_ad_30s") setCommandForm((c) => ({ ...c, goal: "Create a 30-second Facebook and Instagram ad for EquiProfile to get stable owners to start a free trial.", platforms: ["Facebook", "Instagram"] }));
+                  else if (type.id === "assembled_video_3m") setCommandForm((c) => ({ ...c, goal: "Create a 3-minute marketing video for EquiProfile explaining why stable owners should use it.", platforms: ["YouTube Shorts"] }));
+                  else if (type.id === "signup_campaign") setCommandForm((c) => ({ ...c, goal: "Get me 50 signups this month from stable owners.", platforms: ["Facebook", "Instagram", "Email"] }));
+                }}
+                className={`w-full rounded-2xl border px-3 py-2.5 text-left transition-colors ${
+                  selectedCreationType === type.id
+                    ? "border-stone-900 bg-stone-900 text-white"
+                    : type.canGenerate
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-white"
+                      : "border-stone-200 bg-stone-50 text-stone-700 hover:bg-white"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${type.canGenerate ? "bg-emerald-500" : "bg-stone-400"}`} />
+                  <p className="text-xs font-medium">{type.label}</p>
+                </div>
+                <p className={`mt-0.5 text-[10px] leading-tight ${selectedCreationType === type.id ? "text-white/70" : "text-stone-500"}`}>{type.description}</p>
+              </button>
+            ))}
+            {/* Advanced / future types — collapsed by default */}
+            {futureCapabilities.length > 0 ? (
+              <details className="mt-2">
+                <summary className="cursor-pointer px-2 text-[10px] font-semibold uppercase tracking-wide text-stone-400">Advanced</summary>
+                <div className="mt-1.5 space-y-1.5">
+                  {futureCapabilities.map((type) => (
                     <button
                       key={type.id}
                       type="button"
                       data-creation-type={type.id}
-                      disabled={group.title === "Future / not wired"}
-                      onClick={() => {
-                        setSelectedCreationType(type.id);
-                        if (type.id === "image_ad") setCommandForm((c) => ({ ...c, goal: "Create a premium image ad for EquiProfile targeting stable owners." }));
-                        else if (type.id === "video_ad_30s") setCommandForm((c) => ({ ...c, goal: "Create a 30-second Facebook and Instagram ad for EquiProfile to get stable owners to start a free trial.", platforms: ["Facebook", "Instagram"] }));
-                        else if (type.id === "assembled_video_3m") setCommandForm((c) => ({ ...c, goal: "Create a 3-minute marketing video for EquiProfile explaining why stable owners should use it.", platforms: ["YouTube Shorts"] }));
-                        else if (type.id === "signup_campaign") setCommandForm((c) => ({ ...c, goal: "Get me 50 signups this month from stable owners.", platforms: ["Facebook", "Instagram", "Email"] }));
-                        if (group.title === "Future / not wired") {
-                          setCreationStatusNotice({
-                            status: "not_wired",
-                            title: `${type.label} is not wired yet`,
-                            reason: type.blockers[0] ?? "No first-class procedure/viewer contract exists yet.",
-                          });
-                        }
-                      }}
-                      className={`rounded-2xl border px-3 py-2.5 text-left transition-colors ${
-                        selectedCreationType === type.id
-                          ? "border-stone-900 bg-stone-900 text-white"
-                          : `${group.tone} hover:bg-white`
-                      } ${group.title === "Future / not wired" ? "opacity-80" : ""}`}
+                      disabled
+                      className="w-full cursor-not-allowed rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-left opacity-50"
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-medium">{type.label}</p>
-                        <span className={`rounded-full border px-2 py-0.5 text-[10px] ${
-                          selectedCreationType === type.id
-                            ? "border-white/30 bg-white/15 text-white"
-                            : "border-stone-300 bg-white text-stone-600"
-                        }`}>
-                          {formatStatusLabel(type.status)}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-stone-300" />
+                        <p className="text-xs font-medium text-stone-600">{type.label}</p>
                       </div>
-                      <p className={`mt-0.5 text-[10px] leading-tight ${selectedCreationType === type.id ? "text-white/70" : "text-stone-500"}`}>{type.description}</p>
-                      <div className={`mt-1.5 space-y-0.5 text-[10px] ${selectedCreationType === type.id ? "text-white/80" : "text-stone-500"}`}>
-                        <p>Output: {formatOutputGuaranteeLabel(type.outputGuarantee)}</p>
-                        <p>Expected: {type.expectedOutput}</p>
-                        <p>{type.status === "ready" ? type.viewerContract.successState : (type.missingSetup[0] ?? type.blockers[0] ?? type.viewerContract.blockerState)}</p>
-                      </div>
+                      <p className="mt-0.5 text-[10px] leading-tight text-stone-400">{type.description}</p>
+                      <p className="mt-0.5 text-[10px] text-stone-400">Coming soon</p>
                     </button>
                   ))}
                 </div>
-              ) : null
-            ))}
+              </details>
+            ) : null}
           </nav>
 
           {/* ── Center: Composer + workspace ── */}
@@ -1642,7 +1683,16 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                 </label>
               </div>
 
-              <div className="mt-5">
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-2xl px-6"
+                  onClick={handlePlanCampaign}
+                  disabled={isAnyGenerationPending || !commandForm.goal.trim()}
+                >
+                  Plan campaign
+                </Button>
                 <Button
                   type="button"
                   className="rounded-2xl px-6"
@@ -1718,6 +1768,42 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                   </TabsContent>
 
                   <TabsContent value="plan" className="space-y-4">
+                    {campaignPlan ? (
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <h4 className="text-sm font-semibold text-stone-900">Campaign plan</h4>
+                            <p className="mt-2 text-xs text-stone-700">Goal: {campaignPlan.goal}</p>
+                            <p className="mt-1 text-xs text-stone-700">Channels: {campaignPlan.channel}</p>
+                            <p className="mt-1 text-xs text-stone-700">Duration: {campaignPlan.duration}</p>
+                            <p className="mt-1 text-xs text-stone-700">Cadence: {campaignPlan.suggestedCadence}</p>
+                          </div>
+                          <Badge className="rounded-full border border-emerald-300 bg-white text-emerald-700">Plan ready</Badge>
+                        </div>
+                        <div className="mt-3 grid gap-3 md:grid-cols-2">
+                          <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Deliverables</p>
+                            <ul className="mt-2 space-y-1 text-xs text-stone-700">
+                              {campaignPlan.deliverables.map((deliverable) => (
+                                <li key={deliverable}>• {deliverable}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Required setup</p>
+                            {campaignPlan.requiredSetup.length ? (
+                              <ul className="mt-2 space-y-1 text-xs text-stone-700">
+                                {campaignPlan.requiredSetup.map((item) => (
+                                  <li key={item}>• {item}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="mt-2 text-xs text-stone-700">No blocking setup detected for export-first planning.</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
                     <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
                       <h4 className="text-sm font-semibold text-stone-900">Campaign plan</h4>
                       <p className="mt-2 text-xs text-stone-600">Goal: {commandForm.goal || "—"}</p>
