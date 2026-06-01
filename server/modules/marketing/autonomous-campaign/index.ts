@@ -11,6 +11,7 @@ import { buildPlatformSpecialistPromptContext, recommendSpecialistsForCampaign }
 import { getMarketingPerformanceContext } from "../results-conversion";
 import { buildBrandMemoryPromptContext, updateBrandMemoryFromResults } from "../brand-memory";
 import { getMarketingLearningInsights, recommendNextMarketingActions } from "../result-learning";
+import { composeSignupCampaignPackage } from "../deliverable-composer";
 
 type AutonomousRole =
   | "StrategyAgent"
@@ -327,37 +328,66 @@ export async function runAutonomousMarketingCampaign(input: {
     runIds: runSummaries.map((item) => item.runId),
   });
 
+  const agentSummary = summarizeAutonomousCampaignRun({
+    campaignId,
+    runSummaries,
+    connectorReadiness,
+    performanceContext,
+    intelligence: {
+      managerBrief,
+      managerGuidance,
+      structure,
+      specialistContext,
+      geniusContext,
+      playbook,
+      brandMemory,
+      trendContext,
+      competitorContext,
+      gapContext,
+      learningInsights,
+      creativeScore,
+      mediaTemplate,
+      pacingPlan,
+      captionPlan,
+      thumbnailPlan,
+      mediaValidation,
+      nextActions,
+      commandCentre,
+    },
+  });
+
+  const deliverablePackage = await composeSignupCampaignPackage({
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    qualityMode: input.qualityMode,
+    goal: input.goal,
+    audience: input.audience,
+    platforms: input.platforms,
+    packageType: "signup_campaign",
+    campaignId,
+    durationDays: input.durationDays,
+    exportOnly: effectiveExportOnly,
+    requireApproval,
+  });
+
   return {
-    ...summarizeAutonomousCampaignRun({
-      campaignId,
-      runSummaries,
-      connectorReadiness,
-      performanceContext,
-      intelligence: {
-        managerBrief,
-        managerGuidance,
-        structure,
-        specialistContext,
-        geniusContext,
-        playbook,
-        brandMemory,
-        trendContext,
-        competitorContext,
-        gapContext,
-        learningInsights,
-        creativeScore,
-        mediaTemplate,
-        pacingPlan,
-        captionPlan,
-        thumbnailPlan,
-        mediaValidation,
-        nextActions,
-        commandCentre,
-      },
-    }),
+    campaignId,
+    deliverablePackage,
+    campaignItems: deliverablePackage.campaignItems,
+    reviewItems: deliverablePackage.reviewItems,
+    exportPack: deliverablePackage.exportPack,
+    scheduleDrafts: deliverablePackage.scheduleDrafts,
+    mediaJobs: deliverablePackage.mediaJobs,
+    agentSummary,
+    setupNeeded: deliverablePackage.setupNeeded,
+    blockers: deliverablePackage.blockers,
+    reviewTasks: agentSummary.reviewTasks,
+    runSummaries,
     persistedRuns,
     requireApproval,
     exportOnly: effectiveExportOnly,
     directPostingEnabled: false,
+    status: deliverablePackage.status,
   };
 }

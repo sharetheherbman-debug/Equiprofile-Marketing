@@ -357,6 +357,11 @@ import { getMarketingBackendReadiness as getMarketingBackendReadinessService } f
 import { getMarketingConnectorReadiness as getMarketingConnectorReadinessService } from "./modules/marketing/connector-readiness";
 import { runAutonomousMarketingCampaign as runAutonomousMarketingCampaignService } from "./modules/marketing/autonomous-campaign";
 import {
+  composeAssembledVideoPackage as composeAssembledVideoPackageService,
+  composeSignupCampaignPackage as composeSignupCampaignPackageService,
+  composeThirtySecondAdPackage as composeThirtySecondAdPackageService,
+} from "./modules/marketing/deliverable-composer";
+import {
   buildMarketingGeniusPromptContext as buildMarketingGeniusPromptContextService,
   listMarketingAngleFrameworks as listMarketingAngleFrameworksService,
   listMarketingCtaLibrary as listMarketingCtaLibraryService,
@@ -10724,6 +10729,68 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }))
       .mutation(async ({ input }) => {
         return runMarketingAgentTaskService(input);
+      }),
+
+    generateMarketingAdPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        goal: z.string().min(3).max(600),
+        audience: z.string().min(2).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
+        durationSeconds: z.number().int().min(15).max(120).default(30),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        return composeThirtySecondAdPackageService({
+          ...input,
+          packageType: "video_ad_30s",
+        });
+      }),
+
+    generateMarketingVideoPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        goal: z.string().min(3).max(600),
+        audience: z.string().min(2).max(600),
+        platform: z.string().min(1).max(120),
+        durationSeconds: z.number().int().min(60).max(600).default(180),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        return composeAssembledVideoPackageService({
+          ...input,
+          platforms: [input.platform],
+          packageType: "assembled_video_3m",
+        });
+      }),
+
+    generateMarketingCampaignPackage: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        goal: z.string().min(3).max(600),
+        audience: z.string().min(2).max(600),
+        platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
+        durationDays: z.number().int().min(7).max(365).default(30),
+        targetOutcome: z.string().max(600).optional(),
+        exportOnly: z.boolean().default(true),
+        requireApproval: z.boolean().default(true),
+      }))
+      .mutation(async ({ input }) => {
+        return composeSignupCampaignPackageService({
+          ...input,
+          packageType: "signup_campaign",
+        });
       }),
 
     runAutonomousMarketingCampaign: adminUnlockedProcedure
