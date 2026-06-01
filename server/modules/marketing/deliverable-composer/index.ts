@@ -29,6 +29,9 @@ export type MarketingDeliverablePackage = {
   platforms: string[];
   status: "draft" | "partial" | "completed";
   generationSource: "model" | "fallback" | "hybrid";
+  textGeneratedByModel: boolean;
+  mediaGeneratedByModel: boolean;
+  fallbackUsed: boolean;
   setupNeeded: boolean;
   blockers: string[];
   strategy: string;
@@ -127,6 +130,42 @@ async function getTextRouteStatus(input: ComposeMarketingDeliverableInput) {
   };
 }
 
+export function resolveDeliverablePackageStatus(input: {
+  setupNeeded: boolean;
+  blockers: string[];
+  packageType: MarketingDeliverablePackageType;
+  requireApproval?: boolean;
+  hasPlayableMedia: boolean;
+  hasRenderedVideo: boolean;
+}) {
+  if (input.setupNeeded || input.blockers.length > 0) return "partial" as const;
+  if (input.requireApproval) return "draft" as const;
+
+  if (input.packageType === "assembled_video_3m") {
+    return input.hasRenderedVideo ? "completed" as const : "draft" as const;
+  }
+
+  if (input.packageType === "video_ad_30s") {
+    return input.hasPlayableMedia ? "completed" as const : "draft" as const;
+  }
+
+  if (input.packageType === "signup_campaign" || input.packageType === "image_ad") {
+    return "draft" as const;
+  }
+
+  return input.hasPlayableMedia ? "completed" as const : "draft" as const;
+}
+
+export function resolveGenerationSource(input: {
+  textGeneratedByModel: boolean;
+  mediaGeneratedByModel: boolean;
+  fallbackUsed: boolean;
+}): "model" | "fallback" | "hybrid" {
+  if (input.fallbackUsed && (input.textGeneratedByModel || input.mediaGeneratedByModel)) return "hybrid";
+  if (input.textGeneratedByModel || input.mediaGeneratedByModel) return "model";
+  return "fallback";
+}
+
 export async function composeImageAdPackage(input: ComposeMarketingDeliverableInput) {
   const campaignId = await ensureCampaignId(input);
   const textRoute = await getTextRouteStatus(input);
@@ -149,6 +188,20 @@ export async function composeImageAdPackage(input: ComposeMarketingDeliverableIn
     ...(textRoute.setupNeeded ? [textRoute.reason] : []),
     ...(imageResult?.status === "setup_needed" ? imageResult.setupNeeded : []),
   ];
+  const mediaGeneratedByModel = imageResult?.status === "completed" && Boolean(imageResult.publicUrl ?? imageResult.assetId ?? imageResult.jobId);
+  const textGeneratedByModel = false;
+  const fallbackUsed = true;
+  const generationSource = mediaGeneratedByModel && !textRoute.setupNeeded
+    ? "hybrid"
+    : "fallback";
+  const status = resolveDeliverablePackageStatus({
+    setupNeeded: setupBlockers.length > 0,
+    blockers: setupBlockers,
+    packageType: "image_ad",
+    requireApproval: input.requireApproval,
+    hasPlayableMedia: mediaGeneratedByModel,
+    hasRenderedVideo: false,
+  });
 
   const mediaJobs = imageResult
     ? [{
@@ -170,8 +223,11 @@ export async function composeImageAdPackage(input: ComposeMarketingDeliverableIn
     goal: input.goal,
     audience: input.audience,
     platforms: input.platforms,
-    status: setupBlockers.length ? "partial" : "completed",
-    generationSource: textRoute.setupNeeded ? "fallback" : imageResult?.status === "completed" ? "hybrid" : "model",
+    status,
+    generationSource,
+    textGeneratedByModel,
+    mediaGeneratedByModel,
+    fallbackUsed,
     setupNeeded: setupBlockers.length > 0,
     blockers: setupBlockers,
     strategy: `Image-first ad package for ${input.audience} focused on ${input.goal}.`,
@@ -231,6 +287,22 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
   const blockers = scriptPlan.status === "setup_needed" || scriptPlan.status === "provider_unavailable"
     ? [scriptPlan.providerRouteMetadata.reason ?? "Script provider setup is needed."]
     : [];
+  const textGeneratedByModel = scriptPlan.status === "generated" && !scriptPlan.providerRouteMetadata.fallback_used;
+  const mediaGeneratedByModel = false;
+  const fallbackUsed = true;
+  const generationSource = resolveGenerationSource({
+    textGeneratedByModel,
+    mediaGeneratedByModel,
+    fallbackUsed,
+  });
+  const status = resolveDeliverablePackageStatus({
+    setupNeeded: blockers.length > 0,
+    blockers,
+    packageType: "video_ad_30s",
+    requireApproval: input.requireApproval,
+    hasPlayableMedia: false,
+    hasRenderedVideo: false,
+  });
 
   const hooks = fallbackHooks(input.goal, input.audience);
   const packageData: MarketingDeliverablePackage = {
@@ -240,8 +312,11 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
     goal: input.goal,
     audience: input.audience,
     platforms: input.platforms,
-    status: blockers.length ? "partial" : "completed",
-    generationSource: scriptPlan.providerRouteMetadata.fallback_used ? "fallback" : "model",
+    status,
+    generationSource,
+    textGeneratedByModel,
+    mediaGeneratedByModel,
+    fallbackUsed,
     setupNeeded: blockers.length > 0,
     blockers,
     strategy: `30-second conversion ad tailored for ${input.platforms.join(", ")}.`,
@@ -312,6 +387,22 @@ export async function composeAssembledVideoPackage(input: ComposeMarketingDelive
   const blockers = scriptPlan.status === "setup_needed" || scriptPlan.status === "provider_unavailable"
     ? [scriptPlan.providerRouteMetadata.reason ?? "Video planning model route is not configured."]
     : [];
+  const textGeneratedByModel = scriptPlan.status === "generated" && !scriptPlan.providerRouteMetadata.fallback_used;
+  const mediaGeneratedByModel = false;
+  const fallbackUsed = true;
+  const generationSource = resolveGenerationSource({
+    textGeneratedByModel,
+    mediaGeneratedByModel,
+    fallbackUsed,
+  });
+  const status = resolveDeliverablePackageStatus({
+    setupNeeded: blockers.length > 0,
+    blockers,
+    packageType: "assembled_video_3m",
+    requireApproval: input.requireApproval,
+    hasPlayableMedia: false,
+    hasRenderedVideo: false,
+  });
 
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
@@ -320,8 +411,11 @@ export async function composeAssembledVideoPackage(input: ComposeMarketingDelive
     goal: input.goal,
     audience: input.audience,
     platforms: input.platforms,
-    status: blockers.length ? "partial" : "completed",
-    generationSource: scriptPlan.providerRouteMetadata.fallback_used ? "fallback" : "model",
+    status,
+    generationSource,
+    textGeneratedByModel,
+    mediaGeneratedByModel,
+    fallbackUsed,
     setupNeeded: blockers.length > 0,
     blockers,
     strategy: `Assembled-video package with timeline, media slots, voiceover and export readiness for ${input.platforms[0] ?? "YouTube"}.`,
@@ -394,8 +488,18 @@ export async function composeSignupCampaignPackage(input: ComposeMarketingDelive
     goal: input.goal,
     audience: input.audience,
     platforms: input.platforms,
-    status: adPackage.setupNeeded ? "partial" : "completed",
+    status: resolveDeliverablePackageStatus({
+      setupNeeded: adPackage.setupNeeded,
+      blockers: adPackage.blockers,
+      packageType: "signup_campaign",
+      requireApproval: input.requireApproval,
+      hasPlayableMedia: false,
+      hasRenderedVideo: false,
+    }),
     generationSource: adPackage.generationSource,
+    textGeneratedByModel: adPackage.textGeneratedByModel,
+    mediaGeneratedByModel: adPackage.mediaGeneratedByModel,
+    fallbackUsed: adPackage.fallbackUsed,
     setupNeeded: adPackage.setupNeeded,
     blockers: adPackage.blockers,
     strategy: `Signup-focused ${durationDays}-day plan targeting ${input.audience}. Outcome: ${input.targetOutcome ?? "monthly signup growth"}.`,
@@ -463,6 +567,9 @@ export async function createCampaignItemsFromDeliverablePackage(input: {
     model: input.model ?? null,
     qualityMode: input.qualityMode,
     generationSource,
+    textGeneratedByModel: input.packageData.textGeneratedByModel,
+    mediaGeneratedByModel: input.packageData.mediaGeneratedByModel,
+    fallbackUsed: input.packageData.fallbackUsed,
     setupNeeded: input.packageData.setupNeeded,
     blockers: input.packageData.blockers,
   };

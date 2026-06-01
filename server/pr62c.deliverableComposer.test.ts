@@ -78,6 +78,12 @@ describe("PR62C deliverable composer", () => {
     expect(result.hooks.length).toBeGreaterThanOrEqual(3);
     expect(result.script).toContain("30-second");
     expect(result.scenePlan.length).toBeGreaterThanOrEqual(3);
+    expect(result.status).toBe("draft");
+    expect(result.status).not.toBe("completed");
+    expect(result.generationSource).toBe("hybrid");
+    expect(result.textGeneratedByModel).toBe(true);
+    expect(result.mediaGeneratedByModel).toBe(false);
+    expect(result.fallbackUsed).toBe(true);
     expect(result.campaignItems.length).toBeGreaterThan(0);
     expect(createMarketingCampaignItemRecord).toHaveBeenCalled();
     expect(createMarketingScheduleDraftRecord).toHaveBeenCalled();
@@ -131,6 +137,9 @@ describe("PR62C deliverable composer", () => {
     expect(result.packageType).toBe("assembled_video_3m");
     expect(result.scenePlan.length).toBeGreaterThanOrEqual(8);
     expect(result.scenePlan.length).toBeLessThanOrEqual(15);
+    expect(result.status).toBe("draft");
+    expect(result.status).not.toBe("completed");
+    expect((result.exportPack as { renderStatus?: string }).renderStatus).toBe("not_rendered");
   });
 
   it("generateMarketingAdPackage persists campaign items", () => {
@@ -285,5 +294,111 @@ describe("PR62C deliverable composer", () => {
     expect(result.setupNeeded).toBe(true);
     expect(result.blockers.join(" ")).toContain("Configure image provider");
     expect(result.adCopy.length).toBeGreaterThan(0);
+    expect(result.status).toBe("partial");
+    expect(result.status).not.toBe("completed");
+    expect(result.generationSource).toBe("fallback");
+    expect(result.textGeneratedByModel).toBe(false);
+    expect(result.mediaGeneratedByModel).toBe(false);
+    expect(result.fallbackUsed).toBe(true);
+  });
+
+  it("signup campaign defaults to draft when package is generated without setup blockers", async () => {
+    vi.doMock("./modules/marketing/studio-generation", () => ({
+      generateMarketingStudioScript: vi.fn(async () => ({
+        status: "generated",
+        title: "Ad",
+        goal: "g",
+        audience: "a",
+        brief: "b",
+        script: "30-second script",
+        voiceoverScript: "voice",
+        scenePlan: [
+          { order: 1, durationSeconds: 8, narration: "s1", visualPrompt: "v1" },
+          { order: 2, durationSeconds: 10, narration: "s2", visualPrompt: "v2" },
+          { order: 3, durationSeconds: 12, narration: "s3", visualPrompt: "v3" },
+        ],
+        requiredAssets: ["asset"],
+        platformNotes: ["note"],
+        cta: "Start free trial",
+        hashtags: [],
+        complianceNotes: [],
+        providerRouteMetadata: {
+          task: "scriptwriting",
+          status: "ready",
+          provider: "qwen",
+          modelId: "qwen-text",
+          reason: null,
+          fallback_used: false,
+          fallback_reason: null,
+        },
+      })),
+    }));
+    vi.doMock("./modules/marketing/image-generation", () => ({
+      generateMarketingImageAsset: vi.fn(async () => ({ status: "completed", setupNeeded: [], assetId: 10, publicUrl: "https://example.com/image.png" })),
+    }));
+    vi.doMock("./modules/growth-engine", () => ({
+      createMarketingCampaignRecord: vi.fn(async () => 77),
+      createMarketingCampaignItemRecord: vi.fn(async () => 1),
+      createMarketingScheduleDraftRecord: vi.fn(async () => 1),
+      listMarketingCampaignItemRecords: vi.fn(async () => []),
+    }));
+    vi.doMock("./modules/marketing/qa-engine/marketingReviewStore", () => ({ createMarketingReviewRecord: vi.fn(async () => 1) }));
+    vi.doMock("./modules/marketing/provider-capabilities", () => ({
+      defaultWorkspaceBudgetPolicy: vi.fn(() => ({ mode: "standard" })),
+      resolveMarketingProviderRoute: vi.fn(async () => ({ status: "ready", reason: null, selected: { provider: "qwen", modelId: "qwen-text" } })),
+    }));
+
+    const { composeSignupCampaignPackage } = await import("./modules/marketing/deliverable-composer");
+    const result = await composeSignupCampaignPackage({
+      tenantId: "t",
+      workspaceId: "w",
+      hostAppId: "equiprofile",
+      qualityMode: "standard",
+      goal: "Get me 50 signups",
+      audience: "stable owners",
+      platforms: ["Facebook"],
+      packageType: "signup_campaign",
+    });
+
+    expect(result.packageType).toBe("signup_campaign");
+    expect(result.status).toBe("draft");
+    expect(result.status).not.toBe("completed");
+  });
+
+  it("image ad generationSource is hybrid only when real image exists and text route is ready", async () => {
+    vi.doMock("./modules/marketing/studio-generation", () => ({
+      generateMarketingStudioScript: vi.fn(async () => ({ status: "generated" })),
+    }));
+    vi.doMock("./modules/marketing/image-generation", () => ({
+      generateMarketingImageAsset: vi.fn(async () => ({ status: "completed", setupNeeded: [], assetId: 22, publicUrl: "https://example.com/generated.png" })),
+    }));
+    vi.doMock("./modules/growth-engine", () => ({
+      createMarketingCampaignRecord: vi.fn(async () => 7),
+      createMarketingCampaignItemRecord: vi.fn(async () => 1),
+      createMarketingScheduleDraftRecord: vi.fn(async () => 1),
+      listMarketingCampaignItemRecords: vi.fn(async () => []),
+    }));
+    vi.doMock("./modules/marketing/qa-engine/marketingReviewStore", () => ({ createMarketingReviewRecord: vi.fn(async () => 1) }));
+    vi.doMock("./modules/marketing/provider-capabilities", () => ({
+      defaultWorkspaceBudgetPolicy: vi.fn(() => ({ mode: "standard" })),
+      resolveMarketingProviderRoute: vi.fn(async () => ({ status: "ready", reason: null, selected: { provider: "qwen", modelId: "qwen-text" } })),
+    }));
+
+    const { composeImageAdPackage } = await import("./modules/marketing/deliverable-composer");
+    const result = await composeImageAdPackage({
+      tenantId: "t",
+      workspaceId: "w",
+      hostAppId: "equiprofile",
+      qualityMode: "standard",
+      goal: "Create image ad",
+      audience: "stable owners",
+      platforms: ["Facebook"],
+      packageType: "image_ad",
+    });
+
+    expect(result.generationSource).toBe("hybrid");
+    expect(result.textGeneratedByModel).toBe(false);
+    expect(result.mediaGeneratedByModel).toBe(true);
+    expect(result.fallbackUsed).toBe(true);
   });
 });

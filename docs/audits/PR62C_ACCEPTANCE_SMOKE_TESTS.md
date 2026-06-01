@@ -31,6 +31,7 @@ Create a 30-second Facebook and Instagram ad for EquiProfile to get stable owner
 - If image/render connectors are missing, package still returns text/script/scene sections.
 - Media blockers are surfaced in **Setup Needed**.
 - No fake completed media is shown.
+- Package status defaults to `draft` when generated and review/export-ready, not `completed`.
 
 ## 2) 3-minute assembled video package
 
@@ -57,6 +58,7 @@ Create a 3-minute marketing video for EquiProfile explaining why stable owners s
 
 - If render/provider setup is missing, response is `setup_needed`/partial with exact blockers.
 - No fake rendered 3-minute output is returned.
+- `renderStatus` remains `not_rendered` because PR62C creates assembled-video packages only (no final render).
 
 ## 3) Signup campaign package
 
@@ -82,3 +84,13 @@ Get me 50 signups this month from stable owners.
 
 - Missing media connectors do not block text deliverables.
 - Package includes blockers and next action requirements without fake publishing/video completion.
+- Default package state is `draft` or `partial`; `completed` is reserved for future finalized workflow completion.
+
+## PR62C truth clarifications
+
+- PR62C creates deliverable packages, campaign items, review items, export packs, and schedule drafts.
+- PR62C does not render final videos.
+- 3-minute videos in PR62C are assembled-video packages only until PR63.
+- `draft` means ready for human review/export.
+- `partial` means package content exists but setup/blockers remain.
+- `completed` is reserved for future finalized output.

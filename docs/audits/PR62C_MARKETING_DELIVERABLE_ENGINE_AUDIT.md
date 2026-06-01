@@ -20,6 +20,15 @@ Recent main history includes:
 - Campaign item persistence was focused on campaign-engine outputs, not package composition flows.
 - Frontend emphasized readiness/agent diagnostics before package deliverables.
 
+## PR62C package truth scope
+
+- PR62C creates deliverable packages, campaign items, review items, export packs, and schedule drafts.
+- PR62C does **not** render final videos.
+- 3-minute video output in PR62C is an assembled-video package only until PR63 render integration.
+- Package status `draft` means generated and ready for human review/export.
+- Package status `partial` means usable package content exists but setup/blockers remain.
+- Package status `completed` is reserved for future finalized output states.
+
 ## PR62C files changed
 
 - `server/modules/marketing/deliverable-composer/index.ts`

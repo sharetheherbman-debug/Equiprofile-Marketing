@@ -9,15 +9,19 @@ describe("PR62C frontend package viewer", () => {
       <MarketingDeliverablePackageViewer
         deliverablePackage={{
           packageType: "video_ad_30s",
+          status: "draft",
+          goal: "Get trial signups",
+          audience: "stable owners",
+          platforms: ["Facebook", "Instagram"],
           strategy: "30-second strategy",
           hooks: ["hook1", "hook2", "hook3"],
           adCopy: ["copy"],
           script: "short script",
           scenePlan: [{ order: 1, durationSeconds: 10, narration: "scene", visualPrompt: "prompt" }],
           mediaRequirements: ["b-roll"],
-          reviewItems: [{ id: 1 }],
-          exportPack: { status: "ready" },
-          scheduleDrafts: [{ id: 2 }],
+          reviewItems: [{ id: 1, status: "needs_review" }],
+          exportPack: { status: "ready", checklist: ["review", "export"], renderStatus: "not_required" },
+          scheduleDrafts: [{ id: 2, status: "draft" }],
           blockers: [],
           setupNeeded: false,
         }}
@@ -29,8 +33,10 @@ describe("PR62C frontend package viewer", () => {
     expect(html).toContain("Hooks");
     expect(html).toContain("Copy");
     expect(html).toContain("Script");
-    expect(html).toContain("Scene Plan");
-    expect(html).toContain("Export / Schedule");
+    expect(html).toContain("Scene Timeline");
+    expect(html).toContain("Review / Export");
+    expect(html).not.toContain("{&quot;id&quot;:1");
+    expect(html).not.toContain("{&quot;status&quot;:&quot;ready&quot;");
   });
 
   it("renders 3-minute assembled video package timeline details", () => {
@@ -38,6 +44,10 @@ describe("PR62C frontend package viewer", () => {
       <MarketingDeliverablePackageViewer
         deliverablePackage={{
           packageType: "assembled_video_3m",
+          status: "draft",
+          goal: "Explain benefits",
+          audience: "stable owners",
+          platforms: ["YouTube"],
           strategy: "3-minute strategy",
           hooks: ["hook"],
           adCopy: [],
@@ -59,9 +69,11 @@ describe("PR62C frontend package viewer", () => {
 
     expect(html).toContain("Assembled video timeline");
     expect(html).toContain("Duration planned");
-    expect(html).toContain("Voiceover plan");
     expect(html).toContain("Media slots");
     expect(html).toContain("Render/export status");
+    expect(html).toContain("not_rendered");
+    expect(html).toContain("Media slot: stock_media");
+    expect(html).toContain("Media slot: generated_image");
   });
 
   it("shows no fake video message when render output is missing", () => {
