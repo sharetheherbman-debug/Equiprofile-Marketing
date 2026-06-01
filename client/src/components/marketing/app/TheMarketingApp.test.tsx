@@ -8,6 +8,7 @@ import { normalizeSocialConnections } from "./MarketingAppSettings";
 import { StudioHome } from "./studio/StudioHome";
 import { buildScenePlanFromPrompt } from "./studio/StudioWorkbench";
 import { shouldQueueRawMediaJob } from "./TheMarketingApp";
+import { MarketingDeliverablePackageViewer } from "./MarketingDeliverablePackageViewer";
 
 vi.mock("./studio/useMarketingRenderJob", () => ({
   useMarketingRenderJob: () => ({
@@ -216,14 +217,17 @@ describe("PR42A marketing app stabilization", () => {
 });
 
 describe("PR61 desktop marketing command centre frontend", () => {
-  it("renders a desktop-first command centre shell", () => {
+  it("renders a desktop-first creation-first Studio shell", () => {
     const source = fs.readFileSync(
       path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
       "utf8",
     );
-    expect(source).toContain("Desktop Marketing Command Centre");
-    expect(source).toContain("Campaign Command Box");
-    expect(source).toContain("Fleet-ready");
+    // PR62D: creation-first Studio header replaces legacy command centre
+    expect(source).toContain("creation-first-studio");
+    expect(source).toContain("The Marketing App");
+    expect(source).toContain("Studio —");
+    expect(source).toContain("CREATION_TYPES");
+    expect(source).toContain("creation-menu");
   });
 
   it("keeps active route wired to TheMarketingApp -> StudioHome -> StudioWorkbench", () => {
@@ -267,19 +271,20 @@ describe("PR61 desktop marketing command centre frontend", () => {
     expect(source).toContain("insufficient_data");
   });
 
-  it("renders required workspace tabs", () => {
+  it("renders required Studio workspace tabs", () => {
     const source = fs.readFileSync(
       path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
       "utf8",
     );
+    // PR62D: post-generation tabs replace old command-centre tabs
     for (const tab of [
-      "Strategy",
+      "Preview",
+      "Plan",
       "Creative",
-      "Media Studio",
-      "Review / QA",
+      "Media",
+      "Review",
       "Schedule / Export",
-      "Results / Learning",
-      "Settings / Readiness",
+      "Details",
     ]) {
       expect(source).toContain(tab);
     }
@@ -291,7 +296,8 @@ describe("PR61 desktop marketing command centre frontend", () => {
       "utf8",
     );
     expect(source).toContain("Preview / Intelligence");
-    expect(source).toContain("lg:grid-cols-[minmax(0,1fr)_500px]");
+    // PR62D: 3-column layout with left creation menu
+    expect(source).toContain("lg:grid-cols-[220px_minmax(0,1fr)_500px]");
     expect(source).toContain("sticky top-4 h-fit");
   });
 
@@ -338,5 +344,239 @@ describe("PR61 desktop marketing command centre frontend", () => {
     );
     expect(source).toContain("max-w-[1600px]");
     expect(source).toContain("min-w-0");
+  });
+});
+
+describe("PR62D frontend Studio creation flow", () => {
+  it("main screen renders creation-first Studio", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("creation-first-studio");
+    expect(source).toContain("creation-menu");
+    expect(source).toContain("CREATION_TYPES");
+    expect(source).toContain("selectedCreationType");
+  });
+
+  it("creation menu includes Image Ad, 30-Second Video Ad, 3-Minute Assembled Video, and Signup Campaign", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Image Ad");
+    expect(source).toContain("30-Second Video Ad");
+    expect(source).toContain("3-Minute Assembled Video");
+    expect(source).toContain("Signup Campaign");
+  });
+
+  it("Image Ad creation type calls generateMarketingImageAsset", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("case \"image_ad\": handleGenerateImageAd()");
+    expect(source).toContain("generateMarketingImageAsset");
+  });
+
+  it("30-Second Video Ad creation type calls generateMarketingAdPackage", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("case \"video_ad_30s\": handleGenerateThirtySecondAdPackage()");
+    expect(source).toContain("generateMarketingAdPackage");
+  });
+
+  it("3-Minute Assembled Video creation type calls generateMarketingVideoPackage", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("case \"assembled_video_3m\": handleGenerateAssembledVideoPackage()");
+    expect(source).toContain("generateMarketingVideoPackage");
+  });
+
+  it("Signup Campaign creation type calls generateMarketingCampaignPackage", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("case \"signup_campaign\": handleGenerateSignupCampaignPackage()");
+    expect(source).toContain("generateMarketingCampaignPackage");
+  });
+
+  it("package viewer shows user-facing sections without raw JSON", () => {
+    const html = renderToStaticMarkup(
+      <MarketingDeliverablePackageViewer
+        deliverablePackage={{
+          packageType: "video_ad_30s",
+          status: "draft",
+          goal: "Get signups",
+          audience: "stable owners",
+          platforms: ["Facebook"],
+          strategy: "Strategy text",
+          hooks: ["hook1"],
+          adCopy: ["copy1"],
+          script: "30-second script",
+          scenePlan: [{ order: 1, durationSeconds: 10, narration: "scene", visualPrompt: "visual" }],
+          mediaRequirements: ["b-roll"],
+          reviewItems: [],
+          exportPack: { renderStatus: "not_required", checklist: [] },
+          scheduleDrafts: [],
+          blockers: [],
+          setupNeeded: false,
+        }}
+      />,
+    );
+    expect(html).toContain("Package summary");
+    expect(html).toContain("Strategy");
+    expect(html).not.toContain("{&quot;");
+    expect(html).not.toContain("JSON.stringify");
+  });
+
+  it("package viewer does not show raw JSON in main view", () => {
+    const html = renderToStaticMarkup(
+      <MarketingDeliverablePackageViewer
+        deliverablePackage={{
+          packageType: "assembled_video_3m",
+          strategy: "plan",
+          hooks: [],
+          adCopy: [],
+          script: "script",
+          scenePlan: [],
+          mediaRequirements: [],
+          reviewItems: [{ id: 1, status: "needs_review" }],
+          exportPack: { renderStatus: "not_rendered" },
+          scheduleDrafts: [],
+          blockers: [],
+          setupNeeded: false,
+        }}
+      />,
+    );
+    // review items should not be raw JSON
+    expect(html).not.toContain("{&quot;id&quot;:1");
+  });
+
+  it("main screen does not show empty agent cards before generation", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // Agent timeline must be conditional — gated on isAnyGenerationPending or having run data
+    expect(source).toContain("isAnyGenerationPending || autonomousRunSummaries.length > 0");
+  });
+
+  it("diagnostics are not shown first on the main screen", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // Readiness grid is inside a <details> element (collapsed by default)
+    expect(source).toContain("Advanced Diagnostics");
+    expect(source).toContain("Readiness / Capability Strip");
+    // The creation menu appears before the diagnostics section
+    const creationMenuPos = source.indexOf("creation-menu");
+    const diagnosticsPos = source.indexOf("Advanced Diagnostics");
+    expect(creationMenuPos).toBeGreaterThan(0);
+    expect(creationMenuPos).toBeLessThan(diagnosticsPos);
+  });
+
+  it("settings setup wizard renders provider checklist items", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/MarketingAppSettings.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("setup_needed");
+    expect(source).toContain("keyMasked");
+  });
+
+  it("assembled-video package clearly shows not_rendered and no fake video", () => {
+    const html = renderToStaticMarkup(
+      <MarketingDeliverablePackageViewer
+        deliverablePackage={{
+          packageType: "assembled_video_3m",
+          strategy: "strategy",
+          hooks: [],
+          adCopy: [],
+          script: "script",
+          scenePlan: [],
+          mediaRequirements: [],
+          reviewItems: [],
+          exportPack: { renderStatus: "not_rendered" },
+          scheduleDrafts: [],
+          blockers: ["render setup"],
+          setupNeeded: true,
+        }}
+      />,
+    );
+    expect(html).toContain("not_rendered");
+    expect(html).toContain("No fake video is shown because render output is missing");
+  });
+
+  it("preview panel is large and positioned on the right side on desktop", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // 3-column layout with 500px right preview
+    expect(source).toContain("lg:grid-cols-[220px_minmax(0,1fr)_500px]");
+    expect(source).toContain("data-testid=\"preview-panel\"");
+    expect(source).toContain("sticky top-4 h-fit");
+  });
+
+  it("diagnostic/intelligence queries are lazy-loaded behind lazyDiagnosticsEnabled", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // Lazy condition variables must be defined
+    expect(source).toContain("lazyDiagnosticsEnabled");
+    expect(source).toContain("lazyCreativeEnabled");
+    expect(source).toContain("lazyMediaEnabled");
+    // Each non-essential query must carry an enabled guard
+    expect(source).toContain("enabled: lazyDiagnosticsEnabled");
+    expect(source).toContain("enabled: lazyCreativeEnabled || lazyDiagnosticsEnabled");
+    expect(source).toContain("enabled: lazyDiagnosticsEnabled || lazyMediaEnabled");
+    // The lazy guard must reference Settings dialog and details tab
+    expect(source).toContain("showSettingsDialog || workspaceTab === \"details\"");
+  });
+
+  it("main creation screen does not depend on diagnostics queries for its initial render", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    // Creation menu and generate button are present
+    expect(source).toContain("creation-menu");
+    expect(source).toContain("data-testid=\"generate-button\"");
+    // The lazy conditions are declared before the creation menu in the file
+    const lazyIdx = source.indexOf("lazyDiagnosticsEnabled");
+    const creationMenuIdx = source.indexOf("creation-menu");
+    expect(lazyIdx).toBeGreaterThan(0);
+    expect(lazyIdx).toBeLessThan(creationMenuIdx);
+  });
+
+  it("details tab shows diagnostic loading placeholder when data is not yet available", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Open diagnostics to load advanced readiness data.");
+  });
+
+  it("details tab still contains Advanced Diagnostics and readiness strip sections", () => {
+    const source = fs.readFileSync(
+      path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("Advanced Diagnostics");
+    expect(source).toContain("Readiness / Capability Strip");
+    expect(source).toContain("Strategy context");
+    // Details tab content is inside the workspace tabs section
+    const detailsTabIdx = source.indexOf('value="details"');
+    const diagnosticsIdx = source.indexOf("Advanced Diagnostics");
+    expect(detailsTabIdx).toBeGreaterThan(0);
+    expect(diagnosticsIdx).toBeGreaterThan(detailsTabIdx);
   });
 });
