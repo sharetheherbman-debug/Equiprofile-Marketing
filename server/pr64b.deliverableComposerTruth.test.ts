@@ -29,13 +29,13 @@ describe("PR64B deliverable composer truth", () => {
         goal: "Create a social ad package.",
         audience: "stable owners",
         platforms: ["Facebook"],
-        packageType: "email_campaign",
+        packageType: "blog_seo",
       });
       throw new Error("Expected unsupported error");
     } catch (error) {
       expect(error).toBeInstanceOf(UnsupportedDeliverablePackageTypeError);
       const typed = error as UnsupportedDeliverablePackageTypeError;
-      expect(typed.packageType).toBe("email_campaign");
+      expect(typed.packageType).toBe("blog_seo");
       expect(typed.message).toContain("Unsupported deliverable package type");
     }
   });
