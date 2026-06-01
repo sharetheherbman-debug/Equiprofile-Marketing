@@ -1,0 +1,301 @@
+{
+  "repo": "https://github.com/amarktainetwork-blip/Equiprofile-MarketingV2",
+  "commit": "5fa28f0",
+  "generatedAt": "2026-06-01T00:00:00Z",
+  "areas": {
+    "frontend": {
+      "status": "partial",
+      "truth": "Active route is clean and uses capability contract, but main UX still blends plan/package and playable output states.",
+      "evidenceFiles": [
+        "client/src/pages/AdminCampaigns.tsx",
+        "client/src/components/marketing/app/TheMarketingApp.tsx",
+        "client/src/components/marketing/app/MarketingAppSettings.tsx",
+        "client/src/components/marketing/app/TheMarketingApp.test.tsx"
+      ]
+    },
+    "providerRouting": {
+      "status": "working",
+      "truth": "Task route resolver + capability matrix + budget policy are in place and default Standard policy avoids premium-first spend.",
+      "evidenceFiles": [
+        "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts",
+        "server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts",
+        "server/modules/marketing/provider-capabilities/providerCapabilitySync.ts",
+        "server/dynamicConfig.ts"
+      ]
+    },
+    "imageGeneration": {
+      "status": "partial",
+      "truth": "First-class generation endpoint exists and enforces playable-media truth, but live success still depends on real provider model/key availability.",
+      "evidenceFiles": [
+        "server/modules/marketing/image-generation/index.ts",
+        "server/_core/ai/mediaPlayability.ts",
+        "server/modules/growth-engine/mediaAssets.ts",
+        "client/src/components/marketing/app/TheMarketingApp.tsx"
+      ]
+    },
+    "avatar": {
+      "status": "partial",
+      "truth": "Avatar records/jobs and resolver truth exist, but end-to-end playable avatar output is not guaranteed by default runtime.",
+      "evidenceFiles": [
+        "server/modules/marketing/avatar-voice-music/index.ts",
+        "server/modules/marketing/media-job-resolver/index.ts"
+      ]
+    },
+    "voice": {
+      "status": "partial",
+      "truth": "Voice profile/preview flows exist and queue states are truthful; playable preview output depends on provider execution path.",
+      "evidenceFiles": [
+        "server/modules/marketing/avatar-voice-music/index.ts",
+        "server/modules/marketing/media-job-resolver/index.ts",
+        "server/modules/marketing/media-factory/marketingVoiceService.ts"
+      ]
+    },
+    "music": {
+      "status": "partial",
+      "truth": "Music job taxonomy/status handling exists, but live generation/resolution to playable assets is not guaranteed.",
+      "evidenceFiles": [
+        "server/modules/marketing/avatar-voice-music/index.ts",
+        "server/modules/marketing/media-job-resolver/index.ts"
+      ]
+    },
+    "videoRendering": {
+      "status": "partial",
+      "truth": "Render pipeline, queue, worker, and store exist; 30s/3m creation paths are package-first and rendering remains dependency/runtime-gated.",
+      "evidenceFiles": [
+        "server/modules/marketing/media-factory/marketingRenderQueue.ts",
+        "server/modules/marketing/media-factory/marketingRenderWorker.ts",
+        "server/modules/marketing/media-factory/marketingRenderer.ts",
+        "server/modules/marketing/deliverable-composer/index.ts"
+      ]
+    },
+    "socialCampaigns": {
+      "status": "partial",
+      "truth": "Signup campaign package persistence works; first-class social_post flow is explicitly not_wired in creation contract.",
+      "evidenceFiles": [
+        "server/modules/marketing/creation-capabilities/index.ts",
+        "server/modules/marketing/deliverable-composer/index.ts",
+        "server/modules/marketing/autonomous-campaign/index.ts"
+      ]
+    },
+    "emailCampaigns": {
+      "status": "scaffold",
+      "truth": "Email generation task exists in matrix, but first-class creation flow is marked not_wired.",
+      "evidenceFiles": [
+        "server/modules/marketing/creation-capabilities/index.ts",
+        "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts"
+      ]
+    },
+    "scheduleExport": {
+      "status": "working",
+      "truth": "Schedule draft listing/export has resilient empty handling and export-pack builder; requires live smoke proof on VPS.",
+      "evidenceFiles": [
+        "server/modules/growth-engine/persistence.ts",
+        "server/modules/marketing/social-publishing/scheduleExportPackBuilder.ts",
+        "server/routers.ts"
+      ]
+    },
+    "publishing": {
+      "status": "working",
+      "truth": "Adapters are truthful and blocked without real connector readiness/IDs; export-first default is preserved.",
+      "evidenceFiles": [
+        "server/modules/marketing/social-publishing/socialPublisherRegistry.ts",
+        "server/modules/marketing/social-publishing/adapters/basePublisherStub.ts",
+        "server/modules/marketing/connector-readiness/index.ts"
+      ]
+    },
+    "brainLearning": {
+      "status": "partial",
+      "truth": "Genius/brand/specialist/learning modules exist, but high-confidence self-improving loop depends on real tracked outcomes and attribution volume.",
+      "evidenceFiles": [
+        "server/modules/marketing/genius-brain/index.ts",
+        "server/modules/marketing/brand-memory/index.ts",
+        "server/modules/marketing/result-learning/index.ts",
+        "server/modules/marketing/command-centre/index.ts"
+      ]
+    },
+    "analyticsResults": {
+      "status": "partial",
+      "truth": "Attribution redirect, conversion events, and scoring exist; live campaign CTAs still need strict wiring to ensure meaningful data loop.",
+      "evidenceFiles": [
+        "server/_core/index.ts",
+        "server/modules/marketing/results-conversion/index.ts",
+        "server/routers.ts"
+      ]
+    },
+    "dbSchema": {
+      "status": "working",
+      "truth": "PR63A resolved known beast-mode startup mismatch and schema/runtime alignment materially improved.",
+      "evidenceFiles": [
+        "drizzle/schema.ts",
+        "server/db.ts",
+        "server/pr63a.marketingTruthContract.test.ts"
+      ]
+    },
+    "tests": {
+      "status": "partial",
+      "truth": "Coverage is broad but still skewed toward contract/structure checks; critical full user-flow E2E smoke tests are limited.",
+      "evidenceFiles": [
+        "client/src/components/marketing/app/TheMarketingApp.test.tsx",
+        "server/pr62c.deliverableComposer.test.ts",
+        "server/pr63a.marketingTruthContract.test.ts"
+      ]
+    }
+  },
+  "goLiveBlockers": [
+    {
+      "id": "P0-01",
+      "severity": "P0",
+      "area": "media",
+      "truth": "Playable output is not guaranteed for avatar/voice/music/video from primary creation paths.",
+      "evidenceFiles": [
+        "server/modules/marketing/avatar-voice-music/index.ts",
+        "server/modules/marketing/media-job-resolver/index.ts",
+        "server/modules/marketing/deliverable-composer/index.ts"
+      ],
+      "fixRecommendation": "Implement deterministic execution/resolve path with explicit playable-output proof and frontend state separation.",
+      "estimatedScope": "large"
+    },
+    {
+      "id": "P0-02",
+      "severity": "P0",
+      "area": "frontend",
+      "truth": "Main UX still overmixes diagnostics with creation outcome, reducing clarity of successful deliverables.",
+      "evidenceFiles": ["client/src/components/marketing/app/TheMarketingApp.tsx"],
+      "fixRecommendation": "Switch to deliverable-first primary panel; collapse deep diagnostics to details/settings.",
+      "estimatedScope": "medium"
+    },
+    {
+      "id": "P0-03",
+      "severity": "P0",
+      "area": "creation",
+      "truth": "Social/email/blog/weekly creation types are still not first-class wired, yet remain in product vision.",
+      "evidenceFiles": ["server/modules/marketing/creation-capabilities/index.ts"],
+      "fixRecommendation": "Either wire first-class procedures/viewers or lock them as non-primary until complete.",
+      "estimatedScope": "medium"
+    },
+    {
+      "id": "P0-04",
+      "severity": "P0",
+      "area": "video",
+      "truth": "30s/3m flows are package-first and can be misinterpreted as rendered output.",
+      "evidenceFiles": [
+        "server/modules/marketing/deliverable-composer/index.ts",
+        "client/src/components/marketing/app/MarketingDeliverablePackageViewer.tsx"
+      ],
+      "fixRecommendation": "Hard label plan/package vs rendered output and add render proof gate in UI.",
+      "estimatedScope": "small"
+    },
+    {
+      "id": "P1-05",
+      "severity": "P1",
+      "area": "render-runtime",
+      "truth": "Media factory depends on FFmpeg/Remotion/Redis environment correctness; no enforced go-live smoke suite yet.",
+      "evidenceFiles": [
+        "server/modules/marketing/media-factory/marketingRenderQueue.ts",
+        "server/modules/marketing/media-factory/marketingRenderWorker.ts"
+      ],
+      "fixRecommendation": "Add mandatory deploy smoke checks and endpoint-level self-test command sequence.",
+      "estimatedScope": "small"
+    },
+    {
+      "id": "P1-06",
+      "severity": "P1",
+      "area": "results-loop",
+      "truth": "Attribution and scoring exist but generation-to-CTA-to-results loop is not strongly enforced in frontend flows.",
+      "evidenceFiles": [
+        "server/_core/index.ts",
+        "server/modules/marketing/results-conversion/index.ts",
+        "client/src/components/marketing/app/TheMarketingApp.tsx"
+      ],
+      "fixRecommendation": "Auto-attach attribution link generation to campaign package CTA outputs and surface performance context in next run.",
+      "estimatedScope": "medium"
+    },
+    {
+      "id": "P1-07",
+      "severity": "P1",
+      "area": "contract",
+      "truth": "Creation capability contract lacks explicit output guarantee/viewer contract fields.",
+      "evidenceFiles": ["server/modules/marketing/creation-capabilities/index.ts"],
+      "fixRecommendation": "Add outputGuarantee/viewerContract/lastExecutionProof fields.",
+      "estimatedScope": "small"
+    },
+    {
+      "id": "P2-08",
+      "severity": "P2",
+      "area": "schema-runtime",
+      "truth": "Large hand-maintained startup SQL remains drift-prone.",
+      "evidenceFiles": ["server/db.ts", "drizzle/schema.ts"],
+      "fixRecommendation": "Add schema/runtime parity test generator for key marketing tables.",
+      "estimatedScope": "medium"
+    },
+    {
+      "id": "P2-09",
+      "severity": "P2",
+      "area": "testing",
+      "truth": "No browser-level E2E asserts the full prompt->preview deliverable path.",
+      "evidenceFiles": ["package.json"],
+      "fixRecommendation": "Add Playwright smoke suite for image/package/growth campaign happy+setup-needed paths.",
+      "estimatedScope": "medium"
+    },
+    {
+      "id": "P2-10",
+      "severity": "P2",
+      "area": "frontend-state",
+      "truth": "Some secondary UI modules still expose internals too early for operators.",
+      "evidenceFiles": [
+        "client/src/components/marketing/app/MarketingAppPanels.tsx",
+        "client/src/components/marketing/app/TheMarketingApp.tsx"
+      ],
+      "fixRecommendation": "Progressively disclose diagnostics after deliverable render.",
+      "estimatedScope": "small"
+    }
+  ],
+  "nextRepairPRs": [
+    {
+      "pr": "PR64B",
+      "title": "Deliverable-first Studio + output guarantee contract",
+      "objective": "Make primary Studio flow unambiguous: prompt -> deliverable package/playable asset with clear guarantee labels.",
+      "mustChangeFiles": [
+        "server/modules/marketing/creation-capabilities/index.ts",
+        "client/src/components/marketing/app/TheMarketingApp.tsx",
+        "client/src/components/marketing/app/MarketingDeliverablePackageViewer.tsx"
+      ],
+      "acceptanceTests": [
+        "Image flow shows completed only with playable URL",
+        "30s/3m clearly labeled package vs rendered",
+        "Non-first-class types hidden from primary actions"
+      ]
+    },
+    {
+      "pr": "PR64C",
+      "title": "Avatar/Voice/Music executable completion path",
+      "objective": "Upgrade queued media flows to verifiable provider execution with resolver completion proof and previewability.",
+      "mustChangeFiles": [
+        "server/modules/marketing/avatar-voice-music/index.ts",
+        "server/modules/marketing/media-job-resolver/index.ts",
+        "client/src/components/marketing/app/TheMarketingApp.tsx"
+      ],
+      "acceptanceTests": [
+        "Queued jobs resolve to playable URLs or setup_needed",
+        "No completed without playable media",
+        "Frontend preview for resolved avatar/voice/music"
+      ]
+    },
+    {
+      "pr": "PR64D",
+      "title": "Go-live smoke automation and attribution loop hardening",
+      "objective": "Add deterministic VPS smoke checks for creation/render/schedule/attribution and enforce CTA tracking loop.",
+      "mustChangeFiles": [
+        "server/routers.ts",
+        "server/_core/index.ts",
+        "server/modules/marketing/results-conversion/index.ts",
+        "docs/audits/pr64a_tomorrow_go_live_plan.md"
+      ],
+      "acceptanceTests": [
+        "Run smoke endpoint suite returns truthful status",
+        "Attribution click updates visible",
+        "Results context feeds next run guidance"
+      ]
+    }
+  ]
+}

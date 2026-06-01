@@ -1,0 +1,1497 @@
+{
+  "generatedAt": "2026-06-01T14:03:18.021Z",
+  "totalFiles": 213,
+  "files": [
+    {
+      "path": "client/src/components/marketing/app/ChatResultCard.tsx",
+      "purpose": "ChatResultCard.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingAppActions.tsx",
+      "purpose": "MarketingAppActions.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingAppAssetStore.ts",
+      "purpose": "MarketingAppAssetStore.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingAppPanels.tsx",
+      "purpose": "MarketingAppPanels.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingAppSettings.tsx",
+      "purpose": "Settings/setup wizard and readiness diagnostics UI.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingAppTopBar.tsx",
+      "purpose": "MarketingAppTopBar.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingDeliverablePackageViewer.test.tsx",
+      "purpose": "MarketingDeliverablePackageViewer.test.tsx module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/MarketingDeliverablePackageViewer.tsx",
+      "purpose": "MarketingDeliverablePackageViewer.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/TheMarketingApp.test.tsx",
+      "purpose": "TheMarketingApp.test.tsx module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/TheMarketingApp.tsx",
+      "purpose": "Primary Marketing App frontend shell and creation/preview tabs.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingAssets.ts",
+      "purpose": "useMarketingAssets.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingBrandKit.ts",
+      "purpose": "useMarketingBrandKit.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingCalendar.ts",
+      "purpose": "useMarketingCalendar.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingCampaigns.ts",
+      "purpose": "useMarketingCampaigns.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingReviewActions.ts",
+      "purpose": "useMarketingReviewActions.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingWorkspaceConfig.ts",
+      "purpose": "useMarketingWorkspaceConfig.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/hooks/useMarketingWorkspaceConfig.types.ts",
+      "purpose": "useMarketingWorkspaceConfig.types.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/marketingAppHelpers.ts",
+      "purpose": "marketingAppHelpers.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/BrandOverlayStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/BriefStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/CaptionsStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/CreateTypeSelector.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/ExportStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/MediaSelectionStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/RenderStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/ScenePlanStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/ScriptStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/StudioHome.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/StudioWorkbench.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/VoiceAudioStep.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/studioWorkbench.test.tsx",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/useMarketingRenderJob.ts",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/app/studio/useMarketingSceneMedia.ts",
+      "purpose": "Studio step UI and hooks for guided creation/edit/render workflow.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/legacy/AssetLibrary.tsx",
+      "purpose": "AssetLibrary.tsx module/file related to marketing pipeline.",
+      "status": "legacy",
+      "referencedBy": [],
+      "notes": "Quarantined or legacy; should remain inactive unless explicitly reintroduced."
+    },
+    {
+      "path": "client/src/components/marketing/legacy/PlatformConnectionCards.tsx",
+      "purpose": "PlatformConnectionCards.tsx module/file related to marketing pipeline.",
+      "status": "legacy",
+      "referencedBy": [],
+      "notes": "Quarantined or legacy; should remain inactive unless explicitly reintroduced."
+    },
+    {
+      "path": "client/src/components/marketing/legacy/SetupDrawer.tsx",
+      "purpose": "SetupDrawer.tsx module/file related to marketing pipeline.",
+      "status": "legacy",
+      "referencedBy": [],
+      "notes": "Quarantined or legacy; should remain inactive unless explicitly reintroduced."
+    },
+    {
+      "path": "client/src/components/marketing/legacy/quarantine/MarketingAppChat.tsx",
+      "purpose": "Legacy marketing UI kept quarantined and inactive from active route.",
+      "status": "legacy",
+      "referencedBy": [],
+      "notes": "Quarantined or legacy; should remain inactive unless explicitly reintroduced."
+    },
+    {
+      "path": "client/src/components/marketing/legacy/quarantine/MarketingAppPreview.tsx",
+      "purpose": "Legacy marketing UI kept quarantined and inactive from active route.",
+      "status": "legacy",
+      "referencedBy": [],
+      "notes": "Quarantined or legacy; should remain inactive unless explicitly reintroduced."
+    },
+    {
+      "path": "client/src/components/marketing/legacy/quarantine/MarketingStudioV2.tsx",
+      "purpose": "Legacy marketing UI kept quarantined and inactive from active route.",
+      "status": "legacy",
+      "referencedBy": [],
+      "notes": "Quarantined or legacy; should remain inactive unless explicitly reintroduced."
+    },
+    {
+      "path": "client/src/components/marketing/previews/index.tsx",
+      "purpose": "index.tsx module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/AITeamProgress.tsx",
+      "purpose": "AITeamProgress.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/AutopilotWizard.tsx",
+      "purpose": "AutopilotWizard.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/CampaignContextStrip.tsx",
+      "purpose": "CampaignContextStrip.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/PresenterLibrary.tsx",
+      "purpose": "PresenterLibrary.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/PresenterSelector.tsx",
+      "purpose": "PresenterSelector.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/QualityToggle.tsx",
+      "purpose": "QualityToggle.tsx module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/mediaStatus.ts",
+      "purpose": "mediaStatus.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/types.ts",
+      "purpose": "types.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/components/marketing/studio/workspaceConfig.ts",
+      "purpose": "workspaceConfig.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "client/src/pages/AdminCampaigns.tsx",
+      "purpose": "Active admin route entry; renders TheMarketingApp.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "drizzle/schema.ts",
+      "purpose": "Source-of-truth DB schema for marketing and platform tables.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/agents/registry.test.ts",
+      "purpose": "registry.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/agents/registry.ts",
+      "purpose": "registry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/agents/workflows/index.test.ts",
+      "purpose": "index.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/agents/workflows/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/analytics/usageAnalytics.ts",
+      "purpose": "usageAnalytics.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/approval/approvalQueue.ts",
+      "purpose": "approvalQueue.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/capabilityRegistry.test.ts",
+      "purpose": "capabilityRegistry.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/capabilityRegistry.ts",
+      "purpose": "capabilityRegistry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/capabilityRouter.test.ts",
+      "purpose": "capabilityRouter.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/capabilityRouter.ts",
+      "purpose": "capabilityRouter.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/chatOrchestrator.test.ts",
+      "purpose": "chatOrchestrator.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/chatOrchestrator.ts",
+      "purpose": "chatOrchestrator.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/dashscopeMediaExecutor.test.ts",
+      "purpose": "dashscopeMediaExecutor.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/dashscopeMediaExecutor.ts",
+      "purpose": "dashscopeMediaExecutor.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/generationLifecycle.test.ts",
+      "purpose": "generationLifecycle.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/generationLifecycle.ts",
+      "purpose": "generationLifecycle.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/jobs/mediaJobManager.ts",
+      "purpose": "mediaJobManager.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/knowledge/templates.ts",
+      "purpose": "templates.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/mediaPlayability.ts",
+      "purpose": "mediaPlayability.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/mediaResolver.test.ts",
+      "purpose": "mediaResolver.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/mediaResolver.ts",
+      "purpose": "mediaResolver.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/modelQualityPolicy.ts",
+      "purpose": "modelQualityPolicy.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/modelRegistry.ts",
+      "purpose": "modelRegistry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/moderation/compliance.ts",
+      "purpose": "compliance.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/orchestrator.test.ts",
+      "purpose": "orchestrator.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/orchestrator.ts",
+      "purpose": "orchestrator.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/outputNormalization.test.ts",
+      "purpose": "outputNormalization.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/outputNormalization.ts",
+      "purpose": "outputNormalization.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerCapabilities.test.ts",
+      "purpose": "providerCapabilities.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerCapabilities.ts",
+      "purpose": "providerCapabilities.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerModelDiscovery.test.ts",
+      "purpose": "providerModelDiscovery.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerModelDiscovery.ts",
+      "purpose": "providerModelDiscovery.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerRanking.test.ts",
+      "purpose": "providerRanking.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerRanking.ts",
+      "purpose": "providerRanking.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerRouting.test.ts",
+      "purpose": "providerRouting.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerRouting.ts",
+      "purpose": "providerRouting.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerTelemetry.test.ts",
+      "purpose": "providerTelemetry.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerTelemetry.ts",
+      "purpose": "providerTelemetry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providerTestIsolation.test.ts",
+      "purpose": "providerTestIsolation.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/genxProvider.test.ts",
+      "purpose": "genxProvider.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/genxProvider.ts",
+      "purpose": "genxProvider.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/httpUtils.test.ts",
+      "purpose": "httpUtils.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/httpUtils.ts",
+      "purpose": "httpUtils.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/huggingFaceProvider.test.ts",
+      "purpose": "huggingFaceProvider.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/huggingFaceProvider.ts",
+      "purpose": "huggingFaceProvider.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/providerRegistry.test.ts",
+      "purpose": "providerRegistry.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/providerRegistry.ts",
+      "purpose": "providerRegistry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/qwenProvider.test.ts",
+      "purpose": "qwenProvider.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/providers/qwenProvider.ts",
+      "purpose": "qwenProvider.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/taskModelPolicy.test.ts",
+      "purpose": "taskModelPolicy.test.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/taskModelPolicy.ts",
+      "purpose": "taskModelPolicy.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/tasks/taskRegistry.ts",
+      "purpose": "taskRegistry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/ai/types.ts",
+      "purpose": "types.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/_core/index.ts",
+      "purpose": "Express bootstrap and /m/:code attribution redirect endpoint.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/db.ts",
+      "purpose": "Runtime startup CREATE/ALTER table guards and non-destructive DB safety net.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/dynamicConfig.ts",
+      "purpose": "Runtime provider/connector config resolution (DB siteSettings -> env fallback).",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/agent-workforce/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/autonomous-campaign/index.ts",
+      "purpose": "Autonomous orchestration and campaign run summarization.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/avatar-voice-music/index.ts",
+      "purpose": "Avatar/voice/music profile and job orchestration APIs.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Often queues jobs and metadata; playable completion depends on provider execution + resolver."
+    },
+    {
+      "path": "server/modules/marketing/backend-readiness/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeBatchRenderPlanner.ts",
+      "purpose": "beastModeBatchRenderPlanner.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeBriefBuilder.ts",
+      "purpose": "beastModeBriefBuilder.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeCopyGenerator.ts",
+      "purpose": "beastModeCopyGenerator.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeCostPolicy.ts",
+      "purpose": "beastModeCostPolicy.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeExecutionService.ts",
+      "purpose": "beastModeExecutionService.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeModelRouter.ts",
+      "purpose": "beastModeModelRouter.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeMultilingualService.ts",
+      "purpose": "beastModeMultilingualService.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeQualityRules.ts",
+      "purpose": "beastModeQualityRules.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeStore.ts",
+      "purpose": "beastModeStore.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeTypes.ts",
+      "purpose": "beastModeTypes.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/beastModeVariantPlanner.ts",
+      "purpose": "beastModeVariantPlanner.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/beast-mode/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/brand-kit/index.ts",
+      "purpose": "Brand kit storage and retrieval used by marketing generation paths.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/brand-kit/marketingBrandKitService.ts",
+      "purpose": "Brand kit storage and retrieval used by marketing generation paths.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/brand-kit/marketingBrandKitStore.ts",
+      "purpose": "Brand kit storage and retrieval used by marketing generation paths.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/brand-kit/marketingBrandKitTypes.ts",
+      "purpose": "Brand kit storage and retrieval used by marketing generation paths.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/brand-kit/marketingBrandOverlayTemplateService.ts",
+      "purpose": "Brand kit storage and retrieval used by marketing generation paths.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/brand-memory/index.ts",
+      "purpose": "Brand memory persistence and prompt-context assembly.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignBriefBuilder.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignCopyGenerator.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignDeliverablePlanner.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignDeliverableTypes.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignExportPackBuilder.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignQualityRules.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/campaignVideoPlanner.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/index.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-engine/platformContentRules.ts",
+      "purpose": "Campaign planning utilities and export/copy helpers.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/campaign-manager-brain/index.ts",
+      "purpose": "Campaign brief analysis and manager guidance generation rules.",
+      "status": "scaffold",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/command-centre/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/connector-readiness/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/creation-capabilities/index.ts",
+      "purpose": "Creation truth contract for Studio creation types and readiness states.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/creative-scoring/index.ts",
+      "purpose": "Creative scorecards and recommendation outputs for QA/review.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/deliverable-composer/index.ts",
+      "purpose": "Campaign/ad package composition, persistence, review/schedule/export hooks.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Writes package records, but several outputs are plan/package-first and not guaranteed playable media."
+    },
+    {
+      "path": "server/modules/marketing/genius-brain/index.ts",
+      "purpose": "Rule libraries/playbooks/hooks/CTA frameworks (non-execution intelligence primitives).",
+      "status": "scaffold",
+      "referencedBy": [],
+      "notes": "Rule/context library; not by itself proof of successful generation outcomes."
+    },
+    {
+      "path": "server/modules/marketing/image-generation/index.ts",
+      "purpose": "First-class image generation flow with setup_needed/failure truth.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/market-intelligence/index.ts",
+      "purpose": "Trend/competitor/content-gap signal capture and context summaries.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/marketingCapabilityValidator.ts",
+      "purpose": "marketingCapabilityValidator.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/media-excellence/index.ts",
+      "purpose": "Template and media quality policy recommendations.",
+      "status": "scaffold",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/media-factory/index.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingBrandOverlayService.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingCaptionService.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingMediaAssetVersionStore.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingRenderJobStore.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingRenderQueue.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingRenderWorker.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingRenderer.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingStockAssetLocalization.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingStockMediaService.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingTimelineCompiler.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/marketingVoiceService.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-factory/renderJobTypes.ts",
+      "purpose": "Timeline compilation, rendering pipeline, render queue/worker, and media factory stores.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Rendering depends on FFmpeg/Remotion and runtime dependencies."
+    },
+    {
+      "path": "server/modules/marketing/media-job-resolver/index.ts",
+      "purpose": "Resolver that reconciles queued avatar/voice/music jobs against playable assets.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/marketingModelExecutionFallback.ts",
+      "purpose": "marketingModelExecutionFallback.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/marketingModelExecutionParser.ts",
+      "purpose": "marketingModelExecutionParser.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/marketingModelExecutionPrompts.ts",
+      "purpose": "marketingModelExecutionPrompts.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/marketingModelExecutionService.ts",
+      "purpose": "marketingModelExecutionService.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/marketingModelExecutionTelemetry.ts",
+      "purpose": "marketingModelExecutionTelemetry.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/model-execution/marketingModelExecutionTypes.ts",
+      "purpose": "marketingModelExecutionTypes.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/platform-specialists/index.ts",
+      "purpose": "Platform specialist rule sets and fit scoring heuristics.",
+      "status": "scaffold",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/genxModelCatalogSync.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/huggingFaceModelRegistry.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/index.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/marketingBudgetPolicy.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/marketingProviderReadinessService.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/providerCapabilitySync.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/providerCapabilityTypes.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/providerHealthStore.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/providerModelStore.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/provider-capabilities/qwenModelRegistry.ts",
+      "purpose": "Provider model inventory, health checks, task capability matrix, and route resolver.",
+      "status": "active",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/qa-engine/index.ts",
+      "purpose": "index.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/qa-engine/marketingQaChecklistBuilder.ts",
+      "purpose": "marketingQaChecklistBuilder.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/qa-engine/marketingQaRules.ts",
+      "purpose": "marketingQaRules.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/qa-engine/marketingQaScoring.ts",
+      "purpose": "marketingQaScoring.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/qa-engine/marketingQaTypes.ts",
+      "purpose": "marketingQaTypes.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/qa-engine/marketingReviewStore.ts",
+      "purpose": "marketingReviewStore.ts module/file related to marketing pipeline.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/result-learning/index.ts",
+      "purpose": "Learning/insight layer over results with confidence and source labels.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/results-conversion/index.ts",
+      "purpose": "Attribution links, conversion events, scoring, and winning-pattern analytics.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/basePublisherStub.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/blogSeoPublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/emailPublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/facebookPublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/instagramPublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/linkedinPublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/tiktokPublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/adapters/youtubePublisher.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/scheduleExportPackBuilder.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/socialPublisherRegistry.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/social-publishing/socialPublisherTypes.ts",
+      "purpose": "Export-first publishing adapters and truthful posting guards.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": "Adapters are intentionally truthful stubs unless real connector readiness exists."
+    },
+    {
+      "path": "server/modules/marketing/studio-generation/index.ts",
+      "purpose": "Script and scene-plan generation services and fallback handling.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/index.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaFrameExtractor.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaRelevanceRules.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaScoring.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaService.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaStore.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaTypes.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/modules/marketing/visual-qa/visualQaVisionProvider.ts",
+      "purpose": "Visual QA extraction, scoring, and persistence interfaces.",
+      "status": "partial",
+      "referencedBy": [],
+      "notes": ""
+    },
+    {
+      "path": "server/routers.ts",
+      "purpose": "tRPC procedure contracts, including admin marketing endpoints.",
+      "status": "unknown",
+      "referencedBy": [],
+      "notes": ""
+    }
+  ]
+}
