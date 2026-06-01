@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,23 @@ type ImageGenerationResult = {
   errorMessage: string | null;
 };
 
+type CreationCapabilityStatus = "ready" | "setup_needed" | "planned_only" | "not_wired" | "broken";
+type CreationCapability = {
+  id: string;
+  label: string;
+  description: string;
+  status: CreationCapabilityStatus;
+  primaryProcedure: string | null;
+  expectedOutput: "image_asset" | "campaign_package" | "video_plan" | "rendered_video" | "avatar_video" | "voice_preview" | "audio_bed" | "export_pack" | "unknown";
+  canGenerate: boolean;
+  canPreview: boolean;
+  canExport: boolean;
+  canSchedule: boolean;
+  missingSetup: string[];
+  blockers: string[];
+  notes: string[];
+};
+
 const CREATION_TYPES = [
   { id: "image_ad", label: "Image Ad", description: "Premium image creative for social or display" },
   { id: "video_ad_30s", label: "30-Second Video Ad", description: "Facebook, Instagram or YouTube short ad" },
@@ -88,6 +105,22 @@ const CREATION_TYPES = [
   { id: "weekly_content_pack", label: "Weekly Content Pack", description: "Full week of multi-platform content" },
   { id: "avatar_video", label: "Avatar Video", description: "AI avatar-led product intro" },
 ] as const;
+
+function fallbackCapabilityForType(type: (typeof CREATION_TYPES)[number]): CreationCapability {
+  return {
+    ...type,
+    status: "setup_needed",
+    primaryProcedure: null,
+    expectedOutput: "unknown",
+    canGenerate: false,
+    canPreview: false,
+    canExport: false,
+    canSchedule: false,
+    missingSetup: ["waiting_for_backend"],
+    blockers: [],
+    notes: ["Capability contract is loading."],
+  };
+}
 
 function getReadinessBadge(status?: string): { label: string; classes: string } {
   switch (status) {
@@ -336,7 +369,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const utils = trpc.useUtils();
   const workspace = useMarketingWorkspaceConfig();
 
-  const [quality, setQuality] = useState<QualityMode>("elite");
+  const [quality, setQuality] = useState<QualityMode>("standard");
   const [activeTab, setActiveTab] = useState<WorkspaceTab>("strategy");
   const [selectedCreationType, setSelectedCreationType] = useState<string>("image_ad");
   const [showSettingsDialog, setShowSettingsDialog] = useState<boolean>(false);
@@ -345,13 +378,18 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const [lastAutonomousRun, setLastAutonomousRun] = useState<Record<string, unknown> | null>(null);
   const [lastDeliverablePackage, setLastDeliverablePackage] = useState<Record<string, unknown> | null>(null);
   const [imageGenerationResult, setImageGenerationResult] = useState<ImageGenerationResult | null>(null);
+  const [creationStatusNotice, setCreationStatusNotice] = useState<{
+    status: CreationCapabilityStatus | "waiting_for_backend";
+    title: string;
+    reason: string;
+  } | null>(null);
   const [commandForm, setCommandForm] = useState<CommandFormState>({
     goal: "Get me 50 signups this month from stable owners.",
     audience: workspace.defaultAudience,
     hostAppId: workspace.host_app_id,
     platforms: ["Facebook", "Instagram", "LinkedIn"],
     contentTypes: ["7-Day Growth Plan", "Social Post", "Reel / Short"],
-    qualityMode: "elite",
+    qualityMode: "standard",
     exportOnly: true,
     requireApproval: true,
     durationDays: 30,
@@ -447,6 +485,15 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       workspaceId: workspace.marketing_workspace_id,
       hostAppId: workspace.host_app_id,
       qualityMode: quality,
+    },
+    { refetchInterval: 30_000 },
+  );
+  const creationCapabilitiesQuery = trpc.admin.getMarketingCreationCapabilities.useQuery(
+    {
+      tenantId: workspace.tenantId,
+      workspaceId: workspace.marketing_workspace_id,
+      hostAppId: workspace.host_app_id,
+      qualityMode: commandForm.qualityMode,
     },
     { refetchInterval: 30_000 },
   );
@@ -1099,12 +1146,56 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   }
 
   function handleGenerate() {
+    if (creationCapabilitiesQuery.isLoading) {
+      setCreationStatusNotice({
+        status: "waiting_for_backend",
+        title: "waiting_for_backend",
+        reason: "Capability contract is loading. Please retry in a moment.",
+      });
+      setWorkspaceTab("preview");
+      return;
+    }
+    if (selectedCreationCapability.status === "setup_needed") {
+      setCreationStatusNotice({
+        status: "setup_needed",
+        title: `${selectedCreationCapability.label} requires setup`,
+        reason: selectedCreationCapability.missingSetup[0] ?? "Required provider/model route is not ready.",
+      });
+      setWorkspaceTab("preview");
+      return;
+    }
+    if (selectedCreationCapability.status === "not_wired") {
+      setCreationStatusNotice({
+        status: "not_wired",
+        title: `${selectedCreationCapability.label} is not wired yet`,
+        reason: selectedCreationCapability.blockers[0] ?? "No first-class generation contract exists for this creation type yet.",
+      });
+      setWorkspaceTab("preview");
+      return;
+    }
+    if (selectedCreationCapability.status === "broken") {
+      setCreationStatusNotice({
+        status: "broken",
+        title: `${selectedCreationCapability.label} is currently blocked`,
+        reason: selectedCreationCapability.blockers[0] ?? "A backend blocker is preventing this generation flow.",
+      });
+      setWorkspaceTab("preview");
+      return;
+    }
+
+    setCreationStatusNotice(null);
     switch (selectedCreationType) {
       case "image_ad": handleGenerateImageAd(); break;
       case "video_ad_30s": handleGenerateThirtySecondAdPackage(); break;
       case "assembled_video_3m": handleGenerateAssembledVideoPackage(); break;
       case "signup_campaign": handleGenerateSignupCampaignPackage(); break;
-      default: handleRunAutonomousCampaign(); break;
+      default:
+        setCreationStatusNotice({
+          status: "not_wired",
+          title: `${selectedCreationCapability.label} is not wired yet`,
+          reason: selectedCreationCapability.blockers[0] ?? "No first-class handler exists for this creation type yet.",
+        });
+        break;
     }
     setWorkspaceTab("preview");
   }
@@ -1120,6 +1211,23 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
 
   const backendReadiness = (backendReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const connectorReadiness = (connectorReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
+  const capabilityRows = (
+    (creationCapabilitiesQuery.data as { capabilities?: CreationCapability[] } | undefined)?.capabilities
+      ?? CREATION_TYPES.map((type) => fallbackCapabilityForType(type))
+  ) as CreationCapability[];
+  const creationCapabilities = capabilityRows;
+  const primaryCreationCapabilities = creationCapabilities.filter((row) => row.status !== "not_wired");
+  const notReadyCreationCapabilities = creationCapabilities.filter((row) => row.status === "not_wired");
+  const selectedCreationCapability =
+    creationCapabilities.find((row) => row.id === selectedCreationType)
+    ?? creationCapabilities[0]
+    ?? fallbackCapabilityForType(CREATION_TYPES[0]);
+  useEffect(() => {
+    if (!creationCapabilities.some((row) => row.id === selectedCreationType)) {
+      const fallback = primaryCreationCapabilities[0]?.id ?? creationCapabilities[0]?.id ?? "image_ad";
+      setSelectedCreationType(fallback);
+    }
+  }, [creationCapabilities, primaryCreationCapabilities, selectedCreationType]);
   const commandCentre = (commandCentreQuery.data as Record<string, any> | undefined) ?? undefined;
   const autonomousRun = (lastAutonomousRun ?? null) as Record<string, any> | null;
   const autonomousRunSummaries = (autonomousRun?.runSummaries as Array<Record<string, any>> | undefined) ?? [];
@@ -1207,7 +1315,13 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
 
 
   const readinessBadge = getReadinessBadge(backendReadiness?.status);
-  const selectedCreationTypeLabel = CREATION_TYPES.find((t) => t.id === selectedCreationType)?.label ?? "Content";
+  const selectedCreationTypeLabel = selectedCreationCapability?.label ?? "Content";
+  const selectedCreationBlocked = selectedCreationCapability.status === "setup_needed"
+    || selectedCreationCapability.status === "broken"
+    || selectedCreationCapability.status === "not_wired";
+  const generateButtonLabel = selectedCreationCapability.status === "planned_only"
+    ? `Generate ${selectedCreationTypeLabel} (plan/package)`
+    : `Generate ${selectedCreationTypeLabel}`;
 
   return (
     <main
@@ -1263,7 +1377,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
           {/* ── Left: Creation Menu ── */}
           <nav className="creation-menu flex flex-col gap-1 rounded-3xl border border-stone-200 bg-white p-3 shadow-sm lg:h-fit">
             <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-stone-500">Create</p>
-            {CREATION_TYPES.map((type) => (
+            {primaryCreationCapabilities.map((type) => (
               <button
                 key={type.id}
                 type="button"
@@ -1281,10 +1395,50 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                     : "text-stone-700 hover:bg-stone-50"
                 }`}
               >
-                <p className="text-xs font-medium">{type.label}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-medium">{type.label}</p>
+                  <span className={`rounded-full border px-2 py-0.5 text-[10px] ${
+                    type.status === "ready"
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                      : type.status === "planned_only"
+                        ? "border-amber-300 bg-amber-50 text-amber-700"
+                        : type.status === "setup_needed"
+                          ? "border-stone-300 bg-stone-100 text-stone-700"
+                          : "border-red-300 bg-red-50 text-red-700"
+                  }`}>
+                    {type.status === "planned_only" ? "Plan/package only" : formatStatusLabel(type.status)}
+                  </span>
+                </div>
                 <p className={`mt-0.5 text-[10px] leading-tight ${selectedCreationType === type.id ? "text-white/70" : "text-stone-400"}`}>{type.description}</p>
               </button>
             ))}
+            {notReadyCreationCapabilities.length ? (
+              <div className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-stone-500">Not ready yet</p>
+                <div className="mt-2 space-y-1.5">
+                  {notReadyCreationCapabilities.map((type) => (
+                    <button
+                      key={type.id}
+                      type="button"
+                      className="w-full rounded-xl border border-stone-200 bg-white px-2 py-1.5 text-left text-[11px] text-stone-600"
+                      onClick={() => {
+                        setSelectedCreationType(type.id);
+                        setCreationStatusNotice({
+                          status: "not_wired",
+                          title: `${type.label} is not wired yet`,
+                          reason: type.blockers[0] ?? "No first-class procedure/viewer contract exists yet.",
+                        });
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium text-stone-700">{type.label}</span>
+                        <span className="rounded-full border border-stone-200 bg-stone-100 px-2 py-0.5 text-[10px] text-stone-600">Not wired</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </nav>
 
           {/* ── Center: Composer + workspace ── */}
@@ -1293,7 +1447,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             {/* Composer card */}
             <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold text-stone-900">{selectedCreationTypeLabel}</h2>
-              <p className="mt-0.5 text-xs text-stone-500">{CREATION_TYPES.find((t) => t.id === selectedCreationType)?.description}</p>
+              <p className="mt-0.5 text-xs text-stone-500">{selectedCreationCapability?.description}</p>
 
               <div className="mt-4 grid gap-4 xl:grid-cols-2">
                 <label className="space-y-1">
@@ -1373,11 +1527,21 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                   type="button"
                   className="rounded-2xl px-6"
                   onClick={handleGenerate}
-                  disabled={isAnyGenerationPending}
+                  disabled={isAnyGenerationPending || selectedCreationBlocked}
                   data-testid="generate-button"
                 >
-                  {isAnyGenerationPending ? "Generating…" : `Generate ${selectedCreationTypeLabel}`}
+                  {isAnyGenerationPending ? "Generating…" : generateButtonLabel}
                 </Button>
+                {selectedCreationCapability.status === "planned_only" ? (
+                  <p className="mt-2 text-xs text-amber-700">Plan/package only: this flow does not claim rendered media output.</p>
+                ) : null}
+                {selectedCreationBlocked ? (
+                  <p className="mt-2 text-xs text-stone-600">
+                    {selectedCreationCapability.missingSetup[0]
+                      ?? selectedCreationCapability.blockers[0]
+                      ?? "This creation type is not available yet."}
+                  </p>
+                ) : null}
               </div>
 
               {/* Quick actions (secondary) */}
@@ -1778,6 +1942,35 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             <p className="mt-0.5 text-xs text-stone-500">Generated output appears here.</p>
 
             <div className="mt-4 space-y-3">
+              {creationStatusNotice ? (
+                <div className={`rounded-2xl border p-4 ${
+                  creationStatusNotice.status === "setup_needed"
+                    ? "border-amber-200 bg-amber-50"
+                    : creationStatusNotice.status === "broken"
+                      ? "border-red-200 bg-red-50"
+                      : "border-stone-200 bg-stone-50"
+                }`}>
+                  <p className={`text-sm font-medium ${
+                    creationStatusNotice.status === "setup_needed"
+                      ? "text-amber-800"
+                      : creationStatusNotice.status === "broken"
+                        ? "text-red-800"
+                        : "text-stone-800"
+                  }`}>
+                    {creationStatusNotice.title}
+                  </p>
+                  <p className={`mt-1 text-xs ${
+                    creationStatusNotice.status === "setup_needed"
+                      ? "text-amber-700"
+                      : creationStatusNotice.status === "broken"
+                        ? "text-red-700"
+                        : "text-stone-600"
+                  }`}>
+                    {creationStatusNotice.reason}
+                  </p>
+                </div>
+              ) : null}
+
               {/* Image ad output */}
               {imageGenerationResult?.publicUrl && imageGenerationResult.mimeType?.startsWith("image/") ? (
                 <div className="overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
