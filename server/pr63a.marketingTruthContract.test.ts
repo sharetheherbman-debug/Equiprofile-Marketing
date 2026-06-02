@@ -99,7 +99,7 @@ describe("PR63A creation capability truth contract", () => {
   it("keeps frontend default quality mode as standard", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     expect(app).toContain('const [quality, setQuality] = useState<QualityMode>("standard")');
-    expect(app).toContain('qualityMode: "standard"');
+    expect(app).toContain("qualityMode: quality");
   });
 
   it("settings checklist uses task-route truth for media capabilities", () => {
@@ -115,10 +115,10 @@ describe("PR63A creation capability truth contract", () => {
 
   it("TheMarketingApp keeps truthful output states without exposing diagnostic grouping in the primary menu", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
-    expect(app).toContain("Setup / blocker output");
-    expect(app).toContain("Plan-only output");
-    expect(app).toContain("Advanced");
-    expect(app).toContain("futureCapabilities.length > 0");
+    const drawer = read("client/src/components/marketing/app/workspace/AdvancedMarketingDrawer.tsx");
+    expect(app).toContain("<AdvancedMarketingDrawer");
+    expect(drawer).toContain("Advanced tools");
+    expect(drawer).toContain("Developer Diagnostics stay out of the main campaign flow.");
     expect(app).not.toContain('>{"Ready now"}<');
     expect(app).not.toContain('>{"Package / plan only"}<');
     expect(app).not.toContain('>{"Needs setup"}<');

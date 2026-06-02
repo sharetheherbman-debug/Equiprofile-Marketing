@@ -280,8 +280,8 @@ describe("PR62B frontend image action + asset card truth", () => {
       "utf8",
     );
     expect(source).toContain("generateMarketingImageAsset");
-    // PR62D: Image Ad is the creation type label; button is dynamic "Generate {type}"
-    expect(source).toContain("Image Ad");
+    // PR64F: image creative remains explicit-only and secondary to full campaigns.
+    expect(source).toContain("Image creative generated for review");
     expect(source).toContain("image_ad");
     expect(source).not.toContain("fake preview");
   });

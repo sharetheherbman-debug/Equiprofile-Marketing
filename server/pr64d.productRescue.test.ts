@@ -55,6 +55,10 @@ const marketingAppSource = fs.readFileSync(
   path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
   "utf8",
 );
+const campaignPromptSource = fs.readFileSync(
+  path.join(repoRoot, "client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx"),
+  "utf8",
+);
 
 const BACKEND_TERMS_FORBIDDEN_IN_PRIMARY_UI = [
   "Ready now",
@@ -69,40 +73,24 @@ const BACKEND_LABELS_FORBIDDEN_IN_BUTTONS = [
 ] as const;
 
 describe("PR64D frontend — diagnostic grid removed from primary Studio", () => {
-  it("creation menu does not render diagnostic group headers", () => {
-    const menuStart = marketingAppSource.indexOf("creation-menu");
-    const menuEnd = marketingAppSource.indexOf("Center: Composer", menuStart);
-    expect(menuStart).toBeGreaterThan(0);
-    const menuSection = marketingAppSource.slice(menuStart, menuEnd > 0 ? menuEnd : menuStart + 5000);
-
+  it("primary prompt panel does not render diagnostic group headers", () => {
     for (const term of BACKEND_TERMS_FORBIDDEN_IN_PRIMARY_UI) {
-      expect(menuSection, `Creation menu must not render \"${term}\" as a section header`).not.toContain(`>${term}<`);
+      expect(campaignPromptSource, `Primary prompt must not render \"${term}\" as a section header`).not.toContain(`>${term}<`);
     }
   });
 
-  it('creation menu buttons do not show "Output:" or "Expected:" labels', () => {
-    const menuStart = marketingAppSource.indexOf("creation-menu");
-    const menuEnd = marketingAppSource.indexOf("Center: Composer", menuStart);
-    const menuSection = marketingAppSource.slice(menuStart, menuEnd > 0 ? menuEnd : menuStart + 5000);
-
+  it('primary prompt buttons do not show "Output:" or "Expected:" labels', () => {
     for (const label of BACKEND_LABELS_FORBIDDEN_IN_BUTTONS) {
-      expect(menuSection, `Creation menu must not render \"${label}\" label`).not.toContain(label);
+      expect(campaignPromptSource, `Primary prompt must not render \"${label}\" label`).not.toContain(label);
     }
   });
 
-  it("future capabilities are not rendered as active creation menu items", () => {
-    const menuStart = marketingAppSource.indexOf("creation-menu");
-    const detailsIdx = marketingAppSource.indexOf("<details", menuStart);
-    const futureLabelIdx = marketingAppSource.indexOf('"Future / not wired"', menuStart);
-
-    if (futureLabelIdx > 0 && futureLabelIdx < marketingAppSource.indexOf("Center: Composer", menuStart)) {
-      expect(detailsIdx).toBeGreaterThan(0);
-      expect(detailsIdx).toBeLessThan(futureLabelIdx);
-    }
+  it("future capabilities are not rendered as active primary creation items", () => {
+    expect(campaignPromptSource).not.toContain("Future / not wired");
   });
 
   it("Plan campaign button is present in the composer", () => {
-    expect(marketingAppSource).toContain("Plan campaign");
+    expect(campaignPromptSource).toContain("Plan campaign");
     expect(marketingAppSource).toContain("handlePlanCampaign");
   });
 

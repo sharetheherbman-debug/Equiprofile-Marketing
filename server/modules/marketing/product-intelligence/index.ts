@@ -309,6 +309,144 @@ export function isMarketingProductProfileReady(profile?: MarketingProductProfile
   return Boolean(profile && profile.confidenceScore >= MIN_PRODUCT_PROFILE_CONFIDENCE && profile.missingInfo.length <= 3);
 }
 
+export type SafeMarketingProductContext = {
+  status: "confirmed" | "draft" | "missing";
+  source: "confirmed_profile" | "saved_draft" | "equiprofile_defaults" | "manual_notes" | "missing";
+  profile: MarketingProductProfileRecord | null;
+  profileReady: boolean;
+  missingInfo: string[];
+  setupQuestions: string[];
+  notice: string | null;
+};
+
+function buildEquiProfileDefaults(input: {
+  tenantId: string;
+  workspaceId: string;
+  hostAppId: string;
+  landingPageUrl?: string | null;
+  signupUrl?: string | null;
+  productNotes?: string | null;
+}): MarketingProductProfileRecord {
+  const landingPageUrl = input.landingPageUrl?.trim() || null;
+  const signupUrl = input.signupUrl?.trim() || null;
+  const cta = signupUrl ? `Start your free trial: ${signupUrl}` : "Start your free trial";
+  const missingInfo = unique([
+    landingPageUrl ? null : "website or landing page URL",
+    signupUrl ? null : "signup URL for tracking links",
+  ]);
+  return {
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    appName: "EquiProfile",
+    domain: landingPageUrl ? new URL(landingPageUrl).hostname.replace(/^www\./, "") : "equiprofile.com",
+    landingPageUrl,
+    signupUrl,
+    logoAssetId: null,
+    brandColors: [],
+    targetAudiences: EQUI_PROFILE_AUDIENCES,
+    primaryOffer: signupUrl ? "Start a free EquiProfile trial" : "Free-trial signup offer; add the signup URL before export.",
+    pricingDetails: "Free-trial details should be confirmed before publishing.",
+    coreFeatures: EQUI_PROFILE_FEATURES,
+    benefits: EQUI_PROFILE_BENEFITS,
+    painPointsSolved: ["scattered stable admin", "limited visibility across horse records, documents, schedules, and staff"],
+    objections: ["Confirm the exact trial and pricing details before publishing."],
+    proofPoints: [],
+    differentiators: ["equine and stable management context in one operational platform"],
+    forbiddenClaims: DEFAULT_FORBIDDEN_CLAIMS,
+    toneOfVoice: ["professional", "helpful", "practical equestrian software"],
+    ctaLibrary: [cta],
+    platformPositioning: {
+      Facebook: "Show practical stable-management relief and a free-trial CTA.",
+      Instagram: "Use equestrian operations visuals with one concrete benefit.",
+      LinkedIn: "Position operational visibility and growth support for equestrian businesses.",
+      Email: "Use benefit-led education and the configured signup or free-trial CTA.",
+    },
+    extractedSourceUrls: unique([landingPageUrl, signupUrl]),
+    candidateLogoUrls: [],
+    candidateLogoAssetIds: [],
+    missingInfo,
+    sourceMode: "manual",
+    confidenceScore: 56,
+    lastScrapedAt: null,
+    confirmedAt: null,
+  };
+}
+
+function mergeEquiProfileDraft(profile: MarketingProductProfileRecord, defaults: MarketingProductProfileRecord) {
+  const missingInfo = unique([
+    ...profile.missingInfo,
+    profile.landingPageUrl ? null : "website or landing page URL",
+    profile.signupUrl ? null : "signup URL for tracking links",
+  ]);
+  return {
+    ...defaults,
+    ...profile,
+    domain: profile.domain || defaults.domain,
+    targetAudiences: profile.targetAudiences.length ? profile.targetAudiences : defaults.targetAudiences,
+    coreFeatures: profile.coreFeatures.length ? profile.coreFeatures : defaults.coreFeatures,
+    benefits: profile.benefits.length ? profile.benefits : defaults.benefits,
+    painPointsSolved: profile.painPointsSolved.length ? profile.painPointsSolved : defaults.painPointsSolved,
+    objections: profile.objections.length ? profile.objections : defaults.objections,
+    differentiators: profile.differentiators.length ? profile.differentiators : defaults.differentiators,
+    forbiddenClaims: profile.forbiddenClaims.length ? profile.forbiddenClaims : defaults.forbiddenClaims,
+    toneOfVoice: profile.toneOfVoice.length ? profile.toneOfVoice : defaults.toneOfVoice,
+    ctaLibrary: profile.ctaLibrary.length ? profile.ctaLibrary : defaults.ctaLibrary,
+    platformPositioning: Object.keys(profile.platformPositioning).length ? profile.platformPositioning : defaults.platformPositioning,
+    missingInfo,
+  };
+}
+
+function buildManualNotesDraft(input: {
+  tenantId: string;
+  workspaceId: string;
+  hostAppId: string;
+  landingPageUrl?: string | null;
+  signupUrl?: string | null;
+  productNotes: string;
+}): MarketingProductProfileRecord {
+  const landingPageUrl = input.landingPageUrl?.trim() || null;
+  const signupUrl = input.signupUrl?.trim() || null;
+  const missingInfo = unique([
+    landingPageUrl ? null : "website or landing page URL",
+    signupUrl ? null : "signup URL for tracking links",
+    "target audience review",
+    "primary offer review",
+  ]);
+  return {
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    appName: input.hostAppId,
+    domain: landingPageUrl ? new URL(landingPageUrl).hostname.replace(/^www\./, "") : null,
+    landingPageUrl,
+    signupUrl,
+    logoAssetId: null,
+    brandColors: [],
+    targetAudiences: [],
+    primaryOffer: signupUrl ? "Signup offer available" : null,
+    pricingDetails: null,
+    coreFeatures: [input.productNotes.trim()],
+    benefits: [input.productNotes.trim()],
+    painPointsSolved: [],
+    objections: [],
+    proofPoints: [],
+    differentiators: [],
+    forbiddenClaims: DEFAULT_FORBIDDEN_CLAIMS,
+    toneOfVoice: [],
+    ctaLibrary: signupUrl ? [`Learn more: ${signupUrl}`] : ["Learn more"],
+    platformPositioning: {},
+    extractedSourceUrls: unique([landingPageUrl, signupUrl]),
+    candidateLogoUrls: [],
+    candidateLogoAssetIds: [],
+    missingInfo,
+    sourceMode: "manual",
+    confidenceScore: 36,
+    lastScrapedAt: null,
+    confirmedAt: null,
+  };
+}
+
 export async function getMarketingProductProfile(input: { tenantId: string; workspaceId: string; hostAppId: string }) {
   const db = await getDb();
   if (!db) return { status: "setup_needed" as const, reason: "Database not available", profile: null, setupQuestions: productProfileSetupQuestions() };
@@ -324,6 +462,78 @@ export async function getMarketingProductProfile(input: { tenantId: string; work
     reason: isMarketingProductProfileReady(profile) ? null : "product_profile_low_confidence",
     profile,
     setupQuestions: productProfileSetupQuestions(profile),
+  };
+}
+
+export async function getSafeMarketingProductContext(input: {
+  tenantId: string;
+  workspaceId: string;
+  hostAppId: string;
+  landingPageUrl?: string | null;
+  signupUrl?: string | null;
+  productNotes?: string | null;
+}): Promise<SafeMarketingProductContext> {
+  const current = await getMarketingProductProfile(input).catch(() => ({
+    status: "setup_needed" as const,
+    reason: "product_profile_unavailable",
+    profile: null,
+    setupQuestions: productProfileSetupQuestions(),
+  }));
+  if (current.profile && isMarketingProductProfileReady(current.profile)) {
+    return {
+      status: "confirmed",
+      source: "confirmed_profile",
+      profile: current.profile,
+      profileReady: true,
+      missingInfo: current.profile.missingInfo,
+      setupQuestions: productProfileSetupQuestions(current.profile),
+      notice: null,
+    };
+  }
+  if (input.hostAppId.toLowerCase() === "equiprofile") {
+    const defaults = buildEquiProfileDefaults(input);
+    const profile = current.profile ? mergeEquiProfileDraft(current.profile, defaults) : defaults;
+    return {
+      status: "draft",
+      source: current.profile ? "saved_draft" : "equiprofile_defaults",
+      profile,
+      profileReady: false,
+      missingInfo: profile.missingInfo,
+      setupQuestions: productProfileSetupQuestions(profile),
+      notice: "Draft campaign generated from saved product defaults. Scan your website or sync providers for stronger AI copy.",
+    };
+  }
+  if (current.profile) {
+    return {
+      status: "draft",
+      source: "saved_draft",
+      profile: current.profile,
+      profileReady: false,
+      missingInfo: current.profile.missingInfo,
+      setupQuestions: productProfileSetupQuestions(current.profile),
+      notice: "Draft campaign generated from saved product notes. Review the product profile for stronger AI copy.",
+    };
+  }
+  if (input.productNotes?.trim()) {
+    const profile = buildManualNotesDraft({ ...input, productNotes: input.productNotes });
+    return {
+      status: "draft",
+      source: "manual_notes",
+      profile,
+      profileReady: false,
+      missingInfo: profile.missingInfo,
+      setupQuestions: productProfileSetupQuestions(profile),
+      notice: "Draft campaign generated from your product notes. Review the profile for stronger AI copy.",
+    };
+  }
+  return {
+    status: "missing",
+    source: "missing",
+    profile: null,
+    profileReady: false,
+    missingInfo: ["website or landing page URL", "target audience", "primary offer or trial details", "core product benefits"],
+    setupQuestions: productProfileSetupQuestions(),
+    notice: "Add a few product details before generating campaign material.",
   };
 }
 
