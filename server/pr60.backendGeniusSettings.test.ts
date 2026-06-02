@@ -8,11 +8,11 @@ describe("PR60 settings stability", () => {
   it("settings consumes provider settings object shape and readiness endpoints", () => {
     const source = readFileSync(path.join(root, "client/src/components/marketing/app/MarketingAppSettings.tsx"), "utf8");
     expect(source).toContain("type ProviderSettingsApiResponse");
-    expect(source).toContain("providerSettingsById");
+    expect(source).toContain("settingsById");
     expect(source).toContain("trpc.admin.getMarketingBackendReadiness.useQuery");
-    expect(source).toContain("trpc.admin.getMarketingConnectorReadiness.useQuery");
+    expect(source).toContain("trpc.admin.listMarketingSocialConnections.useQuery");
     expect(source).not.toContain("providerSettingsQuery.data as Array");
-    expect(source).toContain("Saved value:");
+    expect(source).toContain("Saved");
     expect(source).toContain("keyMasked");
   });
 

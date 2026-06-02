@@ -13,10 +13,11 @@ const output = read("client/src/components/marketing/app/workspace/CampaignOutpu
 const status = read("client/src/components/marketing/app/workspace/WorkflowStatusPanel.tsx");
 
 describe("PR64F desktop campaign workspace", () => {
-  it("renders a spacious three-column desktop workspace", () => {
+  it("renders an embedded campaign workspace", () => {
     expect(app).toContain("<MarketingWorkspaceShell");
-    expect(shell).toContain("xl:grid-cols-[280px_minmax(640px,1fr)_340px]");
-    expect(shell).toContain("max-w-[1600px]");
+    expect(shell).toContain("marketing-product-strip");
+    expect(shell).toContain("Product");
+    expect(shell).toContain("Results");
   });
 
   it("puts the campaign prompt first", () => {

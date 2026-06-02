@@ -30,6 +30,8 @@ export function CampaignOutputPanel({
   const fallbackAds = Array.isArray(deliverablePackage.adCopy) ? deliverablePackage.adCopy.map((body, index) => ({ headline: `Ad variant ${index + 1}`, primaryText: body })) : [];
   const ads = adVariants.length ? adVariants : fallbackAds.slice(0, 3);
   const fallbackUsed = deliverablePackage.fallbackUsed === true;
+  const qualityGate = (deliverablePackage.qualityGate as { status?: string; reasons?: string[]; exportReady?: boolean } | undefined) ?? {};
+  const attribution = (deliverablePackage.attribution as { trackingUrl?: string } | undefined) ?? {};
 
   return (
     <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm" data-testid="campaign-output-panel">
@@ -42,6 +44,7 @@ export function CampaignOutputPanel({
       </div>
       <p className="mt-3 text-sm leading-6 text-stone-700">{text(deliverablePackage.strategy, "Campaign material is ready for review.")}</p>
       {fallbackUsed ? <p className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-800">Draft campaign generated from saved product defaults. Scan your website or sync providers for stronger AI copy.</p> : null}
+      {qualityGate.status === "failed" ? <p className="mt-3 rounded-2xl bg-rose-50 px-3 py-2 text-xs leading-5 text-rose-800">Draft needs product details before export. {(qualityGate.reasons ?? []).join(" ")}</p> : null}
 
       <div className="mt-6 grid gap-5">
         <OutputGroup title="Day-by-day schedule" rows={dayPlan} render={(row) => `Day ${row.day ?? "—"} · ${row.platform ?? row.channel ?? "Channel"} — ${text(row.body, text(row.hook, "Draft item"))}`} />
@@ -51,8 +54,8 @@ export function CampaignOutputPanel({
       </div>
 
       <div className="mt-6 grid gap-3 rounded-2xl bg-stone-50 p-4 text-sm text-stone-700 sm:grid-cols-2">
-        <p><span className="font-semibold text-stone-900">CTA / tracking:</span> {signupUrl || text(deliverablePackage.cta, "Add a signup URL to create tracking links.")}</p>
-        <p><span className="font-semibold text-stone-900">Export status:</span> Draft pack ready for review and export.</p>
+        <p><span className="font-semibold text-stone-900">CTA / tracking:</span> {attribution.trackingUrl || signupUrl || text(deliverablePackage.cta, "Add a signup URL to create tracking links.")}</p>
+        <p><span className="font-semibold text-stone-900">Export status:</span> {qualityGate.exportReady ? "Quality-checked draft ready for review and export." : "Review needed before export."}</p>
       </div>
     </section>
   );

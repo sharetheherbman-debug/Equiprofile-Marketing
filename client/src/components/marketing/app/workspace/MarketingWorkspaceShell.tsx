@@ -11,12 +11,23 @@ export function MarketingWorkspaceShell({
 }) {
   return (
     <div
-      className="mx-auto grid min-w-0 max-w-[1600px] gap-5 px-5 py-6 xl:grid-cols-[280px_minmax(640px,1fr)_340px]"
+      className="mx-auto min-w-0 max-w-[1440px] space-y-5 px-4 py-5 lg:px-6"
       data-testid="marketing-workspace-shell"
     >
-      <aside className="min-w-0">{productPanel}</aside>
+      <aside className="min-w-0" data-testid="marketing-product-strip">{productPanel}</aside>
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-stone-200 bg-white px-4 py-3 text-xs font-medium text-stone-600 shadow-sm" data-testid="marketing-workflow-stepper">
+        {["Product", "Plan", "Generate", "Review", "Schedule", "Results"].map((step, index) => (
+          <span key={step} className="flex items-center gap-2">
+            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-800">{step}</span>
+            {index < 5 ? <span className="text-stone-300">→</span> : null}
+          </span>
+        ))}
+      </div>
       <main className="min-w-0 space-y-5">{workflow}</main>
-      <aside className="min-w-0 xl:sticky xl:top-5 xl:h-fit">{statusRail}</aside>
+      <details className="min-w-0 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm" data-testid="marketing-inspector">
+        <summary className="cursor-pointer text-sm font-semibold text-stone-900">Campaign inspector</summary>
+        <div className="mt-4 border-t border-stone-100 pt-4">{statusRail}</div>
+      </details>
     </div>
   );
 }

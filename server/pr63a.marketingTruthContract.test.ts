@@ -102,15 +102,11 @@ describe("PR63A creation capability truth contract", () => {
     expect(app).toContain("qualityMode: quality");
   });
 
-  it("settings checklist uses task-route truth for media capabilities", () => {
+  it("settings keeps task-route diagnostics out of normal user sections", () => {
     const settings = read("client/src/components/marketing/app/MarketingAppSettings.tsx");
-    expect(settings).toContain('isTaskReady("image_generation")');
-    expect(settings).toContain('isTaskReady("voiceover")');
-    expect(settings).toContain('isTaskReady("music_generation")');
-    expect(settings).toContain('isTaskReady("avatar_generation")');
     expect(settings).toContain("mediaFactoryConfigStatus");
-    expect(settings).toContain("Output guarantee truth");
-    expect(settings).toContain("getMarketingCreationCapabilities");
+    expect(settings).not.toContain("Output guarantee truth");
+    expect(settings).toContain("Admin Support");
   });
 
   it("TheMarketingApp keeps truthful output states without exposing diagnostic grouping in the primary menu", () => {
@@ -118,7 +114,7 @@ describe("PR63A creation capability truth contract", () => {
     const drawer = read("client/src/components/marketing/app/workspace/AdvancedMarketingDrawer.tsx");
     expect(app).toContain("<AdvancedMarketingDrawer");
     expect(drawer).toContain("Advanced tools");
-    expect(drawer).toContain("Developer Diagnostics stay out of the main campaign flow.");
+    expect(drawer).not.toContain("Developer Diagnostics");
     expect(app).not.toContain('>{"Ready now"}<');
     expect(app).not.toContain('>{"Package / plan only"}<');
     expect(app).not.toContain('>{"Needs setup"}<');

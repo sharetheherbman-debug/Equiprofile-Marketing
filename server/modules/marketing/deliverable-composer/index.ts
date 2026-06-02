@@ -6,10 +6,18 @@ import {
   listMarketingCampaignItemRecords,
 } from "../../growth-engine";
 import { createMarketingReviewRecord } from "../qa-engine/marketingReviewStore";
+import { validateMarketingCampaignQuality, type MarketingCampaignQualityGate } from "../campaign-quality-gate";
 import { defaultWorkspaceBudgetPolicy, resolveMarketingProviderRoute } from "../provider-capabilities";
 import { generateMarketingImageAsset } from "../image-generation";
 import { generateMarketingStudioScript } from "../studio-generation";
 import { getMarketingBrandMemory } from "../brand-memory";
+import { generateMarketingManagerGuidance, recommendCampaignStructure } from "../campaign-manager-brain";
+import { recommendMarketingPlaybook } from "../genius-brain";
+import { buildPlatformSpecialistPromptContext } from "../platform-specialists";
+import { getMarketingPerformanceContext } from "../results-conversion";
+import { getMarketingLearningInsights } from "../result-learning";
+import { recommendMarketingMediaTemplate } from "../media-excellence";
+import { createMarketingAttributionLink } from "../results-conversion";
 import { executeMarketingModelTask } from "../model-execution";
 import type { MarketingModelExecutionOutput, MarketingModelTask } from "../model-execution";
 import {
@@ -61,6 +69,13 @@ export type MarketingDeliverablePackage = {
   scheduleDrafts: Array<Record<string, unknown>>;
   mediaJobs: Array<Record<string, unknown>>;
   campaignItems: Array<Record<string, unknown>>;
+  productCategory?: string;
+  productBenefits?: string[];
+  productFeatures?: string[];
+  qualityGate?: MarketingCampaignQualityGate;
+  orchestration?: Record<string, unknown>;
+  trackingDestinationUrl?: string | null;
+  attribution?: Record<string, unknown>;
 };
 
 export type ComposeMarketingDeliverableInput = {
@@ -108,6 +123,7 @@ type ProductGenerationContext = {
   brandMemory: Record<string, unknown> | null;
   brandKit: Record<string, unknown>;
   primaryCta: string;
+  orchestration: Record<string, unknown>;
 };
 
 function fallbackHooks(goal: string, audience: string, profile?: MarketingProductProfileRecord) {
@@ -140,15 +156,36 @@ async function requireProductGenerationContext(input: ComposeMarketingDeliverabl
   if (!resolved.profile) {
     throw new MarketingProductProfileSetupNeededError(productProfileSetupQuestions(resolved.profile));
   }
-  const memory = await getMarketingBrandMemory(input).catch(() => ({ status: "setup_needed" as const, memory: null }));
   const profile = resolved.profile;
   const primaryCta = primaryProductCta(profile);
+  const [memory, performance, learning, specialistContext, managerGuidance] = await Promise.all([
+    getMarketingBrandMemory(input).catch(() => ({ status: "setup_needed" as const, memory: null })),
+    getMarketingPerformanceContext(input).catch(() => ({ status: "insufficient_data" as const })),
+    getMarketingLearningInsights(input).catch(() => ({ status: "insufficient_data" as const, insights: [] })),
+    Promise.resolve(buildPlatformSpecialistPromptContext({ platforms: input.platforms, goal: input.goal, contentTypes: [input.packageType] })),
+    generateMarketingManagerGuidance({
+      ...input,
+      cta: primaryCta,
+      proofPoints: profile.proofPoints,
+    }).catch(() => ({ status: "setup_needed" as const, guidance: ["Use product truth and require human review."] })),
+  ]);
+  const orchestration = {
+    roles: ["StrategyAgent", "CopyAgent", "MediaAgent", "QaAgent", "SchedulerAgent", "ResultsAgent"],
+    performance,
+    learning,
+    specialistContext,
+    managerGuidance,
+    campaignStructure: recommendCampaignStructure({ goal: input.goal, platform: input.platforms, audience: input.audience }),
+    geniusPlaybook: recommendMarketingPlaybook({ platform: input.platforms[0] ?? "Facebook", goal: input.goal, audience: input.audience }),
+    mediaTemplate: recommendMarketingMediaTemplate({ platform: input.platforms[0] ?? "Facebook", contentType: input.packageType }),
+  };
   return {
     profile,
     profileReady: resolved.profileReady,
     profileSource: resolved.source,
     brandMemory: memory.memory as Record<string, unknown> | null,
     primaryCta,
+    orchestration,
     brandKit: {
       brandName: profile.appName,
       domain: profile.domain ?? "",
@@ -187,7 +224,7 @@ async function executeProductCopy(input: ComposeMarketingDeliverableInput, conte
       primaryCta: context.primaryCta,
       productProfile: {
         appName: profile.appName,
-        category: profile.differentiators[0] ?? "",
+        category: profile.category,
         coreFeatures: profile.coreFeatures,
         benefits: profile.benefits,
         painPointsSolved: profile.painPointsSolved,
@@ -199,7 +236,10 @@ async function executeProductCopy(input: ComposeMarketingDeliverableInput, conte
         signupUrl: profile.signupUrl,
         platformPositioning: profile.platformPositioning[options.platform] ?? "",
       },
-      brandMemory: context.brandMemory,
+      brandMemory: {
+        savedMemory: context.brandMemory,
+        orchestration: context.orchestration,
+      },
     },
     platform: options.platform,
     contentType: options.contentType,
@@ -227,6 +267,16 @@ function generationTruth(results: MarketingModelExecutionOutput[]) {
 
 function productVisualPrompt(profile: MarketingProductProfileRecord, platform: string, benefit: string) {
   return `${platform} creative for ${profile.appName}: show ${benefit}. Keep the concept grounded in ${profile.coreFeatures.slice(0, 3).join(", ")}. Use confirmed brand colors ${profile.brandColors.join(", ") || "from Brand Kit"} and reserve logo-safe space${profile.logoAssetId ? ` for logo asset ${profile.logoAssetId}` : ""}.`;
+}
+
+function productTruth(context: ProductGenerationContext) {
+  return {
+    productCategory: context.profile.category,
+    productBenefits: context.profile.benefits,
+    productFeatures: context.profile.coreFeatures,
+    orchestration: context.orchestration,
+    trackingDestinationUrl: context.profile.signupUrl,
+  };
 }
 
 function normalizeScenes(input: Array<Record<string, unknown>>, durationSeconds: number, min: number, max: number) {
@@ -369,6 +419,7 @@ export async function composeImageAdPackage(input: ComposeMarketingDeliverableIn
     : [];
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "image_ad",
@@ -459,6 +510,7 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
 
   const hooks = fallbackHooks(input.goal, input.audience, productContext.profile);
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "video_ad_30s",
@@ -559,6 +611,7 @@ export async function composeAssembledVideoPackage(input: ComposeMarketingDelive
   });
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "assembled_video_3m",
@@ -655,6 +708,7 @@ export async function composeSignupCampaignPackage(input: ComposeMarketingDelive
   const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "signup_campaign",
@@ -743,6 +797,7 @@ export async function generateMarketingSocialPostPackage(input: ComposeMarketing
   const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "social_post",
@@ -827,6 +882,7 @@ export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketi
   const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "paid_social_ad",
@@ -915,6 +971,7 @@ export async function generateMarketingEmailCampaignPackage(input: ComposeMarket
   const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "email_campaign",
@@ -1014,6 +1071,7 @@ export async function generateMarketingWeeklyContentPackPackage(input: ComposeMa
   const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
+    ...productTruth(productContext),
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
     packageType: "weekly_content_pack",
@@ -1089,7 +1147,7 @@ export async function createCampaignItemsFromDeliverablePackage(input: {
   durationSeconds?: number;
   exportOnly?: boolean;
 }) {
-  const status = input.exportOnly === false ? "draft" : "export_only";
+  const status = input.packageData.qualityGate?.exportReady && input.exportOnly !== false ? "export_only" : "draft";
   const generationSource = input.packageData.generationSource;
   const metadataBase = {
     packageId: input.packageData.packageId,
@@ -1102,6 +1160,8 @@ export async function createCampaignItemsFromDeliverablePackage(input: {
     fallbackUsed: input.packageData.fallbackUsed,
     setupNeeded: input.packageData.setupNeeded,
     blockers: input.packageData.blockers,
+    qualityGate: input.packageData.qualityGate ?? null,
+    orchestration: input.packageData.orchestration ?? null,
   };
 
   const itemRows: Array<{ type: string; platform?: string; title: string; content?: string; prompt?: string; metadata?: Record<string, unknown> }> = [
@@ -1317,6 +1377,8 @@ export function createExportPackFromDeliverablePackage(input: {
     itemCount: input.campaignItems.length,
     scheduleDraftCount: input.scheduleDrafts.length,
     renderStatus: input.packageData.packageType === "assembled_video_3m" ? "not_rendered" : "not_required",
+    qualityGate: input.packageData.qualityGate ?? null,
+    exportReady: input.packageData.qualityGate?.exportReady ?? false,
   };
   return exportPack;
 }
@@ -1347,20 +1409,37 @@ export async function persistMarketingDeliverablePackage(input: {
   exportOnly?: boolean;
   requireApproval?: boolean;
 }) {
+  const qualityGate = validateMarketingCampaignQuality({
+    productCategory: input.packageData.productCategory,
+    sourcePrompt: input.sourcePrompt,
+    cta: input.packageData.cta,
+    benefits: input.packageData.productBenefits,
+    features: input.packageData.productFeatures,
+    copyBlocks: [...input.packageData.hooks, ...input.packageData.adCopy, input.packageData.script],
+  });
+  const packageData = qualityGate.status === "passed"
+    ? { ...input.packageData, qualityGate }
+    : {
+      ...input.packageData,
+      status: "partial" as const,
+      setupNeeded: true,
+      blockers: Array.from(new Set([...input.packageData.blockers, "Draft needs product details before export.", ...qualityGate.reasons])),
+      qualityGate,
+    };
   const existing = await listMarketingCampaignItemRecords({
-    campaignId: input.packageData.campaignId,
+    campaignId: packageData.campaignId,
     tenantId: input.tenantId,
   }).catch(() => [] as Array<Record<string, unknown>>);
 
   const hasPackage = existing.some((row) => {
     const metadata = (row as { metadata?: Record<string, unknown> }).metadata ?? {};
-    return metadata.packageId === input.packageData.packageId;
+    return metadata.packageId === packageData.packageId;
   });
 
   const campaignItems = hasPackage
     ? existing
     : await createCampaignItemsFromDeliverablePackage({
-      packageData: input.packageData,
+      packageData,
       tenantId: input.tenantId,
       sourcePrompt: input.sourcePrompt,
       qualityMode: input.qualityMode,
@@ -1369,30 +1448,46 @@ export async function persistMarketingDeliverablePackage(input: {
       durationSeconds: input.durationSeconds,
       exportOnly: input.exportOnly,
     });
+  const attribution = packageData.trackingDestinationUrl
+    ? await createMarketingAttributionLink({
+      tenantId: input.tenantId,
+      workspaceId: input.workspaceId,
+      hostAppId: input.hostAppId,
+      campaignId: packageData.campaignId,
+      destinationUrl: packageData.trackingDestinationUrl,
+      utmSource: packageData.platforms[0] ?? "marketing-app",
+      utmMedium: "campaign",
+      utmCampaign: packageData.packageType,
+      metadata: { packageId: packageData.packageId },
+    }).catch(() => null)
+    : null;
 
   const reviewItems = await createReviewItemsFromDeliverablePackage({
-    packageData: input.packageData,
+    packageData,
     tenantId: input.tenantId,
     workspaceId: input.workspaceId,
     hostAppId: input.hostAppId,
     campaignItems,
   });
 
-  const scheduleDrafts = await createScheduleDraftsFromDeliverablePackage({
-    packageData: input.packageData,
-    tenantId: input.tenantId,
-    workspaceId: input.workspaceId,
-    campaignItems,
-  });
+  const scheduleDrafts = qualityGate.exportReady
+    ? await createScheduleDraftsFromDeliverablePackage({
+      packageData,
+      tenantId: input.tenantId,
+      workspaceId: input.workspaceId,
+      campaignItems,
+    })
+    : [];
 
   const exportPack = createExportPackFromDeliverablePackage({
-    packageData: input.packageData,
+    packageData,
     campaignItems,
     scheduleDrafts,
   });
 
   return {
-    ...input.packageData,
+    ...packageData,
+    attribution: attribution ? { ...attribution, trackingUrl: attribution.shortUrl } : { status: "signup_url_needed" },
     reviewItems,
     exportPack,
     scheduleDrafts,

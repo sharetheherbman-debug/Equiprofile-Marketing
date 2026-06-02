@@ -140,16 +140,13 @@ describe("Phase 1 — Architecture document", () => {
 
 // ── 2. TheMarketingApp is a thin shell ────────────────────────────────────────
 describe("Phase 2 — Thin shell", () => {
-  it("TheMarketingApp delegates creative workspace to StudioHome in command-centre tabs instead of embedding MarketingAppChat directly", () => {
+  it("TheMarketingApp keeps StudioHome out of the embedded primary workflow", () => {
     const source = fs.readFileSync(
       path.join(repoRoot, "client/src/components/marketing/app/TheMarketingApp.tsx"),
       "utf8",
     );
-    // StudioHome must be imported and mounted in the Creative tab.
-    expect(source).toContain("StudioHome");
-    const creativeTab = source.slice(source.indexOf('<TabsContent value="creative"'));
-    expect(creativeTab).toContain("<StudioHome");
-    expect(creativeTab).not.toContain("<MarketingAppChat");
+    expect(source).not.toContain("<StudioHome");
+    expect(source).not.toContain("<MarketingAppChat");
   });
 
   it("TheMarketingApp source does not directly embed MarketingAppChat in the create section JSX", () => {

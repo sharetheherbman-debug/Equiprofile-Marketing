@@ -7,51 +7,16 @@ import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 
 export const PROVIDER_FIELDS = [
-  { id: "genx", key: "marketing_genx_api_key", label: "Marketing GenX", group: "Provider Keys", canTest: true },
-  { id: "qwen", key: "marketing_qwen_api_key", label: "Marketing Qwen", group: "Provider Keys", canTest: true },
-  { id: "huggingface", key: "marketing_huggingface_api_key", label: "Marketing Hugging Face", group: "Provider Keys", canTest: true },
-  { id: "pexels", key: "marketing_pexels_api_key", label: "Pexels", group: "Stock Media", canTest: false },
-  { id: "pixabay", key: "marketing_pixabay_api_key", label: "Pixabay", group: "Stock Media", canTest: false },
+  { id: "genx", key: "marketing_genx_api_key", label: "GenX", group: "Provider keys", canTest: true },
+  { id: "qwen", key: "marketing_qwen_api_key", label: "Qwen", group: "Provider keys", canTest: true },
+  { id: "huggingface", key: "marketing_huggingface_api_key", label: "Hugging Face", group: "Provider keys", canTest: true },
+  { id: "pexels", key: "marketing_pexels_api_key", label: "Pexels", group: "Stock media", canTest: false },
+  { id: "pixabay", key: "marketing_pixabay_api_key", label: "Pixabay", group: "Stock media", canTest: false },
 ] as const;
 
 type SocialConnection = { platform: string; status: string; accountName?: string | null };
-const SOCIAL_STATUS_COMPAT_MARKERS = ["export_only", "not_connected", "setup_needed", "ready_for_posting", "token_expired", "permission_missing"] as const;
-type ProviderSettingsApiEntry = {
-  provider: string;
-  configured: boolean;
-  keyMasked: string | null;
-  settings?: Record<string, string>;
-};
+type ProviderSettingsApiEntry = { configured: boolean; keyMasked: string | null };
 type ProviderSettingsApiResponse = Record<string, ProviderSettingsApiEntry>;
-type CreationCapabilitySummary = {
-  id: string;
-  label: string;
-  outputGuarantee?: string;
-  viewerContract?: { viewer?: string; successState?: string; blockerState?: string };
-  status?: string;
-  missingSetup?: string[];
-  blockers?: string[];
-};
-
-function socialStatusLabel(status: string): string {
-  if (status === "ready_for_approval_posting") return "Connected";
-  if (status === "ready_for_posting") return "Ready for posting";
-  if (status === "connected") return "Connected";
-  if (status === "token_expired") return "Token expired";
-  if (status === "permission_missing") return "Permission missing";
-  if (status === "setup_needed") return "Needs setup";
-  return "Export manually";
-}
-
-function formatReadinessStatus(status: string | undefined): string {
-  if (!status) return "Needs setup";
-  if (status === "setup_needed") return "Needs setup";
-  if (status === "ready_for_posting") return "Ready for publishing";
-  if (status === "ready") return "Ready";
-  if (status === "partial") return "Partially ready";
-  if (status === "provider_unavailable") return "Provider unavailable";
-  return status.replace(/_/g, " ");
-}
 
 export function normalizeSocialConnections(value: unknown): SocialConnection[] {
   if (!Array.isArray(value)) return [];
@@ -64,10 +29,26 @@ export function normalizeSocialConnections(value: unknown): SocialConnection[] {
     }));
 }
 
-function obfuscateSecret(value: string): string {
-  if (!value) return "";
-  if (value.length <= 4) return "****";
-  return `${value.slice(0, 2)}****${value.slice(-2)}`;
+function connectionLabel(status: string) {
+  if (status === "ready_for_posting" || status === "ready_for_approval_posting") return "Connected";
+  if (status === "token_expired") return "Token expired";
+  if (status === "permission_missing") return "Scopes missing";
+  return "Connect required";
+}
+
+function SettingsCard({ title, status, action, children }: { title: string; status: string; action: string; children?: React.ReactNode }) {
+  return (
+    <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-stone-900">{title}</h3>
+          <p className="mt-1 text-xs leading-5 text-stone-500">{action}</p>
+        </div>
+        <Badge variant="outline" className="rounded-full bg-stone-50 text-xs">{status}</Badge>
+      </div>
+      {children ? <div className="mt-4">{children}</div> : null}
+    </section>
+  );
 }
 
 export function MarketingAppSettings({
@@ -75,56 +56,29 @@ export function MarketingAppSettings({
   onQualityChange,
   tenantId,
   workspaceId,
+  hostAppId,
 }: {
   quality: "standard" | "elite";
   onQualityChange: (value: "standard" | "elite") => void;
   tenantId: string;
   workspaceId: string;
+  hostAppId: string;
 }) {
-  const hostAppId = "equiprofile";
   const utils = trpc.useUtils();
+  const [showAdminSupport, setShowAdminSupport] = useState(false);
+  const [values, setValues] = useState<Record<string, string>>({});
   const providerSettingsQuery = trpc.admin.listAIProviderSettings.useQuery();
-  const diagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, { refetchInterval: 30_000 });
   const socialConnectionsQuery = trpc.admin.listMarketingSocialConnections.useQuery({ tenantId, workspaceId });
-  const providerReadinessQuery = trpc.admin.getMarketingProviderReadiness.useQuery({ tenantId, workspaceId });
-  const providerToolingTruthQuery = trpc.admin.getMarketingProviderToolingTruth.useQuery({ tenantId, workspaceId, hostAppId, mode: quality });
-  const taskCapabilityMapQuery = trpc.admin.getMarketingTaskCapabilityMap.useQuery({ tenantId, workspaceId, mode: quality });
   const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
-  const connectorReadinessQuery = trpc.admin.getMarketingConnectorReadiness.useQuery({ tenantId, workspaceId });
-  const productDiagnosticsQuery = trpc.admin.getMarketingProductDiagnostics.useQuery({ tenantId, workspaceId, hostAppId });
-  const creationCapabilitiesQuery = trpc.admin.getMarketingCreationCapabilities.useQuery({
-    tenantId,
-    workspaceId,
-    hostAppId,
-    qualityMode: quality,
-  });
-
-  const syncCapabilitiesMutation = trpc.admin.syncMarketingProviderCapabilities.useMutation({
-    onSuccess: async () => {
-      toast.success("Provider capabilities synced");
-      await providerReadinessQuery.refetch();
-      await taskCapabilityMapQuery.refetch();
-      await backendReadinessQuery.refetch();
-    },
-    onError: (error) => toast.error("Capability sync failed", { description: error.message }),
-  });
-  const testTaskRouteMutation = trpc.admin.testMarketingProviderTaskRoute.useMutation();
-  const runFullProviderTestMutation = trpc.admin.runFullProviderTest.useMutation({
-    onSuccess: async () => {
-      toast.success("Provider tests completed");
-      await providerToolingTruthQuery.refetch();
-      await providerReadinessQuery.refetch();
-    },
-    onError: (error) => toast.error("Provider tests failed", { description: error.message }),
-  });
+  const toolingQuery = trpc.admin.getMarketingProviderToolingTruth.useQuery({ tenantId, workspaceId, hostAppId, mode: quality });
+  const diagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, { enabled: showAdminSupport });
   const saveProviderSettings = trpc.admin.saveAIProviderSettings.useMutation({
     onSuccess: async () => {
       toast.success("Marketing settings saved");
-      await utils.admin.listAIProviderSettings.invalidate();
-      await utils.admin.getAIDiagnostics.invalidate();
-      await utils.admin.getMarketingBackendReadiness.invalidate();
-      await utils.admin.getMarketingConnectorReadiness.invalidate();
-      await utils.admin.getMarketingCreationCapabilities.invalidate();
+      await Promise.all([
+        utils.admin.listAIProviderSettings.invalidate(),
+        utils.admin.getMarketingBackendReadiness.invalidate(),
+      ]);
     },
     onError: (error) => toast.error("Could not save settings", { description: error.message }),
   });
@@ -132,475 +86,128 @@ export function MarketingAppSettings({
     onError: (error) => toast.error("Connection test failed", { description: error.message }),
   });
 
-  const [showDiagnostics, setShowDiagnostics] = useState(false);
-  const [values, setValues] = useState<Record<string, string>>({});
-
   const providerSettings = (providerSettingsQuery.data ?? {}) as ProviderSettingsApiResponse;
-  const providerSettingsById = useMemo(() => {
-    const map: Record<string, ProviderSettingsApiEntry> = {};
-    for (const [key, value] of Object.entries(providerSettings)) {
-      map[key.toLowerCase()] = value;
-    }
-    return map;
-  }, [providerSettings]);
+  const settingsById = useMemo(() => Object.fromEntries(Object.entries(providerSettings).map(([key, value]) => [key.toLowerCase(), value])), [providerSettings]);
+  const socialConnections = useMemo(() => normalizeSocialConnections(socialConnectionsQuery.data), [socialConnectionsQuery.data]);
+  const backend = (backendReadinessQuery.data ?? {}) as Record<string, unknown>;
+  const tooling = (toolingQuery.data ?? {}) as { attribution?: { redirectRouteAvailable?: boolean; clickTrackingAvailable?: boolean; conversionRecordingAvailable?: boolean; manualMetricsAvailable?: boolean } };
 
   useEffect(() => {
-    const initial = PROVIDER_FIELDS.reduce<Record<string, string>>((accumulator, field) => {
-      accumulator[field.key] = "";
-      return accumulator;
-    }, {});
-    setValues(initial);
+    setValues(Object.fromEntries(PROVIDER_FIELDS.map((field) => [field.key, ""])));
   }, [providerSettingsQuery.data]);
 
-  const groupedFields = useMemo(() => {
-    return PROVIDER_FIELDS.reduce<Record<string, Array<(typeof PROVIDER_FIELDS)[number]>>>((accumulator, field) => {
-      const current = accumulator[field.group] ?? [];
-      accumulator[field.group] = [...current, field];
-      return accumulator;
-    }, {});
-  }, []);
-
-  const providerHealth = (((diagnosticsQuery.data as { providerHealth?: Array<{ provider: string; liveReady?: boolean; configured?: boolean }> } | undefined)?.providerHealth) ?? []);
-  const socialConnections = useMemo(
-    () => normalizeSocialConnections(socialConnectionsQuery.data),
-    [socialConnectionsQuery.data],
-  );
-  const taskCapabilityRows = (((taskCapabilityMapQuery.data as { tasks?: Array<{ task: string; status: string; reason?: string | null }> } | undefined)?.tasks) ?? []);
-  const taskCapabilityByTask = useMemo(() => {
-    const map = new Map<string, { status: string; reason?: string | null }>();
-    for (const row of taskCapabilityRows) map.set(row.task, { status: row.status, reason: row.reason });
-    return map;
-  }, [taskCapabilityRows]);
-  const routeStatus = (task: string) => taskCapabilityByTask.get(task)?.status ?? "setup_needed";
-  const routeReason = (task: string, fallback: string) => taskCapabilityByTask.get(task)?.reason ?? fallback;
-  const isTaskReady = (task: string) => routeStatus(task) === "ready";
-  const connectorPlatforms = (((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string }> } | undefined)?.platforms) ?? []);
-  const hasPublishingConnectorReady = connectorPlatforms.some((item) => item.status === "ready_for_posting" || item.status === "ready");
-  const routeMapNeedsSetup = taskCapabilityRows.some((row) => row.status !== "ready");
-  const creationCapabilities = ((((creationCapabilitiesQuery.data as { capabilities?: CreationCapabilitySummary[] } | undefined)?.capabilities) ?? []) as CreationCapabilitySummary[]);
-  const capabilityById = useMemo(() => {
-    const map = new Map<string, CreationCapabilitySummary>();
-    for (const row of creationCapabilities) map.set(row.id, row);
-    return map;
-  }, [creationCapabilities]);
-
   function saveSettings() {
-    saveProviderSettings.mutate({
-      settings: values,
+    saveProviderSettings.mutate({ settings: values });
+  }
+
+  function testConnection(provider: "genx" | "qwen" | "huggingface") {
+    testProviderConnection.mutate({ provider }, {
+      onSuccess: (result) => {
+        const liveReady = Boolean((result as { liveReady?: boolean }).liveReady);
+        toast[liveReady ? "success" : "error"](liveReady ? "Live generation passed" : "Provider needs attention", {
+          description: liveReady ? `${provider} completed a real live test.` : "Review the provider response and update the key or compatible model.",
+        });
+      },
     });
   }
 
-  function runConnectionTest(providerId: "genx" | "qwen" | "huggingface") {
-    testProviderConnection.mutate(
-      { provider: providerId },
-      {
-        onSuccess: (result) => {
-          const response = result as { liveReady?: boolean; message?: string; catalogueCount?: number; selectedModels?: string[] };
-          const ready = Boolean(response.liveReady ?? response.selectedModels?.length ?? response.catalogueCount);
-          toast[ready ? "success" : "error"](ready ? "Connection ready" : "Connection not ready", {
-            description: response.message ?? "Check your provider configuration.",
-          });
-        },
-      },
-    );
-  }
+  const providers = PROVIDER_FIELDS.filter((field) => field.group === "Provider keys");
+  const stock = PROVIDER_FIELDS.filter((field) => field.group === "Stock media");
+  const configuredProviderCount = providers.filter((field) => settingsById[field.id]?.configured).length;
+  const configuredStockCount = stock.filter((field) => settingsById[field.id]?.configured).length;
+  const attributionReady = Boolean(tooling.attribution?.redirectRouteAvailable && tooling.attribution?.clickTrackingAvailable && tooling.attribution?.conversionRecordingAvailable);
+  const mediaReady = backend.mediaFactoryConfigStatus === "ready";
+  const socialPlatforms = ["Facebook", "Instagram", "TikTok", "YouTube", "LinkedIn"];
 
   return (
-    <section className="space-y-4" aria-label="Settings">
-      {/* Setup wizard checklist */}
-      <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="setup-wizard">
-        <h2 className="text-xl font-semibold text-stone-900">Setup Checklist</h2>
-        <p className="mt-1 text-sm text-stone-500">Complete these steps to unlock each creation type.</p>
-        <div className="mt-4 rounded-2xl border border-stone-200 bg-stone-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-stone-600">Output guarantee truth</p>
-          <div className="mt-2 grid gap-2 md:grid-cols-2">
-            {["image_ad", "video_ad_30s", "assembled_video_3m", "signup_campaign", "avatar_video"].map((id) => {
-              const capability = capabilityById.get(id);
-              if (!capability) {
-                return (
-                  <div key={id} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-600">
-                    {id}: waiting_for_backend
-                  </div>
-                );
-              }
-              const blocker = capability.missingSetup?.[0] ?? capability.blockers?.[0] ?? capability.viewerContract?.blockerState ?? "No blocker recorded.";
-              const summary = capability.status === "ready"
-                ? capability.viewerContract?.successState ?? "Ready"
-                : blocker;
-              return (
-                <div key={id} className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-700">
-                  <p className="font-medium text-stone-900">{capability.label}</p>
-                  <p className="mt-1">Output: {capability.outputGuarantee ?? "unknown"}</p>
-                  <p className="mt-1">Viewer: {capability.viewerContract?.viewer ?? "unknown"}</p>
-                  <p className="mt-1 text-stone-600">{summary}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="mt-4 space-y-3">
-          {[
-            {
-              id: "text_gen",
-              label: "Text generation",
-              enables: "Image ad copy, scripts, campaign plans",
-              check: () => isTaskReady("campaign_strategy") || isTaskReady("platform_copywriting") || isTaskReady("scriptwriting"),
-              nextAction: routeReason("campaign_strategy", "Configure GenX, Qwen, or Hugging Face text routes."),
-            },
-            {
-              id: "image_gen",
-              label: "Image generation",
-              enables: "Image Ad creative",
-              check: () => isTaskReady("image_generation"),
-              nextAction: routeReason("image_generation", "Configure a provider/model route for image_generation."),
-            },
-            {
-              id: "ad_packages",
-              label: "Campaign / ad packages",
-              enables: "30-Second Video Ad, Signup Campaign",
-              check: () => isTaskReady("scriptwriting") && isTaskReady("scene_planning") && isTaskReady("campaign_strategy"),
-              nextAction: !isTaskReady("scriptwriting")
-                ? routeReason("scriptwriting", "Enable scriptwriting route.")
-                : !isTaskReady("scene_planning")
-                  ? routeReason("scene_planning", "Enable scene_planning route.")
-                  : routeReason("campaign_strategy", "Enable campaign_strategy route."),
-            },
-            {
-              id: "video_planning",
-              label: "3-minute video package planning",
-              enables: "3-Minute Assembled Video (plan + script)",
-              check: () => isTaskReady("scriptwriting") && isTaskReady("scene_planning"),
-              nextAction: !isTaskReady("scene_planning")
-                ? routeReason("scene_planning", "Enable scene_planning route.")
-                : routeReason("scriptwriting", "Enable scriptwriting route."),
-            },
-            {
-              id: "rendering",
-              label: "Media rendering / Remotion / FFmpeg",
-              enables: "Rendered video output",
-              check: () => Boolean(
-                (backendReadinessQuery.data as { mediaFactoryConfigStatus?: string } | undefined)?.mediaFactoryConfigStatus === "ready"
-                && (backendReadinessQuery.data as { remotionAvailability?: boolean } | undefined)?.remotionAvailability
-                && (backendReadinessQuery.data as { ffmpegAvailability?: boolean } | undefined)?.ffmpegAvailability,
-              ),
-              nextAction: "Install/configure FFmpeg and Remotion so media_factory render jobs can complete.",
-            },
-            {
-              id: "stock_media",
-              label: "Stock media",
-              enables: "B-roll sourcing for video scenes",
-              check: () => ((backendReadinessQuery.data as { stockMediaConfigStatus?: string } | undefined)?.stockMediaConfigStatus === "ready"),
-              nextAction: "Add a Pexels and/or Pixabay API key and validate stock media readiness.",
-            },
-            {
-              id: "avatar",
-              label: "Avatar generation + lipsync",
-              enables: "Avatar-led video drafts",
-              check: () => isTaskReady("avatar_generation") && isTaskReady("avatar_lipsync"),
-              nextAction: !isTaskReady("avatar_generation")
-                ? routeReason("avatar_generation", "Enable avatar_generation route.")
-                : routeReason("avatar_lipsync", "Enable avatar_lipsync route."),
-            },
-            {
-              id: "voiceover",
-              label: "Voiceover",
-              enables: "Automated narration for assembled video",
-              check: () => isTaskReady("voiceover"),
-              nextAction: routeReason("voiceover", "Enable voiceover route with a configured provider."),
-            },
-            {
-              id: "music",
-              label: "Music / audio",
-              enables: "Background music track for video",
-              check: () => isTaskReady("music_generation") && isTaskReady("background_audio_selection"),
-              nextAction: !isTaskReady("music_generation")
-                ? routeReason("music_generation", "Enable music_generation route.")
-                : routeReason("background_audio_selection", "Enable background_audio_selection route."),
-            },
-            {
-              id: "export",
-              label: "Export / schedule",
-              enables: "Downloading packages and scheduling posts",
-              check: () => {
-                const status = (backendReadinessQuery.data as { schedulingExportReadiness?: string } | undefined)?.schedulingExportReadiness;
-                return status === "ready" || status === "partial";
-              },
-              nextAction: "Fix schedule/export storage blockers shown in backend readiness.",
-            },
-            {
-              id: "publishing",
-              label: "Publishing connectors",
-              enables: "Direct posting to social platforms",
-              check: () => hasPublishingConnectorReady || socialConnections.some((connection) => connection.status === "ready_for_posting" || connection.status === "ready_for_approval_posting"),
-              nextAction: "Connect platform accounts with valid tokens/scopes. Export-first remains available while missing.",
-            },
-          ].map((item) => {
-            const isReady = item.check();
-            return (
-              <div key={item.id} className={`flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${isReady ? "border-emerald-200 bg-emerald-50" : "border-stone-200 bg-stone-50"}`}>
-                <span className={`mt-0.5 text-base ${isReady ? "text-emerald-600" : "text-stone-400"}`}>{isReady ? "✓" : "○"}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-stone-900">{item.label}</p>
-                  <p className="text-xs text-stone-500">Enables: {item.enables}</p>
-                  {!isReady ? <p className="mt-1 text-xs text-amber-700">Next: {item.nextAction}</p> : null}
-                </div>
-                <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] ${isReady ? "border-emerald-300 bg-white text-emerald-700" : "border-amber-300 bg-white text-amber-700"}`}>
-                  {isReady ? "Ready" : "Needs setup"}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-        <span className="sr-only">{SOCIAL_STATUS_COMPAT_MARKERS.join(" ")}</span>
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <div className="space-y-4" aria-label="Settings">
+      <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-stone-900">Settings</h2>
-            <p className="text-sm text-stone-500">Quiet, marketing-only configuration for The Marketing App. Dashboard AI settings stay separate.</p>
+            <h2 className="text-xl font-semibold text-stone-900">Marketing App settings</h2>
+            <p className="mt-1 text-sm text-stone-500">Connect what you use. Draft campaigns and export remain available while optional connections are missing.</p>
           </div>
-          <Button type="button" className="rounded-2xl" onClick={saveSettings} disabled={saveProviderSettings.isPending}>
+          <Button type="button" onClick={saveSettings} disabled={saveProviderSettings.isPending}>
             {saveProviderSettings.isPending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
             Save settings
           </Button>
         </div>
+        <div className="mt-4 flex gap-2">
+          {(["standard", "elite"] as const).map((mode) => (
+            <Button key={mode} type="button" variant={quality === mode ? "default" : "outline"} size="sm" onClick={() => onQualityChange(mode)}>
+              {mode === "standard" ? "Standard" : "Elite"}
+            </Button>
+          ))}
+        </div>
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SettingsCard title="1. Product profile" status="Managed in workspace" action="Use Edit product in the top strip to scan, review, and confirm product truth." />
+        <SettingsCard title="2. Brand Kit" status="Managed in workspace" action="Use Brand Kit in the top strip to upload a logo, choose colors, set tone, CTA, and signup URL." />
+        <SettingsCard title="3. Provider keys" status={configuredProviderCount ? `${configuredProviderCount}/3 saved` : "Add a key"} action="Standard uses Qwen first. Hugging Face is fallback only after a real live pass. Elite uses GenX first.">
+          <div className="grid gap-3">
+            {providers.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} onTest={() => testConnection(field.id as "genx" | "qwen" | "huggingface")} testing={testProviderConnection.isPending} />)}
+          </div>
+        </SettingsCard>
+        <SettingsCard title="4. Stock media" status={configuredStockCount ? `${configuredStockCount}/2 saved` : "Keys required"} action="Add Pexels or Pixabay keys for stock image and video sourcing. Text campaigns keep working without them.">
+          <div className="grid gap-3">
+            {stock.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} />)}
+          </div>
+        </SettingsCard>
+        <SettingsCard title="5. Social connections" status={socialConnections.some((connection) => connection.status === "ready_for_posting") ? "Connected" : "Connect required"} action="Connect each account with the required OAuth scopes. Export/manual posting remains available.">
+          {socialConnectionsQuery.isError ? (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              <p>Could not load social connections right now.</p>
+              <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => void socialConnectionsQuery.refetch()}>Retry</Button>
+            </div>
+          ) : (
+            <div className="grid gap-2">
+              {socialPlatforms.map((platform) => {
+                const connection = socialConnections.find((item) => item.platform.toLowerCase() === platform.toLowerCase());
+                return <div key={platform} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs"><span>{platform}</span><span>{connectionLabel(connection?.status ?? "not_connected")}</span></div>;
+              })}
+            </div>
+          )}
+        </SettingsCard>
+        <SettingsCard title="6. Email / SMTP" status="Configure server credentials" action="Add valid SMTP credentials and use a test send before sending campaign email." />
+        <SettingsCard title="7. Tracking & Results" status={attributionReady ? "Ready" : "Needs setup"} action={attributionReady ? "Attribution redirects, click tracking, conversion recording, and manual metrics are available." : "Add a signup URL and verify tracking storage."} />
+        <SettingsCard title="8. Export / Schedule" status="Export-first" action="Review quality-checked drafts, export packs, and schedule drafts. Direct posting unlocks only after connector tests pass." />
+        <SettingsCard title="9. Media Studio readiness" status={mediaReady ? "Ready" : "Needs setup"} action={mediaReady ? "Media jobs can run when their provider route is executable and output is playable." : "Verify FFmpeg, storage, and model routes for optional media jobs."} />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-stone-900">Generation mode</h3>
-          <div className="mt-4 inline-flex rounded-2xl border border-stone-200 bg-stone-50 p-1">
-            {(["standard", "elite"] as const).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => onQualityChange(mode)}
-                className={`rounded-2xl px-4 py-2 text-sm font-medium ${quality === mode ? "bg-stone-900 text-white" : "text-stone-600"}`}
-              >
-                {mode === "standard" ? "Standard" : "Elite"}
-              </button>
-            ))}
+      <details className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" open={showAdminSupport} onToggle={(event) => setShowAdminSupport(event.currentTarget.open)}>
+        <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-stone-900">Admin Support <ChevronDown className={`size-4 transition ${showAdminSupport ? "rotate-180" : ""}`} /></summary>
+        {showAdminSupport ? (
+          <div className="mt-4 space-y-3 border-t border-stone-100 pt-4">
+            <p className="text-xs text-stone-500">Developer Diagnostics are available here only for admin/support troubleshooting.</p>
+            <pre className="max-h-80 overflow-auto rounded-2xl bg-stone-950 p-4 text-xs text-stone-100">{JSON.stringify({ backend, diagnostics: diagnosticsQuery.data ?? {} }, null, 2)}</pre>
           </div>
-        </div>
-
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-stone-900">Provider readiness</h3>
-              <p className="text-xs text-stone-500">Avatar / voice / music / image / video / visual QA diagnostics.</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => runFullProviderTestMutation.mutate()} disabled={runFullProviderTestMutation.isPending}>
-                {runFullProviderTestMutation.isPending ? <Loader2 className="mr-2 size-3 animate-spin" /> : null}
-                Test all providers
-              </Button>
-              <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={() => syncCapabilitiesMutation.mutate({ tenantId, workspaceId, forceRefresh: true })}>
-                Sync all capabilities
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() => testTaskRouteMutation.mutate({ tenantId, workspaceId, task: "campaign_strategy", executeLive: false, mode: quality })}
-              >
-                Test route map
-              </Button>
-            </div>
-          </div>
-          <div className="mt-3 grid gap-2 md:grid-cols-3">
-            {Object.entries((providerReadinessQuery.data as { readinessByCapability?: Record<string, string> } | undefined)?.readinessByCapability ?? {}).map(([key, value]) => (
-              <div key={key} className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700">
-                <span className="font-medium">{key}</span>: {value}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-stone-900">Route map summary</h3>
-              <p className="text-xs text-stone-500">{routeMapNeedsSetup ? "Some tasks still need provider sync or setup." : "All required routes are ready."}</p>
-            </div>
-          </div>
-          <div className="mt-3 space-y-2">
-            {(((taskCapabilityMapQuery.data as { tasks?: Array<{ task: string; status: string }> } | undefined)?.tasks) ?? []).slice(0, 8).map((task) => (
-              <div key={task.task} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700">
-                <span>{task.task.replace(/_/g, " ")}</span>
-                <Badge className="rounded-full border border-stone-200 bg-white px-2 py-0.5 text-xs text-stone-600">{formatReadinessStatus(task.status)}</Badge>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-stone-900">Social Connections</h3>
-          <p className="mt-2 text-xs text-stone-500">Connection flow required before direct publishing.</p>
-          <div className="mt-4 space-y-3">
-            {socialConnectionsQuery.isLoading ? (
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-xs text-stone-500">
-                Loading social connection status...
-              </div>
-            ) : null}
-            {socialConnectionsQuery.isError ? (
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-                <p className="text-xs text-amber-800">Could not load social connections right now.</p>
-                <Button type="button" variant="outline" size="sm" className="mt-2 rounded-full" onClick={() => void socialConnectionsQuery.refetch()}>
-                  Retry
-                </Button>
-              </div>
-            ) : null}
-            {!socialConnectionsQuery.isLoading && !socialConnectionsQuery.isError && socialConnections.length === 0 ? (
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-xs text-stone-500">
-                No social connections yet. Export manually while connector setup is pending.
-              </div>
-            ) : null}
-            {socialConnections.map((connection) => (
-              <div key={connection.platform} className="flex items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-stone-900">{connection.platform}</p>
-                  <p className="text-xs text-stone-500">{connection.accountName ? `Connected as ${connection.accountName}` : "Export manually"}</p>
-                </div>
-                <Badge className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs text-stone-600">
-                  {socialStatusLabel(connection.status)}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-stone-900">Backend readiness truth</h3>
-          {backendReadinessQuery.isError ? (
-            <p className="mt-2 text-xs text-amber-700">Readiness endpoint unavailable. Status defaults to setup_needed.</p>
-          ) : null}
-          <div className="mt-3 grid gap-2 md:grid-cols-2 text-xs text-stone-700">
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Overall: {formatReadinessStatus((backendReadinessQuery.data as { status?: string } | undefined)?.status)}</div>
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">FFmpeg: {(backendReadinessQuery.data as { ffmpegAvailability?: boolean } | undefined)?.ffmpegAvailability ? "ready" : "setup_needed"}</div>
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Remotion: {(backendReadinessQuery.data as { remotionAvailability?: boolean } | undefined)?.remotionAvailability ? "ready" : "setup_needed"}</div>
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Publishing: {formatReadinessStatus((backendReadinessQuery.data as { publishingReadiness?: string } | undefined)?.publishingReadiness)}</div>
-          </div>
-          <div className="mt-3 text-xs text-stone-600 space-y-1">
-            {(((backendReadinessQuery.data as { blockingIssues?: string[] } | undefined)?.blockingIssues) ?? []).slice(0, 4).map((item) => (
-              <p key={item}>- {item}</p>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-stone-900">Connector readiness truth</h3>
-          <div className="mt-3 space-y-2">
-            {(((connectorReadinessQuery.data as { platforms?: Array<{ platform: string; status: string; reason: string }> } | undefined)?.platforms) ?? []).map((item) => (
-              <div key={item.platform} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700">
-                <span>{item.platform}</span>
-                <span>{formatReadinessStatus(item.status)}</span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-stone-500">
-            Missing connector access keeps publishing in export/manual mode until a valid connection with scopes is confirmed.
-          </p>
-        </div>
-
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-stone-900">Results and attribution</h3>
-          <div className="mt-3 grid gap-2 text-xs text-stone-700">
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Redirect route: {(providerToolingTruthQuery.data as { attribution?: { redirectRouteAvailable?: boolean } } | undefined)?.attribution?.redirectRouteAvailable ? "Available" : "Needs setup"}</div>
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Click tracking: {(providerToolingTruthQuery.data as { attribution?: { clickTrackingAvailable?: boolean } } | undefined)?.attribution?.clickTrackingAvailable ? "Available" : "Needs setup"}</div>
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Conversion recording: {(providerToolingTruthQuery.data as { attribution?: { conversionRecordingAvailable?: boolean } } | undefined)?.attribution?.conversionRecordingAvailable ? "Available" : "Needs setup"}</div>
-            <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">Manual metrics import: {(providerToolingTruthQuery.data as { attribution?: { manualMetricsAvailable?: boolean } } | undefined)?.attribution?.manualMetricsAvailable ? "Available" : "Needs setup"}</div>
-          </div>
-        </div>
-      </div>
-
-      {Object.entries(groupedFields).map(([group, fields]) => (
-        <div key={group} className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-sm font-semibold text-stone-900">{group}</h3>
-            {group === "Provider Keys" ? (
-              <p className="text-xs text-stone-500">Only Marketing App providers live here.</p>
-            ) : null}
-          </div>
-
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            {fields.map((field) => {
-              const health = providerHealth.find((entry) => entry.provider === field.id);
-              const settingsEntry = providerSettingsById[field.id] ?? null;
-              const readiness = health?.liveReady
-                ? "ready"
-                : settingsEntry?.configured
-                  ? "degraded"
-                  : "setup_needed";
-              return (
-                <div key={field.key} className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-stone-900">{field.label}</p>
-                      <p className="text-xs text-stone-500">{field.canTest ? "Connection test available" : "Stored for asset sourcing"}</p>
-                    </div>
-                    <Badge className="rounded-full border border-stone-200 bg-white px-2 py-0.5 text-xs text-stone-600">
-                      {readiness}
-                    </Badge>
-                  </div>
-
-                  <Input
-                    value={values[field.key] ?? ""}
-                    onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))}
-                    placeholder={field.label}
-                    type="password"
-                    className="mt-3"
-                  />
-                  <p className="mt-2 text-xs text-stone-500">
-                    Saved value: {settingsEntry?.keyMasked ? obfuscateSecret(settingsEntry.keyMasked) : "Not set"}
-                  </p>
-
-                  {field.canTest ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-3 rounded-full"
-                      onClick={() => runConnectionTest(field.id as "genx" | "qwen" | "huggingface")}
-                      disabled={testProviderConnection.isPending}
-                    >
-                      {testProviderConnection.isPending ? <Loader2 className="mr-2 size-3 animate-spin" /> : null}
-                      Test connection
-                    </Button>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-
-      <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
-        <button
-          type="button"
-          className="flex w-full items-center justify-between text-left"
-          onClick={() => setShowDiagnostics((current) => !current)}
-        >
-          <div>
-            <h3 className="text-sm font-semibold text-stone-900">Developer Diagnostics</h3>
-            <p className="text-xs text-stone-500">Collapsed by default.</p>
-          </div>
-          <ChevronDown className={`size-4 transition ${showDiagnostics ? "rotate-180" : ""}`} />
-        </button>
-
-        {showDiagnostics ? (
-          <pre className="mt-4 overflow-x-auto rounded-2xl bg-stone-950 p-4 text-xs text-stone-100">
-            {JSON.stringify({
-              diagnostics: diagnosticsQuery.data ?? {},
-              backendReadiness: backendReadinessQuery.data ?? { status: "setup_needed" },
-              connectorReadiness: connectorReadinessQuery.data ?? { status: "setup_needed" },
-              providerToolingTruth: providerToolingTruthQuery.data ?? { status: "setup_needed" },
-              productIntelligence: productDiagnosticsQuery.data ?? { status: "setup_needed" },
-            }, null, 2)}
-          </pre>
         ) : null}
-      </div>
-    </section>
+      </details>
+    </div>
+  );
+}
+
+function ProviderField({
+  field,
+  entry,
+  value,
+  onChange,
+  onTest,
+  testing,
+}: {
+  field: (typeof PROVIDER_FIELDS)[number];
+  entry?: ProviderSettingsApiEntry;
+  value: string;
+  onChange: (value: string) => void;
+  onTest?: () => void;
+  testing?: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
+      <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-900">{field.label}</p><span className="text-xs text-stone-500">{entry?.configured ? "Saved" : "Missing"}</span></div>
+      <Input type="password" value={value} onChange={(event) => onChange(event.target.value)} placeholder={`Add ${field.label} key`} className="mt-2" />
+      {onTest ? <Button type="button" variant="outline" size="sm" className="mt-2" onClick={onTest} disabled={testing}>{testing ? "Testing..." : "Test live generation"}</Button> : null}
+    </div>
   );
 }

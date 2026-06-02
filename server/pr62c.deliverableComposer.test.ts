@@ -112,7 +112,7 @@ describe("PR62C deliverable composer", () => {
     expect(result.hooks.length).toBeGreaterThanOrEqual(3);
     expect(result.script).toContain("30-second");
     expect(result.scenePlan.length).toBeGreaterThanOrEqual(3);
-    expect(result.status).toBe("draft");
+    expect(result.status).toBe("partial");
     expect(result.status).not.toBe("completed");
     expect(result.generationSource).toBe("hybrid");
     expect(result.textGeneratedByModel).toBe(true);
@@ -120,7 +120,7 @@ describe("PR62C deliverable composer", () => {
     expect(result.fallbackUsed).toBe(true);
     expect(result.campaignItems.length).toBeGreaterThan(0);
     expect(createMarketingCampaignItemRecord).toHaveBeenCalled();
-    expect(createMarketingScheduleDraftRecord).toHaveBeenCalled();
+    expect(createMarketingScheduleDraftRecord).not.toHaveBeenCalled();
   }, 10_000);
 
   it("composeAssembledVideoPackage returns 8 to 15 scene timeline for 180-second package", async () => {
@@ -172,7 +172,7 @@ describe("PR62C deliverable composer", () => {
     expect(result.packageType).toBe("assembled_video_3m");
     expect(result.scenePlan.length).toBeGreaterThanOrEqual(8);
     expect(result.scenePlan.length).toBeLessThanOrEqual(15);
-    expect(result.status).toBe("draft");
+    expect(result.status).toBe("partial");
     expect(result.status).not.toBe("completed");
     expect((result.exportPack as { renderStatus?: string }).renderStatus).toBe("not_rendered");
   });
@@ -211,6 +211,7 @@ describe("PR62C deliverable composer", () => {
     }));
     vi.doMock("./modules/marketing/results-conversion", () => ({
       getMarketingPerformanceContext: vi.fn(async () => ({ status: "insufficient_data", confidence: "low" })),
+      createMarketingAttributionLink: vi.fn(async () => ({ id: 1, code: "mkt_test", shortUrl: "/m/mkt_test" })),
     }));
     vi.doMock("./modules/marketing/market-intelligence", () => ({
       getMarketingTrendContext: vi.fn(async () => ({ status: "setup_needed" })),
@@ -412,7 +413,7 @@ describe("PR62C deliverable composer", () => {
     });
 
     expect(result.packageType).toBe("signup_campaign");
-    expect(result.status).toBe("draft");
+    expect(result.status).toBe("partial");
     expect(result.status).not.toBe("completed");
   });
 

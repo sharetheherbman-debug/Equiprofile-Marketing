@@ -255,6 +255,6 @@ describe("PR64E frontend product setup", () => {
   it("keeps raw scrape diagnostics out of the main Studio", () => {
     expect(appSource).not.toContain("rawScrapeSummary");
     expect(profileCardSource).not.toContain("rawScrapeSummary");
-    expect(fs.readFileSync(path.join(root, "client/src/components/marketing/app/MarketingAppSettings.tsx"), "utf8")).toContain("productIntelligence");
+    expect(fs.readFileSync(path.join(root, "client/src/components/marketing/app/MarketingAppSettings.tsx"), "utf8")).toContain("Admin Support");
   });
 });

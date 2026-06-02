@@ -85,9 +85,9 @@ describe("Marketing app stable contracts", () => {
 });
 
 describe("PR64F rescued workspace", () => {
-  it("renders a three-column desktop-first shell", () => {
+  it("renders an embedded desktop-first shell", () => {
     expect(read("client/src/components/marketing/app/TheMarketingApp.tsx")).toContain("<MarketingWorkspaceShell");
-    expect(read("client/src/components/marketing/app/workspace/MarketingWorkspaceShell.tsx")).toContain("xl:grid-cols-[280px_minmax(640px,1fr)_340px]");
+    expect(read("client/src/components/marketing/app/workspace/MarketingWorkspaceShell.tsx")).toContain("marketing-product-strip");
   });
 
   it("makes campaign generation primary and image creative explicit-only", () => {
@@ -110,11 +110,11 @@ describe("PR64F rescued workspace", () => {
     expect(read("client/src/components/marketing/app/workspace/WorkflowStatusPanel.tsx")).toContain("Direct posting needs a connected Facebook account. Export is ready.");
   });
 
-  it("keeps diagnostics and legacy workbench collapsed behind advanced tools", () => {
+  it("keeps diagnostics and legacy workbench out of the primary tools panel", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const drawer = read("client/src/components/marketing/app/workspace/AdvancedMarketingDrawer.tsx");
     expect(app).toContain("<AdvancedMarketingDrawer");
-    expect(app).toContain("<StudioHome");
+    expect(app).not.toContain("<StudioHome");
     expect(drawer).toContain("<details");
     expect(drawer).not.toContain("open={true}");
   });
