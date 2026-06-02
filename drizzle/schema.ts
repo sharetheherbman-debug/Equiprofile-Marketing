@@ -1910,6 +1910,46 @@ export const marketingBrandMemory = mysqlTable("marketingBrandMemory", {
 export type MarketingBrandMemory = typeof marketingBrandMemory.$inferSelect;
 export type InsertMarketingBrandMemory = typeof marketingBrandMemory.$inferInsert;
 
+export const marketingProductProfiles = mysqlTable("marketingProductProfiles", {
+  id: int("id").autoincrement().primaryKey(),
+  tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),
+  workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
+  hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
+  appName: varchar("appName", { length: 220 }).notNull(),
+  domain: varchar("domain", { length: 300 }),
+  landingPageUrl: text("landingPageUrl"),
+  signupUrl: text("signupUrl"),
+  logoAssetId: int("logoAssetId"),
+  brandColorsJson: text("brandColorsJson"),
+  targetAudiencesJson: text("targetAudiencesJson"),
+  primaryOffer: text("primaryOffer"),
+  pricingDetails: text("pricingDetails"),
+  coreFeaturesJson: text("coreFeaturesJson"),
+  benefitsJson: text("benefitsJson"),
+  painPointsSolvedJson: text("painPointsSolvedJson"),
+  objectionsJson: text("objectionsJson"),
+  proofPointsJson: text("proofPointsJson"),
+  differentiatorsJson: text("differentiatorsJson"),
+  forbiddenClaimsJson: text("forbiddenClaimsJson"),
+  toneOfVoiceJson: text("toneOfVoiceJson"),
+  ctaLibraryJson: text("ctaLibraryJson"),
+  platformPositioningJson: text("platformPositioningJson"),
+  extractedSourceUrlsJson: text("extractedSourceUrlsJson"),
+  candidateLogoUrlsJson: text("candidateLogoUrlsJson"),
+  candidateLogoAssetIdsJson: text("candidateLogoAssetIdsJson"),
+  missingInfoJson: text("missingInfoJson"),
+  rawScrapeSummaryJson: text("rawScrapeSummaryJson"),
+  sourceMode: varchar("sourceMode", { length: 40 }).notNull().default("manual"),
+  confidenceScore: int("confidenceScore").notNull().default(0),
+  lastScrapedAt: timestamp("lastScrapedAt"),
+  confirmedAt: timestamp("confirmedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MarketingProductProfile = typeof marketingProductProfiles.$inferSelect;
+export type InsertMarketingProductProfile = typeof marketingProductProfiles.$inferInsert;
+
 export const marketingTrendSignals = mysqlTable("marketingTrendSignals", {
   id: int("id").autoincrement().primaryKey(),
   tenantId: varchar("tenantId", { length: 100 }).notNull().default("global"),

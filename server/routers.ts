@@ -382,6 +382,14 @@ import {
   upsertMarketingBrandMemory as upsertMarketingBrandMemoryService,
 } from "./modules/marketing/brand-memory";
 import {
+  confirmMarketingProductProfile as confirmMarketingProductProfileService,
+  getMarketingProductDiagnostics as getMarketingProductDiagnosticsService,
+  getMarketingProductProfile as getMarketingProductProfileService,
+  refreshMarketingProductProfile as refreshMarketingProductProfileService,
+  scanMarketingProductSite as scanMarketingProductSiteService,
+  upsertMarketingProductProfile as updateMarketingProductProfileService,
+} from "./modules/marketing/product-intelligence";
+import {
   getMarketingPlatformSpecialist as getMarketingPlatformSpecialistService,
   listMarketingPlatformSpecialists as listMarketingPlatformSpecialistsService,
   recommendSpecialistsForCampaign as recommendMarketingPlatformSpecialistsService,
@@ -11014,6 +11022,91 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }))
       .query(async ({ input }) => {
         return getMarketingBrandMemoryService(input);
+      }),
+
+    scanMarketingProductSite: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        landingPageUrl: z.string().url(),
+        signupUrl: z.string().url().optional(),
+        productNotes: z.string().max(6000).optional(),
+        forceRefresh: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return scanMarketingProductSiteService(input);
+      }),
+
+    getMarketingProductProfile: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingProductProfileService(input);
+      }),
+
+    updateMarketingProductProfile: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        appName: z.string().min(1).max(220).optional(),
+        domain: z.string().max(300).nullable().optional(),
+        landingPageUrl: z.string().url().nullable().optional(),
+        signupUrl: z.string().url().nullable().optional(),
+        logoAssetId: z.number().int().positive().nullable().optional(),
+        brandColors: z.array(z.string().max(30)).max(12).optional(),
+        targetAudiences: z.array(z.string().max(500)).max(30).optional(),
+        primaryOffer: z.string().max(2000).nullable().optional(),
+        pricingDetails: z.string().max(4000).nullable().optional(),
+        coreFeatures: z.array(z.string().max(1000)).max(40).optional(),
+        benefits: z.array(z.string().max(1000)).max(40).optional(),
+        painPointsSolved: z.array(z.string().max(1000)).max(40).optional(),
+        objections: z.array(z.string().max(1000)).max(40).optional(),
+        proofPoints: z.array(z.string().max(1000)).max(40).optional(),
+        differentiators: z.array(z.string().max(1000)).max(40).optional(),
+        forbiddenClaims: z.array(z.string().max(1000)).max(40).optional(),
+        toneOfVoice: z.array(z.string().max(500)).max(20).optional(),
+        ctaLibrary: z.array(z.string().max(1000)).max(30).optional(),
+        platformPositioning: z.record(z.string(), z.string().max(2000)).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return updateMarketingProductProfileService(input);
+      }),
+
+    refreshMarketingProductProfile: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        forceRefresh: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return refreshMarketingProductProfileService(input);
+      }),
+
+    confirmMarketingProductProfile: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        logoAssetId: z.number().int().positive().nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return confirmMarketingProductProfileService(input);
+      }),
+
+    getMarketingProductDiagnostics: adminUnlockedProcedure
+      .input(z.object({
+        tenantId: z.string().min(1).max(100).default("global"),
+        workspaceId: z.string().min(1).max(120).default("default"),
+        hostAppId: z.string().min(1).max(120).default("equiprofile"),
+      }))
+      .query(async ({ input }) => {
+        return getMarketingProductDiagnosticsService(input);
       }),
 
     upsertMarketingBrandMemory: adminUnlockedProcedure

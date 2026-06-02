@@ -9,6 +9,15 @@ import { createMarketingReviewRecord } from "../qa-engine/marketingReviewStore";
 import { defaultWorkspaceBudgetPolicy, resolveMarketingProviderRoute } from "../provider-capabilities";
 import { generateMarketingImageAsset } from "../image-generation";
 import { generateMarketingStudioScript } from "../studio-generation";
+import { getMarketingBrandMemory } from "../brand-memory";
+import { executeMarketingModelTask } from "../model-execution";
+import type { MarketingModelExecutionOutput, MarketingModelTask } from "../model-execution";
+import {
+  getMarketingProductProfile,
+  isMarketingProductProfileReady,
+  productProfileSetupQuestions,
+  type MarketingProductProfileRecord,
+} from "../product-intelligence";
 
 export type MarketingDeliverablePackageType =
   | "image_ad"
@@ -70,6 +79,7 @@ export type ComposeMarketingDeliverableInput = {
   targetOutcome?: string;
   exportOnly?: boolean;
   requireApproval?: boolean;
+  productProfile?: MarketingProductProfileRecord;
 };
 
 export class UnsupportedDeliverablePackageTypeError extends Error {
@@ -82,12 +92,138 @@ export class UnsupportedDeliverablePackageTypeError extends Error {
   }
 }
 
-function fallbackHooks(goal: string, audience: string) {
+export class MarketingProductProfileSetupNeededError extends Error {
+  readonly setupQuestions: string[];
+
+  constructor(setupQuestions: string[]) {
+    super(`Let's learn what we're marketing first. ${setupQuestions.join(" ")}`);
+    this.name = "MarketingProductProfileSetupNeededError";
+    this.setupQuestions = setupQuestions.slice(0, 4);
+  }
+}
+
+type ProductGenerationContext = {
+  profile: MarketingProductProfileRecord;
+  brandMemory: Record<string, unknown> | null;
+  brandKit: Record<string, unknown>;
+  primaryCta: string;
+};
+
+function fallbackHooks(goal: string, audience: string, profile?: MarketingProductProfileRecord) {
+  if (profile) {
+    const benefit = profile.benefits[0] ?? profile.coreFeatures[0] ?? "make daily operations clearer";
+    const feature = profile.coreFeatures[0] ?? "product workflows";
+    return [
+      `${audience}: ${profile.appName} helps you ${benefit}`,
+      `Bring ${feature} into one practical workflow with ${profile.appName}`,
+      `${profile.appName} gives ${audience} a clearer path to ${goal.toLowerCase()}`,
+    ];
+  }
   return [
     `${audience}: stop losing time to manual updates`,
     `Get more from every stable with ${goal.toLowerCase()}`,
     "From admin chaos to consistent growth in one flow",
   ];
+}
+
+function primaryProductCta(profile: MarketingProductProfileRecord) {
+  return profile.ctaLibrary[0]
+    ?? (profile.signupUrl ? `Start your free trial: ${profile.signupUrl}` : null)
+    ?? "Learn more";
+}
+
+async function requireProductGenerationContext(input: ComposeMarketingDeliverableInput): Promise<ProductGenerationContext> {
+  const resolved = input.productProfile
+    ? { profile: input.productProfile }
+    : await getMarketingProductProfile(input);
+  if (!resolved.profile || !isMarketingProductProfileReady(resolved.profile)) {
+    throw new MarketingProductProfileSetupNeededError(productProfileSetupQuestions(resolved.profile));
+  }
+  const memory = await getMarketingBrandMemory(input).catch(() => ({ status: "setup_needed" as const, memory: null }));
+  const profile = resolved.profile;
+  const primaryCta = primaryProductCta(profile);
+  return {
+    profile,
+    brandMemory: memory.memory as Record<string, unknown> | null,
+    primaryCta,
+    brandKit: {
+      brandName: profile.appName,
+      domain: profile.domain ?? "",
+      primaryCta,
+      toneOfVoice: profile.toneOfVoice.join(", "),
+      logoAssetId: profile.logoAssetId,
+      brandColors: profile.brandColors,
+      brandMemory: memory.memory ?? null,
+    },
+  };
+}
+
+function asText(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+async function executeProductCopy(input: ComposeMarketingDeliverableInput, context: ProductGenerationContext, options: {
+  task?: MarketingModelTask;
+  platform: string;
+  contentType: string;
+  originalPrompt?: string;
+}) {
+  const profile = context.profile;
+  return executeMarketingModelTask({
+    tenantId: input.tenantId,
+    workspaceId: input.workspaceId,
+    hostAppId: input.hostAppId,
+    mode: input.qualityMode,
+    task: options.task ?? "platform_copywriting",
+    brandKit: context.brandKit,
+    campaignBrief: {
+      campaignName: `${profile.appName} ${input.packageType}`,
+      goal: input.goal,
+      audience: input.audience,
+      offer: profile.primaryOffer,
+      primaryCta: context.primaryCta,
+      productProfile: {
+        appName: profile.appName,
+        category: profile.differentiators[0] ?? "",
+        coreFeatures: profile.coreFeatures,
+        benefits: profile.benefits,
+        painPointsSolved: profile.painPointsSolved,
+        objections: profile.objections,
+        proofPoints: profile.proofPoints,
+        differentiators: profile.differentiators,
+        forbiddenClaims: profile.forbiddenClaims,
+        toneOfVoice: profile.toneOfVoice,
+        signupUrl: profile.signupUrl,
+        platformPositioning: profile.platformPositioning[options.platform] ?? "",
+      },
+      brandMemory: context.brandMemory,
+    },
+    platform: options.platform,
+    contentType: options.contentType,
+    audience: input.audience,
+    offer: profile.primaryOffer ?? "",
+    originalPrompt: options.originalPrompt ?? input.goal,
+    constraints: [
+      `Use only product facts from the supplied product profile for ${profile.appName}.`,
+      `Use this CTA exactly where appropriate: ${context.primaryCta}`,
+      ...profile.forbiddenClaims,
+    ],
+  });
+}
+
+function generationTruth(results: MarketingModelExecutionOutput[]) {
+  const textGeneratedByModel = results.some((result) => result.generationMode === "model");
+  const fallbackUsed = results.some((result) => result.generationMode === "fallback");
+  const blockers = Array.from(new Set(results
+    .filter((result) => result.generationMode === "fallback" && result.providerStatus !== "ready")
+    .map((result) => result.providerStatus === "setup_needed"
+      ? "AI copy provider setup is needed. Configure Qwen or Hugging Face for Standard copy, or GenX for Elite copy."
+      : "The configured AI copy provider is temporarily unavailable; product-aware fallback copy was used.")));
+  return { textGeneratedByModel, fallbackUsed, blockers };
+}
+
+function productVisualPrompt(profile: MarketingProductProfileRecord, platform: string, benefit: string) {
+  return `${platform} creative for ${profile.appName}: show ${benefit}. Keep the concept grounded in ${profile.coreFeatures.slice(0, 3).join(", ")}. Use confirmed brand colors ${profile.brandColors.join(", ") || "from Brand Kit"} and reserve logo-safe space${profile.logoAssetId ? ` for logo asset ${profile.logoAssetId}` : ""}.`;
 }
 
 function normalizeScenes(input: Array<Record<string, unknown>>, durationSeconds: number, min: number, max: number) {
@@ -179,18 +315,19 @@ export function resolveGenerationSource(input: {
 }
 
 export async function composeImageAdPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
   const textRoute = await getTextRouteStatus(input);
-  const hooks = fallbackHooks(input.goal, input.audience);
+  const hooks = fallbackHooks(input.goal, input.audience, productContext.profile);
   const adCopy = [
-    `${hooks[0]} EquiProfile helps stable owners centralize operations and launch with confidence.`,
-    `${hooks[1]} Start your free trial and move from guesswork to growth.`,
+    `${hooks[0]}. ${productContext.profile.appName} helps with ${productContext.profile.benefits[0]}.`,
+    `${hooks[1]}. ${productContext.primaryCta}`,
   ];
   const imageResult = await generateMarketingImageAsset({
     tenantId: input.tenantId,
     workspaceId: input.workspaceId,
     hostAppId: input.hostAppId,
-    prompt: `${input.goal}. Audience: ${input.audience}. Platform: ${input.platforms.join(", ")}`,
+    prompt: `${input.goal}. Product: ${productContext.profile.appName}. Features: ${productContext.profile.coreFeatures.join(", ")}. Benefits: ${productContext.profile.benefits.join(", ")}. Audience: ${input.audience}. Platform: ${input.platforms.join(", ")}. Use logo-safe space and brand colors: ${productContext.profile.brandColors.join(", ")}.`,
     platform: input.platforms[0],
     qualityMode: input.qualityMode,
     campaignId,
@@ -245,10 +382,10 @@ export async function composeImageAdPackage(input: ComposeMarketingDeliverableIn
     strategy: `Image-first ad package for ${input.audience} focused on ${input.goal}.`,
     hooks,
     adCopy,
-    cta: "Start your EquiProfile free trial",
+    cta: productContext.primaryCta,
     script: "",
     scenePlan: [],
-    visualPrompts: [`Premium horse stable environment, trustworthy staff, product-led workflow for ${input.audience}`],
+    visualPrompts: [productVisualPrompt(productContext.profile, input.platforms[0] ?? "Social", productContext.profile.benefits[0] ?? "the primary product benefit")],
     mediaRequirements: ["Square image 1:1", "Brand-safe product screenshot", "Logo lockup"],
     captionPlan: {
       primary: "Clear opener + proof + CTA",
@@ -279,6 +416,7 @@ export async function composeImageAdPackage(input: ComposeMarketingDeliverableIn
 }
 
 export async function composeThirtySecondAdPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
   const durationSeconds = input.durationSeconds ?? 30;
   const scriptPlan = await generateMarketingStudioScript({
@@ -289,7 +427,7 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
     contentType: "30_second_ad",
     platform: input.platforms[0],
     originalUserPrompt: input.goal,
-    brief: `Goal: ${input.goal}. Audience: ${input.audience}.`,
+    brief: `Goal: ${input.goal}. Audience: ${input.audience}. Product: ${productContext.profile.appName}. Features: ${productContext.profile.coreFeatures.join(", ")}. Benefits: ${productContext.profile.benefits.join(", ")}. Offer: ${productContext.profile.primaryOffer ?? "not configured"}. CTA: ${productContext.primaryCta}.`,
     audience: input.audience,
     goal: input.goal,
     durationTargetSeconds: durationSeconds,
@@ -316,7 +454,7 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
     hasRenderedVideo: false,
   });
 
-  const hooks = fallbackHooks(input.goal, input.audience);
+  const hooks = fallbackHooks(input.goal, input.audience, productContext.profile);
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
     campaignId,
@@ -334,10 +472,10 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
     strategy: `30-second conversion ad tailored for ${input.platforms.join(", ")}.`,
     hooks,
     adCopy: [
-      `${hooks[0]} EquiProfile organizes your stable into one growth-ready system.`,
+      `${hooks[0]}. ${productContext.profile.appName} brings ${productContext.profile.coreFeatures.slice(0, 3).join(", ")} into one practical workflow.`,
       "Stop juggling tools and start converting interested owners today.",
     ],
-    cta: scriptPlan.cta || "Start your free trial",
+    cta: scriptPlan.cta || productContext.primaryCta,
     script: scriptPlan.script,
     scenePlan: scenes,
     visualPrompts: scenes.map((scene) => String(scene.visualPrompt ?? "")),
@@ -369,6 +507,7 @@ export async function composeThirtySecondAdPackage(input: ComposeMarketingDelive
 }
 
 export async function composeAssembledVideoPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
   const durationSeconds = input.durationSeconds ?? 180;
   const scriptPlan = await generateMarketingStudioScript({
@@ -379,7 +518,7 @@ export async function composeAssembledVideoPackage(input: ComposeMarketingDelive
     contentType: "assembled_video_3m",
     platform: input.platforms[0] ?? "YouTube",
     originalUserPrompt: input.goal,
-    brief: `Build an assembled 3-minute marketing video package for ${input.audience}.`,
+    brief: `Build an assembled 3-minute marketing video package for ${input.audience}. Product: ${productContext.profile.appName}. Features: ${productContext.profile.coreFeatures.join(", ")}. Benefits: ${productContext.profile.benefits.join(", ")}. Offer: ${productContext.profile.primaryOffer ?? "not configured"}. CTA: ${productContext.primaryCta}.`,
     audience: input.audience,
     goal: input.goal,
     durationTargetSeconds: durationSeconds,
@@ -431,9 +570,9 @@ export async function composeAssembledVideoPackage(input: ComposeMarketingDelive
     setupNeeded: blockers.length > 0,
     blockers,
     strategy: `Assembled-video package with timeline, media slots, voiceover and export readiness for ${input.platforms[0] ?? "YouTube"}.`,
-    hooks: fallbackHooks(input.goal, input.audience),
+    hooks: fallbackHooks(input.goal, input.audience, productContext.profile),
     adCopy: [],
-    cta: scriptPlan.cta || "Book your EquiProfile demo",
+    cta: scriptPlan.cta || productContext.primaryCta,
     script: scriptPlan.script,
     scenePlan: scenes,
     visualPrompts: scenes.map((scene) => String(scene.visualPrompt ?? "")),
@@ -475,23 +614,42 @@ export async function composeAssembledVideoPackage(input: ComposeMarketingDelive
 }
 
 export async function composeSignupCampaignPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
-  const durationDays = input.durationDays ?? 30;
-  const adPackage = await composeThirtySecondAdPackage({
-    ...input,
-    campaignId,
-    packageType: "video_ad_30s",
-    durationSeconds: 30,
+  const durationDays = Math.min(7, Math.max(7, input.durationDays ?? 7));
+  const platforms = input.platforms.length ? input.platforms : ["Facebook", "Instagram", "Email"];
+  const dayTemplates = Array.from({ length: durationDays }).map((_, index) => {
+    const day = index + 1;
+    const isEmail = day === 2 || day === 5 || day === 7;
+    return {
+      day,
+      isEmail,
+      platform: isEmail ? "Email" : platforms.filter((platform) => platform !== "Email")[index % Math.max(1, platforms.filter((platform) => platform !== "Email").length)] ?? "Facebook",
+    };
   });
-
-  const socialPosts = Array.from({ length: durationDays >= 30 ? 6 : 3 }).map((_, index) =>
-    `Day ${index + 1}: Stable-owner conversion message with proof + CTA`,
-  );
-  const emails = [
-    "Email 1: Pain + promise + free-trial CTA",
-    "Email 2: Case-study proof + objections",
-    "Email 3: Last-chance CTA",
-  ];
+  const results = await Promise.all(dayTemplates.map((day) => executeProductCopy(input, productContext, {
+    task: day.isEmail ? "email_generation" : "platform_copywriting",
+    platform: day.platform,
+    contentType: `signup_campaign day_${day.day} ${day.isEmail ? "email" : "social_post"}`,
+  })));
+  const hooks = fallbackHooks(input.goal, input.audience, productContext.profile);
+  const dayPlan = dayTemplates.map((day, index) => {
+    const benefit = productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "make operations clearer";
+    return {
+      day: day.day,
+      platform: day.platform,
+      channel: day.isEmail ? "email" : "social",
+      subject: day.isEmail ? asText(results[index]?.output.subject, `${productContext.profile.appName}: ${benefit}`) : undefined,
+      hook: asText(results[index]?.output.hook, hooks[index % hooks.length]),
+      body: asText(results[index]?.output.body, `${productContext.profile.appName} helps ${input.audience} ${benefit}. ${productContext.primaryCta}`),
+      cta: asText(results[index]?.output.cta, productContext.primaryCta),
+      proofNote: productContext.profile.proofPoints[0] ?? "Add confirmed proof before publishing.",
+      offerNote: productContext.profile.primaryOffer ?? "Offer details require confirmation.",
+    };
+  });
+  const socialPosts = dayPlan.filter((day) => day.channel === "social");
+  const emails = dayPlan.filter((day) => day.channel === "email");
+  const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
@@ -501,43 +659,43 @@ export async function composeSignupCampaignPackage(input: ComposeMarketingDelive
     audience: input.audience,
     platforms: input.platforms,
     status: resolveDeliverablePackageStatus({
-      setupNeeded: adPackage.setupNeeded,
-      blockers: adPackage.blockers,
+      setupNeeded: truth.blockers.length > 0,
+      blockers: truth.blockers,
       packageType: "signup_campaign",
       requireApproval: input.requireApproval,
       hasPlayableMedia: false,
       hasRenderedVideo: false,
     }),
-    generationSource: adPackage.generationSource,
-    textGeneratedByModel: adPackage.textGeneratedByModel,
-    mediaGeneratedByModel: adPackage.mediaGeneratedByModel,
-    fallbackUsed: adPackage.fallbackUsed,
-    setupNeeded: adPackage.setupNeeded,
-    blockers: adPackage.blockers,
-    strategy: `Signup-focused ${durationDays}-day plan targeting ${input.audience}. Outcome: ${input.targetOutcome ?? "monthly signup growth"}.`,
-    hooks: adPackage.hooks,
-    adCopy: [...adPackage.adCopy, ...socialPosts.slice(0, 2)],
-    cta: "Start free trial",
-    script: adPackage.script,
-    scenePlan: adPackage.scenePlan,
-    visualPrompts: adPackage.visualPrompts,
-    mediaRequirements: adPackage.mediaRequirements,
+    generationSource: resolveGenerationSource({ textGeneratedByModel: truth.textGeneratedByModel, mediaGeneratedByModel: false, fallbackUsed: truth.fallbackUsed }),
+    textGeneratedByModel: truth.textGeneratedByModel,
+    mediaGeneratedByModel: false,
+    fallbackUsed: truth.fallbackUsed,
+    setupNeeded: truth.blockers.length > 0,
+    blockers: truth.blockers,
+    strategy: `Signup-focused 7-day plan for ${productContext.profile.appName} targeting ${input.audience}. Outcome: ${input.targetOutcome ?? "signup growth"}. Offer: ${productContext.profile.primaryOffer ?? "confirm offer"}.`,
+    hooks: socialPosts.map((post) => post.hook),
+    adCopy: socialPosts.map((post) => post.body),
+    cta: productContext.primaryCta,
+    script: dayPlan.map((day) => `Day ${day.day} - ${day.platform}\n${day.subject ? `Subject: ${day.subject}\n` : ""}${day.body}\nCTA: ${day.cta}`).join("\n\n"),
+    scenePlan: [],
+    visualPrompts: socialPosts.map((post, index) => productVisualPrompt(productContext.profile, post.platform, productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? post.body)),
+    mediaRequirements: socialPosts.map((post) => `${post.platform} brand-aware creative with logo-safe space`),
     captionPlan: {
-      ...adPackage.captionPlan,
+      dayPlan,
       socialPosts,
       emailSequence: emails,
-      measurementPlan: ["Track signups", "Track CTR", "Track trial activations"],
+      measurementPlan: ["Export tracking-link plan", "Connect analytics before claiming measured results"],
     },
-    voiceoverPlan: adPackage.voiceoverPlan,
-    musicPlan: adPackage.musicPlan,
-    brandOverlayPlan: adPackage.brandOverlayPlan,
+    voiceoverPlan: {},
+    musicPlan: {},
+    brandOverlayPlan: { logoAssetId: productContext.profile.logoAssetId, brandColors: productContext.profile.brandColors },
     reviewItems: [],
     exportPack: {
       campaignCalendarDays: durationDays,
       checklist: ["social posts", "ad copy", "email sequence", "landing CTA", "video recommendation"],
     },
     scheduleDrafts: [],
-    mediaJobs: adPackage.mediaJobs,
+    mediaJobs: [],
     campaignItems: [],
   };
 
@@ -550,27 +708,36 @@ export async function composeSignupCampaignPackage(input: ComposeMarketingDelive
     qualityMode: input.qualityMode,
     requireApproval: input.requireApproval,
     exportOnly: input.exportOnly,
+    provider: results.find((result) => result.generationMode === "model")?.provider ?? null,
+    model: results.find((result) => result.generationMode === "model")?.model ?? null,
   });
 }
 
 export async function generateMarketingSocialPostPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
-  const textRoute = await getTextRouteStatus(input);
   const platformList = input.platforms.length ? input.platforms : ["Facebook"];
   const postCount = Math.min(5, Math.max(3, platformList.length + 2));
-
-  const posts = Array.from({ length: postCount }).map((_, index) => {
+  const results = await Promise.all(Array.from({ length: postCount }).map((_, index) => {
     const platform = platformList[index % platformList.length];
-    const hooks = fallbackHooks(input.goal, input.audience);
+    return executeProductCopy(input, productContext, { platform, contentType: "social_post" });
+  }));
+  const hooks = fallbackHooks(input.goal, input.audience, productContext.profile);
+  const posts = results.map((result, index) => {
+    const platform = platformList[index % platformList.length];
+    const benefit = productContext.profile.benefits[index % productContext.profile.benefits.length] ?? productContext.profile.benefits[0];
+    const fallbackHook = hooks[index % hooks.length];
+    const fallbackCaption = `${fallbackHook}. ${productContext.profile.appName} helps ${input.audience} ${benefit}. ${productContext.primaryCta}`;
     return {
       platform,
-      hook: hooks[index % hooks.length],
-      caption: `${hooks[index % hooks.length]}. ${input.audience} are already using ${input.goal.toLowerCase().includes("equiprofile") ? "EquiProfile" : "it"} to stay ahead. ${input.platforms.includes("Email") ? "" : "#equestrian #stablemanagement #equiprofile"}`.trim(),
-      cta: "Start free trial",
-      hashtags: platform === "Instagram" || platform === "TikTok" ? ["#equestrian", "#stablemanagement", "#equiprofile"] : [],
-      proofNote: "Used by stable owners across the UK",
+      hook: asText(result.output.hook, fallbackHook),
+      caption: asText(result.output.body, fallbackCaption),
+      cta: asText(result.output.cta, productContext.primaryCta),
+      hashtags: Array.isArray(result.output.hashtags) ? result.output.hashtags.map(String) : [],
+      proofNote: productContext.profile.proofPoints[0] ?? "Use only confirmed product facts; add proof before publishing.",
     };
   });
+  const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
@@ -580,26 +747,26 @@ export async function generateMarketingSocialPostPackage(input: ComposeMarketing
     audience: input.audience,
     platforms: platformList,
     status: resolveDeliverablePackageStatus({
-      setupNeeded: textRoute.setupNeeded,
-      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      setupNeeded: truth.blockers.length > 0,
+      blockers: truth.blockers,
       packageType: "social_post",
       requireApproval: input.requireApproval,
       hasPlayableMedia: false,
       hasRenderedVideo: false,
     }),
-    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
-    textGeneratedByModel: !textRoute.setupNeeded,
+    generationSource: resolveGenerationSource({ textGeneratedByModel: truth.textGeneratedByModel, mediaGeneratedByModel: false, fallbackUsed: truth.fallbackUsed }),
+    textGeneratedByModel: truth.textGeneratedByModel,
     mediaGeneratedByModel: false,
-    fallbackUsed: textRoute.setupNeeded,
-    setupNeeded: textRoute.setupNeeded,
-    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
-    strategy: `${postCount} platform-specific posts for ${platformList.join(", ")} targeting ${input.audience}.`,
+    fallbackUsed: truth.fallbackUsed,
+    setupNeeded: truth.blockers.length > 0,
+    blockers: truth.blockers,
+    strategy: `${postCount} product-aware posts for ${platformList.join(", ")} using ${productContext.profile.appName}'s confirmed benefits and CTA.`,
     hooks: posts.map((post) => post.hook),
     adCopy: posts.map((post) => post.caption),
-    cta: "Start free trial",
+    cta: productContext.primaryCta,
     script: posts.map((post, index) => `Post ${index + 1} (${post.platform}):\nHook: ${post.hook}\nCaption: ${post.caption}\nCTA: ${post.cta}`).join("\n\n"),
     scenePlan: [],
-    visualPrompts: posts.map((post) => `Social post visual for ${post.platform}: ${input.goal}`),
+    visualPrompts: posts.map((post, index) => productVisualPrompt(productContext.profile, post.platform, productContext.profile.benefits[index % productContext.profile.benefits.length] ?? productContext.profile.benefits[0])),
     mediaRequirements: posts.map((post) => `${post.platform} image or graphic`),
     captionPlan: { posts, reviewChecklist: posts.map((post, index) => `Review post ${index + 1} (${post.platform})`) },
     voiceoverPlan: {},
@@ -621,18 +788,18 @@ export async function generateMarketingSocialPostPackage(input: ComposeMarketing
     qualityMode: input.qualityMode,
     requireApproval: input.requireApproval,
     exportOnly: input.exportOnly,
-    provider: textRoute.provider,
-    model: textRoute.model,
+    provider: results.find((result) => result.generationMode === "model")?.provider ?? null,
+    model: results.find((result) => result.generationMode === "model")?.model ?? null,
   });
 }
 
 export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
-  const textRoute = await getTextRouteStatus(input);
   const platformList = input.platforms.filter((platform) => ["Facebook", "Instagram", "LinkedIn"].includes(platform));
   const platform = platformList[0] ?? input.platforms[0] ?? "Facebook";
 
-  const adVariants = [
+  const fallbackAdVariants = [
     {
       variantLabel: "Variant A — Pain + proof",
       primaryText: fallbackHooks(input.goal, input.audience)[0],
@@ -661,6 +828,20 @@ export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketi
       offerNote: "No setup fees. Cancel anytime.",
     },
   ];
+  const results = await Promise.all(fallbackAdVariants.map((variant) => executeProductCopy(input, productContext, {
+    platform,
+    contentType: `paid_social_ad ${variant.variantLabel}`,
+  })));
+  const adVariants = fallbackAdVariants.map((variant, index) => ({
+    ...variant,
+    primaryText: asText(results[index]?.output.body, `${fallbackHooks(input.goal, input.audience, productContext.profile)[index]}. ${productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "Make operations clearer"}.`),
+    headline: asText(results[index]?.output.hook, `${productContext.profile.appName}: ${productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "A clearer workflow"}`),
+    description: asText(results[index]?.output.angle, productContext.profile.differentiators[index % Math.max(1, productContext.profile.differentiators.length)] ?? variant.description),
+    cta: asText(results[index]?.output.cta, productContext.primaryCta),
+    audienceAngle: asText(results[index]?.output.angle, `${input.audience}: ${productContext.profile.painPointsSolved[index % Math.max(1, productContext.profile.painPointsSolved.length)] ?? "operational clarity"}`),
+    offerNote: productContext.profile.primaryOffer ?? "Offer details require confirmation.",
+  }));
+  const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
@@ -670,26 +851,26 @@ export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketi
     audience: input.audience,
     platforms: input.platforms,
     status: resolveDeliverablePackageStatus({
-      setupNeeded: textRoute.setupNeeded,
-      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      setupNeeded: truth.blockers.length > 0,
+      blockers: truth.blockers,
       packageType: "paid_social_ad",
       requireApproval: input.requireApproval,
       hasPlayableMedia: false,
       hasRenderedVideo: false,
     }),
-    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
-    textGeneratedByModel: !textRoute.setupNeeded,
+    generationSource: resolveGenerationSource({ textGeneratedByModel: truth.textGeneratedByModel, mediaGeneratedByModel: false, fallbackUsed: truth.fallbackUsed }),
+    textGeneratedByModel: truth.textGeneratedByModel,
     mediaGeneratedByModel: false,
-    fallbackUsed: textRoute.setupNeeded,
-    setupNeeded: textRoute.setupNeeded,
-    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
-    strategy: `3 paid ad variants for ${platform} targeting ${input.audience}. Goal: ${input.goal}.`,
+    fallbackUsed: truth.fallbackUsed,
+    setupNeeded: truth.blockers.length > 0,
+    blockers: truth.blockers,
+    strategy: `3 product-aware paid ad variants for ${platform} using ${productContext.profile.appName}'s offer and confirmed positioning.`,
     hooks: adVariants.map((variant) => variant.primaryText),
     adCopy: adVariants.map((variant) => `${variant.headline}: ${variant.description} | CTA: ${variant.cta} | ${variant.offerNote}`),
-    cta: "Start free trial",
+    cta: productContext.primaryCta,
     script: adVariants.map((variant) => `${variant.variantLabel}\nPrimary text: ${variant.primaryText}\nHeadline: ${variant.headline}\nDescription: ${variant.description}\nCTA: ${variant.cta}\nAudience: ${variant.audienceAngle}\nOffer: ${variant.offerNote}`).join("\n\n"),
     scenePlan: [],
-    visualPrompts: adVariants.map((variant) => `${platform} ad creative: ${variant.audienceAngle} angle`),
+    visualPrompts: adVariants.map((variant, index) => productVisualPrompt(productContext.profile, platform, productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? variant.audienceAngle)),
     mediaRequirements: adVariants.map((variant) => `${platform} ad image or video for ${variant.variantLabel}`),
     captionPlan: { adVariants, reviewChecklist: adVariants.map((variant, index) => `Approve ${variant.variantLabel} (ad ${index + 1})`) },
     voiceoverPlan: {},
@@ -711,17 +892,17 @@ export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketi
     qualityMode: input.qualityMode,
     requireApproval: input.requireApproval,
     exportOnly: input.exportOnly,
-    provider: textRoute.provider,
-    model: textRoute.model,
+    provider: results.find((result) => result.generationMode === "model")?.provider ?? null,
+    model: results.find((result) => result.generationMode === "model")?.model ?? null,
   });
 }
 
 export async function generateMarketingEmailCampaignPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
-  const textRoute = await getTextRouteStatus(input);
   const emailCount = Math.min(5, Math.max(3, Math.ceil((input.durationDays ?? 7) / 3)));
 
-  const emails = [
+  const fallbackEmails = [
     {
       emailIndex: 1,
       subject: `[EquiProfile] Your stable deserves better — here's how`,
@@ -750,6 +931,22 @@ export async function generateMarketingEmailCampaignPackage(input: ComposeMarket
       complianceNote: "Include unsubscribe link.",
     },
   ];
+  const results = await Promise.all(fallbackEmails.map((email) => executeProductCopy(input, productContext, {
+    task: "email_generation",
+    platform: "Email",
+    contentType: `email_campaign email_${email.emailIndex}`,
+  })));
+  const emails = fallbackEmails.map((email, index) => {
+    const benefit = productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "make daily operations clearer";
+    return {
+      ...email,
+      subject: asText(results[index]?.output.subject, `${productContext.profile.appName}: ${benefit}`),
+      previewText: asText(results[index]?.output.previewText, `${benefit}. ${productContext.profile.primaryOffer ?? ""}`),
+      body: asText(results[index]?.output.body, `Hi [First Name],\n\n${productContext.profile.appName} helps ${input.audience} ${benefit} with ${productContext.profile.coreFeatures.slice(0, 3).join(", ")}.\n\n${productContext.primaryCta}`),
+      cta: asText(results[index]?.output.cta, productContext.primaryCta),
+    };
+  });
+  const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
@@ -759,23 +956,23 @@ export async function generateMarketingEmailCampaignPackage(input: ComposeMarket
     audience: input.audience,
     platforms: ["Email"],
     status: resolveDeliverablePackageStatus({
-      setupNeeded: textRoute.setupNeeded,
-      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      setupNeeded: truth.blockers.length > 0,
+      blockers: truth.blockers,
       packageType: "email_campaign",
       requireApproval: input.requireApproval,
       hasPlayableMedia: false,
       hasRenderedVideo: false,
     }),
-    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
-    textGeneratedByModel: !textRoute.setupNeeded,
+    generationSource: resolveGenerationSource({ textGeneratedByModel: truth.textGeneratedByModel, mediaGeneratedByModel: false, fallbackUsed: truth.fallbackUsed }),
+    textGeneratedByModel: truth.textGeneratedByModel,
     mediaGeneratedByModel: false,
-    fallbackUsed: textRoute.setupNeeded,
-    setupNeeded: textRoute.setupNeeded,
-    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
-    strategy: `${emailCount}-email nurture sequence for ${input.audience}. Goal: ${input.goal}.`,
+    fallbackUsed: truth.fallbackUsed,
+    setupNeeded: truth.blockers.length > 0,
+    blockers: truth.blockers,
+    strategy: `${emailCount}-email product-aware nurture sequence for ${input.audience} using ${productContext.profile.appName}'s configured CTA.`,
     hooks: emails.map((email) => email.subject),
     adCopy: emails.map((email) => `${email.subject} | Preview: ${email.previewText} | CTA: ${email.cta}`),
-    cta: "Start free trial",
+    cta: productContext.primaryCta,
     script: emails.map((email) => `Email ${email.emailIndex}: ${email.subject}\nPreview: ${email.previewText}\n\n${email.body}\n\nCTA: ${email.cta}\nTiming: ${email.timingSuggestion}\nCompliance: ${email.complianceNote}`).join("\n\n---\n\n"),
     scenePlan: [],
     visualPrompts: [],
@@ -800,19 +997,19 @@ export async function generateMarketingEmailCampaignPackage(input: ComposeMarket
     qualityMode: input.qualityMode,
     requireApproval: input.requireApproval,
     exportOnly: input.exportOnly,
-    provider: textRoute.provider,
-    model: textRoute.model,
+    provider: results.find((result) => result.generationMode === "model")?.provider ?? null,
+    model: results.find((result) => result.generationMode === "model")?.model ?? null,
   });
 }
 
 export async function generateMarketingWeeklyContentPackPackage(input: ComposeMarketingDeliverableInput) {
+  const productContext = await requireProductGenerationContext(input);
   const campaignId = await ensureCampaignId(input);
-  const textRoute = await getTextRouteStatus(input);
   const days = Math.min(7, Math.max(5, input.durationDays ?? 7));
   const platformList = input.platforms.length ? input.platforms : ["Facebook", "Instagram"];
-  const hooks = fallbackHooks(input.goal, input.audience);
+  const hooks = fallbackHooks(input.goal, input.audience, productContext.profile);
 
-  const dayPlan = Array.from({ length: days }).map((_, index) => {
+  const fallbackDayPlan = Array.from({ length: days }).map((_, index) => {
     const day = index + 1;
     const platform = platformList[index % platformList.length];
     const hook = hooks[index % hooks.length];
@@ -826,6 +1023,29 @@ export async function generateMarketingWeeklyContentPackPackage(input: ComposeMa
       postingWindow: day <= 3 ? "Morning (8–10am)" : "Afternoon (12–2pm)",
     };
   });
+  const results = await Promise.all(fallbackDayPlan.map((day) => {
+    const isEmail = day.day % 4 === 0;
+    return executeProductCopy(input, productContext, {
+      task: isEmail ? "email_generation" : "platform_copywriting",
+      platform: isEmail ? "Email" : day.platform,
+      contentType: `weekly_content_pack ${isEmail ? "email" : day.contentFormat}`,
+    });
+  }));
+  const dayPlan = fallbackDayPlan.map((day, index) => {
+    const isEmail = day.day % 4 === 0;
+    const benefit = productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "make operations clearer";
+    const platform = isEmail ? "Email" : day.platform;
+    return {
+      ...day,
+      platform,
+      channel: platform,
+      contentFormat: isEmail ? "email" : day.contentFormat,
+      subject: isEmail ? asText(results[index]?.output.subject, `${productContext.profile.appName}: ${benefit}`) : undefined,
+      body: asText(results[index]?.output.body, `Day ${day.day} - ${platform}: ${productContext.profile.appName} helps ${input.audience} ${benefit}. ${productContext.primaryCta}`),
+      cta: asText(results[index]?.output.cta, productContext.primaryCta),
+    };
+  });
+  const truth = generationTruth(results);
 
   const packageData: MarketingDeliverablePackage = {
     packageId: `pkg_${nanoid(12)}`,
@@ -835,26 +1055,26 @@ export async function generateMarketingWeeklyContentPackPackage(input: ComposeMa
     audience: input.audience,
     platforms: platformList,
     status: resolveDeliverablePackageStatus({
-      setupNeeded: textRoute.setupNeeded,
-      blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
+      setupNeeded: truth.blockers.length > 0,
+      blockers: truth.blockers,
       packageType: "weekly_content_pack",
       requireApproval: input.requireApproval,
       hasPlayableMedia: false,
       hasRenderedVideo: false,
     }),
-    generationSource: resolveGenerationSource({ textGeneratedByModel: !textRoute.setupNeeded, mediaGeneratedByModel: false, fallbackUsed: textRoute.setupNeeded }),
-    textGeneratedByModel: !textRoute.setupNeeded,
+    generationSource: resolveGenerationSource({ textGeneratedByModel: truth.textGeneratedByModel, mediaGeneratedByModel: false, fallbackUsed: truth.fallbackUsed }),
+    textGeneratedByModel: truth.textGeneratedByModel,
     mediaGeneratedByModel: false,
-    fallbackUsed: textRoute.setupNeeded,
-    setupNeeded: textRoute.setupNeeded,
-    blockers: textRoute.setupNeeded ? [textRoute.reason] : [],
-    strategy: `${days}-day content plan across ${platformList.join(", ")} for ${input.audience}.`,
+    fallbackUsed: truth.fallbackUsed,
+    setupNeeded: truth.blockers.length > 0,
+    blockers: truth.blockers,
+    strategy: `${days}-day product-aware social and email plan across ${platformList.join(", ")} for ${input.audience}.`,
     hooks: dayPlan.map((day) => day.body),
     adCopy: dayPlan.map((day) => `Day ${day.day} (${day.platform}): ${day.body} | CTA: ${day.cta}`),
-    cta: "Start free trial",
+    cta: productContext.primaryCta,
     script: dayPlan.map((day) => `Day ${day.day} — ${day.platform} (${day.postingWindow})\nFormat: ${day.contentFormat}\nContent: ${day.body}\nCTA: ${day.cta}`).join("\n\n"),
     scenePlan: [],
-    visualPrompts: dayPlan.map((day) => `Day ${day.day} ${day.platform} visual: ${day.body}`),
+    visualPrompts: dayPlan.filter((day) => day.contentFormat !== "email").map((day, index) => productVisualPrompt(productContext.profile, day.platform, productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? day.body)),
     mediaRequirements: dayPlan.map((day) => `Day ${day.day} ${day.platform} image`),
     captionPlan: { dayPlan, reviewChecklist: dayPlan.map((day) => `Approve Day ${day.day} (${day.platform})`) },
     voiceoverPlan: {},
@@ -876,8 +1096,8 @@ export async function generateMarketingWeeklyContentPackPackage(input: ComposeMa
     qualityMode: input.qualityMode,
     requireApproval: input.requireApproval,
     exportOnly: input.exportOnly,
-    provider: textRoute.provider,
-    model: textRoute.model,
+    provider: results.find((result) => result.generationMode === "model")?.provider ?? null,
+    model: results.find((result) => result.generationMode === "model")?.model ?? null,
   });
 }
 
