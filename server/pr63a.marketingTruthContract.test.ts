@@ -63,6 +63,7 @@ describe("PR63A creation capability truth contract", () => {
       "assembled_video_3m",
       "signup_campaign",
       "social_post",
+      "paid_social_ad",
       "email_campaign",
       "blog_seo",
       "weekly_content_pack",
@@ -87,11 +88,12 @@ describe("PR63A creation capability truth contract", () => {
     expect(byId.get("signup_campaign")?.outputGuarantee).toBe("package_only");
     expect(byId.get("signup_campaign")?.viewerContract?.viewer).toBe("deliverable_package");
 
-    expect(byId.get("social_post")?.status).toBe("not_wired");
-    expect(byId.get("social_post")?.outputGuarantee).toBe("not_wired");
-    expect(byId.get("email_campaign")?.status).toBe("not_wired");
+    expect(byId.get("social_post")?.status).toBe("ready");
+    expect(byId.get("social_post")?.outputGuarantee).toBe("package_only");
+    expect(byId.get("paid_social_ad")?.status).toBe("ready");
+    expect(byId.get("email_campaign")?.status).toBe("ready");
     expect(byId.get("blog_seo")?.status).toBe("not_wired");
-    expect(byId.get("weekly_content_pack")?.status).toBe("not_wired");
+    expect(byId.get("weekly_content_pack")?.status).toBe("ready");
   });
 
   it("keeps frontend default quality mode as standard", () => {

@@ -91,6 +91,7 @@ export function MarketingAppSettings({
   const taskCapabilityMapQuery = trpc.admin.getMarketingTaskCapabilityMap.useQuery({ tenantId, workspaceId, mode: quality });
   const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
   const connectorReadinessQuery = trpc.admin.getMarketingConnectorReadiness.useQuery({ tenantId, workspaceId });
+  const productDiagnosticsQuery = trpc.admin.getMarketingProductDiagnostics.useQuery({ tenantId, workspaceId, hostAppId });
   const creationCapabilitiesQuery = trpc.admin.getMarketingCreationCapabilities.useQuery({
     tenantId,
     workspaceId,
@@ -595,6 +596,7 @@ export function MarketingAppSettings({
               backendReadiness: backendReadinessQuery.data ?? { status: "setup_needed" },
               connectorReadiness: connectorReadinessQuery.data ?? { status: "setup_needed" },
               providerToolingTruth: providerToolingTruthQuery.data ?? { status: "setup_needed" },
+              productIntelligence: productDiagnosticsQuery.data ?? { status: "setup_needed" },
             }, null, 2)}
           </pre>
         ) : null}

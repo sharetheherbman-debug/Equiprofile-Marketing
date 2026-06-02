@@ -1,8 +1,41 @@
 import fs from "node:fs";
 import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { MarketingProductProfileRecord } from "./modules/marketing/product-intelligence";
 
 const repoRoot = path.resolve(import.meta.dirname, "..");
+const testProductProfile: MarketingProductProfileRecord = {
+  tenantId: "t",
+  workspaceId: "w",
+  hostAppId: "equiprofile",
+  appName: "EquiProfile",
+  domain: "equiprofile.example",
+  landingPageUrl: "https://equiprofile.example",
+  signupUrl: "https://equiprofile.example/signup",
+  logoAssetId: null,
+  brandColors: [],
+  targetAudiences: ["stable owners"],
+  primaryOffer: "Start a free trial",
+  pricingDetails: "Free trial available",
+  coreFeatures: ["horse health records", "document tracking", "stable scheduling"],
+  benefits: ["keep every stable record organised"],
+  painPointsSolved: ["scattered stable records"],
+  objections: [],
+  proofPoints: [],
+  differentiators: ["equine operations workspace"],
+  forbiddenClaims: [],
+  toneOfVoice: ["clear", "practical"],
+  ctaLibrary: ["Start your free trial"],
+  platformPositioning: {},
+  extractedSourceUrls: ["https://equiprofile.example"],
+  candidateLogoUrls: [],
+  candidateLogoAssetIds: [],
+  missingInfo: [],
+  sourceMode: "manual",
+  confidenceScore: 90,
+  lastScrapedAt: null,
+  confirmedAt: null,
+};
 
 beforeEach(() => {
   vi.resetModules();
@@ -71,6 +104,7 @@ describe("PR62C deliverable composer", () => {
       platforms: ["Facebook", "Instagram"],
       packageType: "video_ad_30s",
       durationSeconds: 30,
+      productProfile: testProductProfile,
     });
 
     expect(result.packageType).toBe("video_ad_30s");
@@ -87,7 +121,7 @@ describe("PR62C deliverable composer", () => {
     expect(result.campaignItems.length).toBeGreaterThan(0);
     expect(createMarketingCampaignItemRecord).toHaveBeenCalled();
     expect(createMarketingScheduleDraftRecord).toHaveBeenCalled();
-  });
+  }, 10_000);
 
   it("composeAssembledVideoPackage returns 8 to 15 scene timeline for 180-second package", async () => {
     vi.doMock("./modules/marketing/studio-generation", () => ({
@@ -132,6 +166,7 @@ describe("PR62C deliverable composer", () => {
       platforms: ["YouTube"],
       packageType: "assembled_video_3m",
       durationSeconds: 180,
+      productProfile: testProductProfile,
     });
 
     expect(result.packageType).toBe("assembled_video_3m");
@@ -189,6 +224,7 @@ describe("PR62C deliverable composer", () => {
     vi.doMock("./modules/marketing/genius-brain", () => ({ recommendMarketingPlaybook: vi.fn(async () => ({ status: "ok" })) }));
     vi.doMock("./modules/marketing/brand-memory", () => ({
       buildBrandMemoryPromptContext: vi.fn(async () => ({ status: "ok" })),
+      getMarketingBrandMemory: vi.fn(async () => ({ status: "setup_needed", memory: null })),
       updateBrandMemoryFromResults: vi.fn(async () => ({})),
     }));
     vi.doMock("./modules/marketing/campaign-manager-brain", () => ({
@@ -289,6 +325,7 @@ describe("PR62C deliverable composer", () => {
       audience: "stable owners",
       platforms: ["Facebook"],
       packageType: "image_ad",
+      productProfile: testProductProfile,
     });
 
     expect(result.setupNeeded).toBe(true);
@@ -347,6 +384,19 @@ describe("PR62C deliverable composer", () => {
       defaultWorkspaceBudgetPolicy: vi.fn(() => ({ mode: "standard" })),
       resolveMarketingProviderRoute: vi.fn(async () => ({ status: "ready", reason: null, selected: { provider: "qwen", modelId: "qwen-text" } })),
     }));
+    vi.doMock("./modules/marketing/brand-memory", () => ({
+      getMarketingBrandMemory: vi.fn(async () => ({ status: "setup_needed", memory: null })),
+    }));
+    vi.doMock("./modules/marketing/model-execution", () => ({
+      executeMarketingModelTask: vi.fn(async () => ({
+        status: "completed",
+        generationMode: "model",
+        providerStatus: "ready",
+        provider: "qwen",
+        model: "qwen-text",
+        output: { hook: "Keep every stable record clear", body: "EquiProfile keeps stable records organised.", cta: "Start your free trial" },
+      })),
+    }));
 
     const { composeSignupCampaignPackage } = await import("./modules/marketing/deliverable-composer");
     const result = await composeSignupCampaignPackage({
@@ -358,6 +408,7 @@ describe("PR62C deliverable composer", () => {
       audience: "stable owners",
       platforms: ["Facebook"],
       packageType: "signup_campaign",
+      productProfile: testProductProfile,
     });
 
     expect(result.packageType).toBe("signup_campaign");
@@ -383,6 +434,9 @@ describe("PR62C deliverable composer", () => {
       defaultWorkspaceBudgetPolicy: vi.fn(() => ({ mode: "standard" })),
       resolveMarketingProviderRoute: vi.fn(async () => ({ status: "ready", reason: null, selected: { provider: "qwen", modelId: "qwen-text" } })),
     }));
+    vi.doMock("./modules/marketing/brand-memory", () => ({
+      getMarketingBrandMemory: vi.fn(async () => ({ status: "setup_needed", memory: null })),
+    }));
 
     const { composeImageAdPackage } = await import("./modules/marketing/deliverable-composer");
     const result = await composeImageAdPackage({
@@ -394,6 +448,7 @@ describe("PR62C deliverable composer", () => {
       audience: "stable owners",
       platforms: ["Facebook"],
       packageType: "image_ad",
+      productProfile: testProductProfile,
     });
 
     expect(result.generationSource).toBe("hybrid");

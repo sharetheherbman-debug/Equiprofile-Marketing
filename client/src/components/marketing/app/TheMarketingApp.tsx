@@ -18,6 +18,9 @@ import { useMarketingCalendar } from "./hooks/useMarketingCalendar";
 import { useMarketingCampaigns } from "./hooks/useMarketingCampaigns";
 import { useMarketingReviewActions } from "./hooks/useMarketingReviewActions";
 import { useMarketingWorkspaceConfig } from "./hooks/useMarketingWorkspaceConfig";
+import { useMarketingProductProfile } from "./hooks/useMarketingProductProfile";
+import { useMarketingCopyPackages } from "./hooks/useMarketingCopyPackages";
+import { ProductMarketingProfileSetup } from "./ProductMarketingProfileSetup";
 
 type MediaTask = "text_to_image" | "text_to_video";
 
@@ -129,6 +132,7 @@ const CREATION_TYPES = [
   { id: "assembled_video_3m", label: "3-Minute Assembled Video", description: "Long-form marketing video with scene plan" },
   { id: "signup_campaign", label: "Signup Campaign", description: "Goal-driven campaign to drive conversions" },
   { id: "social_post", label: "Social Post", description: "Single post for any platform" },
+  { id: "paid_social_ad", label: "Paid Social Ad", description: "Three product-aware paid social variants" },
   { id: "email_campaign", label: "Email Campaign", description: "Email sequence or newsletter" },
   { id: "blog_seo", label: "Blog / SEO Article", description: "Long-form article for search" },
   { id: "weekly_content_pack", label: "Weekly Content Pack", description: "Full week of multi-platform content" },
@@ -528,6 +532,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     cancelScheduleDraftMutation,
     exportScheduleDraftPackMutation,
   } = useMarketingCalendar(workspace);
+  const productIntelligence = useMarketingProductProfile(workspace);
 
   // Lazy-load conditions — non-essential diagnostics/intelligence queries are only
   // enabled when the user explicitly opens the relevant context, keeping the
@@ -773,6 +778,13 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       await Promise.all([utils.admin.getMarketingCampaign.invalidate(), utils.admin.listMarketingCampaigns.invalidate()]);
     },
     onError: (error) => toast.error("Could not generate campaign package", { description: error.message }),
+  });
+  const copyPackages = useMarketingCopyPackages({
+    workspace,
+    onPackage: (payload) => {
+      setLastDeliverablePackage(payload);
+      if (typeof payload.campaignId === "number") setSelectedCampaignId(String(payload.campaignId));
+    },
   });
   const generateImageAdMutation = trpc.admin.generateMarketingImageAsset.useMutation({
     onSuccess: async (data) => {
@@ -1220,6 +1232,10 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
+  function handleGenerateCopyPackage(packageType: "social_post" | "paid_social_ad" | "email_campaign" | "weekly_content_pack") {
+    copyPackages.generate(packageType, commandForm);
+  }
+
   function handlePlanCampaign() {
     if (!commandForm.goal.trim()) {
       toast.error("Describe what you want to create first");
@@ -1258,6 +1274,15 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   }
 
   function handleGenerate() {
+    if (!productProfileReady) {
+      setCreationStatusNotice({
+        status: "setup_needed",
+        title: "Let's learn what we're marketing first.",
+        reason: "Scan or complete the product profile before generating campaign material.",
+      });
+      setWorkspaceTab("preview");
+      return;
+    }
     if (creationCapabilitiesQuery.isLoading) {
       setCreationStatusNotice({
         status: "waiting_for_backend",
@@ -1313,6 +1338,10 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       case "video_ad_30s": handleGenerateThirtySecondAdPackage(); break;
       case "assembled_video_3m": handleGenerateAssembledVideoPackage(); break;
       case "signup_campaign": handleGenerateSignupCampaignPackage(); break;
+      case "social_post": handleGenerateCopyPackage("social_post"); break;
+      case "paid_social_ad": handleGenerateCopyPackage("paid_social_ad"); break;
+      case "email_campaign": handleGenerateCopyPackage("email_campaign"); break;
+      case "weekly_content_pack": handleGenerateCopyPackage("weekly_content_pack"); break;
       default:
         setCreationStatusNotice({
           status: "not_wired",
@@ -1329,11 +1358,17 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     generateAdPackageMutation.isPending ||
     generateVideoPackageMutation.isPending ||
     generateCampaignPackageMutation.isPending ||
+    copyPackages.socialPost.isPending ||
+    copyPackages.paidSocialAd.isPending ||
+    copyPackages.emailCampaign.isPending ||
+    copyPackages.weeklyContentPack.isPending ||
     runAutonomousCampaignMutation.isPending;
 
   const hasGeneratedOutput = campaignPlan !== null || lastDeliverablePackage !== null || imageGenerationResult !== null;
 
   const backendReadiness = (backendReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
+  const productProfile = productIntelligence.profile;
+  const productProfileReady = productIntelligence.isReady;
   const connectorReadiness = (connectorReadinessQuery.data as Record<string, any> | undefined) ?? undefined;
   const capabilityRows = (
     (creationCapabilitiesQuery.data as { capabilities?: CreationCapability[] } | undefined)?.capabilities
@@ -1461,7 +1496,8 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const readinessBadge = getReadinessBadge(backendReadiness?.status);
   const selectedCreationTypeLabel = selectedCreationCapability?.label ?? "Content";
   const selectedCreationBlocked =
-    !selectedCreationCapability.canGenerate
+    !productProfileReady
+    || !selectedCreationCapability.canGenerate
     || selectedCreationCapability.outputGuarantee === "setup_needed"
     || selectedCreationCapability.outputGuarantee === "not_wired"
     || selectedCreationCapability.outputGuarantee === "broken";
@@ -1531,6 +1567,12 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             </div>
           </div>
         </header>
+
+        <ProductMarketingProfileSetup
+          workspace={workspace}
+          intelligence={productIntelligence}
+          onChooseLogo={() => setShowSettingsDialog(true)}
+        />
 
         {/* ── Main Studio Workspace ── */}
         <div className="studio-workspace grid min-w-0 gap-4 lg:grid-cols-[220px_minmax(0,1fr)_500px]">

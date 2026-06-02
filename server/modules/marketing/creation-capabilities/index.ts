@@ -145,7 +145,7 @@ const CREATION_DEFINITIONS: Definition[] = [
     label: "Signup Campaign",
     description: "Generates a campaign package and persists deliverables for review/export scheduling.",
     primaryProcedure: "generateMarketingCampaignPackage",
-    requiredTasks: ["campaign_strategy", "platform_copywriting"],
+    requiredTasks: ["campaign_strategy", "platform_copywriting", "email_generation"],
     expectedOutput: "campaign_package",
     deliverableKind: "signup_campaign",
     proofRequired: [
@@ -159,24 +159,35 @@ const CREATION_DEFINITIONS: Definition[] = [
   {
     id: "social_post",
     label: "Social Post",
-    description: "No first-class generation contract yet.",
-    primaryProcedure: null,
+    description: "Generates product-aware platform copy for review and export.",
+    primaryProcedure: "generateMarketingSocialPostPackage",
     requiredTasks: ["platform_copywriting"],
-    expectedOutput: "unknown",
+    expectedOutput: "campaign_package",
     deliverableKind: "social",
-    proofRequired: ["first_class_procedure", "viewer_contract"],
-    supportLevel: "not_wired",
+    proofRequired: ["campaignItems.length>0", "reviewItems.created", "scheduleDrafts.created", "exportPack"],
+    supportLevel: "first_class",
+  },
+  {
+    id: "paid_social_ad",
+    label: "Paid Social Ad",
+    description: "Generates product-aware paid social variants for review and export.",
+    primaryProcedure: "generateMarketingPaidSocialAdPackage",
+    requiredTasks: ["platform_copywriting"],
+    expectedOutput: "campaign_package",
+    deliverableKind: "social",
+    proofRequired: ["campaignItems.length>0", "reviewItems.created", "exportPack"],
+    supportLevel: "first_class",
   },
   {
     id: "email_campaign",
     label: "Email Campaign",
-    description: "No first-class generation contract yet.",
-    primaryProcedure: null,
+    description: "Generates a product-aware email campaign for review and export.",
+    primaryProcedure: "generateMarketingEmailCampaignPackage",
     requiredTasks: ["email_generation"],
-    expectedOutput: "unknown",
+    expectedOutput: "campaign_package",
     deliverableKind: "email",
-    proofRequired: ["first_class_procedure", "viewer_contract"],
-    supportLevel: "not_wired",
+    proofRequired: ["campaignItems.length>0", "reviewItems.created", "exportPack"],
+    supportLevel: "first_class",
   },
   {
     id: "blog_seo",
@@ -192,13 +203,13 @@ const CREATION_DEFINITIONS: Definition[] = [
   {
     id: "weekly_content_pack",
     label: "Weekly Content Pack",
-    description: "No first-class generation contract yet.",
-    primaryProcedure: null,
-    requiredTasks: ["campaign_strategy", "platform_copywriting"],
-    expectedOutput: "unknown",
+    description: "Generates a product-aware social and email week for review and export.",
+    primaryProcedure: "generateMarketingWeeklyContentPackPackage",
+    requiredTasks: ["campaign_strategy", "platform_copywriting", "email_generation"],
+    expectedOutput: "campaign_package",
     deliverableKind: "social",
-    proofRequired: ["first_class_procedure", "viewer_contract"],
-    supportLevel: "not_wired",
+    proofRequired: ["campaignItems.length>0", "reviewItems.created", "scheduleDrafts.created", "exportPack"],
+    supportLevel: "first_class",
   },
   {
     id: "avatar_video",
@@ -420,6 +431,41 @@ export async function getMarketingCreationCapabilities(input: {
         missingSetup,
         blockers,
         notes,
+        routeSummary,
+      });
+      continue;
+    }
+
+    if (["social_post", "paid_social_ad", "email_campaign", "weekly_content_pack"].includes(definition.id)) {
+      if (!allRoutesReady && !missingSetup.length) {
+        missingSetup.push("A ready text generation route is required.");
+      }
+      capabilities.push({
+        id: definition.id,
+        label: definition.label,
+        description: definition.description,
+        status: allRoutesReady ? "ready" : "setup_needed",
+        primaryProcedure: definition.primaryProcedure,
+        requiredTasks: definition.requiredTasks,
+        expectedOutput: definition.expectedOutput,
+        outputGuarantee: allRoutesReady ? "package_only" : "setup_needed",
+        viewerContract: buildViewerContract({
+          viewer: allRoutesReady ? "deliverable_package" : "setup_blocker",
+          primaryDataPath: allRoutesReady ? "lastDeliverablePackage" : "creationStatusNotice",
+          emptyState: "No product-aware package generated yet.",
+          successState: "Product-aware copy package is persisted for review and export.",
+          blockerState: "AI copy provider setup is needed.",
+        }),
+        deliverableKind: definition.deliverableKind,
+        executionLevel: allRoutesReady ? "first_class" : "blocked",
+        proofRequired: definition.proofRequired,
+        canGenerate: allRoutesReady,
+        canPreview: allRoutesReady,
+        canExport: allRoutesReady,
+        canSchedule: allRoutesReady,
+        missingSetup,
+        blockers,
+        notes: ["Copy packages require product intelligence and a ready AI text route."],
         routeSummary,
       });
       continue;

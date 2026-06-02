@@ -58,6 +58,8 @@ export function buildMarketingModelPrompt(input: MarketingModelExecutionInput): 
     `Goal: ${String(input.campaignBrief.goal ?? "")}`,
     `Audience: ${String(input.audience ?? input.campaignBrief.audience ?? "")}`,
     `Offer: ${String(input.offer ?? input.campaignBrief.offer ?? "")}`,
+    `Product profile: ${JSON.stringify(input.campaignBrief.productProfile ?? {})}`,
+    `Brand memory: ${JSON.stringify(input.campaignBrief.brandMemory ?? {})}`,
     `Platform: ${String(input.platform ?? "")}`,
     `Language: ${String(input.language ?? "English")}`,
     `Content type: ${String(input.contentType ?? "")}`,
