@@ -799,35 +799,15 @@ export async function generateMarketingPaidSocialAdPackage(input: ComposeMarketi
   const platformList = input.platforms.filter((platform) => ["Facebook", "Instagram", "LinkedIn"].includes(platform));
   const platform = platformList[0] ?? input.platforms[0] ?? "Facebook";
 
-  const fallbackAdVariants = [
-    {
-      variantLabel: "Variant A — Pain + proof",
-      primaryText: fallbackHooks(input.goal, input.audience)[0],
-      headline: "EquiProfile: Built for stable owners",
-      description: "Centralize your stable operations and grow with confidence.",
-      cta: "Start free trial",
-      audienceAngle: "Problem-aware stable owners",
-      offerNote: "Free 14-day trial. No credit card required.",
-    },
-    {
-      variantLabel: "Variant B — Social proof",
-      primaryText: fallbackHooks(input.goal, input.audience)[1],
-      headline: "Join stable owners already using EquiProfile",
-      description: "From horse records to marketing — all in one place.",
-      cta: "Get started",
-      audienceAngle: "Trust-driven horse owners",
-      offerNote: "Free 14-day trial. Export your data anytime.",
-    },
-    {
-      variantLabel: "Variant C — Direct CTA",
-      primaryText: fallbackHooks(input.goal, input.audience)[2],
-      headline: "Start your free EquiProfile trial today",
-      description: "Less admin. More time with your horses.",
-      cta: "Try free",
-      audienceAngle: "Action-ready stable managers",
-      offerNote: "No setup fees. Cancel anytime.",
-    },
-  ];
+  const fallbackAdVariants = ["Pain and proof", "Product benefit", "Direct CTA"].map((angle, index) => ({
+    variantLabel: `Variant ${String.fromCharCode(65 + index)} - ${angle}`,
+    primaryText: fallbackHooks(input.goal, input.audience, productContext.profile)[index],
+    headline: `${productContext.profile.appName}: ${productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "A clearer workflow"}`,
+    description: productContext.profile.differentiators[index % Math.max(1, productContext.profile.differentiators.length)] ?? "Product details require confirmation.",
+    cta: productContext.primaryCta,
+    audienceAngle: `${input.audience}: ${productContext.profile.painPointsSolved[index % Math.max(1, productContext.profile.painPointsSolved.length)] ?? "operational clarity"}`,
+    offerNote: productContext.profile.primaryOffer ?? "Offer details require confirmation.",
+  }));
   const results = await Promise.all(fallbackAdVariants.map((variant) => executeProductCopy(input, productContext, {
     platform,
     contentType: `paid_social_ad ${variant.variantLabel}`,
@@ -902,35 +882,18 @@ export async function generateMarketingEmailCampaignPackage(input: ComposeMarket
   const campaignId = await ensureCampaignId(input);
   const emailCount = Math.min(5, Math.max(3, Math.ceil((input.durationDays ?? 7) / 3)));
 
-  const fallbackEmails = [
-    {
-      emailIndex: 1,
-      subject: `[EquiProfile] Your stable deserves better — here's how`,
-      previewText: "Stop losing time to manual stable admin.",
-      body: `Hi [First Name],\n\nManaging a stable shouldn't mean drowning in paperwork.\n\nEquiProfile gives you horse records, scheduling, and marketing — all in one place.\n\n${fallbackHooks(input.goal, input.audience)[0]}\n\nStart your free 14-day trial today.`,
-      cta: "Start free trial",
-      timingSuggestion: "Day 1 — send immediately on signup",
-      complianceNote: "Include unsubscribe link. CAN-SPAM / GDPR compliant.",
-    },
-    {
-      emailIndex: 2,
-      subject: "Stable owners like you saved 5+ hours/week",
-      previewText: "Real results from real stable managers.",
-      body: `Hi [First Name],\n\nStable owners using EquiProfile report spending less time on admin and more time with their horses.\n\n${fallbackHooks(input.goal, input.audience)[1]}\n\nSee how it works — try it free today.`,
-      cta: "See how it works",
-      timingSuggestion: "Day 3 — follow-up with proof",
-      complianceNote: "Include unsubscribe link.",
-    },
-    {
-      emailIndex: 3,
-      subject: "Last chance: Your free EquiProfile trial",
-      previewText: "Don't miss out — trial ends soon.",
-      body: `Hi [First Name],\n\nYour free trial window is closing.\n\n${fallbackHooks(input.goal, input.audience)[2]}\n\nActivate your account now — it takes less than 2 minutes.`,
-      cta: "Activate now",
-      timingSuggestion: "Day 7 — urgency close",
-      complianceNote: "Include unsubscribe link.",
-    },
-  ];
+  const fallbackEmails = Array.from({ length: emailCount }).map((_, index) => {
+    const benefit = productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "make daily operations clearer";
+    return {
+      emailIndex: index + 1,
+      subject: `${productContext.profile.appName}: ${benefit}`,
+      previewText: `${benefit}. ${productContext.profile.primaryOffer ?? ""}`,
+      body: `Hi [First Name],\n\n${productContext.profile.appName} helps ${input.audience} ${benefit} with ${productContext.profile.coreFeatures.slice(0, 3).join(", ")}.\n\n${productContext.primaryCta}`,
+      cta: productContext.primaryCta,
+      timingSuggestion: `Day ${index * 3 + 1} - review and send when approved`,
+      complianceNote: "Include unsubscribe link and review compliance before export.",
+    };
+  });
   const results = await Promise.all(fallbackEmails.map((email) => executeProductCopy(input, productContext, {
     task: "email_generation",
     platform: "Email",
