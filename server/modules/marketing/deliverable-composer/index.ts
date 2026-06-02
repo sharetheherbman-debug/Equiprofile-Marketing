@@ -13,8 +13,7 @@ import { getMarketingBrandMemory } from "../brand-memory";
 import { executeMarketingModelTask } from "../model-execution";
 import type { MarketingModelExecutionOutput, MarketingModelTask } from "../model-execution";
 import {
-  getMarketingProductProfile,
-  isMarketingProductProfileReady,
+  getSafeMarketingProductContext,
   productProfileSetupQuestions,
   type MarketingProductProfileRecord,
 } from "../product-intelligence";
@@ -104,6 +103,8 @@ export class MarketingProductProfileSetupNeededError extends Error {
 
 type ProductGenerationContext = {
   profile: MarketingProductProfileRecord;
+  profileReady: boolean;
+  profileSource: "confirmed_profile" | "saved_draft" | "equiprofile_defaults" | "manual_notes" | "missing" | "supplied_profile";
   brandMemory: Record<string, unknown> | null;
   brandKit: Record<string, unknown>;
   primaryCta: string;
@@ -134,9 +135,9 @@ function primaryProductCta(profile: MarketingProductProfileRecord) {
 
 async function requireProductGenerationContext(input: ComposeMarketingDeliverableInput): Promise<ProductGenerationContext> {
   const resolved = input.productProfile
-    ? { profile: input.productProfile }
-    : await getMarketingProductProfile(input);
-  if (!resolved.profile || !isMarketingProductProfileReady(resolved.profile)) {
+    ? { profile: input.productProfile, profileReady: true, source: "supplied_profile" as const }
+    : await getSafeMarketingProductContext(input);
+  if (!resolved.profile) {
     throw new MarketingProductProfileSetupNeededError(productProfileSetupQuestions(resolved.profile));
   }
   const memory = await getMarketingBrandMemory(input).catch(() => ({ status: "setup_needed" as const, memory: null }));
@@ -144,6 +145,8 @@ async function requireProductGenerationContext(input: ComposeMarketingDeliverabl
   const primaryCta = primaryProductCta(profile);
   return {
     profile,
+    profileReady: resolved.profileReady,
+    profileSource: resolved.source,
     brandMemory: memory.memory as Record<string, unknown> | null,
     primaryCta,
     brandKit: {

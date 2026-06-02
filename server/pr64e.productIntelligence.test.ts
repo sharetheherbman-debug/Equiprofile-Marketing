@@ -88,6 +88,7 @@ vi.mock("./modules/marketing/model-execution", () => ({
 import {
   extractMarketingProductProfileFromHtml,
   getMarketingProductProfile,
+  getSafeMarketingProductContext,
   upsertMarketingProductProfile,
 } from "./modules/marketing/product-intelligence";
 import {
@@ -179,12 +180,33 @@ describe("PR64E product intelligence", () => {
     expect(reloaded.profile?.benefits).toContain("keep stable operations organized");
   });
 
-  it("asks setup questions when product profile is missing", async () => {
-    await expect(generateMarketingSocialPostPackage({ ...baseInput, productProfile: undefined, packageType: "social_post" }))
+  it("asks setup questions when a generic product profile is missing", async () => {
+    const genericInput = { ...baseInput, hostAppId: "unknown-app", productProfile: undefined, packageType: "social_post" as const };
+    await expect(generateMarketingSocialPostPackage(genericInput))
       .rejects.toBeInstanceOf(MarketingProductProfileSetupNeededError);
-    const error = await generateMarketingSocialPostPackage({ ...baseInput, productProfile: undefined, packageType: "social_post" }).catch((caught) => caught);
+    const error = await generateMarketingSocialPostPackage(genericInput).catch((caught) => caught);
     expect(error.setupQuestions.length).toBeGreaterThanOrEqual(2);
     expect(error.setupQuestions.length).toBeLessThanOrEqual(4);
+  });
+
+  it("uses safe EquiProfile defaults when the stored profile is missing", async () => {
+    const context = await getSafeMarketingProductContext({
+      tenantId: "global",
+      workspaceId: "default",
+      hostAppId: "equiprofile",
+    });
+    expect(context.source).toBe("equiprofile_defaults");
+    expect(context.profileReady).toBe(false);
+    expect(context.profile?.appName).toBe("EquiProfile");
+    expect(context.profile?.benefits).toContain("keep stable operations organized");
+  });
+
+  it("generates a truthful fallback signup campaign from EquiProfile defaults", async () => {
+    const signup = await composeSignupCampaignPackage({ ...baseInput, productProfile: undefined, packageType: "signup_campaign" });
+    expect(signup.textGeneratedByModel).toBe(false);
+    expect(signup.fallbackUsed).toBe(true);
+    expect(JSON.stringify(signup.captionPlan)).toContain("EquiProfile");
+    expect(JSON.stringify(signup.captionPlan)).toContain("horse health records");
   });
 
   it("uses product benefits, offer, and CTA in deterministic fallbacks", async () => {
@@ -221,12 +243,12 @@ describe("PR64E product intelligence", () => {
 describe("PR64E frontend product setup", () => {
   const root = path.resolve(import.meta.dirname, "..");
   const appSource = fs.readFileSync(path.join(root, "client/src/components/marketing/app/TheMarketingApp.tsx"), "utf8");
-  const profileCardSource = fs.readFileSync(path.join(root, "client/src/components/marketing/app/ProductMarketingProfileCard.tsx"), "utf8");
+  const profileCardSource = fs.readFileSync(path.join(root, "client/src/components/marketing/app/workspace/ProductContextPanel.tsx"), "utf8");
 
   it("shows product setup card when profile is missing or low confidence", () => {
-    expect(appSource).toContain("<ProductMarketingProfileSetup");
-    expect(profileCardSource).toContain("Let&apos;s learn what we&apos;re marketing first.");
-    expect(profileCardSource).toContain("Scan product");
+    expect(appSource).toContain("<ProductContextPanel");
+    expect(profileCardSource).toContain("Let’s learn what we’re marketing.");
+    expect(profileCardSource).toContain("Scan site");
     expect(profileCardSource).toContain("Confirm profile");
   });
 
