@@ -75,9 +75,10 @@ describe("PR38 cleanup enforcement", () => {
 
   it("TheMarketingApp delete actions call permanentDeleteMediaAsset and remove deleted toggle", () => {
     const assetsHook = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/hooks/useMarketingAssets.ts"), "utf8");
+    const library = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/workspace/MarketingLibraryView.tsx"), "utf8");
     expect(marketingApp).toContain("useMarketingAssets");
     expect(assetsHook).toContain("trpc.admin.permanentDeleteMediaAsset.useMutation");
-    expect(marketingApp).toContain("Delete permanently");
+    expect(library).toContain("Delete permanently");
     expect(marketingApp).not.toContain("Show deleted (admin/debug)");
   });
 

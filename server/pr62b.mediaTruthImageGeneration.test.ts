@@ -280,8 +280,9 @@ describe("PR62B frontend image action + asset card truth", () => {
       "utf8",
     );
     expect(source).toContain("generateMarketingImageAsset");
-    // PR64F: image creative remains explicit-only and secondary to full campaigns.
-    expect(source).toContain("Image creative generated for review");
+    // PR64H: image creative remains explicit-only, secondary, and URL-truthful.
+    expect(source).toContain("Image advert generated");
+    expect(source).toContain("Image advert queued or needs setup");
     expect(source).toContain("image_ad");
     expect(source).not.toContain("fake preview");
   });

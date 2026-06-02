@@ -111,10 +111,9 @@ describe("PR63A creation capability truth contract", () => {
 
   it("TheMarketingApp keeps truthful output states without exposing diagnostic grouping in the primary menu", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
-    const drawer = read("client/src/components/marketing/app/workspace/AdvancedMarketingDrawer.tsx");
-    expect(app).toContain("<AdvancedMarketingDrawer");
-    expect(drawer).toContain("Advanced tools");
-    expect(drawer).not.toContain("Developer Diagnostics");
+    expect(app).toContain("Media Studio / Advanced tools");
+    expect(app).toContain("<details");
+    expect(app).not.toContain("Developer Diagnostics");
     expect(app).not.toContain('>{"Ready now"}<');
     expect(app).not.toContain('>{"Package / plan only"}<');
     expect(app).not.toContain('>{"Needs setup"}<');

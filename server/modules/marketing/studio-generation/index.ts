@@ -250,7 +250,7 @@ async function executeRoutedTextTask(input: {
       },
       input: {
         prompt: input.prompt,
-        hostAppId: input.hostAppId ?? "equiprofile",
+        hostAppId: input.hostAppId ?? "workspace",
       },
     });
 

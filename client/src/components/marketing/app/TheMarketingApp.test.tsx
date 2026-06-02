@@ -99,13 +99,13 @@ describe("PR64F rescued workspace", () => {
   it("keeps product setup friendly without blocking draft generation", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const product = read("client/src/components/marketing/app/workspace/ProductContextPanel.tsx");
-    expect(app).toContain("const selectedCreationBlocked = !prompt.trim() || !channels.length || isAnyGenerationPending");
+    expect(app).toContain("const selectedCreationBlocked = !prompt.trim() || isAnyGenerationPending");
     expect(product).toContain("Use EquiProfile defaults");
     expect(product).toContain("Profile needs review, but draft campaigns can still be generated.");
   });
 
   it("renders clear prompt, output, and workflow panels", () => {
-    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("What are we marketing today?");
+    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("What would you like to create?");
     expect(read("client/src/components/marketing/app/workspace/CampaignOutputPanel.tsx")).toContain("Day-by-day schedule");
     expect(read("client/src/components/marketing/app/workspace/WorkflowStatusPanel.tsx")).toContain("Direct posting needs a connected Facebook account. Export is ready.");
   });
@@ -113,7 +113,7 @@ describe("PR64F rescued workspace", () => {
   it("keeps diagnostics and legacy workbench out of the primary tools panel", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const drawer = read("client/src/components/marketing/app/workspace/AdvancedMarketingDrawer.tsx");
-    expect(app).toContain("<AdvancedMarketingDrawer");
+    expect(app).toContain("Media Studio / Advanced tools");
     expect(app).not.toContain("<StudioHome");
     expect(drawer).toContain("<details");
     expect(drawer).not.toContain("open={true}");

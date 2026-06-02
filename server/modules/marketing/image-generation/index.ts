@@ -103,7 +103,7 @@ export async function generateMarketingImageAsset(input: {
         model: route.selected.modelId,
         platform: input.platform,
         aspectRatio: input.aspectRatio,
-        hostAppId: input.hostAppId ?? "equiprofile",
+        hostAppId: input.hostAppId ?? "workspace",
       },
     });
 

@@ -1,3 +1,5 @@
+import React from "react";
+
 function asRows(value: unknown) {
   return Array.isArray(value) ? value.filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === "object") : [];
 }
