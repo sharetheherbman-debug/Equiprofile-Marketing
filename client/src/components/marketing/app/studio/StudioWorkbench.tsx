@@ -6,7 +6,7 @@ import type {
   MarketingContentType,
   StudioPlanStatus,
 } from "@shared/_core/marketingStudioPlan";
-import { CreateTypeSelector, type ContentTypeDefinition } from "./CreateTypeSelector";
+import { CONTENT_TYPE_DEFINITIONS, CreateTypeSelector, type ContentTypeDefinition } from "./CreateTypeSelector";
 import { BriefStep } from "./BriefStep";
 import { ScriptStep } from "./ScriptStep";
 import { ScenePlanStep } from "./ScenePlanStep";
@@ -176,12 +176,20 @@ export function StudioWorkbench({
   workspaceId,
   hostAppId,
   initialPrompt = "",
+  initialPlan,
+  autoStartRender = false,
+  onPlanChange,
+  onRenderJobChange,
   onDone,
 }: {
   tenantId: string;
   workspaceId: string;
   hostAppId: string;
   initialPrompt?: string;
+  initialPlan?: MarketingStudioPlan | null;
+  autoStartRender?: boolean;
+  onPlanChange?: (plan: MarketingStudioPlan | null) => void;
+  onRenderJobChange?: (job: ReturnType<typeof useMarketingRenderJob>["job"]) => void;
   onDone?: (plan: MarketingStudioPlan) => void;
 }) {
   const [selectedType, setSelectedType] = useState<ContentTypeDefinition | null>(null);
@@ -219,6 +227,8 @@ export function StudioWorkbench({
     },
   });
   const [brandKitDraft, setBrandKitDraft] = useState<BrandKitDraft>(() => buildInitialBrandDraft(hostAppId));
+  const [autoSourceComplete, setAutoSourceComplete] = useState(false);
+  const autoRenderStarted = React.useRef(false);
 
   useEffect(() => {
     const brandKit = brandKitQuery.data;
@@ -230,6 +240,50 @@ export function StudioWorkbench({
       id: id ?? current.id,
     }));
   }, [brandKitQuery.data]);
+
+  useEffect(() => {
+    if (!initialPlan) return;
+    const inferredType = CONTENT_TYPE_DEFINITIONS.find((type) => type.id === initialPlan.contentType) ?? null;
+    setSelectedType(inferredType);
+    setPlan(initialPlan);
+    setCurrentStep(initialPlan.status === "done" ? "export" : initialPlan.status);
+    setAutoSourceComplete(false);
+    autoRenderStarted.current = false;
+  }, [initialPlan?.id]);
+
+  useEffect(() => {
+    onPlanChange?.(plan);
+  }, [onPlanChange, plan]);
+
+  useEffect(() => {
+    onRenderJobChange?.(renderJob.job);
+  }, [onRenderJobChange, renderJob.job]);
+
+  useEffect(() => {
+    if (!autoStartRender || !plan || plan.renderMode !== "assembled_video" || autoSourceComplete) return;
+    let cancelled = false;
+    void sceneMedia.sourceSceneMedia(plan)
+      .then((updatedPlan) => {
+        if (cancelled) return;
+        setPlan((current) => current ? { ...current, scenes: updatedPlan.scenes, status: "render" } : current);
+        setCurrentStep("render");
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setAutoSourceComplete(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [autoSourceComplete, autoStartRender, plan?.id]);
+
+  useEffect(() => {
+    if (!autoStartRender || !autoSourceComplete || !plan || plan.renderMode !== "assembled_video" || autoRenderStarted.current || renderJob.status) return;
+    autoRenderStarted.current = true;
+    setCurrentStep("render");
+    setPlan((current) => current ? { ...current, status: "render" } : current);
+    void renderJob.createRenderJob(plan, brandKitDraft);
+  }, [autoSourceComplete, autoStartRender, brandKitDraft, plan, renderJob]);
 
   function handleSelectType(type: ContentTypeDefinition) {
     const newPlan = buildEmptyPlan(type, workspaceId, hostAppId, initialPrompt);

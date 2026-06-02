@@ -244,7 +244,7 @@ export function extractMarketingProductProfileFromHtml(input: {
   const draft = {
     tenantId: "",
     workspaceId: "",
-    hostAppId: input.hostAppId ?? "equiprofile",
+    hostAppId: input.hostAppId ?? "workspace",
     appName,
     category,
     domain,

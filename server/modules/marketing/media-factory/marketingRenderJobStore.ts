@@ -19,6 +19,8 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
 }
 
 function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJob {
+  const isEquiProfile = row.hostAppId.trim().toLowerCase() === "equiprofile";
+  const fallbackBrandName = isEquiProfile ? "EquiProfile" : row.hostAppId.trim().replace(/[-_]+/g, " ") || "Workspace brand";
   return {
     id: String(row.id),
     tenantId: row.tenantId,
@@ -55,11 +57,11 @@ function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJo
     brandOverlay: parseJson<MarketingBrandOverlay>(row.brandOverlayJson, {
       brandKitId: row.brandKitId ?? null,
       overlayTemplate: row.overlayTemplate as MarketingBrandOverlay["overlayTemplate"] ?? "lower_third",
-      brandName: "EquiProfile",
-      domain: "equiprofile.online",
-      cta: "Start your free trial",
-      primaryColor: "#1e3a5f",
-      secondaryColor: "#c5a55a",
+      brandName: fallbackBrandName,
+      domain: isEquiProfile ? "equiprofile.online" : "your-product.example",
+      cta: isEquiProfile ? "Start your free trial" : "Learn more",
+      primaryColor: isEquiProfile ? "#1e3a5f" : "#1f2937",
+      secondaryColor: isEquiProfile ? "#c5a55a" : "#0ea5e9",
     }),
     outputMediaAssetId: row.outputMediaAssetId,
     outputPublicUrl: row.outputPublicUrl,

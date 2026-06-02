@@ -20,6 +20,10 @@ export async function buildMarketingBrandOverlay(input: {
     overlayTemplate?: MarketingOverlayTemplate;
   };
 }): Promise<MarketingBrandOverlay> {
+  const isEquiProfile = input.hostAppId.trim().toLowerCase() === "equiprofile";
+  const fallbackBrandName = isEquiProfile ? "EquiProfile" : input.hostAppId.trim().replace(/[-_]+/g, " ") || "Workspace brand";
+  const fallbackDomain = isEquiProfile ? "equiprofile.online" : "your-product.example";
+  const fallbackCta = isEquiProfile ? "Start your free trial" : "Learn more";
   let resolved: Awaited<ReturnType<typeof buildMarketingRenderOverlayConfig>>;
   try {
     resolved = await buildMarketingRenderOverlayConfig({
@@ -33,11 +37,11 @@ export async function buildMarketingBrandOverlay(input: {
     resolved = {
       brandKitId: null,
       overlayTemplate: "lower_third",
-      brandName: "EquiProfile",
-      domain: "equiprofile.online",
-      cta: "Start your free trial",
-      primaryColor: "#1e3a5f",
-      secondaryColor: "#c5a55a",
+      brandName: fallbackBrandName,
+      domain: fallbackDomain,
+      cta: fallbackCta,
+      primaryColor: isEquiProfile ? "#1e3a5f" : "#1f2937",
+      secondaryColor: isEquiProfile ? "#c5a55a" : "#0ea5e9",
       placements: {
         logo: "top_right",
         brandDomain: "top_left",
@@ -46,9 +50,9 @@ export async function buildMarketingBrandOverlay(input: {
       safeArea: { top: 40, right: 40, bottom: 40, left: 40 },
       endCard: {
         enabled: true,
-        title: "EquiProfile",
-        cta: "Start your free trial",
-        domain: "equiprofile.online",
+        title: fallbackBrandName,
+        cta: fallbackCta,
+        domain: fallbackDomain,
       },
     };
   }

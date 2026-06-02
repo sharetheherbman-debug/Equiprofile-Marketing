@@ -1010,7 +1010,8 @@ function inferMediaTaskFromMarketingInput(input: string): "text_to_image" | "tex
 
 function inferStudioContentType(prompt: string): MarketingContentType {
   const lower = prompt.toLowerCase();
-  if (/3[-\s]?minute|3min|youtube/.test(lower)) return "youtube_3min_video";
+  if (/3[-\s]?minute|3min|youtube.*(explainer|long[-\s]?form)/.test(lower)) return "youtube_3min_video";
+  if (/youtube.*short|shorts?/.test(lower)) return "youtube_short";
   if (/facebook/.test(lower) && /ad/.test(lower)) return "facebook_ad";
   if (/instagram|reel/.test(lower)) return "instagram_reel";
   if (/tiktok/.test(lower)) return "tiktok_video";

@@ -9,6 +9,8 @@ export type MarketingAssetRow = {
   publicUrl?: string | null;
   localPath?: string | null;
   mimeType?: string | null;
+  provider?: string | null;
+  model?: string | null;
   generationPrompt?: string | null;
   errorMessage?: string | null;
   metadata?: Record<string, unknown>;

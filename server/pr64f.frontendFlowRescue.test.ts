@@ -21,9 +21,9 @@ describe("PR64F desktop campaign workspace", () => {
   });
 
   it("puts the campaign prompt first", () => {
-    expect(prompt).toContain("What are we marketing today?");
+    expect(prompt).toContain("What would you like to create?");
     expect(prompt).toContain("Plan campaign");
-    expect(prompt).toContain("Generate campaign");
+    expect(prompt).toContain("Generate");
   });
 
   it("does not disable generation because product profile readiness is false", () => {

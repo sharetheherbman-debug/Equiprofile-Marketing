@@ -22,6 +22,7 @@ export function ProductContextPanel({
   onChooseLogo,
   onUploadLogo,
   onOpenSettings,
+  onOpenResults,
 }: {
   profile: ProductMarketingProfile | null;
   isReady: boolean;
@@ -34,13 +35,14 @@ export function ProductContextPanel({
   onChooseLogo: () => void;
   onUploadLogo: (file: File) => void;
   onOpenSettings: () => void;
+  onOpenResults: () => void;
 }) {
   const [draft, setDraft] = useState<ProductDraft>({
     landingPageUrl: profile?.landingPageUrl ?? "",
     signupUrl: profile?.signupUrl ?? "",
     productNotes: "",
   });
-  const [showEditor, setShowEditor] = useState(!isReady);
+  const [showEditor, setShowEditor] = useState(false);
 
   useEffect(() => {
     setDraft((current) => ({
@@ -75,7 +77,7 @@ export function ProductContextPanel({
         <Button type="button" size="sm" variant="outline" onClick={() => setShowEditor((current) => !current)}>Edit product</Button>
         <Button type="button" size="sm" variant="outline" onClick={onChooseLogo}>Brand Kit</Button>
         <Button type="button" size="sm" variant="outline" onClick={onOpenSettings}>Connections</Button>
-        <Button type="button" size="sm" variant="outline" onClick={onOpenSettings}>Results</Button>
+        <Button type="button" size="sm" variant="outline" onClick={onOpenResults}>Results</Button>
       </div>
 
       {showEditor ? <div className="mt-4 space-y-3">

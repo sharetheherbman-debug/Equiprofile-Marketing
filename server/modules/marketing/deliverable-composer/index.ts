@@ -1041,7 +1041,7 @@ export async function generateMarketingWeeklyContentPackPackage(input: ComposeMa
       platform,
       channel: platform,
       contentFormat: day <= 2 ? "social_post" : day <= 4 ? "ad_creative" : "social_post",
-      body: `Day ${day} — ${platform}: ${hook}. Check out EquiProfile and start your free trial today.`,
+      body: `Day ${day} — ${platform}: ${hook}. ${productContext.profile.appName} helps ${input.audience} ${productContext.profile.benefits[index % Math.max(1, productContext.profile.benefits.length)] ?? "make operations clearer"}. ${productContext.primaryCta}`,
       cta: day % 3 === 0 ? "Start free trial" : day % 3 === 1 ? "Learn more" : "See how it works",
       postingWindow: day <= 3 ? "Morning (8–10am)" : "Afternoon (12–2pm)",
     };
