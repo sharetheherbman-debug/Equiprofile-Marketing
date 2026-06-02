@@ -25,6 +25,12 @@ export interface MarketingStockSearchResult {
 
 const EQUINE_TERMS = ["horse", "equine", "stable", "equestrian", "paddock", "barn"];
 const EQUINE_OFF_TOPIC_TERMS = ["laptop", "office", "city", "business", "skyline", "corporate", "meeting", "desk"];
+const CATEGORY_TERMS: Record<string, string[]> = {
+  equine_stable_management: ["horse", "stable", "equestrian"],
+  property_real_estate: ["property", "real estate", "home"],
+  automotive: ["automotive", "car", "vehicle"],
+  saas_app: ["software app", "productivity", "dashboard"],
+};
 
 function normalizeText(value: unknown): string {
   return String(value ?? "").trim();
@@ -36,11 +42,12 @@ function inferPreferredMediaKind(scene: Pick<MarketingStudioScene, "mediaKind" |
   return scene.sourceType === "stock" ? "video" : "image";
 }
 
-function buildStockQuery(input: {
+export function buildMarketingStockQuery(input: {
   scene: Pick<MarketingStudioScene, "requiredSubject" | "visualPrompt" | "narration">;
   originalUserPrompt: string;
   audience?: string;
   industry?: string;
+  productCategory?: string;
 }): string {
   const pieces = [
     normalizeText(input.scene.requiredSubject),
@@ -51,12 +58,11 @@ function buildStockQuery(input: {
     normalizeText(input.audience),
   ].filter(Boolean);
   const combined = pieces.join(" ").toLowerCase();
-  const hasEquineContext = EQUINE_TERMS.some((term) => combined.includes(term));
+  const inferredCategory = EQUINE_TERMS.some((term) => combined.includes(term)) ? "equine_stable_management" : "";
+  const productCategory = input.productCategory || inferredCategory;
+  const categoryTerms = CATEGORY_TERMS[productCategory] ?? [];
   const query = pieces.slice(0, 3).join(" ").trim();
-  if (hasEquineContext) {
-    return `${query} horse stable equestrian`.trim();
-  }
-  return query || "marketing scene";
+  return `${query || "marketing scene"} ${categoryTerms.join(" ")}`.trim();
 }
 
 function isSafeStockItem(item: MarketingStockMediaItem, query: string): boolean {
@@ -253,14 +259,16 @@ export async function searchMarketingStockMediaForScene(input: {
   originalUserPrompt: string;
   audience?: string;
   industry?: string;
+  productCategory?: string;
   providerPreference?: MarketingStockProviderPreference;
   maxPerScene?: number;
 }) {
-  const query = buildStockQuery({
+  const query = buildMarketingStockQuery({
     scene: input.scene,
     originalUserPrompt: input.originalUserPrompt,
     audience: input.audience,
     industry: input.industry,
+    productCategory: input.productCategory,
   });
   const preferredMediaKind = inferPreferredMediaKind(input.scene);
   const perPage = Math.max(1, Math.min(20, input.maxPerScene ?? 8));
@@ -348,6 +356,7 @@ export function inferSceneMediaType(mediaKind: SceneMediaKind, assetUrl: string 
 
 export type SceneSourcePlan = Pick<MarketingStudioPlan, "originalUserPrompt" | "scenes"> & {
   audience?: string;
+  productCategory?: string;
 };
 
 export interface SceneSourceResultSummary {
@@ -400,6 +409,7 @@ export async function sourceMarketingScenesWithStockMedia(input: {
       scene,
       originalUserPrompt: input.plan.originalUserPrompt,
       audience: input.plan.audience,
+      productCategory: input.plan.productCategory,
       providerPreference: input.providerPreference,
       maxPerScene: input.maxPerScene,
     });

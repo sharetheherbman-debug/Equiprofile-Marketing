@@ -7,7 +7,9 @@ import {
   toProviderHttpError,
 } from "./httpUtils";
 
-const HUGGINGFACE_INFERENCE_HOST = "api-inference.huggingface.co";
+const HUGGINGFACE_INFERENCE_HOST = "router.huggingface.co";
+const HUGGINGFACE_LEGACY_INFERENCE_HOST = "api-inference.huggingface.co";
+const lastSuccessfulRoutes = new Map<AITask, { model: string; endpoint: string; succeededAt: string }>();
 
 const defaultModelByTask: Partial<Record<AITask, string>> = {
   text_to_image: "black-forest-labs/FLUX.1-schnell",
@@ -37,7 +39,7 @@ export const HF_PIPELINE_TASKS = [
 export type HFPipelineTask = (typeof HF_PIPELINE_TASKS)[number];
 
 const DEFAULT_PIPELINE_MODELS: Partial<Record<HFPipelineTask, string>> = {
-  "text-generation": "mistralai/Mistral-7B-Instruct-v0.3",
+  "text-generation": "katanemo/Arch-Router-1.5B",
   "text-to-image": "black-forest-labs/FLUX.1-schnell",
   "text-to-video": "genmo/mochi-1-preview",
   "text-to-speech": "suno/bark",
@@ -47,6 +49,50 @@ const DEFAULT_PIPELINE_MODELS: Partial<Record<HFPipelineTask, string>> = {
   "text-classification": "facebook/bart-large-mnli",
   "zero-shot-classification": "facebook/bart-large-mnli",
 };
+
+function modelPath(model: string) {
+  return model.split("/").map(encodeURIComponent).join("/");
+}
+
+function inferenceEndpoints(model: string) {
+  const path = modelPath(model);
+  return [
+    `https://${HUGGINGFACE_INFERENCE_HOST}/hf-inference/models/${path}`,
+    `https://${HUGGINGFACE_LEGACY_INFERENCE_HOST}/models/${path}`,
+  ];
+}
+
+export function classifyHuggingFaceFailure(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+  const classification =
+    /enotfound|dns|tls|certificate|fetch failed|network/.test(lower) ? "network_dns_tls_fetch" :
+      /401|invalid token|unauthorized|authentication/.test(lower) ? "invalid_token" :
+        /403|forbidden|permission|scope/.test(lower) ? "missing_permission" :
+          /404|not found|model.*unavailable|does not exist/.test(lower) ? "model_unavailable" :
+            /loading|estimated_time|temporarily unavailable/.test(lower) ? "model_loading" :
+              /429|rate limit|too many requests/.test(lower) ? "rate_limited" :
+                /unsupported|not supported|task/.test(lower) ? "unsupported_task" :
+                  /schema|pars|json|response/.test(lower) ? "response_schema_mismatch" :
+                    "unknown";
+  const nextAction: Record<typeof classification, string> = {
+    network_dns_tls_fetch: "Verify VPS outbound HTTPS, DNS, and TLS access to router.huggingface.co.",
+    invalid_token: "Replace the Hugging Face token and run the live provider test again.",
+    missing_permission: "Grant the Hugging Face token inference permissions, then retest.",
+    model_unavailable: "Choose another compatible Hugging Face model candidate.",
+    model_loading: "Wait for the model to load or choose a warm compatible candidate.",
+    rate_limited: "Wait for the Hugging Face rate limit window or use Qwen while it clears.",
+    unsupported_task: "Choose a model that supports the requested Hugging Face task.",
+    response_schema_mismatch: "Inspect the returned Hugging Face schema and select a compatible task route.",
+    unknown: "Inspect the provider response and retry with a compatible Hugging Face model.",
+  };
+  return { classification, message, nextAction: nextAction[classification] };
+}
+
+export function getHuggingFaceLastSuccessfulRoute(task?: AITask) {
+  if (task) return lastSuccessfulRoutes.get(task) ?? null;
+  return Object.fromEntries(lastSuccessfulRoutes.entries());
+}
 
 const PIPELINE_TASK_TO_KEYS: Record<HFPipelineTask, { model: string; models: string; fallback: string; useDefault: string }> = {
   "text-generation": {
@@ -398,70 +444,79 @@ function jsonWithTaskHints(task: AITask, payload: unknown): Record<string, unkno
   return { ...obj, resultType: "json", task };
 }
 
-async function executeHuggingFaceModel(task: AITask, input: Record<string, unknown>, timeoutMs: number, model: string, key: string): Promise<TaskExecutionResult> {
+async function executeHuggingFaceModel(task: AITask, input: Record<string, unknown>, timeoutMs: number, model: string, key: string, endpointIndex: number): Promise<TaskExecutionResult> {
   const startedAt = Date.now();
-  const endpoint = `https://api-inference.huggingface.co/models/${encodeURIComponent(model)}`;
   const payload = buildTaskPayload(task, input);
+  const endpointErrors: string[] = [];
 
-  let attempt = 0;
-  while (attempt < 3) {
-    const response = await abortableFetch(
-      endpoint,
-      {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${key}`,
-          "x-wait-for-model": "true",
-        },
-        body: JSON.stringify(payload),
-      },
-      timeoutMs,
-    );
-    await throwForHttpError(response, "Hugging Face", endpoint);
+  for (const endpoint of [inferenceEndpoints(model)[endpointIndex]]) {
+    let attempt = 0;
+    try {
+      while (attempt < 3) {
+        const response = await abortableFetch(
+          endpoint,
+          {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              authorization: `Bearer ${key}`,
+              "x-wait-for-model": "true",
+            },
+            body: JSON.stringify(payload),
+          },
+          timeoutMs,
+        );
+        await throwForHttpError(response, "Hugging Face", endpoint);
 
-    const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
-    if (contentType.includes("application/json") || contentType.includes("text/")) {
-      const jsonPayload = await response.json();
-      const modelLoading = shouldRetryForModelLoading(jsonPayload);
-      if (modelLoading.retry && attempt < 2) {
-        attempt += 1;
-        await new Promise((resolve) => setTimeout(resolve, modelLoading.waitMs));
-        continue;
+        const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+        if (contentType.includes("application/json") || contentType.includes("text/")) {
+          const jsonPayload = await response.json();
+          const modelLoading = shouldRetryForModelLoading(jsonPayload);
+          if (modelLoading.retry && attempt < 2) {
+            attempt += 1;
+            await new Promise((resolve) => setTimeout(resolve, modelLoading.waitMs));
+            continue;
+          }
+          lastSuccessfulRoutes.set(task, { model, endpoint, succeededAt: new Date().toISOString() });
+          return {
+            provider: "huggingface",
+            task,
+            model,
+            output: jsonWithTaskHints(task, jsonPayload),
+            latencyMs: Date.now() - startedAt,
+            resultType: "json",
+            routeReason: `HF task model ${model} selected for ${task}`,
+            endpointFamily: "hf_inference",
+          };
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const mimeType = contentType.split(";")[0] || "application/octet-stream";
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        lastSuccessfulRoutes.set(task, { model, endpoint, succeededAt: new Date().toISOString() });
+        return {
+          provider: "huggingface",
+          task,
+          model,
+          output: {
+            resultType: "base64",
+            mimeType,
+            base64,
+            task,
+          },
+          latencyMs: Date.now() - startedAt,
+          resultType: "base64",
+          routeReason: `HF task model ${model} returned ${mimeType || "binary"} output`,
+          endpointFamily: "hf_inference",
+        };
       }
-      return {
-        provider: "huggingface",
-        task,
-        model,
-        output: jsonWithTaskHints(task, jsonPayload),
-        latencyMs: Date.now() - startedAt,
-        resultType: "json",
-        routeReason: `HF task model ${model} selected for ${task}`,
-        endpointFamily: "hf_inference",
-      };
+    } catch (error) {
+      const classified = classifyHuggingFaceFailure(error);
+      endpointErrors.push(`${endpoint}: ${classified.classification}: ${classified.message}`);
     }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const mimeType = contentType.split(";")[0] || "application/octet-stream";
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    return {
-      provider: "huggingface",
-      task,
-      model,
-      output: {
-        resultType: "base64",
-        mimeType,
-        base64,
-        task,
-      },
-      latencyMs: Date.now() - startedAt,
-      resultType: "base64",
-      routeReason: `HF task model ${model} returned ${mimeType || "binary"} output`,
-      endpointFamily: "hf_inference",
-    };
   }
 
-  throw new Error(`Hugging Face model loading retries exhausted for ${model}`);
+  throw new Error(`Hugging Face ${task} failed for ${model}: ${endpointErrors.join(" | ")}`);
 }
 
 export async function executeHuggingFaceTask(task: AITask, input: Record<string, unknown>, timeoutMs: number): Promise<TaskExecutionResult> {
@@ -477,17 +532,19 @@ export async function executeHuggingFaceTask(task: AITask, input: Record<string,
 
   const errors: string[] = [];
   try {
-    for (const model of models) {
-      try {
-        return await executeHuggingFaceModel(task, input, timeoutMs, model, key);
-      } catch (error) {
-        errors.push(`${model}: ${error instanceof Error ? error.message : String(error)}`);
+    for (const endpointIndex of [0, 1]) {
+      for (const model of models) {
+        try {
+          return await executeHuggingFaceModel(task, input, timeoutMs, model, key, endpointIndex);
+        } catch (error) {
+          errors.push(`${model}: ${error instanceof Error ? error.message : String(error)}`);
+        }
       }
     }
     throw new Error(`All Hugging Face ${task} candidates failed: ${errors.join(" | ")}`);
   } catch (error) {
     const model = models[0] ?? task;
-    const endpoint = `https://api-inference.huggingface.co/models/${encodeURIComponent(model)}`;
+    const endpoint = inferenceEndpoints(model)[0];
     throw toProviderHttpError(error, endpoint, "Hugging Face");
   }
 }
@@ -510,7 +567,7 @@ export async function testHuggingFaceProvider(timeoutMs = 18_000) {
     return {
       provider: "huggingface" as const,
       status: "skipped" as const,
-      reason: "HF_TASK_COPYWRITING_MODEL is not configured",
+      reason: "No compatible Hugging Face copywriting model is configured.",
     };
   }
   const text = await executeHuggingFaceTask("copywriting", {
@@ -529,6 +586,7 @@ export async function testHuggingFaceProvider(timeoutMs = 18_000) {
     provider: "huggingface" as const,
     status: "success" as const,
     model: textModel,
+    lastSuccessfulRoute: getHuggingFaceLastSuccessfulRoute("copywriting"),
     textPreview: textPreview.slice(0, 200),
     image: imageTest
       ? { status: "tested" as const, model: imageModel, resultType: (imageTest.output as any)?.resultType ?? "unknown" }
@@ -597,12 +655,12 @@ async function probeHead(url: string, timeoutMs = 6_000) {
 
 export async function getHuggingFaceRoutingDiagnostics() {
   const key = await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY");
-  const dnsResult = await dns.lookup("api-inference.huggingface.co")
+  const dnsResult = await dns.lookup(HUGGINGFACE_INFERENCE_HOST)
     .then((result) => ({ ok: true, address: result.address, family: result.family, error: null as string | null }))
     .catch((error) => ({ ok: false, address: null, family: null as number | null, error: error instanceof Error ? error.message : String(error) }));
   const [webProbe, inferenceProbe, taskRouting] = await Promise.all([
     probeHead("https://huggingface.co"),
-    probeHead("https://api-inference.huggingface.co"),
+    probeHead(`https://${HUGGINGFACE_INFERENCE_HOST}`),
     Promise.all(HF_PIPELINE_TASKS.map((task) => resolveHuggingFacePipelineRouting(task))),
   ]);
   return {
@@ -612,7 +670,9 @@ export async function getHuggingFaceRoutingDiagnostics() {
       dns: dnsResult,
       huggingfaceDotCo: webProbe,
       inferenceEndpoint: inferenceProbe,
+      legacyInferenceHost: HUGGINGFACE_LEGACY_INFERENCE_HOST,
     },
     taskRouting,
+    lastSuccessfulRoutes: getHuggingFaceLastSuccessfulRoute(),
   };
 }

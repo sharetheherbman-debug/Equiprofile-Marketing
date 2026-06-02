@@ -22,7 +22,7 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     const studioHome = read("client/src/components/marketing/app/studio/StudioHome.tsx");
 
     expect(adminCampaigns).toContain("TheMarketingApp");
-    expect(appShell).toContain("<StudioHome");
+    expect(appShell).toContain("<MarketingWorkspaceShell");
     expect(studioHome).toContain("StudioWorkbench");
   });
 

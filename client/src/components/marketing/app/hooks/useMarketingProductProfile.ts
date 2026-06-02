@@ -7,7 +7,7 @@ const EQUI_PROFILE_DEFAULTS = {
   appName: "EquiProfile",
   domain: "equiprofile.com",
   targetAudiences: ["stable owners", "horse owners", "riding schools", "trainers", "yards", "equestrian businesses"],
-  primaryOffer: "Free-trial signup offer; add the signup URL before export.",
+  primaryOffer: "Free-trial signup offer",
   pricingDetails: "Free-trial details should be confirmed before publishing.",
   coreFeatures: ["horse health records", "document tracking", "stable management", "scheduling", "staff visibility", "operational growth support"],
   benefits: ["keep stable operations organized", "keep horse health records visible", "track important horse and stable documents", "coordinate schedules and staff", "support operational growth"],

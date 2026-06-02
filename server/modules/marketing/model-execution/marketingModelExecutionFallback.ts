@@ -12,16 +12,21 @@ export function buildMarketingFallbackOutput(input: MarketingModelExecutionInput
   const cta = String(input.campaignBrief.primaryCta ?? input.brandKit.primaryCta ?? "Learn more");
   const platform = String(input.platform ?? "General");
   const language = String(input.language ?? "English");
+  const productProfile = (input.campaignBrief.productProfile ?? {}) as Record<string, unknown>;
+  const benefits = Array.isArray(productProfile.benefits) ? productProfile.benefits.map(String).filter(Boolean) : [];
+  const features = Array.isArray(productProfile.coreFeatures) ? productProfile.coreFeatures.map(String).filter(Boolean) : [];
+  const benefit = benefits[0] ?? features[0] ?? "make the next step clearer";
+  const feature = features[0] ?? "a practical workflow";
 
   switch (input.task) {
     case "platform_copywriting":
       const opening = platform === "LinkedIn"
-        ? `Leaders in ${audience} keep seeing the same bottleneck: ${goal}.`
-        : `If you're ${audience}, this is the fastest route to ${goal}.`;
+        ? `${brandName} gives ${audience} a clearer way to ${benefit}.`
+        : `${audience}: bring ${feature} into one calmer workflow.`;
       return {
-        angle: `${platform}: ${goal} for ${audience}`,
-        hook: `${brandName} helps ${audience} unlock ${goal}.`,
-        body: `${opening} ${platform} ${input.contentType ?? "campaign"} variant for ${brandName}. Offer: ${offer}. Direct response to ${cta}.`,
+        angle: `${benefit} for ${audience}`,
+        hook: `${brandName} helps ${audience} ${benefit}.`,
+        body: `${opening} ${brandName} helps with ${feature}. ${offer}. ${cta}`,
         cta,
         hashtags: [`#${slug(brandName)}`, `#${slug(platform)}`, `#${slug(goal.split(" ").slice(0, 3).join(" "))}`],
         visualPrompt: `${platform} creative for ${brandName}, ${goal}, ${offer}`,
@@ -38,10 +43,11 @@ export function buildMarketingFallbackOutput(input: MarketingModelExecutionInput
         reviewStatus: "needs_review",
       };
     case "email_generation":
-      const subject = `${brandName}: ${goal}`;
+      const subject = `${brandName}: ${benefit}`;
       return {
         subject,
-        body: `Subject: ${subject}\n\nHi ${audience},\n\n${brandName} can help with ${goal}. Offer: ${offer}.\n\n${cta}`,
+        previewText: `${benefit}. ${offer}.`,
+        body: `Hi ${audience},\n\n${brandName} helps you ${benefit} with ${feature}.\n\n${offer}.\n\n${cta}`,
         cta,
         reviewStatus: "needs_review",
       };

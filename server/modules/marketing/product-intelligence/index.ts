@@ -13,6 +13,7 @@ export type MarketingProductProfileRecord = {
   workspaceId: string;
   hostAppId: string;
   appName: string;
+  category: string;
   domain: string | null;
   landingPageUrl: string | null;
   signupUrl: string | null;
@@ -153,9 +154,10 @@ function inferAppName(html: string, landingPageUrl: string) {
 }
 
 function profileMissingInfo(profile: Pick<MarketingProductProfileRecord,
-  "appName" | "landingPageUrl" | "targetAudiences" | "primaryOffer" | "coreFeatures" | "benefits" | "ctaLibrary">) {
+  "appName" | "category" | "landingPageUrl" | "targetAudiences" | "primaryOffer" | "coreFeatures" | "benefits" | "ctaLibrary">) {
   return [
     !profile.appName ? "product name" : "",
+    !profile.category || profile.category === "unknown" ? "product category" : "",
     !profile.landingPageUrl ? "website or landing page URL" : "",
     !profile.targetAudiences.length ? "target audience" : "",
     !profile.primaryOffer ? "primary offer or trial details" : "",
@@ -169,10 +171,44 @@ function confidenceFromMissingInfo(missingInfo: string[], hasSource: boolean, co
   return Math.max(0, Math.min(100, 100 - missingInfo.length * 12 - (hasSource ? 0 : 12) + (confirmed ? 5 : 0)));
 }
 
-function equiProfileDetected(input: { appName: string; text: string; hostAppId?: string }) {
-  return input.hostAppId?.toLowerCase() === "equiprofile"
-    || /equiprofile/i.test(input.appName)
+function equiProfileDetected(input: { appName: string; text: string; domain?: string | null }) {
+  return /equiprofile/i.test(`${input.appName} ${input.domain ?? ""}`)
     || /(equine|equestrian|stable management|horse records)/i.test(input.text);
+}
+
+export function inferMarketingProductCategory(input: { appName?: string; text?: string; domain?: string | null }) {
+  const combined = `${input.appName ?? ""} ${input.domain ?? ""} ${input.text ?? ""}`.toLowerCase();
+  if (/(equiprofile|equine|equestrian|stable management|horse records?|yard management)/i.test(combined)) return "equine_stable_management";
+  if (/(property|real estate|realtor|estate agent|homes? for sale|apartments?|rentals?|mortgage)/i.test(combined)) return "property_real_estate";
+  if (/(bmw|automotive|dealership|vehicle|cars? for sale|test drive|motor)/i.test(combined)) return "automotive";
+  if (/(saas|software|platform|dashboard|app|workflow|subscription|sign up|signup|free trial)/i.test(combined)) return "saas_app";
+  return "unknown";
+}
+
+const BLOCKED_PRODUCT_WEBSITE_HOSTS = new Set([
+  "chat.qwen.ai",
+  "chatgpt.com",
+  "www.chatgpt.com",
+  "claude.ai",
+  "www.claude.ai",
+  "gemini.google.com",
+]);
+
+export function validateMarketingProductWebsiteUrl(value: string) {
+  const safeUrl = validateBrandScanUrl(value);
+  const parsed = new URL(safeUrl);
+  const hostname = parsed.hostname.toLowerCase();
+  const path = parsed.pathname.toLowerCase();
+  if (BLOCKED_PRODUCT_WEBSITE_HOSTS.has(hostname) || /(^|\.)chat\./.test(hostname) || /(conversation|share\/|chat\/|login|signin|auth\/)/.test(path)) {
+    throw new Error("This does not look like a public product website. Add the real website or enter product details manually.");
+  }
+  if (/(facebook\.com|instagram\.com|linkedin\.com|tiktok\.com|youtube\.com|youtu\.be|x\.com|twitter\.com)$/.test(hostname)) {
+    throw new Error("Use the public product website instead of a social post URL.");
+  }
+  if (/\.(pdf|zip|docx?|xlsx?|csv|png|jpe?g|webp|mp4|mov)$/i.test(path)) {
+    throw new Error("Product scanning requires a public HTML website, not a download or media file.");
+  }
+  return safeUrl;
 }
 
 export function extractMarketingProductProfileFromHtml(input: {
@@ -182,12 +218,15 @@ export function extractMarketingProductProfileFromHtml(input: {
   productNotes?: string | null;
   hostAppId?: string;
   sourceMode?: "firecrawl" | "basic_fetch";
+  extractedSourceUrls?: string[];
 }) {
-  const safeUrl = validateBrandScanUrl(input.landingPageUrl);
+  const safeUrl = validateMarketingProductWebsiteUrl(input.landingPageUrl);
   const bodyText = stripHtml(input.html);
   const combinedText = `${bodyText} ${input.productNotes ?? ""}`.trim();
   const appName = inferAppName(input.html, safeUrl);
-  const isEquiProfile = equiProfileDetected({ appName, text: combinedText, hostAppId: input.hostAppId });
+  const domain = new URL(safeUrl).hostname.replace(/^www\./, "");
+  const category = inferMarketingProductCategory({ appName, text: combinedText, domain });
+  const isEquiProfile = category === "equine_stable_management";
   const links = extractAttr(input.html, "href").map((href) => resolvePublicUrl(href, safeUrl)).filter(Boolean) as string[];
   const signupUrl = input.signupUrl
     ? validateBrandScanUrl(input.signupUrl)
@@ -207,7 +246,8 @@ export function extractMarketingProductProfileFromHtml(input: {
     workspaceId: "",
     hostAppId: input.hostAppId ?? "equiprofile",
     appName,
-    domain: new URL(safeUrl).hostname.replace(/^www\./, ""),
+    category,
+    domain,
     landingPageUrl: safeUrl,
     signupUrl,
     logoAssetId: null,
@@ -239,7 +279,7 @@ export function extractMarketingProductProfileFromHtml(input: {
       LinkedIn: "Position operational visibility and growth support for equestrian businesses.",
       Email: "Use benefit-led education and a configured signup or free-trial CTA.",
     } : {} as Record<string, string>,
-    extractedSourceUrls: unique([safeUrl, signupUrl, ...links], 20),
+    extractedSourceUrls: unique([...(input.extractedSourceUrls ?? []), safeUrl, signupUrl, ...links], 30),
     candidateLogoUrls: extractLogoCandidates(input.html, safeUrl),
     candidateLogoAssetIds: [] as number[],
     sourceMode: input.sourceMode ?? "basic_fetch",
@@ -271,6 +311,7 @@ function mapRow(row: typeof marketingProductProfiles.$inferSelect): MarketingPro
     workspaceId: row.workspaceId,
     hostAppId: row.hostAppId,
     appName: row.appName,
+    category: row.category,
     domain: row.domain,
     landingPageUrl: row.landingPageUrl,
     signupUrl: row.signupUrl,
@@ -339,13 +380,14 @@ function buildEquiProfileDefaults(input: {
     workspaceId: input.workspaceId,
     hostAppId: input.hostAppId,
     appName: "EquiProfile",
+    category: "equine_stable_management",
     domain: landingPageUrl ? new URL(landingPageUrl).hostname.replace(/^www\./, "") : "equiprofile.com",
     landingPageUrl,
     signupUrl,
     logoAssetId: null,
     brandColors: [],
     targetAudiences: EQUI_PROFILE_AUDIENCES,
-    primaryOffer: signupUrl ? "Start a free EquiProfile trial" : "Free-trial signup offer; add the signup URL before export.",
+    primaryOffer: signupUrl ? "Start a free EquiProfile trial" : "Free-trial signup offer",
     pricingDetails: "Free-trial details should be confirmed before publishing.",
     coreFeatures: EQUI_PROFILE_FEATURES,
     benefits: EQUI_PROFILE_BENEFITS,
@@ -418,6 +460,7 @@ function buildManualNotesDraft(input: {
     workspaceId: input.workspaceId,
     hostAppId: input.hostAppId,
     appName: input.hostAppId,
+    category: inferMarketingProductCategory({ appName: input.hostAppId, text: input.productNotes, domain: landingPageUrl }),
     domain: landingPageUrl ? new URL(landingPageUrl).hostname.replace(/^www\./, "") : null,
     landingPageUrl,
     signupUrl,
@@ -547,6 +590,7 @@ export async function upsertMarketingProductProfile(input: ProductProfileUpsertI
     workspaceId: input.workspaceId,
     hostAppId: input.hostAppId,
     appName: input.appName ?? existing?.appName ?? "Product",
+    category: input.category ?? existing?.category ?? "unknown",
     domain: input.domain ?? existing?.domain ?? null,
     landingPageUrl: input.landingPageUrl ?? existing?.landingPageUrl ?? null,
     signupUrl: input.signupUrl ?? existing?.signupUrl ?? null,
@@ -605,9 +649,9 @@ export async function upsertMarketingProductProfile(input: ProductProfileUpsertI
 
 async function fetchBasicHtml(url: string) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12_000);
+  const timeout = setTimeout(() => controller.abort(), 8_000);
   try {
-    let targetUrl = validateBrandScanUrl(url);
+    let targetUrl = validateMarketingProductWebsiteUrl(url);
     let response: Response | null = null;
     for (let redirectCount = 0; redirectCount <= 4; redirectCount += 1) {
       response = await fetch(targetUrl, {
@@ -618,18 +662,86 @@ async function fetchBasicHtml(url: string) {
       if (![301, 302, 303, 307, 308].includes(response.status)) break;
       const location = response.headers.get("location");
       if (!location) throw new Error("Product site redirect did not include a location");
-      targetUrl = validateBrandScanUrl(new URL(location, targetUrl).toString());
+      targetUrl = validateMarketingProductWebsiteUrl(new URL(location, targetUrl).toString());
     }
     if (!response) throw new Error("Product site fetch did not return a response");
     if (!response.ok) throw new Error(`Product site fetch failed with status ${response.status}`);
     const contentType = response.headers.get("content-type") ?? "";
     if (!contentType.includes("text/html")) throw new Error("Product site did not return HTML");
     const html = await response.text();
-    if (Buffer.byteLength(html, "utf8") > 1_000_000) throw new Error("Product site HTML exceeds security limit");
+    if (Buffer.byteLength(html, "utf8") > 2_000_000) throw new Error("Product site HTML exceeds security limit");
     return html;
   } finally {
     clearTimeout(timeout);
   }
+}
+
+const COMMON_PRODUCT_PATHS = ["/", "/features", "/pricing", "/about", "/contact", "/signup", "/trial", "/services"];
+
+function sameOriginUrl(candidate: string, origin: string) {
+  try {
+    const resolved = new URL(candidate, origin);
+    if (resolved.origin !== new URL(origin).origin) return null;
+    resolved.hash = "";
+    return validateMarketingProductWebsiteUrl(resolved.toString());
+  } catch {
+    return null;
+  }
+}
+
+async function discoverSitemapUrls(origin: string) {
+  try {
+    const response = await fetch(new URL("/sitemap.xml", origin), {
+      headers: { "user-agent": "EquiProfileMarketingProductScanner/1.0" },
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!response.ok) return [];
+    const body = await response.text();
+    if (Buffer.byteLength(body, "utf8") > 2_000_000) return [];
+    return unique(Array.from(body.matchAll(/<loc>([\s\S]*?)<\/loc>/gi))
+      .map((match) => sameOriginUrl(stripHtml(String(match[1])), origin)), 30);
+  } catch {
+    return [];
+  }
+}
+
+export async function crawlMarketingProductSite(input: { landingPageUrl: string; maxPages?: number; maxDepth?: number }) {
+  const landingPageUrl = validateMarketingProductWebsiteUrl(input.landingPageUrl);
+  const origin = new URL(landingPageUrl).origin;
+  const maxPages = Math.max(1, Math.min(12, input.maxPages ?? 10));
+  const maxDepth = Math.max(0, Math.min(2, input.maxDepth ?? 2));
+  const sitemapUrls = await discoverSitemapUrls(origin);
+  const queue = unique([
+    landingPageUrl,
+    ...COMMON_PRODUCT_PATHS.map((path) => sameOriginUrl(path, origin)),
+    ...sitemapUrls,
+  ], 50).map((url) => ({ url, depth: url === landingPageUrl ? 0 : 1 }));
+  const visited = new Set<string>();
+  const pages: Array<{ url: string; html: string }> = [];
+  while (queue.length && pages.length < maxPages) {
+    const next = queue.shift()!;
+    if (visited.has(next.url) || next.depth > maxDepth) continue;
+    visited.add(next.url);
+    try {
+      const html = await fetchBasicHtml(next.url);
+      pages.push({ url: next.url, html });
+      if (next.depth < maxDepth) {
+        for (const href of extractAttr(html, "href")) {
+          const discovered = sameOriginUrl(href, origin);
+          if (discovered && !visited.has(discovered)) queue.push({ url: discovered, depth: next.depth + 1 });
+        }
+      }
+    } catch {
+      // Public sites often contain optional paths that do not exist. Keep crawling.
+    }
+  }
+  if (!pages.length) throw new Error("No public HTML product pages could be fetched.");
+  return {
+    landingPageUrl,
+    pages,
+    combinedHtml: pages.map((page) => `<section data-source-url="${page.url}">${page.html}</section>`).join("\n"),
+    extractedSourceUrls: pages.map((page) => page.url),
+  };
 }
 
 async function fetchFirecrawlHtml(url: string) {
@@ -670,12 +782,15 @@ async function saveLogoCandidates(input: { tenantId: string; candidateLogoUrls: 
 }
 
 function buildManualProfile(input: { landingPageUrl: string; signupUrl?: string | null; productNotes: string; hostAppId: string }) {
-  const safeUrl = validateBrandScanUrl(input.landingPageUrl);
+  const safeUrl = validateMarketingProductWebsiteUrl(input.landingPageUrl);
   const notes = input.productNotes.trim();
-  const isEquiProfile = equiProfileDetected({ appName: input.hostAppId, text: notes, hostAppId: input.hostAppId });
+  const domain = new URL(safeUrl).hostname.replace(/^www\./, "");
+  const category = inferMarketingProductCategory({ appName: input.hostAppId, text: notes, domain });
+  const isEquiProfile = input.hostAppId.toLowerCase() === "equiprofile" || category === "equine_stable_management";
   const draft = {
     appName: isEquiProfile ? "EquiProfile" : input.hostAppId,
-    domain: new URL(safeUrl).hostname.replace(/^www\./, ""),
+    category: isEquiProfile ? "equine_stable_management" : category,
+    domain,
     landingPageUrl: safeUrl,
     signupUrl: input.signupUrl ? validateBrandScanUrl(input.signupUrl) : null,
     targetAudiences: isEquiProfile ? EQUI_PROFILE_AUDIENCES : [],
@@ -703,6 +818,16 @@ export async function scanMarketingProductSite(input: {
   forceRefresh?: boolean;
 }) {
   const current = await getMarketingProductProfile(input);
+  try {
+    validateMarketingProductWebsiteUrl(input.landingPageUrl);
+  } catch (error) {
+    return {
+      status: "manual_setup_needed" as const,
+      reason: error instanceof Error ? error.message : String(error),
+      profile: current.profile,
+      setupQuestions: productProfileSetupQuestions(current.profile),
+    };
+  }
   if (!input.forceRefresh && current.status === "ok" && current.profile?.landingPageUrl === input.landingPageUrl) return current;
   let html: string | null = null;
   let sourceMode: "firecrawl" | "basic_fetch" = "basic_fetch";
@@ -715,8 +840,18 @@ export async function scanMarketingProductSite(input: {
   }
   if (!html) {
     try {
-      html = await fetchBasicHtml(input.landingPageUrl);
+      const crawl = await crawlMarketingProductSite({ landingPageUrl: input.landingPageUrl });
+      html = crawl.combinedHtml;
       sourceMode = "basic_fetch";
+      const extracted = extractMarketingProductProfileFromHtml({ ...input, html, sourceMode, extractedSourceUrls: crawl.extractedSourceUrls });
+      const candidateLogoAssetIds = await saveLogoCandidates({ tenantId: input.tenantId, candidateLogoUrls: extracted.profile.candidateLogoUrls });
+      return upsertMarketingProductProfile({
+        ...input,
+        ...extracted.profile,
+        candidateLogoAssetIds,
+        lastScrapedAt: new Date(),
+        rawScrapeSummary: { ...extracted.rawScrapeSummary, crawledPages: crawl.extractedSourceUrls, scrapeError },
+      });
     } catch (error) {
       scrapeError = error instanceof Error ? error.message : String(error);
     }

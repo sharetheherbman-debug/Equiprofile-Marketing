@@ -355,6 +355,7 @@ import {
   runMarketingAgentTask as runMarketingAgentTaskService,
 } from "./modules/marketing/agent-workforce";
 import { getMarketingBackendReadiness as getMarketingBackendReadinessService } from "./modules/marketing/backend-readiness";
+import { runMarketingLiveSmokeCheck as runMarketingLiveSmokeCheckService } from "./modules/marketing/live-smoke";
 import { getMarketingConnectorReadiness as getMarketingConnectorReadinessService } from "./modules/marketing/connector-readiness";
 import { runAutonomousMarketingCampaign as runAutonomousMarketingCampaignService } from "./modules/marketing/autonomous-campaign";
 import { getMarketingCreationCapabilities as getMarketingCreationCapabilitiesService } from "./modules/marketing/creation-capabilities";
@@ -5635,14 +5636,41 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tenantId: z.string().min(1).max(100).default("global"),
           workspaceId: z.string().min(1).max(120).default("default"),
           hostAppId: z.string().min(1).max(120).default("equiprofile"),
-          uploadRef: z.string().max(500).optional(),
+          fileName: z.string().min(1).max(240),
+          fileType: z.enum(["image/png", "image/jpeg", "image/webp", "image/gif"]),
+          fileSize: z.number().int().positive().max(5 * 1024 * 1024),
+          fileData: z.string().min(1),
         }),
       )
-      .mutation(async () => {
-        return {
-          status: "setup_needed" as const,
-          message: "Brand logo direct upload is not wired in this environment; use selectMarketingBrandLogoAsset.",
-        };
+      .mutation(async ({ ctx, input }) => {
+        const buffer = Buffer.from(input.fileData, "base64");
+        if (!buffer.length || buffer.length > 5 * 1024 * 1024 || Math.abs(buffer.length - input.fileSize) > Math.max(1024, input.fileSize * 0.05)) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Logo upload is invalid or exceeds the 5MB limit." });
+        }
+        const safeName = input.fileName.replace(/[/\\]/g, "_");
+        const fileKey = `${ctx.user.id}/marketing-brand/${nanoid()}-${safeName}`;
+        const { url } = await storagePut(fileKey, buffer, input.fileType);
+        const asset = await createMediaAsset({
+          tenantType: "stable",
+          tenantId: input.tenantId,
+          userId: ctx.user.id,
+          type: "image",
+          provider: "brand_kit_upload",
+          task: "brand_logo_upload",
+          status: "completed",
+          publicUrl: url,
+          mimeType: input.fileType,
+          generationPrompt: `Uploaded Brand Kit logo: ${safeName}`,
+          outputMetadata: { source: "brand_kit_upload", workspaceId: input.workspaceId, fileName: safeName },
+        });
+        const brandKit = await selectMarketingBrandLogoAssetFromService({ ...input, mediaAssetId: asset.id });
+        await updateMarketingProductProfileService({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          hostAppId: input.hostAppId,
+          logoAssetId: asset.id,
+        }).catch(() => null);
+        return { status: "completed" as const, mediaAssetId: asset.id, publicUrl: url, brandKit };
       }),
 
     selectMarketingBrandLogoAsset: adminUnlockedProcedure
@@ -5656,7 +5684,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .mutation(async ({ input }) => {
         try {
-          return await selectMarketingBrandLogoAssetFromService(input);
+          const brandKit = await selectMarketingBrandLogoAssetFromService(input);
+          await updateMarketingProductProfileService({ ...input, logoAssetId: input.mediaAssetId }).catch(() => null);
+          return brandKit;
         } catch (error) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -8693,6 +8723,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         query: z.string().min(1).max(160),
         perPage: z.number().int().min(1).max(30).default(12),
         preferredMediaKind: z.enum(["video", "image"]).optional(),
+        productCategory: z.string().max(120).optional(),
       }))
       .query(async ({ input }) => {
         const result = await searchMarketingStockMediaForScene({
@@ -8706,6 +8737,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           originalUserPrompt: input.query,
           providerPreference: input.provider,
           maxPerScene: input.perPage,
+          productCategory: input.productCategory,
         });
         return {
           status: result.status,
@@ -8733,6 +8765,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           id: z.string().min(1).max(120).optional(),
           originalUserPrompt: z.string().min(3).max(6000),
           audience: z.string().max(500).optional(),
+          productCategory: z.string().max(120).optional(),
           scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
         }),
       }))
@@ -10947,6 +10980,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return getMarketingBackendReadinessService(input);
       }),
 
+    runMarketingLiveSmokeCheck: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          landingPageUrl: z.string().url().max(2000).nullable().optional(),
+          signupUrl: z.string().url().max(2000).nullable().optional(),
+          executeLiveProviders: z.boolean().default(false),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        return runMarketingLiveSmokeCheckService(input);
+      }),
+
     getMarketingConnectorReadiness: adminUnlockedProcedure
       .input(z.object({
         tenantId: z.string().min(1).max(100).default("global"),
@@ -11054,6 +11102,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         workspaceId: z.string().min(1).max(120).default("default"),
         hostAppId: z.string().min(1).max(120).default("equiprofile"),
         appName: z.string().min(1).max(220).optional(),
+        category: z.string().min(1).max(120).optional(),
         domain: z.string().max(300).nullable().optional(),
         landingPageUrl: z.string().url().nullable().optional(),
         signupUrl: z.string().url().nullable().optional(),

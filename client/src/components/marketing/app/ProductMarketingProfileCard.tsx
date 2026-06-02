@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 
 export type ProductMarketingProfile = {
   appName?: string;
+  category?: string;
   landingPageUrl?: string | null;
   signupUrl?: string | null;
   targetAudiences?: string[];

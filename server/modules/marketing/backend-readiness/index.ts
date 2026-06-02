@@ -60,8 +60,8 @@ export async function getMarketingBackendReadiness(input: {
     };
   }));
 
-  const stockPexels = await getRuntimeConfig("pexels_api_key", "PEXELS_API_KEY");
-  const stockPixabay = await getRuntimeConfig("pixabay_api_key", "PIXABAY_API_KEY");
+  const stockPexels = await getRuntimeConfig("marketing_pexels_api_key", "MARKETING_PEXELS_API_KEY");
+  const stockPixabay = await getRuntimeConfig("marketing_pixabay_api_key", "MARKETING_PIXABAY_API_KEY");
 
   const ffmpegReady = await checkBinary("ffmpeg");
   const remotionReady = await checkBinary("remotion");

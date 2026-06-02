@@ -2,11 +2,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
 import type { QualityMode } from "@/components/marketing/studio/types";
 import { MarketingAppSettings } from "./MarketingAppSettings";
-import { StudioHome } from "./studio/StudioHome";
 import { useMarketingAssets } from "./hooks/useMarketingAssets";
 import { useMarketingBrandKit } from "./hooks/useMarketingBrandKit";
 import { useMarketingCalendar } from "./hooks/useMarketingCalendar";
@@ -145,6 +143,17 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     },
     onError: (error) => toast.error("Image generation needs a ready image model.", { description: error.message }),
   });
+  const uploadMarketingBrandLogoMutation = trpc.admin.uploadMarketingBrandLogo.useMutation({
+    onSuccess: async () => {
+      toast.success("Brand Kit logo uploaded");
+      await Promise.all([
+        utils.admin.getMarketingBrandKit.invalidate(),
+        utils.admin.getMarketingProductProfile.invalidate(),
+        utils.admin.listMediaAssets.invalidate(),
+      ]);
+    },
+    onError: (error) => toast.error("Could not upload logo", { description: error.message }),
+  });
   const copyPackages = useMarketingCopyPackages({
     workspace,
     onPackage: setLastDeliverablePackage,
@@ -230,6 +239,23 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
+  function handleUploadLogo(file: File) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const value = String(reader.result ?? "");
+      uploadMarketingBrandLogoMutation.mutate({
+        tenantId: workspace.tenantId,
+        workspaceId: workspace.marketing_workspace_id,
+        hostAppId: workspace.host_app_id,
+        fileName: file.name,
+        fileType: file.type as "image/png" | "image/jpeg" | "image/webp" | "image/gif",
+        fileSize: file.size,
+        fileData: value.includes(",") ? value.split(",")[1] : value,
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
   function handleExportBeastModePack() {
     const runId = campaignState.selectedBeastModeRunData?.id;
     if (!runId) return;
@@ -262,11 +288,13 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
         onUseDefaults={productIntelligence.useEquiProfileDefaults}
         onConfirm={() => productIntelligence.confirm.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}
         onChooseLogo={() => setAdvancedOpen(true)}
+        onUploadLogo={handleUploadLogo}
+        onOpenSettings={() => setShowSettingsDialog(true)}
       />
     );
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-stone-50" data-testid="creation-first-studio">
+    <div className="min-w-0 overflow-x-hidden bg-stone-50" data-testid="creation-first-studio">
       <header className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-5 py-4">
           <div>
@@ -303,21 +331,20 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                 <Button type="button" size="sm" variant="outline" onClick={handleExportBeastModePack}>Export advanced variants</Button>
               </div>
               <p className="text-xs text-stone-500">Delete permanently remains available from Assets. Review actions remain available after export.</p>
-              <Tabs defaultValue="creative">
-                <TabsContent value="creative">
-                  <StudioHome tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} />
-                </TabsContent>
-              </Tabs>
+              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-700">
+                <p className="font-semibold text-stone-900">Media Studio</p>
+                <p className="mt-1 text-xs leading-5 text-stone-600">Image ads remain optional. Avatar, voice, music, short-video, assembled-video, and stock-media jobs stay truthful to their provider readiness and playable output state.</p>
+              </div>
             </AdvancedMarketingDrawer>
           </>
         )}
-        statusRail={<WorkflowStatusPanel productReady={productIntelligence.isReady} fallbackUsed={fallbackUsed} hasOutput={Boolean(lastDeliverablePackage)} signupUrl={signupUrl} />}
+        statusRail={<WorkflowStatusPanel productReady={productIntelligence.isReady} fallbackUsed={fallbackUsed} hasOutput={Boolean(lastDeliverablePackage)} signupUrl={signupUrl} qualityPassed={(lastDeliverablePackage?.qualityGate as { status?: string } | undefined)?.status === "passed"} />}
       />
 
       <Dialog open={showSettingsDialog} onOpenChange={setShowSettingsDialog}>
         <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
           <DialogHeader><DialogTitle>Marketing App settings</DialogTitle></DialogHeader>
-          <MarketingAppSettings quality={quality} onQualityChange={setQuality} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} />
+          <MarketingAppSettings quality={quality} onQualityChange={setQuality} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} />
         </DialogContent>
       </Dialog>
 

@@ -1916,6 +1916,7 @@ export const marketingProductProfiles = mysqlTable("marketingProductProfiles", {
   workspaceId: varchar("workspaceId", { length: 120 }).notNull().default("default"),
   hostAppId: varchar("hostAppId", { length: 120 }).notNull().default("equiprofile"),
   appName: varchar("appName", { length: 220 }).notNull(),
+  category: varchar("category", { length: 120 }).notNull().default("unknown"),
   domain: varchar("domain", { length: 300 }),
   landingPageUrl: text("landingPageUrl"),
   signupUrl: text("signupUrl"),

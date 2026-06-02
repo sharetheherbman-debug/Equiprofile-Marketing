@@ -103,7 +103,7 @@ describe("Hugging Face model fleet routing", () => {
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain("api-inference.huggingface.co");
+      expect(result.error).toContain("router.huggingface.co");
       expect(result.error).toContain("ENOTFOUND");
     }
   });

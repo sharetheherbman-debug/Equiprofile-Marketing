@@ -20,6 +20,8 @@ export function ProductContextPanel({
   onUseDefaults,
   onConfirm,
   onChooseLogo,
+  onUploadLogo,
+  onOpenSettings,
 }: {
   profile: ProductMarketingProfile | null;
   isReady: boolean;
@@ -30,12 +32,15 @@ export function ProductContextPanel({
   onUseDefaults: (draft: ProductDraft) => void;
   onConfirm: () => void;
   onChooseLogo: () => void;
+  onUploadLogo: (file: File) => void;
+  onOpenSettings: () => void;
 }) {
   const [draft, setDraft] = useState<ProductDraft>({
     landingPageUrl: profile?.landingPageUrl ?? "",
     signupUrl: profile?.signupUrl ?? "",
     productNotes: "",
   });
+  const [showEditor, setShowEditor] = useState(!isReady);
 
   useEffect(() => {
     setDraft((current) => ({
@@ -66,7 +71,14 @@ export function ProductContextPanel({
         </p>
       ) : null}
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button type="button" size="sm" variant="outline" onClick={() => setShowEditor((current) => !current)}>Edit product</Button>
+        <Button type="button" size="sm" variant="outline" onClick={onChooseLogo}>Brand Kit</Button>
+        <Button type="button" size="sm" variant="outline" onClick={onOpenSettings}>Connections</Button>
+        <Button type="button" size="sm" variant="outline" onClick={onOpenSettings}>Results</Button>
+      </div>
+
+      {showEditor ? <div className="mt-4 space-y-3">
         <label className="block space-y-1">
           <span className="text-xs font-medium text-stone-700">Website URL</span>
           <Input
@@ -92,8 +104,6 @@ export function ProductContextPanel({
             placeholder="What should campaigns emphasize?"
           />
         </label>
-      </div>
-
       <div className="mt-4 grid gap-2">
         <Button type="button" disabled={isPending || !draft.landingPageUrl.trim()} onClick={() => onScan(draft)}>
           {isPending ? "Working..." : "Scan site"}
@@ -104,9 +114,11 @@ export function ProductContextPanel({
         ) : null}
         {profile ? <Button type="button" variant="ghost" disabled={isPending} onClick={onConfirm}>Confirm profile</Button> : null}
       </div>
+      </div> : null}
 
       <div className="mt-5 space-y-2 border-t border-stone-100 pt-4 text-xs text-stone-600">
         <p><span className="font-semibold text-stone-800">Product:</span> {profile?.appName || "Add product name"}</p>
+        <p><span className="font-semibold text-stone-800">Category:</span> {profile?.category?.replace(/_/g, " ") || "Add category"}</p>
         <p><span className="font-semibold text-stone-800">Audience:</span> {profile?.targetAudiences?.slice(0, 3).join(", ") || "Add audience notes"}</p>
         <p><span className="font-semibold text-stone-800">Offer:</span> {profile?.primaryOffer || "Add offer details"}</p>
         <p><span className="font-semibold text-stone-800">CTA:</span> {profile?.ctaLibrary?.[0] || profile?.signupUrl || "Add a signup URL"}</p>
@@ -116,7 +128,17 @@ export function ProductContextPanel({
 
       <div className="mt-4 rounded-2xl border border-stone-100 bg-stone-50 p-3">
         {logoUrl ? <img src={logoUrl} alt={`${profile?.appName ?? "Product"} logo`} className="h-16 w-full object-contain" /> : <p className="text-xs text-stone-500">Logo not confirmed yet.</p>}
-        <Button type="button" variant="link" className="mt-1 h-auto p-0 text-xs" onClick={onChooseLogo}>Upload logo / Choose from Assets</Button>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <label className="cursor-pointer rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-700">
+            Upload logo
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="hidden" onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onUploadLogo(file);
+              event.target.value = "";
+            }} />
+          </label>
+          <Button type="button" variant="link" className="h-auto p-0 text-xs" onClick={onChooseLogo}>Choose from Assets</Button>
+        </div>
       </div>
     </section>
   );
