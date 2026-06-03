@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { getLocalMediaStorageRoot } from "./localMediaStorage";
 
 export const LEGACY_UPLOAD_ROOT = "/var/www/equiprofile/uploads";
 
@@ -8,7 +9,7 @@ function uniquePaths(paths: string[]) {
 }
 
 export function getGeneratedStorageRoot() {
-  return path.resolve(process.env.EQUIPROFILE_STORAGE_ROOT ?? "/var/equiprofile/storage");
+  return getLocalMediaStorageRoot();
 }
 
 export function getCanonicalUploadRoot() {

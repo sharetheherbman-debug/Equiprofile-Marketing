@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import ffmpegStatic from "ffmpeg-static";
 import { execa } from "execa";
-import { ensureStorageDirs, STORAGE_ROOT, writeGeneratedAsset } from "../../../_core/storage/localMediaStorage";
+import { ensureStorageDirs, getLocalMediaStorageRoot, writeGeneratedAsset } from "../../../_core/storage/localMediaStorage";
 import type { MarketingBrandOverlay, MarketingTimeline, RenderOutput } from "./renderJobTypes";
 import { generateSrtCaptions, generateVttCaptions } from "./marketingCaptionService";
 
@@ -111,6 +111,19 @@ async function canRunFfmpeg(candidate: string) {
   }
 }
 
+function describeExecutionError(error: unknown): string {
+  if (!(error instanceof Error)) return String(error);
+  const details = [
+    error.message,
+    "shortMessage" in error && typeof error.shortMessage === "string" ? error.shortMessage : null,
+    "exitCode" in error && typeof error.exitCode !== "undefined" ? `exitCode=${String(error.exitCode)}` : null,
+    "stderr" in error && typeof error.stderr === "string" && error.stderr.trim() ? `stderr=${error.stderr.trim().slice(0, 1_000)}` : null,
+    "stdout" in error && typeof error.stdout === "string" && error.stdout.trim() ? `stdout=${error.stdout.trim().slice(0, 500)}` : null,
+    "command" in error && typeof error.command === "string" ? `command=${error.command}` : null,
+  ].filter(Boolean);
+  return Array.from(new Set(details)).join(" | ");
+}
+
 export async function resolveAvailableFfmpegPath() {
   const failures: string[] = [];
   for (const candidate of ffmpegCandidates()) {
@@ -124,7 +137,8 @@ export async function resolveAvailableFfmpegPath() {
 export async function getMarketingRenderRuntimeReadiness() {
   const { ffmpegPath, failures } = await resolveAvailableFfmpegPath();
   const tmpProbe = path.join(os.tmpdir(), `marketing-render-probe-${process.pid}-${Date.now()}.tmp`);
-  const storageProbe = path.join(STORAGE_ROOT, "temp", `render-probe-${process.pid}-${Date.now()}.tmp`);
+  const outputRoot = getLocalMediaStorageRoot();
+  const storageProbe = path.join(outputRoot, "temp", `render-probe-${process.pid}-${Date.now()}.tmp`);
   const result = {
     ready: false,
     ffmpegPath,
@@ -132,7 +146,7 @@ export async function getMarketingRenderRuntimeReadiness() {
     ffmpegFailures: failures,
     tempWritable: false,
     outputWritable: false,
-    outputRoot: STORAGE_ROOT,
+    outputRoot,
     publicUrlBase: "/media/generated",
     reason: "",
   };
@@ -352,7 +366,7 @@ async function renderSceneWithFallback(input: {
     await execa(fallback.command, fallback.args, { timeout: 30_000 });
     return {
       outputPath: fallback.outputPath,
-      warning: `Scene ${input.scene.id} media failed; text card fallback used (${error instanceof Error ? error.message : String(error)}).`,
+      warning: `Scene ${input.scene.id} media failed; text card fallback used (${describeExecutionError(error)}).`,
     };
   }
 }
@@ -372,7 +386,7 @@ export async function renderMarketingTimeline(input: {
     vtt?: string;
   };
   testMode?: boolean;
-}): Promise<{ status: "completed"; output: RenderOutput; warnings?: string[] } | { status: "setup_needed"; errorMessage: string }> {
+}): Promise<{ status: "completed"; output: RenderOutput; warnings?: string[] } | { status: "setup_needed"; errorMessage: string; readiness?: Awaited<ReturnType<typeof getMarketingRenderRuntimeReadiness>> }> {
   if (!input.timeline.scenes.length) {
     return {
       status: "setup_needed",
@@ -420,7 +434,8 @@ export async function renderMarketingTimeline(input: {
   if (!readiness.ready || !readiness.ffmpegPath) {
     return {
       status: "setup_needed",
-      errorMessage: readiness.reason,
+      errorMessage: `${readiness.reason} outputRoot=${readiness.outputRoot}; tempWritable=${readiness.tempWritable}; outputWritable=${readiness.outputWritable}; ffmpegPath=${readiness.ffmpegPath ?? "none"}`,
+      readiness,
     };
   }
   const ffmpegPath = readiness.ffmpegPath;
@@ -435,6 +450,7 @@ export async function renderMarketingTimeline(input: {
   let workingVideoPath = tmpOut;
   let captionsBurnedIn = false;
   let audioIncluded = false;
+  let renderStage = "initialising";
   let captionStatus: "pending" | "generated" | "burned_in" | "failed" =
     captionMode === "none" ? "pending" : "generated";
   let audioStatus: "pending" | "setup_needed" | "queued" | "completed" | "failed" = "pending";
@@ -446,6 +462,7 @@ export async function renderMarketingTimeline(input: {
       warnings.push(`Render started with ${needsReviewOrTextCardCount} branded caption fallback scenes because optional media was unavailable.`);
     }
 
+    renderStage = "rendering scene segments";
     const sceneResults = await Promise.all(input.timeline.scenes.map(async (scene, index) => {
       return renderSceneWithFallback({
         ffmpegPath,
@@ -461,8 +478,10 @@ export async function renderMarketingTimeline(input: {
     });
 
     const concatBody = sceneResults.map((result) => `file '${result.outputPath.replace(/'/g, "'\\''")}'`).join("\n");
+    renderStage = "writing concat manifest";
     await fs.promises.writeFile(concatFile, concatBody, "utf8");
 
+    renderStage = "concatenating scene segments";
     await execa(ffmpegPath, [
       "-y",
       "-f",
@@ -482,6 +501,7 @@ export async function renderMarketingTimeline(input: {
 
     if (captionMode !== "none" && srtText.trim()) {
       try {
+        renderStage = "burning captions";
         await fs.promises.writeFile(srtPath, srtText, "utf8");
         await execa(ffmpegPath, [
           "-y",
@@ -510,6 +530,7 @@ export async function renderMarketingTimeline(input: {
     const selectedAudioUrl = input.audio?.audioUrl || input.audio?.backgroundMusicUrl || null;
     if (selectedAudioUrl) {
       try {
+        renderStage = "mixing audio";
         const isRemote = /^https?:\/\//i.test(selectedAudioUrl);
         await execa(ffmpegPath, [
           "-y",
@@ -544,6 +565,7 @@ export async function renderMarketingTimeline(input: {
       warnings.push("Background music unavailable; rendering continued without music.");
     }
 
+    renderStage = "persisting rendered mp4";
     const data = await fs.promises.readFile(workingVideoPath);
     const { localPath, publicUrl, fileSizeBytes } = await writeGeneratedAsset({
       data,
@@ -575,9 +597,10 @@ export async function renderMarketingTimeline(input: {
       warnings,
     };
   } catch (error) {
+    const storageRoot = getLocalMediaStorageRoot();
     return {
       status: "setup_needed",
-      errorMessage: `Media renderer could not execute ffmpeg: ${error instanceof Error ? error.message : String(error)}`,
+      errorMessage: `Media renderer failed during ${renderStage}. ffmpegPath=${ffmpegPath}; tmpDir=${tmpDir}; outputRoot=${storageRoot}; reason=${describeExecutionError(error)}`,
     };
   } finally {
     try {
