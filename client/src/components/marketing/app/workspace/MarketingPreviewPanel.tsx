@@ -37,7 +37,13 @@ export function MarketingPreviewPanel({
   const isVideo = Boolean(outputUrl && (/video/i.test(mimeType) || /\.(mp4|webm|mov)(?:\?|$)/i.test(outputUrl)));
   const isAudio = Boolean(outputUrl && (/audio/i.test(mimeType) || /\.(mp3|wav|ogg|m4a)(?:\?|$)/i.test(outputUrl)));
   const isImage = Boolean(outputUrl && !isVideo && !isAudio);
-  const failure = renderJob?.errorMessage || (typeof mediaOutput?.errorMessage === "string" ? mediaOutput.errorMessage : asset?.errorMessage);
+  const missingPlayableRender = renderJob?.status === "completed" && !renderJob.outputPublicUrl;
+  const failure = missingPlayableRender
+    ? "Render completed but no playable URL was returned"
+    : renderJob?.errorMessage || (typeof mediaOutput?.errorMessage === "string" ? mediaOutput.errorMessage : asset?.errorMessage);
+  const provider = typeof mediaOutput?.provider === "string" ? mediaOutput.provider : asset?.provider;
+  const model = typeof mediaOutput?.model === "string" ? mediaOutput.model : asset?.model;
+  const source = typeof mediaOutput?.source === "string" ? mediaOutput.source : asset?.outputMetadata?.source;
 
   return (
     <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="marketing-preview-panel">
@@ -67,7 +73,7 @@ export function MarketingPreviewPanel({
       {renderJob?.warnings?.length ? <ul className="mt-3 space-y-1 text-xs text-amber-700">{renderJob.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul> : null}
       {deliverablePackage ? <div className="mt-5"><CampaignOutputPanel deliverablePackage={deliverablePackage} signupUrl={signupUrl} /></div> : null}
       {!deliverablePackage && !studioPlan && !mediaOutput && !asset ? <p className="mt-4 text-sm text-stone-500">Your latest image, video, audio, or campaign package will appear here.</p> : null}
-      {asset?.provider ? <p className="mt-4 text-xs text-stone-400">Source: {asset.provider}</p> : null}
+      {provider || model || source ? <p className="mt-4 text-xs text-stone-400">Source: {[provider, model, source].filter(Boolean).join(" · ")}</p> : null}
     </section>
   );
 }

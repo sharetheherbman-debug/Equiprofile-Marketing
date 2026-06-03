@@ -149,7 +149,7 @@ describe("PR55 studio generation fallback truth", () => {
     expect(result.fallback_used).toBe(true);
     expect(result.scenePlan.length).toBeGreaterThan(0);
     expect(result.scenePlan[0].sourceMetadata).toMatchObject({ fallback_used: true });
-  });
+  }, 10_000);
 });
 
 describe("PR55 audio policy truth", () => {

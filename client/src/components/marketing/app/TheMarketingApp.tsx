@@ -76,7 +76,31 @@ export function inferPrimaryCampaignPackage(prompt: string): PrimaryPackage {
 function buildCampaignPlan(prompt: string, audience: string, channels: string[]): CampaignPlan {
   const lower = prompt.toLowerCase();
   const durationDays = lower.match(/(\d+)[-\s]?day/)?.[1] ?? "7";
+  const intent = inferMarketingWorkspaceIntent(prompt);
+  if (intent.workflow === "image_ad") {
+    return {
+      outputType: "Image advert",
+      goal: prompt,
+      audience,
+      channels: [intent.platform],
+      duration: "Single asset",
+      cadence: "Generate, review, then export or schedule",
+      deliverables: ["Image advert", "Preview", "Library asset", "Export state"],
+    };
+  }
+  if (intent.workflow === "assembled_video") {
+    return {
+      outputType: intent.label,
+      goal: prompt,
+      audience,
+      channels: [intent.platform],
+      duration: `${intent.durationSeconds} seconds`,
+      cadence: "Script, scenes, media, render, export",
+      deliverables: ["Script", "Scene plan", "Branded captions", "Playable MP4", "Library asset"],
+    };
+  }
   return {
+    outputType: intent.workflow === "campaign" ? intent.label : "Needs clarification",
     goal: prompt,
     audience,
     channels,
@@ -341,7 +365,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Guided Studio</p>
                     <h2 className="mt-1 text-xl font-semibold text-stone-950">Script → Scenes → Media → Render → Export</h2>
                   </div>
-                  <StudioWorkbench tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} initialPrompt={prompt} initialPlan={latestStudioPlan} autoStartRender onPlanChange={setLatestStudioPlan} onRenderJobChange={(job) => setLatestRenderJob((job as unknown as Record<string, unknown> | null) ?? null)} onDone={setLatestStudioPlan} />
+                  <StudioWorkbench tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} productCategory={productIntelligence.displayProfile?.category} productName={productIntelligence.displayProfile?.appName} productProfileConfirmed={productIntelligence.isReady} initialPrompt={prompt} initialPlan={latestStudioPlan} autoStartRender onPlanChange={setLatestStudioPlan} onRenderJobChange={(job) => setLatestRenderJob((job as unknown as Record<string, unknown> | null) ?? null)} onDone={setLatestStudioPlan} />
                 </section>
               ) : null}
               <details className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
@@ -360,9 +384,9 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
         />
       ) : (
         <main className="mx-auto min-w-0 max-w-[1440px] px-4 py-5 lg:px-6">
-          {view === "library" ? <MarketingLibraryView assetsState={assetsState} onUseAsLogo={(mediaAssetId) => brandKitState.selectBrandLogoMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, mediaAssetId })} /> : null}
+          {view === "library" ? <MarketingLibraryView assetsState={assetsState} onUseAsLogo={(mediaAssetId) => brandKitState.selectBrandLogoMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, mediaAssetId })} onUseAsReference={(asset) => { setPrompt(`Use Library asset #${asset.id} as a visual reference. ${prompt}`); setView("create"); }} /> : null}
           {view === "calendar" ? <MarketingCalendarView calendarState={calendarState} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} /> : null}
-          {view === "results" ? <MarketingResultsView workspace={workspace} /> : null}
+          {view === "results" ? <MarketingResultsView workspace={workspace} onCreateWithLearning={() => setView("create")} /> : null}
           {view === "settings" ? <div className="space-y-5">{productPanel}<MarketingAppSettings quality={quality} onQualityChange={setQuality} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} /></div> : null}
         </main>
       )}

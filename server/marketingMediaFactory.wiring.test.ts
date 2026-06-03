@@ -90,7 +90,7 @@ describe("PR43 media factory wiring", () => {
   it("media selection step is wired to source scene media", () => {
     expect(mediaSelectionSource).toContain("Find scene media");
     expect(workbenchSource).toContain("useMarketingSceneMedia");
-    expect(workbenchSource).toContain("sourceSceneMedia(plan)");
+    expect(workbenchSource).toContain('sourceSceneMedia(plan, "auto", productCategory ?? undefined)');
     expect(sceneMediaHookSource).toContain("trpc.admin.sourceMarketingSceneMedia.useMutation");
     expect(sceneMediaHookSource).toContain("scenes: plan.scenes");
     expect(sceneMediaHookSource).toContain("\"provider_unavailable\"");

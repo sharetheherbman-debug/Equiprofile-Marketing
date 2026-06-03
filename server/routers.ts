@@ -239,6 +239,7 @@ import {
   buildMarketingVoiceoverScript,
   splitCaptionText,
   sourceMarketingScenesWithStockMedia,
+  testMarketingStockProviderConnection,
   updateMarketingRenderJobRecord,
   cancelMarketingRenderJobRecord,
   listMarketingAssetVersions as listMarketingAssetVersionRecords,
@@ -5040,7 +5041,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           contentType: z.enum(MARKETING_STUDIO_CONTENT_TYPES).optional(),
           platform: z.string().min(1).max(120).optional(),
           requestedDurationSeconds: z.number().min(1).max(3600).optional(),
-          qualityMode: z.enum(["standard", "elite"]).default("elite"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
           brief: z.string().max(8000).optional(),
           audience: z.string().max(500).optional(),
           goal: z.string().max(500).optional(),
@@ -8754,6 +8755,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           })),
         };
       }),
+
+    testMarketingStockMediaConnection: adminUnlockedProcedure
+      .input(z.object({ provider: z.enum(["pexels", "pixabay"]) }))
+      .mutation(async ({ input }) => testMarketingStockProviderConnection(input.provider)),
 
     sourceMarketingSceneMedia: adminUnlockedProcedure
       .input(z.object({

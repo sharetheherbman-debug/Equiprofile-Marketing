@@ -3,6 +3,7 @@ import {
   applySourcedMediaToScene,
   searchMarketingStockMediaForScene,
   sourceMarketingScenesWithStockMedia,
+  testMarketingStockProviderConnection,
 } from "./modules/marketing/media-factory/marketingStockMediaService";
 
 const { getRuntimeConfigMock } = vi.hoisted(() => ({
@@ -134,10 +135,61 @@ describe("PR44 marketing stock media service", () => {
       },
       originalUserPrompt: "horse stable owners ad",
       providerPreference: "pexels",
+      productCategory: "equine_stable_management",
     });
     expect(result.query.toLowerCase()).toContain("horse");
     expect(result.query.toLowerCase()).toContain("stable");
     expect(result.query.toLowerCase()).toContain("equestrian");
+  });
+
+  it("proves configured stock provider readiness with a lightweight live-shaped search", async () => {
+    getRuntimeConfigMock.mockResolvedValue("pexels-key");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ photos: [] }), { status: 200 })));
+    const result = await testMarketingStockProviderConnection("pexels");
+    expect(result.ready).toBe(true);
+    expect(result.status).toBe("ok");
+    expect(result.message).toContain("live response");
+  });
+
+  it("does not inject equine terms for unrelated product categories", async () => {
+    getRuntimeConfigMock.mockResolvedValue("pexels-key");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ photos: [] }), { status: 200 })));
+    const result = await searchMarketingStockMediaForScene({
+      scene: {
+        requiredSubject: "premium home listing",
+        visualPrompt: "real estate exterior",
+        narration: "property viewings",
+        sourceType: "stock",
+        mediaKind: "image",
+      },
+      originalUserPrompt: "Create a property advert",
+      productCategory: "property_real_estate",
+      providerPreference: "pexels",
+    });
+    expect(result.query.toLowerCase()).toContain("property");
+    expect(result.query.toLowerCase()).not.toContain("horse");
+    expect(result.query.toLowerCase()).not.toContain("stable");
+  });
+
+  it("scrubs pasted equine terms when the confirmed category is not equine", async () => {
+    getRuntimeConfigMock.mockResolvedValue("pexels-key");
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ photos: [] }), { status: 200 })));
+    const result = await searchMarketingStockMediaForScene({
+      scene: {
+        requiredSubject: "horse property exterior",
+        visualPrompt: "stable home listing",
+        narration: "equestrian property viewings",
+        sourceType: "stock",
+        mediaKind: "image",
+      },
+      originalUserPrompt: "Create a property advert",
+      productCategory: "property_real_estate",
+      providerPreference: "pexels",
+    });
+    expect(result.query.toLowerCase()).not.toContain("horse");
+    expect(result.query.toLowerCase()).not.toContain("stable");
+    expect(result.query.toLowerCase()).not.toContain("equestrian");
+    expect(result.query.toLowerCase()).toContain("property");
   });
 
   it("applies sourced media to scene and falls back to text card if none", () => {
@@ -218,6 +270,7 @@ describe("PR44 marketing stock media service", () => {
         mediaKind: "video",
       },
       originalUserPrompt: "horse stable campaign",
+      productCategory: "equine_stable_management",
       providerPreference: "pexels",
     });
     expect(result.status).toBe("ok");

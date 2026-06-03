@@ -6,6 +6,13 @@ import type {
   MarketingContentType,
   StudioPlanStatus,
 } from "@shared/_core/marketingStudioPlan";
+import {
+  applyBrandedCaptionFallbackToUnresolvedScenes,
+  buildMarketingStudioFallbackScenes,
+  ensureRenderableMarketingStudioPlan,
+  isRenderableMarketingStudioPlan,
+  type MarketingStudioProductContext,
+} from "@shared/_core/marketingStudioFallback";
 import { CONTENT_TYPE_DEFINITIONS, CreateTypeSelector, type ContentTypeDefinition } from "./CreateTypeSelector";
 import { BriefStep } from "./BriefStep";
 import { ScriptStep } from "./ScriptStep";
@@ -31,8 +38,6 @@ const STEP_ORDER: StudioPlanStatus[] = [
   "render",
   "export",
 ];
-const EQUINE_KEYWORDS = ["horse", "equine", "stable", "equestrian", "equiprofile"];
-const FORBIDDEN_EQUINE_TERMS = ["laptop", "office", "desk", "keyboard", "computer", "gibberish"];
 type BrandKitDraft = {
   id: number | null;
   brandName: string;
@@ -67,54 +72,12 @@ function buildInitialBrandDraft(hostAppId: string): BrandKitDraft {
   };
 }
 
-function isEquinePrompt(prompt: string): boolean {
-  const lower = prompt.toLowerCase();
-  return EQUINE_KEYWORDS.some((keyword) => lower.includes(keyword));
-}
-
-function cleanEquineText(text: string): string {
-  let cleaned = text;
-  for (const term of FORBIDDEN_EQUINE_TERMS) {
-    cleaned = cleaned.replace(new RegExp(term, "ig"), "stable");
-  }
-  return cleaned;
-}
-
-export function buildScenePlanFromPrompt(prompt: string): MarketingStudioScene[] {
-  const equine = isEquinePrompt(prompt);
-  const basePrompt = equine ? cleanEquineText(prompt) : prompt;
-  const sceneBlueprints = equine
-    ? [
-      { narration: "Open with horses moving calmly through a well-kept stable yard.", visual: "Golden-hour horse stable exterior, handlers guiding horses, cinematic wide shot", subject: "horses and stable owners" },
-      { narration: "Show stable owners managing routines with EquiProfile to save time.", visual: "Stable manager reviewing horse care schedule and feeding updates on phone near paddock", subject: "stable owners using EquiProfile" },
-      { narration: "Close on happy horses, confident teams, and a clear EquiProfile call to action.", visual: "Healthy horse in arena, trainer smiling, clean brand-friendly composition with CTA space", subject: "equestrian success" },
-    ]
-    : [
-      { narration: `Hook scene for: ${basePrompt || "marketing request"}`, visual: "Brand-relevant opening scene with clear product context", subject: "campaign hook" },
-      { narration: "Middle scene highlighting product value and social proof.", visual: "Practical product use with target audience", subject: "product value" },
-      { narration: "Closing scene with strong CTA and next step.", visual: "Clear CTA frame with logo-safe composition", subject: "call to action" },
-    ];
-
-  return sceneBlueprints.map((scene, index) => ({
-    id: nanoid(),
-    order: index + 1,
-    durationSeconds: index === sceneBlueprints.length - 1 ? 4 : 5,
-    narration: scene.narration,
-    visualPrompt: scene.visual,
-    negativePrompt: equine ? "off-topic non-equestrian props, irrelevant text overlays" : "blurry, low quality",
-    sourceType: "stock",
-    requiredSubject: scene.subject,
-    assetId: null,
-    assetUrl: null,
-    previewUrl: null,
-    provider: null,
-    providerAssetId: null,
-    mediaKind: "video",
-    sourceMetadata: null,
-    selectedAt: null,
-    selectionReason: null,
-    status: "pending",
-  }));
+export function buildScenePlanFromPrompt(
+  prompt: string,
+  context: MarketingStudioProductContext = {},
+  durationTargetSeconds = 30,
+): MarketingStudioScene[] {
+  return buildMarketingStudioFallbackScenes({ prompt, context, durationTargetSeconds });
 }
 
 function buildEmptyPlan(
@@ -175,6 +138,9 @@ export function StudioWorkbench({
   tenantId,
   workspaceId,
   hostAppId,
+  productCategory,
+  productName,
+  productProfileConfirmed,
   initialPrompt = "",
   initialPlan,
   autoStartRender = false,
@@ -185,6 +151,9 @@ export function StudioWorkbench({
   tenantId: string;
   workspaceId: string;
   hostAppId: string;
+  productCategory?: string | null;
+  productName?: string | null;
+  productProfileConfirmed?: boolean;
   initialPrompt?: string;
   initialPlan?: MarketingStudioPlan | null;
   autoStartRender?: boolean;
@@ -228,7 +197,14 @@ export function StudioWorkbench({
   });
   const [brandKitDraft, setBrandKitDraft] = useState<BrandKitDraft>(() => buildInitialBrandDraft(hostAppId));
   const [autoSourceComplete, setAutoSourceComplete] = useState(false);
+  const [autoRenderPlan, setAutoRenderPlan] = useState<MarketingStudioPlan | null>(null);
   const autoRenderStarted = React.useRef(false);
+  const productContext: MarketingStudioProductContext = {
+    hostAppId,
+    productCategory,
+    productName,
+    productProfileConfirmed,
+  };
 
   useEffect(() => {
     const brandKit = brandKitQuery.data;
@@ -248,6 +224,7 @@ export function StudioWorkbench({
     setPlan(initialPlan);
     setCurrentStep(initialPlan.status === "done" ? "export" : initialPlan.status);
     setAutoSourceComplete(false);
+    setAutoRenderPlan(null);
     autoRenderStarted.current = false;
   }, [initialPlan?.id]);
 
@@ -262,28 +239,46 @@ export function StudioWorkbench({
   useEffect(() => {
     if (!autoStartRender || !plan || plan.renderMode !== "assembled_video" || autoSourceComplete) return;
     let cancelled = false;
-    void sceneMedia.sourceSceneMedia(plan)
+    const preparedPlan = ensureRenderableMarketingStudioPlan(plan, productContext);
+    if (!isRenderableMarketingStudioPlan(preparedPlan)) return;
+    setPlan(preparedPlan);
+    void sceneMedia.sourceSceneMedia(preparedPlan, "auto", productCategory ?? undefined)
       .then((updatedPlan) => {
         if (cancelled) return;
-        setPlan((current) => current ? { ...current, scenes: updatedPlan.scenes, status: "render" } : current);
+        const renderablePlan = applyBrandedCaptionFallbackToUnresolvedScenes({
+          ...preparedPlan,
+          scenes: updatedPlan.scenes,
+          status: "render",
+        });
+        setPlan(renderablePlan);
+        setAutoRenderPlan(renderablePlan);
         setCurrentStep("render");
       })
-      .catch(() => undefined)
+      .catch(() => {
+        if (cancelled) return;
+        const renderablePlan = applyBrandedCaptionFallbackToUnresolvedScenes({
+          ...preparedPlan,
+          status: "render",
+        });
+        setPlan(renderablePlan);
+        setAutoRenderPlan(renderablePlan);
+        setCurrentStep("render");
+      })
       .finally(() => {
         if (!cancelled) setAutoSourceComplete(true);
       });
     return () => {
       cancelled = true;
     };
-  }, [autoSourceComplete, autoStartRender, plan?.id]);
+  }, [autoSourceComplete, autoStartRender, hostAppId, plan?.id, productCategory, productName, productProfileConfirmed]);
 
   useEffect(() => {
-    if (!autoStartRender || !autoSourceComplete || !plan || plan.renderMode !== "assembled_video" || autoRenderStarted.current || renderJob.status) return;
+    if (!autoStartRender || !autoSourceComplete || !autoRenderPlan || autoRenderPlan.renderMode !== "assembled_video" || !isRenderableMarketingStudioPlan(autoRenderPlan) || autoRenderStarted.current || renderJob.status) return;
     autoRenderStarted.current = true;
     setCurrentStep("render");
     setPlan((current) => current ? { ...current, status: "render" } : current);
-    void renderJob.createRenderJob(plan, brandKitDraft);
-  }, [autoSourceComplete, autoStartRender, brandKitDraft, plan, renderJob]);
+    void renderJob.createRenderJob(autoRenderPlan, brandKitDraft);
+  }, [autoRenderPlan, autoSourceComplete, autoStartRender, brandKitDraft, renderJob]);
 
   function handleSelectType(type: ContentTypeDefinition) {
     const newPlan = buildEmptyPlan(type, workspaceId, hostAppId, initialPrompt);
@@ -490,7 +485,7 @@ export function StudioWorkbench({
             isSourcing={sceneMedia.isSourcing}
             sourcingStatus={sceneMedia.lastStatus}
             onFindSceneMedia={() => {
-              void sceneMedia.sourceSceneMedia(plan).then((updatedPlan) => {
+              void sceneMedia.sourceSceneMedia(plan, "auto", productCategory ?? undefined).then((updatedPlan) => {
                 setPlan((current) => (current ? { ...current, scenes: updatedPlan.scenes } : current));
               });
             }}
@@ -592,11 +587,13 @@ export function StudioWorkbench({
             isAvailable={true}
             statusLabel={renderJob.statusLabel}
             warnings={renderJob.job?.warnings ?? []}
-            canCreateRenderJob={plan.renderMode === "assembled_video"}
+            canCreateRenderJob={plan.renderMode === "assembled_video" && isRenderableMarketingStudioPlan(ensureRenderableMarketingStudioPlan(plan, productContext))}
             isStarting={renderJob.isCreating}
             onStartRender={() => {
               if (plan.renderMode === "assembled_video") {
-                void renderJob.createRenderJob(plan, brandKitDraft);
+                const renderablePlan = applyBrandedCaptionFallbackToUnresolvedScenes(ensureRenderableMarketingStudioPlan(plan, productContext));
+                setPlan(renderablePlan);
+                void renderJob.createRenderJob(renderablePlan, brandKitDraft);
               }
             }}
             onCancelRender={
