@@ -62,6 +62,16 @@ export async function processMarketingRenderJob(jobId: string) {
       errorMessage: rendered.errorMessage,
     };
   }
+  if (!rendered.output.publicUrl) {
+    const errorMessage = "Render completed but no playable URL was returned.";
+    const failedJob = await updateMarketingRenderJobRecord({
+      id: job.id,
+      status: "failed",
+      errorMessage,
+      completedAt: new Date(),
+    });
+    return { status: "failed" as const, job: failedJob, errorMessage };
+  }
 
   const mediaAsset = await createMediaAsset({
     tenantId: job.tenantId,

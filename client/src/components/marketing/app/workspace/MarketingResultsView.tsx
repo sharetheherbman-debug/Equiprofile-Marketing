@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import type { MarketingWorkspaceConfig } from "../hooks/useMarketingWorkspaceConfig.types";
 
@@ -6,7 +7,7 @@ function Metric({ label, value }: { label: string; value: string | number }) {
   return <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"><p className="text-xs text-stone-500">{label}</p><p className="mt-1 text-2xl font-semibold text-stone-950">{value}</p></div>;
 }
 
-export function MarketingResultsView({ workspace }: { workspace: MarketingWorkspaceConfig }) {
+export function MarketingResultsView({ workspace, onCreateWithLearning }: { workspace: MarketingWorkspaceConfig; onCreateWithLearning?: () => void }) {
   const input = { tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id };
   const scoreQuery = trpc.admin.getMarketingPerformanceScore.useQuery(input);
   const patternsQuery = trpc.admin.getMarketingWinningPatterns.useQuery(input);
@@ -45,7 +46,10 @@ export function MarketingResultsView({ workspace }: { workspace: MarketingWorksp
           {learning?.insights?.length ? <ul className="mt-3 space-y-2 text-sm text-stone-600">{learning.insights.slice(0, 6).map((insight: Record<string, unknown>, index: number) => <li key={String(insight.id ?? index)}>{String(insight.summary ?? insight.insightType ?? "Saved learning insight")}</li>)}</ul> : <p className="mt-3 text-sm text-stone-600">No learned winners or losers yet. The next recommendation is to gather enough tracked events before changing strategy.</p>}
         </article>
       </div>
-      <p className="rounded-3xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900"><span className="font-semibold">Next recommended action:</span> {nextAction}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900">
+        <p><span className="font-semibold">Next recommended action:</span> {nextAction}</p>
+        {onCreateWithLearning ? <Button type="button" size="sm" onClick={onCreateWithLearning}>Create with learning</Button> : null}
+      </div>
     </section>
   );
 }

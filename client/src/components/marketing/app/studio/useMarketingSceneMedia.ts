@@ -14,7 +14,11 @@ export function useMarketingSceneMedia(input: {
     },
   });
 
-  async function sourceSceneMedia(plan: MarketingStudioPlan, providerPreference: "auto" | "pexels" | "pixabay" = "auto") {
+  async function sourceSceneMedia(
+    plan: MarketingStudioPlan,
+    providerPreference: "auto" | "pexels" | "pixabay" = "auto",
+    productCategory?: string,
+  ) {
     const result = await mutation.mutateAsync({
       tenantId: input.tenantId,
       workspaceId: input.workspaceId,
@@ -24,6 +28,7 @@ export function useMarketingSceneMedia(input: {
         id: plan.id,
         originalUserPrompt: plan.originalUserPrompt,
         audience: plan.audience,
+        productCategory,
         scenes: plan.scenes,
       },
     });

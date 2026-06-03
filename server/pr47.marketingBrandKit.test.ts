@@ -145,7 +145,7 @@ describe("PR47 brand kit persistence and versioning", () => {
     expect(workbenchSource).toContain("getMarketingBrandKit.useQuery");
     expect(workbenchSource).toContain("upsertMarketingBrandKit.useMutation");
     expect(workbenchSource).toContain("selectMarketingBrandLogoAsset.useMutation");
-    expect(workbenchSource).toContain("createRenderJob(plan, brandKitDraft)");
+    expect(workbenchSource).toContain("createRenderJob(renderablePlan, brandKitDraft)");
   });
 
   it("brand overlay step no longer shows backend-not-ready placeholder", () => {

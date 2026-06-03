@@ -49,6 +49,7 @@ export function buildMarketingStockQuery(input: {
   industry?: string;
   productCategory?: string;
 }): string {
+  const productCategory = normalizeText(input.productCategory);
   const pieces = [
     normalizeText(input.scene.requiredSubject),
     normalizeText(input.scene.visualPrompt),
@@ -57,12 +58,31 @@ export function buildMarketingStockQuery(input: {
     normalizeText(input.industry),
     normalizeText(input.audience),
   ].filter(Boolean);
-  const combined = pieces.join(" ").toLowerCase();
-  const inferredCategory = EQUINE_TERMS.some((term) => combined.includes(term)) ? "equine_stable_management" : "";
-  const productCategory = input.productCategory || inferredCategory;
   const categoryTerms = CATEGORY_TERMS[productCategory] ?? [];
-  const query = pieces.slice(0, 3).join(" ").trim();
+  const allowEquineTerms = productCategory === "equine_stable_management";
+  const safePieces = allowEquineTerms
+    ? pieces
+    : pieces.map((piece) => EQUINE_TERMS.reduce((current, term) => current.replace(new RegExp(`\\b${term}\\b`, "ig"), " "), piece).replace(/\s+/g, " ").trim()).filter(Boolean);
+  const query = safePieces.slice(0, 3).join(" ").trim();
   return `${query || "marketing scene"} ${categoryTerms.join(" ")}`.trim();
+}
+
+export async function testMarketingStockProviderConnection(provider: MarketingStockProvider) {
+  const result = await searchProvider({
+    provider,
+    query: "marketing workspace",
+    perPage: 1,
+    preferredMediaKind: "image",
+  });
+  return {
+    provider,
+    status: result.status,
+    ready: result.status === "ok",
+    message: result.status === "ok"
+      ? `${provider} stock search returned a live response.`
+      : result.message ?? `${provider} stock search could not complete. Check the saved key and provider availability.`,
+    resultCount: result.items.length,
+  };
 }
 
 function isSafeStockItem(item: MarketingStockMediaItem, query: string): boolean {
@@ -329,7 +349,7 @@ export function applySourcedMediaToScene(input: {
       provider: null,
       providerAssetId: null,
       selectedAt: null,
-      selectionReason: null,
+      selectionReason: "Branded caption fallback used because optional stock media was unavailable",
       status: "needs_review",
     };
   }

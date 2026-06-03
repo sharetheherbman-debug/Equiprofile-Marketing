@@ -308,6 +308,12 @@ export async function renderMarketingTimeline(input: {
   };
   testMode?: boolean;
 }): Promise<{ status: "completed"; output: RenderOutput; warnings?: string[] } | { status: "setup_needed"; errorMessage: string }> {
+  if (!input.timeline.scenes.length) {
+    return {
+      status: "setup_needed",
+      errorMessage: "Render needs at least one prepared scene. Generate scenes before starting the render job.",
+    };
+  }
   const duration = Math.max(1, Math.round(input.timeline.totalDurationSeconds || 1));
   const captionMode = input.captions?.mode ?? "none";
   const captionFormat = input.captions?.format ?? "srt";
@@ -371,7 +377,7 @@ export async function renderMarketingTimeline(input: {
     const needsReviewOrTextCardCount = input.timeline.scenes.filter((scene) =>
       scene.sourceType === "text_card" || scene.metadata.status === "needs_review").length;
     if (needsReviewOrTextCardCount > 0) {
-      warnings.push(`Render started with ${needsReviewOrTextCardCount} scenes in needs_review/text_card fallback state.`);
+      warnings.push(`Render started with ${needsReviewOrTextCardCount} branded caption fallback scenes because optional media was unavailable.`);
     }
 
     const sceneResults = await Promise.all(input.timeline.scenes.map(async (scene, index) => {
@@ -467,6 +473,9 @@ export async function renderMarketingTimeline(input: {
     } else {
       audioStatus = "setup_needed";
       warnings.push("Voiceover unavailable; silent captioned video rendered.");
+    }
+    if (!input.audio?.backgroundMusicUrl) {
+      warnings.push("Background music unavailable; rendering continued without music.");
     }
 
     const data = await fs.promises.readFile(workingVideoPath);

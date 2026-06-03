@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { executeAITaskWithProviderRoute } from "../../../_core/ai/orchestrator";
+import { buildMarketingStudioFallbackScenes } from "../../../../shared/_core/marketingStudioFallback";
 import { MARKETING_STUDIO_SCENE_SCHEMA } from "../../../../shared/_core/marketingStudioSchemas";
 import type { MarketingStudioScene } from "../../../../shared/_core/marketingStudioPlan";
 import {
@@ -105,6 +106,7 @@ function fallbackScenePlan(input: {
   durationTargetSeconds: number;
   existingScenes?: MarketingStudioScene[];
   reason: string;
+  hostAppId?: string;
 }): MarketingStudioScene[] {
   if (input.existingScenes?.length) {
     return input.existingScenes.map((scene, index) => normalizeScene({
@@ -117,73 +119,12 @@ function fallbackScenePlan(input: {
     }, index, null));
   }
 
-  const baseDuration = Math.max(4, Math.floor(input.durationTargetSeconds / 3));
-  const cleanPrompt = input.prompt.slice(0, 180);
-
-  const generated: MarketingStudioScene[] = [
-    {
-      id: nanoid(),
-      order: 1,
-      durationSeconds: baseDuration,
-      narration: `Open with the problem context for: ${cleanPrompt}`,
-      visualPrompt: `Strong opening visual for ${cleanPrompt}`,
-      negativePrompt: "blurry, off-topic, watermark, text artifacts",
-      sourceType: "stock",
-      requiredSubject: "problem statement",
-      assetId: null,
-      assetUrl: null,
-      previewUrl: null,
-      provider: null,
-      providerAssetId: null,
-      mediaKind: "video",
-      sourceMetadata: { fallback_used: true, fallback_reason: input.reason },
-      selectedAt: null,
-      selectionReason: null,
-      status: "pending",
-    },
-    {
-      id: nanoid(),
-      order: 2,
-      durationSeconds: baseDuration,
-      narration: "Show the product/value transformation in practical use.",
-      visualPrompt: "Mid-scene product value demonstration",
-      negativePrompt: "off-topic corporate office stock",
-      sourceType: "stock",
-      requiredSubject: "value demonstration",
-      assetId: null,
-      assetUrl: null,
-      previewUrl: null,
-      provider: null,
-      providerAssetId: null,
-      mediaKind: "video",
-      sourceMetadata: { fallback_used: true, fallback_reason: input.reason },
-      selectedAt: null,
-      selectionReason: null,
-      status: "pending",
-    },
-    {
-      id: nanoid(),
-      order: 3,
-      durationSeconds: Math.max(4, input.durationTargetSeconds - baseDuration * 2),
-      narration: "Close with clear CTA and concrete next step.",
-      visualPrompt: "CTA close frame, clean and brand-safe",
-      negativePrompt: "noisy layout, unreadable text",
-      sourceType: "text_card",
-      requiredSubject: "call to action",
-      assetId: null,
-      assetUrl: null,
-      previewUrl: null,
-      provider: null,
-      providerAssetId: null,
-      mediaKind: "text_card",
-      sourceMetadata: { fallback_used: true, fallback_reason: input.reason },
-      selectedAt: null,
-      selectionReason: null,
-      status: "pending",
-    },
-  ];
-
-  return generated;
+  return buildMarketingStudioFallbackScenes({
+    prompt: input.prompt,
+    durationTargetSeconds: input.durationTargetSeconds,
+    reason: input.reason,
+    context: { hostAppId: input.hostAppId },
+  });
 }
 
 async function resolveRoute(input: {
@@ -462,6 +403,7 @@ export async function generateMarketingStudioScenePlan(input: GenerateMarketingS
       durationTargetSeconds: input.durationTargetSeconds ?? 30,
       existingScenes: input.existingScenes,
       reason: fallbackReason,
+      hostAppId: input.hostAppId,
     })
     : rawPayload!.scenes.map((scene, index) => normalizeScene({
       ...scene,

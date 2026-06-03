@@ -70,7 +70,7 @@ describe("Marketing app stable contracts", () => {
   });
 
   it("builds equestrian scene plans without office terms", () => {
-    const combined = buildScenePlanFromPrompt("Create a horse video ad for stable owners and equestrian teams").map((scene) => `${scene.narration} ${scene.visualPrompt} ${scene.negativePrompt}`).join(" ").toLowerCase();
+    const combined = buildScenePlanFromPrompt("Create a horse video ad for stable owners and equestrian teams", { hostAppId: "equiprofile", productCategory: "equine_stable_management" }).map((scene) => `${scene.narration} ${scene.visualPrompt} ${scene.negativePrompt}`).join(" ").toLowerCase();
     expect(combined).toContain("horse");
     expect(combined).toContain("stable");
     expect(combined).not.toContain("office");

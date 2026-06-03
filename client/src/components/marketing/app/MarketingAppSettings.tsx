@@ -17,6 +17,8 @@ export const PROVIDER_FIELDS = [
 type SocialConnection = { platform: string; status: string; accountName?: string | null };
 type ProviderSettingsApiEntry = { configured: boolean; keyMasked: string | null };
 type ProviderSettingsApiResponse = Record<string, ProviderSettingsApiEntry>;
+type ToolingTaskRoute = { marketingTask: string; status: string; provider?: string | null; modelId?: string | null; reason?: string | null };
+type ToolingProvider = { degradedReason?: string | null; lastError?: string | null; healthStatus?: string | null; recommendations?: string[] };
 
 export function normalizeSocialConnections(value: unknown): SocialConnection[] {
   if (!Array.isArray(value)) return [];
@@ -67,6 +69,7 @@ export function MarketingAppSettings({
   const utils = trpc.useUtils();
   const [showAdminSupport, setShowAdminSupport] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [stockTestResults, setStockTestResults] = useState<Record<string, string>>({});
   const providerSettingsQuery = trpc.admin.listAIProviderSettings.useQuery();
   const socialConnectionsQuery = trpc.admin.listMarketingSocialConnections.useQuery({ tenantId, workspaceId });
   const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
@@ -85,12 +88,19 @@ export function MarketingAppSettings({
   const testProviderConnection = trpc.admin.testAIProviderConnection.useMutation({
     onError: (error) => toast.error("Connection test failed", { description: error.message }),
   });
+  const testStockConnection = trpc.admin.testMarketingStockMediaConnection.useMutation({
+    onError: (error) => toast.error("Stock media test failed", { description: error.message }),
+  });
 
   const providerSettings = (providerSettingsQuery.data ?? {}) as ProviderSettingsApiResponse;
   const settingsById = useMemo(() => Object.fromEntries(Object.entries(providerSettings).map(([key, value]) => [key.toLowerCase(), value])), [providerSettings]);
   const socialConnections = useMemo(() => normalizeSocialConnections(socialConnectionsQuery.data), [socialConnectionsQuery.data]);
   const backend = (backendReadinessQuery.data ?? {}) as Record<string, unknown>;
-  const tooling = (toolingQuery.data ?? {}) as { attribution?: { redirectRouteAvailable?: boolean; clickTrackingAvailable?: boolean; conversionRecordingAvailable?: boolean; manualMetricsAvailable?: boolean } };
+  const tooling = (toolingQuery.data ?? {}) as {
+    attribution?: { redirectRouteAvailable?: boolean; clickTrackingAvailable?: boolean; conversionRecordingAvailable?: boolean; manualMetricsAvailable?: boolean };
+    taskRoutes?: ToolingTaskRoute[];
+    providers?: Record<string, ToolingProvider>;
+  };
 
   useEffect(() => {
     setValues(Object.fromEntries(PROVIDER_FIELDS.map((field) => [field.key, ""])));
@@ -111,6 +121,15 @@ export function MarketingAppSettings({
     });
   }
 
+  function testStock(provider: "pexels" | "pixabay") {
+    testStockConnection.mutate({ provider }, {
+      onSuccess: (result) => {
+        setStockTestResults((current) => ({ ...current, [provider]: result.message }));
+        toast[result.ready ? "success" : "error"](result.ready ? "Stock search passed" : "Stock search needs attention", { description: result.message });
+      },
+    });
+  }
+
   const providers = PROVIDER_FIELDS.filter((field) => field.group === "Provider keys");
   const stock = PROVIDER_FIELDS.filter((field) => field.group === "Stock media");
   const configuredProviderCount = providers.filter((field) => settingsById[field.id]?.configured).length;
@@ -118,6 +137,15 @@ export function MarketingAppSettings({
   const attributionReady = Boolean(tooling.attribution?.redirectRouteAvailable && tooling.attribution?.clickTrackingAvailable && tooling.attribution?.conversionRecordingAvailable);
   const mediaReady = backend.mediaFactoryConfigStatus === "ready";
   const socialPlatforms = ["Facebook", "Instagram", "TikTok", "YouTube", "LinkedIn"];
+  const taskRoutes = tooling.taskRoutes ?? [];
+  const routeStatus = (tasks: string[]) => {
+    const routes = taskRoutes.filter((route) => tasks.includes(route.marketingTask));
+    if (!routes.length) return "Sync capabilities";
+    return routes.some((route) => route.status === "ready")
+      ? "Ready"
+      : routes.map((route) => route.reason ?? route.status).filter(Boolean).join("; ");
+  };
+  const hfReason = tooling.providers?.huggingface?.degradedReason || tooling.providers?.huggingface?.lastError;
 
   return (
     <div className="space-y-4" aria-label="Settings">
@@ -148,10 +176,16 @@ export function MarketingAppSettings({
           <div className="grid gap-3">
             {providers.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} onTest={() => testConnection(field.id as "genx" | "qwen" | "huggingface")} testing={testProviderConnection.isPending} />)}
           </div>
+          <div className="mt-3 grid gap-2 text-xs text-stone-600">
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Qwen text:</span> {routeStatus(["campaign_strategy", "platform_copywriting", "scriptwriting", "scene_planning"])}</p>
+            <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"><span className="font-semibold">Qwen media:</span> Disabled until DashScope native media execution returns a usable media URL or queued job.</p>
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">GenX media routes:</span> {routeStatus(["image_generation", "avatar_generation", "voiceover"])}</p>
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Hugging Face fallback routes:</span> {hfReason || routeStatus(["image_generation", "avatar_generation", "voiceover"])}</p>
+          </div>
         </SettingsCard>
         <SettingsCard title="4. Stock media" status={configuredStockCount ? `${configuredStockCount}/2 saved` : "Keys required"} action="Add Pexels or Pixabay keys for stock image and video sourcing. Text campaigns keep working without them.">
           <div className="grid gap-3">
-            {stock.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} />)}
+            {stock.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} onTest={() => testStock(field.id as "pexels" | "pixabay")} testing={testStockConnection.isPending} testLabel="Test stock search" note={stockTestResults[field.id]} />)}
           </div>
         </SettingsCard>
         <SettingsCard title="5. Social connections" status={socialConnections.some((connection) => connection.status === "ready_for_posting") ? "Connected" : "Connect required"} action="Connect each account with the required OAuth scopes. Export/manual posting remains available.">
@@ -195,6 +229,8 @@ function ProviderField({
   onChange,
   onTest,
   testing,
+  testLabel = "Test live generation",
+  note,
 }: {
   field: (typeof PROVIDER_FIELDS)[number];
   entry?: ProviderSettingsApiEntry;
@@ -202,12 +238,15 @@ function ProviderField({
   onChange: (value: string) => void;
   onTest?: () => void;
   testing?: boolean;
+  testLabel?: string;
+  note?: string;
 }) {
   return (
     <div className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
       <div className="flex items-center justify-between gap-3"><p className="text-sm font-medium text-stone-900">{field.label}</p><span className="text-xs text-stone-500">{entry?.configured ? "Saved" : "Missing"}</span></div>
       <Input type="password" value={value} onChange={(event) => onChange(event.target.value)} placeholder={`Add ${field.label} key`} className="mt-2" />
-      {onTest ? <Button type="button" variant="outline" size="sm" className="mt-2" onClick={onTest} disabled={testing}>{testing ? "Testing..." : "Test live generation"}</Button> : null}
+      {onTest ? <Button type="button" variant="outline" size="sm" className="mt-2" onClick={onTest} disabled={testing}>{testing ? "Testing..." : testLabel}</Button> : null}
+      {note ? <p className="mt-2 text-xs text-stone-500">{note}</p> : null}
     </div>
   );
 }

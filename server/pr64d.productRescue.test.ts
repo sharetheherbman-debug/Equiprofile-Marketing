@@ -89,8 +89,8 @@ describe("PR64D frontend — diagnostic grid removed from primary Studio", () =>
     expect(campaignPromptSource).not.toContain("Future / not wired");
   });
 
-  it("Plan campaign button is present in the composer", () => {
-    expect(campaignPromptSource).toContain("Plan campaign");
+  it("Plan output button is present in the composer", () => {
+    expect(campaignPromptSource).toContain("Plan output");
     expect(marketingAppSource).toContain("handlePlanCampaign");
   });
 

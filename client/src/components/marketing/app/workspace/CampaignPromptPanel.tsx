@@ -65,7 +65,7 @@ export function CampaignPromptPanel({
         </div>
       </details>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Button type="button" variant="outline" onClick={onPlan}>Plan campaign</Button>
+        <Button type="button" variant="outline" onClick={onPlan}>Plan output</Button>
         <Button type="button" data-testid="generate-button" disabled={generateDisabled} onClick={onGenerate}>
           {isGenerating ? "Generating..." : "Generate"}
         </Button>
