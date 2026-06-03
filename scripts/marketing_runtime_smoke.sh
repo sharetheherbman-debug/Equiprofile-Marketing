@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 echo "[runtime] verifying Marketing App runtime storage, render, and UX contracts"
 npx vitest run server/pr64j.runtimeStorageRenderUx.test.ts
 npx vitest run server/pr64k.realRenderStorageRootRepair.test.ts -t "dynamic storage root repair|executes real FFmpeg"
+npx vitest run server/pr64l.drawtextFreeFallbackRender.test.ts
 EQUIPROFILE_STORAGE_ROOT="$(mktemp -d)" npx tsx scripts/marketing_runtime_render_smoke.ts
 grep -q "getRuntimeFileStorageReadiness" server/_core/index.ts
 grep -q "findServableUploadFile" server/_core/index.ts

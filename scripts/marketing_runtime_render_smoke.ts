@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { getLocalMediaStorageRoot } from "../server/_core/storage/localMediaStorage";
-import { renderMarketingTimeline } from "../server/modules/marketing/media-factory/marketingRenderer";
+import { getMarketingRenderRuntimeReadiness, renderMarketingTimeline } from "../server/modules/marketing/media-factory/marketingRenderer";
 import type { MarketingTimeline } from "../server/modules/marketing/media-factory/renderJobTypes";
 
 if (!process.env.EQUIPROFILE_STORAGE_ROOT) {
@@ -51,6 +51,8 @@ const rendered = await renderMarketingTimeline({
   captions: { mode: "none", format: "srt" },
 });
 
+const readiness = await getMarketingRenderRuntimeReadiness();
+
 if (rendered.status !== "completed") {
   console.error(`[runtime-render] FAIL: ${rendered.errorMessage}`);
   process.exit(1);
@@ -74,4 +76,5 @@ if (signature !== "ftyp") {
 
 console.log(`[runtime-render] PASS: ${rendered.output.publicUrl}`);
 console.log(`[runtime-render] storageRoot=${getLocalMediaStorageRoot()}`);
+console.log(`[runtime-render] drawtextAvailable=${readiness.drawtextAvailable}`);
 console.log(`[runtime-render] warnings=${(rendered.warnings ?? []).join(" | ") || "none"}`);

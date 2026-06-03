@@ -107,10 +107,10 @@ describe("PR64K dynamic storage root repair", () => {
       captions: { mode: "none", format: "srt" },
     });
 
-    expect(rendered.status).toBe("completed");
     if (rendered.status !== "completed") {
       throw new Error(rendered.errorMessage);
     }
+    expect(rendered.status).toBe("completed");
     expect(rendered.output.filePath.startsWith(path.join(newRoot, "generated") + path.sep)).toBe(true);
     expect(rendered.output.publicUrl.startsWith("/media/generated/generated/")).toBe(true);
     expect(fs.readFileSync(rendered.output.filePath).toString("latin1", 4, 8)).toBe("ftyp");

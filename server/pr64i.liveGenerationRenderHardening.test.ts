@@ -115,8 +115,10 @@ describe("PR64I branded caption fallback", () => {
       timeline: compileMarketingTimeline(prepared),
       captions: { mode: "none", format: "srt" },
     });
+    if (rendered.status !== "completed") {
+      throw new Error(rendered.errorMessage);
+    }
     expect(rendered.status).toBe("completed");
-    if (rendered.status !== "completed") return;
     expect(rendered.output.publicUrl).toBeTruthy();
     expect(fs.readFileSync(rendered.output.filePath).toString("latin1", 4, 8)).toBe("ftyp");
     expect(rendered.warnings).toContain("Voiceover unavailable; silent captioned video rendered.");
