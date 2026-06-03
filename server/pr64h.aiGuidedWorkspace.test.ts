@@ -91,7 +91,7 @@ describe("PR64H active workspace wiring", () => {
   it("keeps diagnostics collapsed under Admin Support", () => {
     const settings = read("client/src/components/marketing/app/MarketingAppSettings.tsx");
     expect(settings).toContain("Admin Support");
-    expect(settings).toContain("enabled: showAdminSupport");
+    expect(settings).toContain("enabled: supportModeEnabled && showAdminSupport");
   });
 });
 

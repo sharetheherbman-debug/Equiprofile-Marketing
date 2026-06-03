@@ -212,6 +212,7 @@ import { getPreferredModelOrder } from "./_core/ai/modelQualityPolicy";
 import { orderMediaProviders } from "./_core/ai/providerRouting";
 import { createBrandedMediaDerivative } from "./_core/media/postProcessor";
 import { STORAGE_ROOT } from "./_core/storage/localMediaStorage";
+import { getRuntimeFileStorageReadiness } from "./_core/storage/runtimeFileStorage";
 import { validateMarketingCapability } from "./modules/marketing/marketingCapabilityValidator";
 import type { MarketingContentType, MarketingStudioScene } from "@shared/_core/marketingStudioPlan";
 import { MARKETING_STUDIO_SCENE_SCHEMA } from "@shared/_core/marketingStudioSchemas";
@@ -221,6 +222,7 @@ import {
   getMarketingBrandPublicSummary,
   listMarketingBrandOverlayTemplates,
   resetMarketingBrandKitToWorkspaceDefault,
+  repairMarketingBrandLogo,
   selectMarketingBrandLogoAsset as selectMarketingBrandLogoAssetFromService,
   upsertMarketingBrandKit,
 } from "./modules/marketing/brand-kit";
@@ -240,6 +242,7 @@ import {
   splitCaptionText,
   sourceMarketingScenesWithStockMedia,
   testMarketingStockProviderConnection,
+  getMarketingRenderRuntimeReadiness,
   updateMarketingRenderJobRecord,
   cancelMarketingRenderJobRecord,
   listMarketingAssetVersions as listMarketingAssetVersionRecords,
@@ -5617,7 +5620,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }),
       )
       .mutation(async ({ input }) => {
-        return upsertMarketingBrandKit(input);
+        try {
+          return await upsertMarketingBrandKit(input);
+        } catch (error) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: error instanceof Error ? error.message : "Failed to save Brand Kit",
+          });
+        }
       }),
 
     resetMarketingBrandKitToWorkspaceDefault: adminUnlockedProcedure
@@ -5630,6 +5640,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .mutation(async ({ input }) => {
         return resetMarketingBrandKitToWorkspaceDefault(input);
+      }),
+
+    repairMarketingBrandLogo: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        return repairMarketingBrandLogo(input);
+      }),
+
+    getMarketingRuntimeStorageReadiness: adminUnlockedProcedure
+      .query(async () => {
+        return getRuntimeFileStorageReadiness();
+      }),
+
+    getMarketingRenderRuntimeReadiness: adminUnlockedProcedure
+      .query(async () => {
+        return getMarketingRenderRuntimeReadiness();
       }),
 
     uploadMarketingBrandLogo: adminUnlockedProcedure

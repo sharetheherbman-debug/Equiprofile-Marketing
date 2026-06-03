@@ -21,6 +21,7 @@ import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
+import { getGeneratedStorageRoot } from "./storage/runtimeFileStorage";
 
 // ── Hostname detection ─────────────────────────────────────────────────────
 
@@ -88,15 +89,12 @@ function sendSafeNotFound(req: express.Request, res: express.Response) {
 
 export async function setupVite(app: Express, server: Server) {
   // Serve generated media assets at /media/generated/* in dev mode too
-  const storageRoot = path.resolve(
-    process.env.EQUIPROFILE_STORAGE_ROOT ?? "/var/equiprofile/storage",
+  const storageRoot = getGeneratedStorageRoot();
+  fs.mkdirSync(storageRoot, { recursive: true });
+  app.use(
+    "/media/generated",
+    express.static(storageRoot, { index: false, dotfiles: "deny" }),
   );
-  if (fs.existsSync(storageRoot)) {
-    app.use(
-      "/media/generated",
-      express.static(storageRoot, { index: false, dotfiles: "deny" }),
-    );
-  }
 
   const serverOptions = {
     middlewareMode: true,
@@ -179,9 +177,7 @@ export function serveStatic(app: Express) {
 
   // Serve generated media assets at /media/generated/*
   // STORAGE_ROOT defaults to /var/equiprofile/storage (override: EQUIPROFILE_STORAGE_ROOT)
-  const storageRoot = path.resolve(
-    process.env.EQUIPROFILE_STORAGE_ROOT ?? "/var/equiprofile/storage",
-  );
+  const storageRoot = getGeneratedStorageRoot();
   if (fs.existsSync(storageRoot)) {
     app.use(
       "/media/generated",

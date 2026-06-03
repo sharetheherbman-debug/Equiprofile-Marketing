@@ -30,6 +30,11 @@ import { resolve } from "path";
 import path from "path";
 import fs from "fs";
 import { resolveMarketingAttributionClick } from "../modules/marketing/results-conversion";
+import {
+  findServableUploadFile,
+  getRuntimeFileStorageReadiness,
+  safeResolveInside,
+} from "./storage/runtimeFileStorage";
 
 // Module-level server reference used by the graceful-shutdown handler below.
 // Set inside server.listen() callback once the port is bound.
@@ -1103,17 +1108,14 @@ async function startServer() {
       return res.status(400).json({ error: "Missing file key" });
     }
 
-    const uploadsDir = resolve(ENV.storagePath);
-    const filePath = resolve(uploadsDir, fileKey);
-
-    // Security: ensure the resolved path stays strictly within the uploads directory.
-    // Excludes `filePath === uploadsDir` — that would serve the directory itself.
-    if (!filePath.startsWith(uploadsDir + path.sep)) {
+    const rootCheck = safeResolveInside(ENV.storagePath, fileKey);
+    if (!rootCheck.ok) {
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    if (!fs.existsSync(filePath)) {
-      console.warn(`[FileServe] 404 – file not found on disk: ${filePath} (key: ${fileKey}, uploadsDir: ${uploadsDir})`);
+    const found = findServableUploadFile(fileKey);
+    if (!found) {
+      console.warn(`[FileServe] 404 - file not found on disk: ${fileKey}`);
       return res.status(404).json({ error: "File not found" });
     }
 
@@ -1141,7 +1143,7 @@ async function startServer() {
       );
     }
 
-    res.sendFile(filePath);
+    res.sendFile(found.filePath);
   });
   // Any request that starts with /api/ and has NOT been handled by a route
   // above must return JSON, never the SPA index.html.
@@ -1213,6 +1215,10 @@ async function startServer() {
   } catch (err) {
     console.error(`❌ Uploads directory not writable: ${uploadsDir}`, err);
   }
+
+  getRuntimeFileStorageReadiness()
+    .then((readiness) => console.log("[RuntimeStorage]", JSON.stringify(readiness)))
+    .catch((err) => console.error("[RuntimeStorage] readiness check failed", err));
 
   // Pre-warm the database connection so that ensureTables() runs before the
   // first user request arrives.  Without this, the first API call (e.g.
