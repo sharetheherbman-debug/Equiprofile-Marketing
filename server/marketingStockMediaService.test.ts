@@ -340,4 +340,96 @@ describe("PR44 marketing stock media service", () => {
     expect(result.plan.scenes[1].status).toBe("needs_review");
     expect(result.warnings.length).toBeGreaterThan(0);
   });
+
+  it("tries to upgrade text-card scenes before leaving fallback-only output", async () => {
+    const result = await sourceMarketingScenesWithStockMedia({
+      providerPreference: "auto",
+      plan: {
+        originalUserPrompt: "Create a 30 second Facebook Reel for EquiProfile",
+        audience: "stable owners",
+        scenes: [
+          {
+            id: "s1",
+            order: 1,
+            durationSeconds: 8,
+            narration: "EquiProfile scene",
+            visualPrompt: "Product UI and riders",
+            negativePrompt: "",
+            sourceType: "text_card",
+            requiredSubject: "product demo",
+            assetId: null,
+            assetUrl: null,
+            previewUrl: null,
+            provider: null,
+            providerAssetId: null,
+            mediaKind: "text_card",
+            sourceMetadata: null,
+            selectedAt: null,
+            selectionReason: "initial fallback",
+            status: "pending",
+          },
+        ],
+      },
+      search: vi.fn(async () => ({
+        status: "ok" as const,
+        provider: "pexels" as const,
+        query: "equiprofile reel product demo",
+        items: [{
+          provider: "pexels" as const,
+          providerAssetId: "video-1",
+          title: "Product demo clip",
+          previewUrl: "https://example.com/p.jpg",
+          assetUrl: "https://example.com/clip.mp4",
+          mediaKind: "video" as const,
+          sourceMetadata: { source: "pexels" },
+        }],
+      })),
+    });
+    expect(result.plan.scenes[0].sourceType).toBe("stock");
+    expect(result.plan.scenes[0].mediaKind).toBe("video");
+    expect(result.plan.scenes[0].assetUrl).toContain("clip.mp4");
+    expect(result.plan.scenes[0].sourceMetadata).toMatchObject({ source: "pexels" });
+  });
+
+  it("preserves existing upload/library media scenes without re-sourcing", async () => {
+    const search = vi.fn(async () => ({
+      status: "ok" as const,
+      provider: "pexels" as const,
+      query: "unused",
+      items: [],
+    }));
+    const result = await sourceMarketingScenesWithStockMedia({
+      providerPreference: "auto",
+      plan: {
+        originalUserPrompt: "Create social video",
+        scenes: [
+          {
+            id: "upload-scene",
+            order: 1,
+            durationSeconds: 6,
+            narration: "brand asset",
+            visualPrompt: "logo animation",
+            negativePrompt: "",
+            sourceType: "upload",
+            requiredSubject: "brand asset",
+            assetId: 42,
+            assetUrl: "https://cdn.example.com/brand.mp4",
+            previewUrl: "https://cdn.example.com/brand.jpg",
+            provider: "library",
+            providerAssetId: "asset-42",
+            mediaKind: "video",
+            sourceMetadata: { source: "library" },
+            selectedAt: new Date().toISOString(),
+            selectionReason: "User selected brand asset",
+            status: "ready",
+          },
+        ],
+      },
+      search,
+    });
+    expect(result.plan.scenes[0].sourceType).toBe("upload");
+    expect(result.plan.scenes[0].assetUrl).toContain("brand.mp4");
+    expect(result.perSceneResults[0]).toMatchObject({ status: "preserved", selected: true });
+    expect(search).not.toHaveBeenCalled();
+  });
 });

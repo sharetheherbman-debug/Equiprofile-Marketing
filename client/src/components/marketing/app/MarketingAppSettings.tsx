@@ -37,8 +37,11 @@ export function normalizeSocialConnections(value: unknown): SocialConnection[] {
 
 function connectionLabel(status: string) {
   if (status === "ready_for_posting" || status === "ready_for_approval_posting") return "Connected";
-  if (status === "token_expired") return "Token expired";
-  if (status === "permission_missing") return "Scopes missing";
+  if (status === "token_expired" || status === "expired_token") return "Token expired";
+  if (status === "permission_missing" || status === "missing_scopes") return "Scopes missing";
+  if (status === "adapter_missing") return "Adapter not implemented";
+  if (status === "missing_token") return "Missing credentials";
+  if (status === "setup_needed") return "Setup required";
   return "Connect required";
 }
 

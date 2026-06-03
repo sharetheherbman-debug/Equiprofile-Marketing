@@ -348,6 +348,13 @@ export function applySourcedMediaToScene(input: {
       previewUrl: null,
       provider: null,
       providerAssetId: null,
+      sourceMetadata: {
+        source: "fallback_text_card",
+        fallbackReason: "all_media_sources_failed",
+        providerStatus: input.result.status,
+        providerAttempted: input.result.provider,
+        query: input.result.query,
+      },
       selectedAt: null,
       selectionReason: "Branded caption fallback used because optional stock media was unavailable",
       status: "needs_review",
@@ -361,7 +368,13 @@ export function applySourcedMediaToScene(input: {
     previewUrl: first.previewUrl,
     provider: first.provider,
     providerAssetId: first.providerAssetId,
-    sourceMetadata: first.sourceMetadata,
+    sourceMetadata: {
+      ...first.sourceMetadata,
+      source: first.sourceMetadata?.source ?? first.provider,
+      selectionReason: "auto_selected_real_media",
+      query: input.result.query,
+      providerStatus: input.result.status,
+    },
     selectedAt: (input.pickedAt ?? new Date()).toISOString(),
     selectionReason: `Auto-selected from ${first.provider} for query: ${input.result.query}`,
     status: "asset_selected",
@@ -393,6 +406,10 @@ function isManuallySelectedScene(scene: MarketingStudioScene): boolean {
   return reason.includes("manual");
 }
 
+function hasSceneMediaAsset(scene: MarketingStudioScene): boolean {
+  return Boolean(scene.assetUrl && scene.mediaKind !== "text_card");
+}
+
 export async function sourceMarketingScenesWithStockMedia(input: {
   plan: SceneSourcePlan;
   providerPreference?: MarketingStockProviderPreference;
@@ -413,9 +430,9 @@ export async function sourceMarketingScenesWithStockMedia(input: {
       status: rawScene.status ?? "pending",
     };
 
-    if (scene.sourceType === "text_card" || scene.mediaKind === "text_card") {
+    if (hasSceneMediaAsset(scene)) {
       updatedScenes.push(scene);
-      perSceneResults.push({ sceneId: scene.id, status: "preserved", selected: false, provider: null });
+      perSceneResults.push({ sceneId: scene.id, status: "preserved", selected: true, provider: (scene.provider as MarketingStockProvider | null) ?? null });
       continue;
     }
 
@@ -425,8 +442,17 @@ export async function sourceMarketingScenesWithStockMedia(input: {
       continue;
     }
 
+    const sceneForSearch = (scene.sourceType === "text_card" || scene.mediaKind === "text_card")
+      ? {
+        ...scene,
+        sourceType: "stock" as const,
+        mediaKind: "video" as const,
+        status: scene.status === "ready" ? "asset_selected" : scene.status,
+      }
+      : scene;
+
     const result = await search({
-      scene,
+      scene: sceneForSearch,
       originalUserPrompt: input.plan.originalUserPrompt,
       audience: input.plan.audience,
       productCategory: input.plan.productCategory,
@@ -438,7 +464,7 @@ export async function sourceMarketingScenesWithStockMedia(input: {
     if (result.status === "provider_unavailable") status = "provider_unavailable";
 
     if (result.status === "ok" && result.items.length > 0) {
-      const selected = applySourcedMediaToScene({ scene: scene as MarketingStudioScene, result });
+      const selected = applySourcedMediaToScene({ scene: sceneForSearch as MarketingStudioScene, result });
       updatedScenes.push(selected);
       perSceneResults.push({ sceneId: scene.id, status: "ok", selected: true, provider: selected.provider as MarketingStockProvider | null });
       continue;
@@ -458,6 +484,13 @@ export async function sourceMarketingScenesWithStockMedia(input: {
       previewUrl: null,
       provider: null,
       providerAssetId: null,
+      sourceMetadata: {
+        source: "fallback_text_card",
+        fallbackReason,
+        providerStatus: result.status,
+        providerAttempted: result.provider,
+        query: result.query,
+      },
       selectedAt: null,
       selectionReason: fallbackReason,
       status: "needs_review",
