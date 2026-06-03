@@ -66,7 +66,7 @@ function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJo
   const fallbackBrandName = isEquiProfile ? "EquiProfile" : row.hostAppId.trim().replace(/[-_]+/g, " ") || "Workspace brand";
   const rawTimeline = parseJson<MarketingTimeline>(row.timelineJson, { scenes: [], totalDurationSeconds: 0, render: DEFAULT_TIMELINE_RENDER, captionLines: [] });
   // Ensure render contract is always present — old jobs stored before PR64O may have render: undefined
-  const timeline: MarketingTimeline = rawTimeline.render !== undefined && rawTimeline.render !== null
+  const timeline: MarketingTimeline = rawTimeline.render != null
     ? rawTimeline
     : { ...rawTimeline, render: inferRenderContractFromJob(row.contentType, row.originalUserPrompt) };
   return {

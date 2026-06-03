@@ -439,10 +439,10 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                 {(hasTextCardFallback || missingAudio) && (
                   <div className="mt-2 space-y-1">
                     {hasTextCardFallback && (
-                      <p className="text-xs text-amber-700" role="alert" aria-label="Warning: media scenes need upgrade" data-testid="media-scenes-need-upgrade">Media scenes need upgrade — real images or video clips not yet attached.</p>
+                      <p className="text-xs text-amber-700" role="alert" data-testid="media-scenes-need-upgrade">Media scenes need upgrade — real images or video clips not yet attached.</p>
                     )}
                     {missingAudio && (
-                      <p className="text-xs text-amber-700" role="alert" aria-label="Warning: audio or music missing" data-testid="audio-music-missing">Audio/music missing — add a voiceover or background track before exporting.</p>
+                      <p className="text-xs text-amber-700" role="alert" data-testid="audio-music-missing">Audio/music missing — add a voiceover or background track before exporting.</p>
                     )}
                   </div>
                 )}
