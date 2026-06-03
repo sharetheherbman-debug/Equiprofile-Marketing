@@ -117,6 +117,32 @@ function triggerDownload(value: string, filename: string) {
   anchor.click();
 }
 
+type CreateBadgeLabel =
+  | "Draft generated"
+  | "Needs media upgrade"
+  | "Needs audio upgrade"
+  | "Ready for review"
+  | "Ready to export"
+  | "Scheduled"
+  | "Published";
+
+function inferCreateBadge(input: {
+  hasOutput: boolean;
+  qualityPassed: boolean;
+  hasTextCardFallback: boolean;
+  missingAudio: boolean;
+  scheduledCount: number;
+  publishedPlatformId: string | null;
+}): CreateBadgeLabel {
+  if (input.publishedPlatformId) return "Published";
+  if (input.scheduledCount > 0) return "Scheduled";
+  if (input.hasTextCardFallback) return "Needs media upgrade";
+  if (input.missingAudio) return "Needs audio upgrade";
+  if (input.hasOutput && input.qualityPassed) return "Ready to export";
+  if (input.hasOutput) return "Ready for review";
+  return "Draft generated";
+}
+
 function SectionErrorCard({ onRetry }: { onRetry: () => void }) {
   return (
     <section className="mx-auto mt-4 max-w-[1440px] rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
@@ -214,6 +240,26 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const selectedCreationBlocked = !prompt.trim() || isAnyGenerationPending;
   const audience = productIntelligence.displayProfile?.targetAudiences?.[0] ?? workspace.defaultAudience;
   const signupUrl = productIntelligence.displayProfile?.signupUrl;
+  const renderTimelineScenes = Array.isArray((latestRenderJob as { timeline?: { scenes?: unknown[] } } | null)?.timeline?.scenes)
+    ? ((latestRenderJob as { timeline?: { scenes?: Array<{ sourceType?: string }> } }).timeline?.scenes ?? [])
+    : [];
+  const hasTextCardFallback = renderTimelineScenes.some((scene) => scene?.sourceType === "text_card");
+  const renderAudio = (latestRenderJob as { audio?: { status?: string } } | null)?.audio;
+  const audioRequired = (latestStudioPlan?.voiceoverRequired ?? false)
+    || Boolean((latestRenderJob as { timeline?: { render?: { audioRequired?: boolean } } } | null)?.timeline?.render?.audioRequired);
+  const missingAudio = audioRequired && renderAudio?.status !== "completed";
+  const qualityPassed = (lastDeliverablePackage?.qualityGate as { status?: string } | undefined)?.status === "passed";
+  const hasOutput = Boolean(lastDeliverablePackage || lastMediaOutput || latestStudioPlan);
+  const publishedPlatformId = [lastDeliverablePackage?.platformPostId, lastDeliverablePackage?.uploadId, lastDeliverablePackage?.platformId, lastDeliverablePackage?.smtpMessageId]
+    .find((value): value is string => typeof value === "string" && Boolean(value.trim()));
+  const createBadge = inferCreateBadge({
+    hasOutput,
+    qualityPassed,
+    hasTextCardFallback,
+    missingAudio,
+    scheduledCount: calendarState.mappedScheduleDrafts.length,
+    publishedPlatformId: publishedPlatformId ?? null,
+  });
 
   function toggleChannel(channel: string) {
     setChannels((current) => current.includes(channel) ? current.filter((item) => item !== channel) : [...current, channel]);
@@ -384,6 +430,19 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
           workflow={(
             <>
               <CampaignPromptPanel prompt={prompt} channels={channels} isGenerating={isAnyGenerationPending} generateDisabled={selectedCreationBlocked} onPromptChange={setPrompt} onToggleChannel={toggleChannel} onPlan={handlePlanCampaign} onGenerate={() => void handleGenerate()} />
+              <section className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm" data-testid="create-primary-actions">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-stone-900">Next actions</p>
+                  <span className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">{createBadge}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button type="button" size="sm" variant="outline" onClick={() => setView("settings")}>Edit</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setStudioOpen(true)}>Improve</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => toast.info("Approval is available after review checks.")}>Approve</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={createScheduleDraftsFromCampaign}>Schedule</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={exportCampaign}>Export</Button>
+                </div>
+              </section>
               {clarifyingQuestion ? <p className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{clarifyingQuestion}</p> : null}
               {latestOutcome ? (
                 <section className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm" data-testid="latest-outcome-card">
@@ -424,7 +483,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
               </details>
             </>
           )}
-          statusRail={<WorkflowStatusPanel productReady={productIntelligence.isReady} fallbackUsed={lastDeliverablePackage?.fallbackUsed === true} hasOutput={Boolean(lastDeliverablePackage || lastMediaOutput || latestStudioPlan)} signupUrl={signupUrl} qualityPassed={(lastDeliverablePackage?.qualityGate as { status?: string } | undefined)?.status === "passed"} />}
+          statusRail={<WorkflowStatusPanel productReady={productIntelligence.isReady} fallbackUsed={lastDeliverablePackage?.fallbackUsed === true} hasOutput={hasOutput} signupUrl={signupUrl} qualityPassed={qualityPassed} />}
         />
       ) : (
         <main className="mx-auto min-w-0 max-w-[1440px] px-4 py-5 lg:px-6">

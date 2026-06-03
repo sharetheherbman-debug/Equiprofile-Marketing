@@ -129,15 +129,24 @@ export function ProductContextPanel({
       </div>
       </div> : null}
 
-      <div className="mt-5 space-y-2 border-t border-stone-100 pt-4 text-xs text-stone-600">
-        <p><span className="font-semibold text-stone-800">Product:</span> {profile?.appName || "Add product name"}</p>
-        <p><span className="font-semibold text-stone-800">Category:</span> {profile?.category?.replace(/_/g, " ") || "Add category"}</p>
-        <p><span className="font-semibold text-stone-800">Audience:</span> {profile?.targetAudiences?.slice(0, 3).join(", ") || "Add audience notes"}</p>
-        <p><span className="font-semibold text-stone-800">Offer:</span> {profile?.primaryOffer || "Add offer details"}</p>
-        <p><span className="font-semibold text-stone-800">CTA:</span> {profile?.ctaLibrary?.[0] || profile?.signupUrl || "Add a signup URL"}</p>
-        <p><span className="font-semibold text-stone-800">Top benefits:</span> {profile?.benefits?.slice(0, 3).join(", ") || "Add benefits"}</p>
-        {profile?.missingInfo?.length ? <p className="text-amber-700">Missing: {profile.missingInfo.join(", ")}</p> : null}
-      </div>
+      {isReady && !showEditor ? (
+        <div className="mt-5 grid gap-2 rounded-2xl border border-stone-100 bg-stone-50 p-3 text-xs text-stone-600 sm:grid-cols-4">
+          <p><span className="font-semibold text-stone-800">Product:</span> {profile?.appName || "Add product name"}</p>
+          <p><span className="font-semibold text-stone-800">Category:</span> {profile?.category?.replace(/_/g, " ") || "Add category"}</p>
+          <p><span className="font-semibold text-stone-800">CTA URL:</span> {profile?.signupUrl || "Add signup URL"}</p>
+          <p><span className="font-semibold text-stone-800">Logo:</span> {logoUrl && !logoBroken ? "Active" : "Not available"}</p>
+        </div>
+      ) : (
+        <div className="mt-5 space-y-2 border-t border-stone-100 pt-4 text-xs text-stone-600">
+          <p><span className="font-semibold text-stone-800">Product:</span> {profile?.appName || "Add product name"}</p>
+          <p><span className="font-semibold text-stone-800">Category:</span> {profile?.category?.replace(/_/g, " ") || "Add category"}</p>
+          <p><span className="font-semibold text-stone-800">Audience:</span> {profile?.targetAudiences?.slice(0, 3).join(", ") || "Add audience notes"}</p>
+          <p><span className="font-semibold text-stone-800">Offer:</span> {profile?.primaryOffer || "Add offer details"}</p>
+          <p><span className="font-semibold text-stone-800">CTA:</span> {profile?.ctaLibrary?.[0] || profile?.signupUrl || "Add a signup URL"}</p>
+          <p><span className="font-semibold text-stone-800">Top benefits:</span> {profile?.benefits?.slice(0, 3).join(", ") || "Add benefits"}</p>
+          {profile?.missingInfo?.length ? <p className="text-amber-700">Missing: {profile.missingInfo.join(", ")}</p> : null}
+        </div>
+      )}
 
       <div className="mt-4 rounded-2xl border border-stone-100 bg-stone-50 p-3">
         {logoUrl && !logoBroken ? (
