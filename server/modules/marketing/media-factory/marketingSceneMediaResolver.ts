@@ -300,7 +300,7 @@ export async function resolveReelSceneMedia(input: {
       selectionReason: fallbackReason,
       selectedAt: new Date().toISOString(),
       status: "needs_review",
-    } as unknown as MarketingStudioScene;
+    };
     record.finalStatus = "text_card_fallback";
     record.selectionReason = fallbackReason;
     warnings.push(`Scene ${scene.id}: ${fallbackReason}`);
