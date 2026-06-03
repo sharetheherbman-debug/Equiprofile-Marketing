@@ -2,6 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import ffmpegStatic from "ffmpeg-static";
+import sharp from "sharp";
 import { execa } from "execa";
 import { ensureStorageDirs, getLocalMediaStorageRoot, writeGeneratedAsset } from "../../../_core/storage/localMediaStorage";
 import type { MarketingBrandOverlay, MarketingTimeline, RenderOutput } from "./renderJobTypes";
@@ -27,6 +28,89 @@ function escapeSubtitlePath(filePath: string): string {
 
 function safeSceneText(value: string): string {
   return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+const NAMED_SVG_COLORS = new Set([
+  "black",
+  "white",
+  "red",
+  "green",
+  "blue",
+  "navy",
+  "gray",
+  "grey",
+  "silver",
+  "maroon",
+  "purple",
+  "fuchsia",
+  "lime",
+  "olive",
+  "yellow",
+  "teal",
+  "aqua",
+  "orange",
+  "gold",
+]);
+
+function normalizeHexColor(value: string): string | null {
+  const trimmed = value.trim();
+  const short = /^#([0-9a-f]{3})$/i.exec(trimmed);
+  if (short) {
+    return `#${short[1].split("").map((char) => `${char}${char}`).join("").toLowerCase()}`;
+  }
+  const long = /^#([0-9a-f]{6})(?:[0-9a-f]{2})?$/i.exec(trimmed);
+  if (long) {
+    return `#${long[1].toLowerCase()}`;
+  }
+  return null;
+}
+
+function sanitizeSvgColor(value: string | null | undefined, fallback: string): string {
+  const normalizedFallback = normalizeHexColor(fallback) ?? "#1e3a5f";
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) return normalizedFallback;
+  const normalized = normalizeHexColor(trimmed);
+  if (normalized) return normalized;
+  const named = trimmed.toLowerCase().replace(/[^a-z]/g, "");
+  if (NAMED_SVG_COLORS.has(named)) return named === "grey" ? "gray" : named;
+  return normalizedFallback;
+}
+
+function svgColorToFfmpegColor(value: string): string {
+  const normalized = normalizeHexColor(value);
+  if (normalized) return `0x${normalized.slice(1)}`;
+  const named = value.toLowerCase().replace(/[^a-z]/g, "");
+  return NAMED_SVG_COLORS.has(named) ? named : "0x1e3a5f";
+}
+
+function escapeXml(value: string): string {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function wrapSvgText(value: string, maxChars = 44, maxLines = 4): string[] {
+  const words = safeSceneText(value).split(" ").filter(Boolean);
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length > maxChars && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+    if (lines.length >= maxLines) break;
+  }
+  if (current && lines.length < maxLines) lines.push(current);
+  if (lines.length === maxLines && words.join(" ").length > lines.join(" ").length) {
+    lines[maxLines - 1] = `${lines[maxLines - 1].replace(/\s+\S*$/, "")}…`;
+  }
+  return lines.length ? lines : ["Marketing message"];
 }
 
 function isRemoteUrl(url: string): boolean {
@@ -111,6 +195,25 @@ async function canRunFfmpeg(candidate: string) {
   }
 }
 
+async function getFfmpegFilterCapabilities(ffmpegPath: string | null) {
+  if (!ffmpegPath) return { drawtextAvailable: false, filterCheckError: "FFmpeg is not executable." };
+  if (process.env.MARKETING_RENDER_DISABLE_DRAWTEXT === "1") {
+    return { drawtextAvailable: false, filterCheckError: "drawtext disabled by MARKETING_RENDER_DISABLE_DRAWTEXT." };
+  }
+  try {
+    const result = await execa(ffmpegPath, ["-hide_banner", "-filters"], { timeout: 8_000 });
+    return {
+      drawtextAvailable: /(^|\n)\s*T?\.?\.?\s+drawtext\s+/m.test(result.stdout),
+      filterCheckError: "",
+    };
+  } catch (error) {
+    return {
+      drawtextAvailable: false,
+      filterCheckError: describeExecutionError(error),
+    };
+  }
+}
+
 function describeExecutionError(error: unknown): string {
   if (!(error instanceof Error)) return String(error);
   const details = [
@@ -136,6 +239,7 @@ export async function resolveAvailableFfmpegPath() {
 
 export async function getMarketingRenderRuntimeReadiness() {
   const { ffmpegPath, failures } = await resolveAvailableFfmpegPath();
+  const filterCapabilities = await getFfmpegFilterCapabilities(ffmpegPath);
   const tmpProbe = path.join(os.tmpdir(), `marketing-render-probe-${process.pid}-${Date.now()}.tmp`);
   const outputRoot = getLocalMediaStorageRoot();
   const storageProbe = path.join(outputRoot, "temp", `render-probe-${process.pid}-${Date.now()}.tmp`);
@@ -144,6 +248,8 @@ export async function getMarketingRenderRuntimeReadiness() {
     ffmpegPath,
     ffmpegExecutable: Boolean(ffmpegPath),
     ffmpegFailures: failures,
+    drawtextAvailable: filterCapabilities.drawtextAvailable,
+    filterCheckError: filterCapabilities.filterCheckError,
     tempWritable: false,
     outputWritable: false,
     outputRoot,
@@ -175,6 +281,127 @@ export async function getMarketingRenderRuntimeReadiness() {
 
 function sceneBaseVideoFilter(): string {
   return "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:black,fps=30,format=yuv420p";
+}
+
+function buildTextCardSvg(input: {
+  scene: MarketingTimeline["scenes"][number];
+  overlay: MarketingBrandOverlay;
+  isFinalScene: boolean;
+}) {
+  const primary = sanitizeSvgColor(input.overlay.primaryColor, "#1e3a5f");
+  const secondary = sanitizeSvgColor(input.overlay.secondaryColor, "#c5a55a");
+  const accent = sanitizeSvgColor(input.overlay.accentColor, secondary);
+  const sceneText = safeSceneText(input.scene.textCard || input.scene.narration || input.scene.visualPrompt || input.scene.caption || "Marketing message");
+  const lines = wrapSvgText(sceneText, 42, 5);
+  const ctaText = input.isFinalScene && input.overlay.endCard?.enabled
+    ? input.overlay.endCard.cta || input.overlay.cta
+    : input.overlay.cta;
+  const tspans = lines.map((line, index) =>
+    `<tspan x="92" dy="${index === 0 ? 0 : 50}">${escapeXml(line)}</tspan>`).join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="${primary}"/>
+  <rect x="0" y="0" width="1280" height="720" fill="rgba(0,0,0,0.14)"/>
+  <circle cx="1110" cy="145" r="220" fill="${secondary}" opacity="0.18"/>
+  <rect x="72" y="72" width="1136" height="576" rx="34" fill="rgba(255,255,255,0.10)" stroke="${accent}" stroke-width="3"/>
+  <text x="92" y="126" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">${escapeXml(input.overlay.brandName)}</text>
+  <text x="92" y="166" fill="rgba(255,255,255,0.78)" font-family="Arial, Helvetica, sans-serif" font-size="22">${escapeXml(input.overlay.domain)}</text>
+  <text x="92" y="315" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700">${tspans}</text>
+  <rect x="92" y="570" width="520" height="58" rx="29" fill="${secondary}"/>
+  <text x="122" y="608" fill="${primary}" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">${escapeXml(ctaText || "Learn more")}</text>
+</svg>`;
+}
+
+async function renderTextCardPng(input: {
+  tmpDir: string;
+  scene: MarketingTimeline["scenes"][number];
+  sceneIndex: number;
+  totalScenes: number;
+  overlay: MarketingBrandOverlay;
+}) {
+  const outputPath = path.join(input.tmpDir, `scene-card-${input.sceneIndex + 1}.png`);
+  const svg = buildTextCardSvg({
+    scene: input.scene,
+    overlay: input.overlay,
+    isFinalScene: input.sceneIndex === input.totalScenes - 1,
+  });
+  await sharp(Buffer.from(svg)).png().toFile(outputPath);
+  return outputPath;
+}
+
+function buildPlainColorSceneCommand(input: {
+  ffmpegPath: string;
+  tmpDir: string;
+  sceneIndex: number;
+  durationSeconds: number;
+  overlay: MarketingBrandOverlay;
+}) {
+  const outputPath = path.join(input.tmpDir, `scene-${input.sceneIndex + 1}.mp4`);
+  return {
+    command: input.ffmpegPath,
+    args: [
+      "-y",
+      "-f",
+      "lavfi",
+      "-i",
+      `color=c=${svgColorToFfmpegColor(sanitizeSvgColor(input.overlay.primaryColor, "#1e3a5f"))}:s=1280x720:d=${Math.max(1, Math.round(input.durationSeconds || 1))}:r=30`,
+      "-an",
+      "-c:v",
+      "libx264",
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+      outputPath,
+    ],
+    outputPath,
+  };
+}
+
+async function renderGeneratedTextCardSegment(input: {
+  ffmpegPath: string;
+  tmpDir: string;
+  scene: MarketingTimeline["scenes"][number];
+  sceneIndex: number;
+  totalScenes: number;
+  overlay: MarketingBrandOverlay;
+}): Promise<{ outputPath: string; warning?: string }> {
+  const duration = String(Math.max(1, Math.round(input.scene.durationSeconds || 1)));
+  const outputPath = path.join(input.tmpDir, `scene-${input.sceneIndex + 1}.mp4`);
+  try {
+    const cardPath = await renderTextCardPng(input);
+    await execa(input.ffmpegPath, [
+      "-y",
+      "-loop",
+      "1",
+      "-t",
+      duration,
+      "-i",
+      cardPath,
+      "-an",
+      "-c:v",
+      "libx264",
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+      outputPath,
+    ], { timeout: 35_000 });
+    return { outputPath };
+  } catch (error) {
+    const plain = buildPlainColorSceneCommand({
+      ffmpegPath: input.ffmpegPath,
+      tmpDir: input.tmpDir,
+      sceneIndex: input.sceneIndex,
+      durationSeconds: input.scene.durationSeconds,
+      overlay: input.overlay,
+    });
+    await execa(plain.command, plain.args, { timeout: 25_000 });
+    return {
+      outputPath: plain.outputPath,
+      warning: `Scene ${input.scene.id} branded text-card PNG failed; plain colour fallback used (${describeExecutionError(error)}).`,
+    };
+  }
 }
 
 export function buildSceneSegmentCommand(input: {
@@ -294,25 +521,38 @@ async function renderSceneWithFallback(input: {
   sceneIndex: number;
   totalScenes: number;
   overlay: MarketingBrandOverlay;
+  drawtextAvailable: boolean;
 }): Promise<{ outputPath: string; warning?: string }> {
+  if (input.scene.sourceType === "text_card" || input.scene.mediaKind === "text_card") {
+    const rendered = await renderGeneratedTextCardSegment(input);
+    return {
+      outputPath: rendered.outputPath,
+      warning: rendered.warning ?? (
+        input.drawtextAvailable
+          ? undefined
+          : `Scene ${input.scene.id} used PNG text-card fallback because FFmpeg drawtext is unavailable.`
+      ),
+    };
+  }
+
   if (input.scene.assetUrl && isRemoteUrl(input.scene.assetUrl) && !isAllowedRemoteStockUrl(input.scene.assetUrl)) {
-    const fallback = buildSceneSegmentCommand({
+    const fallbackScene = {
+      ...input.scene,
+      sourceType: "text_card" as const,
+      mediaKind: "text_card" as const,
+      assetUrl: null,
+    };
+    const rendered = await renderGeneratedTextCardSegment({
       ffmpegPath: input.ffmpegPath,
       tmpDir: input.tmpDir,
-      scene: {
-        ...input.scene,
-        sourceType: "text_card",
-        mediaKind: "text_card",
-        assetUrl: null,
-      },
+      scene: fallbackScene,
       sceneIndex: input.sceneIndex,
       totalScenes: input.totalScenes,
       overlay: input.overlay,
     });
-    await execa(fallback.command, fallback.args, { timeout: 30_000 });
     return {
-      outputPath: fallback.outputPath,
-      warning: `Scene ${input.scene.id} used disallowed remote host; text card fallback used.`,
+      outputPath: rendered.outputPath,
+      warning: rendered.warning ?? `Scene ${input.scene.id} used disallowed remote host; PNG text card fallback used.`,
     };
   }
 
@@ -355,7 +595,7 @@ async function renderSceneWithFallback(input: {
       mediaKind: "text_card" as const,
       assetUrl: null,
     };
-    const fallback = buildSceneSegmentCommand({
+    const rendered = await renderGeneratedTextCardSegment({
       ffmpegPath: input.ffmpegPath,
       tmpDir: input.tmpDir,
       scene: fallbackScene,
@@ -363,10 +603,9 @@ async function renderSceneWithFallback(input: {
       totalScenes: input.totalScenes,
       overlay: input.overlay,
     });
-    await execa(fallback.command, fallback.args, { timeout: 30_000 });
     return {
-      outputPath: fallback.outputPath,
-      warning: `Scene ${input.scene.id} media failed; text card fallback used (${describeExecutionError(error)}).`,
+      outputPath: rendered.outputPath,
+      warning: rendered.warning ?? `Scene ${input.scene.id} media failed; PNG text card fallback used (${describeExecutionError(error)}).`,
     };
   }
 }
@@ -471,6 +710,7 @@ export async function renderMarketingTimeline(input: {
         sceneIndex: index,
         totalScenes: input.timeline.scenes.length,
         overlay: input.brandOverlay,
+        drawtextAvailable: readiness.drawtextAvailable,
       });
     }));
     sceneResults.forEach((result) => {
