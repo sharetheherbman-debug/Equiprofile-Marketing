@@ -248,8 +248,8 @@ describe("PR64E frontend product setup", () => {
   it("shows product setup card when profile is missing or low confidence", () => {
     expect(appSource).toContain("<ProductContextPanel");
     expect(profileCardSource).toContain("Let’s learn what we’re marketing.");
-    expect(profileCardSource).toContain("Scan site");
-    expect(profileCardSource).toContain("Confirm profile");
+    expect(profileCardSource).toContain("Scan Site");
+    expect(profileCardSource).toContain("Confirm Product");
   });
 
   it("keeps raw scrape diagnostics out of the main Studio", () => {

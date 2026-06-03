@@ -21,6 +21,7 @@ export function ProductContextPanel({
   onConfirm,
   onChooseLogo,
   onUploadLogo,
+  onRepairLogo,
   onOpenSettings,
   onOpenResults,
 }: {
@@ -34,6 +35,7 @@ export function ProductContextPanel({
   onConfirm: () => void;
   onChooseLogo: () => void;
   onUploadLogo: (file: File) => void;
+  onRepairLogo?: () => void;
   onOpenSettings: () => void;
   onOpenResults: () => void;
 }) {
@@ -42,7 +44,8 @@ export function ProductContextPanel({
     signupUrl: profile?.signupUrl ?? "",
     productNotes: "",
   });
-  const [showEditor, setShowEditor] = useState(false);
+  const [showEditor, setShowEditor] = useState(!isReady);
+  const [logoBroken, setLogoBroken] = useState(false);
 
   useEffect(() => {
     setDraft((current) => ({
@@ -54,6 +57,14 @@ export function ProductContextPanel({
 
   const logoUrl = profile?.candidateLogoUrls?.[0] ?? null;
   const needsReview = !isReady;
+
+  useEffect(() => {
+    if (needsReview) setShowEditor(true);
+  }, [needsReview]);
+
+  useEffect(() => {
+    setLogoBroken(false);
+  }, [logoUrl]);
 
   return (
     <section className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm" data-testid="product-context-panel">
@@ -74,7 +85,7 @@ export function ProductContextPanel({
       ) : null}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button type="button" size="sm" variant="outline" onClick={() => setShowEditor((current) => !current)}>Edit product</Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => setShowEditor((current) => !current)}>{showEditor ? "Hide product setup" : "Edit product"}</Button>
         <Button type="button" size="sm" variant="outline" onClick={onChooseLogo}>Brand Kit</Button>
         <Button type="button" size="sm" variant="outline" onClick={onOpenSettings}>Connections</Button>
         <Button type="button" size="sm" variant="outline" onClick={onOpenResults}>Results</Button>
@@ -108,13 +119,13 @@ export function ProductContextPanel({
         </label>
       <div className="mt-4 grid gap-2">
         <Button type="button" disabled={isPending || !draft.landingPageUrl.trim()} onClick={() => onScan(draft)}>
-          {isPending ? "Working..." : "Scan site"}
+          {isPending ? "Working..." : "Scan Site"}
         </Button>
         <Button type="button" variant="outline" disabled={isPending} onClick={() => onSaveDraft(draft)}>Save draft</Button>
         {usingEquiProfileDefaults ? (
           <Button type="button" variant="outline" disabled={isPending} onClick={() => onUseDefaults(draft)}>Use EquiProfile defaults</Button>
         ) : null}
-        {profile ? <Button type="button" variant="ghost" disabled={isPending} onClick={onConfirm}>Confirm profile</Button> : null}
+        {profile ? <Button type="button" variant="ghost" disabled={isPending} onClick={onConfirm}>Confirm Product</Button> : null}
       </div>
       </div> : null}
 
@@ -129,7 +140,19 @@ export function ProductContextPanel({
       </div>
 
       <div className="mt-4 rounded-2xl border border-stone-100 bg-stone-50 p-3">
-        {logoUrl ? <img src={logoUrl} alt={`${profile?.appName ?? "Product"} logo`} className="h-16 w-full object-contain" /> : <p className="text-xs text-stone-500">Logo not confirmed yet.</p>}
+        {logoUrl && !logoBroken ? (
+          <img
+            src={logoUrl}
+            alt={`${profile?.appName ?? "Product"} logo`}
+            className="h-16 w-full object-contain"
+            onError={() => setLogoBroken(true)}
+          />
+        ) : logoBroken ? (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+            <p>Logo file missing — reupload or repair.</p>
+            {onRepairLogo ? <Button type="button" variant="outline" size="sm" className="mt-2" onClick={onRepairLogo}>Repair logo</Button> : null}
+          </div>
+        ) : <p className="text-xs text-stone-500">Logo not confirmed yet.</p>}
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <label className="cursor-pointer rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-700">
             Upload logo

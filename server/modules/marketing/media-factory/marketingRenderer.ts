@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import ffmpegStatic from "ffmpeg-static";
 import { execa } from "execa";
-import { writeGeneratedAsset } from "../../../_core/storage/localMediaStorage";
+import { ensureStorageDirs, STORAGE_ROOT, writeGeneratedAsset } from "../../../_core/storage/localMediaStorage";
 import type { MarketingBrandOverlay, MarketingTimeline, RenderOutput } from "./renderJobTypes";
 import { generateSrtCaptions, generateVttCaptions } from "./marketingCaptionService";
 
@@ -87,11 +87,76 @@ function buildSceneOverlayFilter(input: {
   return lines.join(",");
 }
 
-function ffmpegBinaryAvailable(): string | null {
-  if (typeof ffmpegStatic === "string" && ffmpegStatic.length > 0 && fs.existsSync(ffmpegStatic)) {
-    return ffmpegStatic;
+function ffmpegCandidates() {
+  return Array.from(new Set([
+    process.env.FFMPEG_PATH,
+    typeof ffmpegStatic === "string" ? ffmpegStatic : null,
+    path.resolve(process.cwd(), "node_modules", "ffmpeg-static", process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg"),
+    "ffmpeg",
+  ].filter((value): value is string => Boolean(value && value.trim()))));
+}
+
+async function canRunFfmpeg(candidate: string) {
+  if (candidate !== "ffmpeg" && !fs.existsSync(candidate)) {
+    return { ok: false as const, reason: "path_missing" };
   }
-  return null;
+  try {
+    await execa(candidate, ["-version"], { timeout: 8_000 });
+    return { ok: true as const };
+  } catch (error) {
+    return {
+      ok: false as const,
+      reason: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function resolveAvailableFfmpegPath() {
+  const failures: string[] = [];
+  for (const candidate of ffmpegCandidates()) {
+    const result = await canRunFfmpeg(candidate);
+    if (result.ok) return { ffmpegPath: candidate, failures };
+    failures.push(`${candidate}: ${result.reason}`);
+  }
+  return { ffmpegPath: null, failures };
+}
+
+export async function getMarketingRenderRuntimeReadiness() {
+  const { ffmpegPath, failures } = await resolveAvailableFfmpegPath();
+  const tmpProbe = path.join(os.tmpdir(), `marketing-render-probe-${process.pid}-${Date.now()}.tmp`);
+  const storageProbe = path.join(STORAGE_ROOT, "temp", `render-probe-${process.pid}-${Date.now()}.tmp`);
+  const result = {
+    ready: false,
+    ffmpegPath,
+    ffmpegExecutable: Boolean(ffmpegPath),
+    ffmpegFailures: failures,
+    tempWritable: false,
+    outputWritable: false,
+    outputRoot: STORAGE_ROOT,
+    publicUrlBase: "/media/generated",
+    reason: "",
+  };
+  try {
+    await fs.promises.writeFile(tmpProbe, "ok");
+    await fs.promises.unlink(tmpProbe);
+    result.tempWritable = true;
+  } catch (error) {
+    result.reason = `Temp directory is not writable: ${error instanceof Error ? error.message : String(error)}`;
+  }
+  try {
+    await ensureStorageDirs();
+    await fs.promises.writeFile(storageProbe, "ok");
+    await fs.promises.unlink(storageProbe);
+    result.outputWritable = true;
+  } catch (error) {
+    result.reason = `Generated media root is not writable: ${error instanceof Error ? error.message : String(error)}`;
+  }
+  if (!ffmpegPath) {
+    result.reason = `FFmpeg is not executable. Tried: ${failures.join("; ") || "no candidates"}`;
+  }
+  result.ready = Boolean(ffmpegPath && result.tempWritable && result.outputWritable);
+  if (result.ready) result.reason = "FFmpeg, temp storage, and generated media output are ready.";
+  return result;
 }
 
 function sceneBaseVideoFilter(): string {
@@ -351,13 +416,14 @@ export async function renderMarketingTimeline(input: {
     };
   }
 
-  const ffmpegPath = ffmpegBinaryAvailable();
-  if (!ffmpegPath) {
+  const readiness = await getMarketingRenderRuntimeReadiness();
+  if (!readiness.ready || !readiness.ffmpegPath) {
     return {
       status: "setup_needed",
-      errorMessage: "ffmpeg-static binary is unavailable in this runtime.",
+      errorMessage: readiness.reason,
     };
   }
+  const ffmpegPath = readiness.ffmpegPath;
 
   const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), `marketing-render-${input.jobId}-`));
   const tmpOut = path.join(tmpDir, `assembled-${input.jobId}.mp4`);
@@ -508,10 +574,10 @@ export async function renderMarketingTimeline(input: {
       },
       warnings,
     };
-  } catch {
+  } catch (error) {
     return {
       status: "setup_needed",
-      errorMessage: "Media renderer could not execute ffmpeg. Verify binary/runtime permissions.",
+      errorMessage: `Media renderer could not execute ffmpeg: ${error instanceof Error ? error.message : String(error)}`,
     };
   } finally {
     try {

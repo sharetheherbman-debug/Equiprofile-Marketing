@@ -140,6 +140,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
   const [latestRenderJob, setLatestRenderJob] = useState<Record<string, unknown> | null>(null);
   const [studioOpen, setStudioOpen] = useState(false);
   const [clarifyingQuestion, setClarifyingQuestion] = useState<string | null>(null);
+  const [latestOutcome, setLatestOutcome] = useState<{ route: string; status: string; detail: string; nextAction: string } | null>(null);
 
   const productIntelligence = useMarketingProductProfile(workspace);
   const brandKitState = useMarketingBrandKit(workspace);
@@ -156,10 +157,14 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       setLastDeliverablePackage((result as Record<string, unknown>) ?? null);
       setLastMediaOutput(null);
       setStudioOpen(false);
+      setLatestOutcome({ route: "Campaign package", status: "ready", detail: "Campaign package generated for review and export.", nextAction: "Review the package, then export or create schedule drafts." });
       toast.success("Campaign package generated");
       await Promise.all([utils.admin.getMarketingCampaign.invalidate(), utils.admin.listMarketingCampaigns.invalidate()]);
     },
-    onError: (error) => toast.error("Could not generate campaign", { description: error.message }),
+    onError: (error) => {
+      setLatestOutcome({ route: "Campaign package", status: "failed", detail: error.message, nextAction: "Check product details and provider setup, then try Generate again." });
+      toast.error("Could not generate campaign", { description: error.message });
+    },
   });
   const generateImageAdMutation = trpc.admin.generateMarketingImageAsset.useMutation({
     onSuccess: async (result) => {
@@ -167,10 +172,14 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       setLastMediaOutput(image);
       setLastDeliverablePackage(null);
       setStudioOpen(false);
+      setLatestOutcome({ route: "Image advert", status: image.publicUrl ? "ready" : String(image.status ?? "queued"), detail: image.publicUrl ? "Image preview is ready." : String(image.errorMessage ?? "Image advert queued or needs provider setup."), nextAction: image.publicUrl ? "Preview the image and use it from Library." : "Open Settings and test the image provider route." });
       toast[image.publicUrl ? "success" : "info"](image.publicUrl ? "Image advert generated" : "Image advert queued or needs setup");
       await utils.admin.listMediaAssets.invalidate();
     },
-    onError: (error) => toast.error("Image generation needs attention", { description: error.message }),
+    onError: (error) => {
+      setLatestOutcome({ route: "Image advert", status: "failed", detail: error.message, nextAction: "Open Settings and test GenX/Hugging Face image routes." });
+      toast.error("Image generation needs attention", { description: error.message });
+    },
   });
   const uploadMarketingBrandLogoMutation = trpc.admin.uploadMarketingBrandLogo.useMutation({
     onSuccess: async () => {
@@ -178,6 +187,16 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       await Promise.all([utils.admin.getMarketingBrandKit.invalidate(), utils.admin.getMarketingProductProfile.invalidate(), utils.admin.listMediaAssets.invalidate()]);
     },
     onError: (error) => toast.error("Could not upload logo", { description: error.message }),
+  });
+  const repairMarketingBrandLogoMutation = trpc.admin.repairMarketingBrandLogo.useMutation({
+    onSuccess: async (result) => {
+      toast[result.status === "cleared_missing_logo" ? "info" : "success"](
+        result.status === "cleared_missing_logo" ? "Logo file missing" : "Logo link checked",
+        { description: result.message ?? "Brand Kit logo path is valid." },
+      );
+      await Promise.all([utils.admin.getMarketingBrandKit.invalidate(), utils.admin.getMarketingProductProfile.invalidate(), utils.admin.listMediaAssets.invalidate()]);
+    },
+    onError: (error) => toast.error("Could not repair logo", { description: error.message }),
   });
   const copyPackages = useMarketingCopyPackages({ workspace, onPackage: (value) => {
     setLastDeliverablePackage(value);
@@ -212,30 +231,37 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     setClarifyingQuestion(null);
     if (intent.workflow === "clarify") {
       setClarifyingQuestion(intent.question);
+      setLatestOutcome({ route: "Needs clarification", status: "waiting", detail: intent.question, nextAction: "Answer the question in the prompt and Generate again." });
       return;
     }
     if (intent.workflow === "assembled_video") {
+      setLatestOutcome({ route: `${intent.label} assembled video`, status: "generating", detail: "Preparing script, scenes, fallback media, and render job.", nextAction: "Preview will show render status and playable output when ready." });
       const result = await createMarketingStudioPlan.mutateAsync({
-        tenantId: workspace.tenantId,
-        workspaceId: workspace.marketing_workspace_id,
-        hostAppId: workspace.host_app_id,
-        originalUserPrompt: goal,
-        contentType: intent.contentType,
-        platform: intent.platform,
-        requestedDurationSeconds: intent.durationSeconds,
-        qualityMode: quality,
-        audience,
-        goal,
-      });
+          tenantId: workspace.tenantId,
+          workspaceId: workspace.marketing_workspace_id,
+          hostAppId: workspace.host_app_id,
+          originalUserPrompt: goal,
+          contentType: intent.contentType,
+          platform: intent.platform,
+          requestedDurationSeconds: intent.durationSeconds,
+          qualityMode: quality,
+          audience,
+          goal,
+        }).catch((error: Error) => {
+          setLatestOutcome({ route: `${intent.label} assembled video`, status: "failed", detail: error.message, nextAction: "Check product setup and provider routes, then try Generate again." });
+          throw error;
+        });
       setLatestStudioPlan(result.plan as MarketingStudioPlan);
       setLatestRenderJob(null);
       setLastDeliverablePackage(null);
       setLastMediaOutput(null);
       setStudioOpen(true);
+      setLatestOutcome({ route: `${intent.label} assembled video`, status: "rendering", detail: "Studio workflow started. Fallback caption video can render without stock media.", nextAction: "Watch render status in Preview." });
       toast.success(`${intent.label} workflow started`);
       return;
     }
     if (intent.workflow === "image_ad") {
+      setLatestOutcome({ route: "Image advert", status: "generating", detail: "Routing to image generation.", nextAction: "Preview will show the image URL or exact setup failure." });
       generateImageAdMutation.mutate({
         tenantId: workspace.tenantId,
         workspaceId: workspace.marketing_workspace_id,
@@ -260,6 +286,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       durationDays: 7,
     };
     if (!campaignPlan) setCampaignPlan(buildCampaignPlan(goal, audience, form.platforms));
+    setLatestOutcome({ route: intent.packageType, status: "generating", detail: "Generating product-aware campaign copy and export package.", nextAction: "Review the package, then export or schedule." });
     if (intent.packageType === "signup_campaign") generateCampaignPackageMutation.mutate({ ...form, targetOutcome: "signup growth" });
     else copyPackages.generate(intent.packageType, form);
   }
@@ -324,6 +351,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       onConfirm={() => productIntelligence.confirm.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}
       onChooseLogo={() => setView("library")}
       onUploadLogo={handleUploadLogo}
+      onRepairLogo={() => repairMarketingBrandLogoMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}
       onOpenSettings={() => setView("settings")}
       onOpenResults={() => setView("results")}
     />
@@ -357,6 +385,17 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
             <>
               <CampaignPromptPanel prompt={prompt} channels={channels} isGenerating={isAnyGenerationPending} generateDisabled={selectedCreationBlocked} onPromptChange={setPrompt} onToggleChannel={toggleChannel} onPlan={handlePlanCampaign} onGenerate={() => void handleGenerate()} />
               {clarifyingQuestion ? <p className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{clarifyingQuestion}</p> : null}
+              {latestOutcome ? (
+                <section className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm" data-testid="latest-outcome-card">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Latest outcome</p>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="text-lg font-semibold text-stone-950">{latestOutcome.route}</h2>
+                    <span className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs text-stone-700">{latestOutcome.status}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-stone-600">{latestOutcome.detail}</p>
+                  <p className="mt-1 text-xs text-stone-500">Next action: {latestOutcome.nextAction}</p>
+                </section>
+              ) : null}
               <CampaignPlanPanel plan={campaignPlan} />
               <MarketingPreviewPanel deliverablePackage={lastDeliverablePackage} mediaOutput={lastMediaOutput} asset={assetsState.assetStore.resolvedPreviewAsset} renderJob={latestRenderJob} studioPlan={latestStudioPlan} signupUrl={signupUrl} />
               {studioOpen ? (
@@ -365,7 +404,12 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Guided Studio</p>
                     <h2 className="mt-1 text-xl font-semibold text-stone-950">Script → Scenes → Media → Render → Export</h2>
                   </div>
-                  <StudioWorkbench tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} productCategory={productIntelligence.displayProfile?.category} productName={productIntelligence.displayProfile?.appName} productProfileConfirmed={productIntelligence.isReady} initialPrompt={prompt} initialPlan={latestStudioPlan} autoStartRender onPlanChange={setLatestStudioPlan} onRenderJobChange={(job) => setLatestRenderJob((job as unknown as Record<string, unknown> | null) ?? null)} onDone={setLatestStudioPlan} />
+                  <StudioWorkbench tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} productCategory={productIntelligence.displayProfile?.category} productName={productIntelligence.displayProfile?.appName} productProfileConfirmed={productIntelligence.isReady} initialPrompt={prompt} initialPlan={latestStudioPlan} autoStartRender onPlanChange={setLatestStudioPlan} onRenderJobChange={(job) => {
+                    const nextJob = (job as unknown as Record<string, unknown> | null) ?? null;
+                    setLatestRenderJob(nextJob);
+                    if (nextJob?.status === "completed") setLatestOutcome({ route: "Assembled video", status: "ready", detail: String(nextJob.outputPublicUrl ? "Playable MP4 is ready." : "Render completed but no playable URL was returned."), nextAction: nextJob.outputPublicUrl ? "Preview the video, then export or schedule." : "Treat as render failure and check runtime storage." });
+                    if (nextJob?.status === "failed" || nextJob?.status === "setup_needed") setLatestOutcome({ route: "Assembled video", status: String(nextJob.status), detail: String(nextJob.errorMessage ?? "Render needs runtime setup."), nextAction: "Open Settings and verify FFmpeg/storage readiness." });
+                  }} onDone={setLatestStudioPlan} />
                 </section>
               ) : null}
               <details className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">

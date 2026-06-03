@@ -1,7 +1,7 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { config } from "dotenv";
 import { existsSync } from "fs";
-import { resolve } from "path";
+import { join, resolve } from "path";
 
 // Load environment variables with fallback to .env.default in non-production
 const isProduction = process.env.NODE_ENV === "production";
@@ -218,8 +218,9 @@ export const ENV = {
   // Local file storage path (used when ENABLE_UPLOADS=false or proxy storage is not configured)
   storagePath:
     process.env.STORAGE_PATH ??
+    process.env.EQUIPROFILE_UPLOADS_ROOT ??
     (process.env.NODE_ENV === "production"
-      ? "/var/www/equiprofile/uploads"
+      ? join(process.env.EQUIPROFILE_STORAGE_ROOT ?? "/var/equiprofile/storage", "uploads")
       : "./uploads"),
 
   // Admin

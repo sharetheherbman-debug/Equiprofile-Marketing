@@ -46,7 +46,7 @@ describe("Marketing app stable contracts", () => {
   it("normalizes invalid social query responses without crashing", () => {
     expect(normalizeSocialConnections(undefined)).toEqual([]);
     expect(normalizeSocialConnections({})).toEqual([]);
-    expect(normalizeSocialConnections([{ platform: 1, status: null }])).toEqual([{ platform: "Unknown", status: "not_connected", accountName: null }]);
+    expect(normalizeSocialConnections([{ platform: 1, status: null }])).toEqual([{ platform: "Unknown", status: "not_connected", accountName: null, scopes: [], requiredScopes: [], missingScopes: [], reason: null }]);
   });
 
   it("keeps StudioHome guided-only", () => {

@@ -14,7 +14,7 @@ export const PROVIDER_FIELDS = [
   { id: "pixabay", key: "marketing_pixabay_api_key", label: "Pixabay", group: "Stock media", canTest: false },
 ] as const;
 
-type SocialConnection = { platform: string; status: string; accountName?: string | null };
+type SocialConnection = { platform: string; status: string; accountName?: string | null; scopes?: string[]; requiredScopes?: string[]; missingScopes?: string[]; reason?: string | null };
 type ProviderSettingsApiEntry = { configured: boolean; keyMasked: string | null };
 type ProviderSettingsApiResponse = Record<string, ProviderSettingsApiEntry>;
 type ToolingTaskRoute = { marketingTask: string; status: string; provider?: string | null; modelId?: string | null; reason?: string | null };
@@ -28,6 +28,10 @@ export function normalizeSocialConnections(value: unknown): SocialConnection[] {
       platform: typeof item.platform === "string" ? item.platform : "Unknown",
       status: typeof item.status === "string" ? item.status : "not_connected",
       accountName: typeof item.accountName === "string" ? item.accountName : null,
+      scopes: Array.isArray(item.scopes) ? item.scopes.filter((scope): scope is string => typeof scope === "string") : [],
+      requiredScopes: Array.isArray(item.requiredScopes) ? item.requiredScopes.filter((scope): scope is string => typeof scope === "string") : [],
+      missingScopes: Array.isArray(item.missingScopes) ? item.missingScopes.filter((scope): scope is string => typeof scope === "string") : [],
+      reason: typeof item.reason === "string" ? item.reason : null,
     }));
 }
 
@@ -67,6 +71,7 @@ export function MarketingAppSettings({
   hostAppId: string;
 }) {
   const utils = trpc.useUtils();
+  const supportModeEnabled = import.meta.env.VITE_MARKETING_SUPPORT_MODE === "true";
   const [showAdminSupport, setShowAdminSupport] = useState(false);
   const [values, setValues] = useState<Record<string, string>>({});
   const [stockTestResults, setStockTestResults] = useState<Record<string, string>>({});
@@ -74,7 +79,7 @@ export function MarketingAppSettings({
   const socialConnectionsQuery = trpc.admin.listMarketingSocialConnections.useQuery({ tenantId, workspaceId });
   const backendReadinessQuery = trpc.admin.getMarketingBackendReadiness.useQuery({ tenantId, workspaceId, hostAppId, qualityMode: quality });
   const toolingQuery = trpc.admin.getMarketingProviderToolingTruth.useQuery({ tenantId, workspaceId, hostAppId, mode: quality });
-  const diagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, { enabled: showAdminSupport });
+  const diagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, { enabled: supportModeEnabled && showAdminSupport });
   const saveProviderSettings = trpc.admin.saveAIProviderSettings.useMutation({
     onSuccess: async () => {
       toast.success("Marketing settings saved");
@@ -198,7 +203,13 @@ export function MarketingAppSettings({
             <div className="grid gap-2">
               {socialPlatforms.map((platform) => {
                 const connection = socialConnections.find((item) => item.platform.toLowerCase() === platform.toLowerCase());
-                return <div key={platform} className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs"><span>{platform}</span><span>{connectionLabel(connection?.status ?? "not_connected")}</span></div>;
+                const requiredScopes = connection?.requiredScopes?.length ? connection.requiredScopes.join(", ") : "Scopes shown after connector setup.";
+                const missingScopes = connection?.missingScopes?.length ? `Missing: ${connection.missingScopes.join(", ")}` : connection?.reason ?? "Export/manual fallback stays available.";
+                return <div key={platform} className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs">
+                  <div className="flex items-center justify-between gap-3"><span className="font-medium text-stone-800">{platform}</span><span>{connectionLabel(connection?.status ?? "not_connected")}</span></div>
+                  <p className="mt-1 text-stone-500">Required scopes: {requiredScopes}</p>
+                  <p className="mt-1 text-stone-500">{missingScopes}</p>
+                </div>;
               })}
             </div>
           )}
@@ -209,7 +220,7 @@ export function MarketingAppSettings({
         <SettingsCard title="9. Media Studio readiness" status={mediaReady ? "Ready" : "Needs setup"} action={mediaReady ? "Media jobs can run when their provider route is executable and output is playable." : "Verify FFmpeg, storage, and model routes for optional media jobs."} />
       </div>
 
-      <details className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" open={showAdminSupport} onToggle={(event) => setShowAdminSupport(event.currentTarget.open)}>
+      {supportModeEnabled ? <details className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" open={showAdminSupport} onToggle={(event) => setShowAdminSupport(event.currentTarget.open)}>
         <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-stone-900">Admin Support <ChevronDown className={`size-4 transition ${showAdminSupport ? "rotate-180" : ""}`} /></summary>
         {showAdminSupport ? (
           <div className="mt-4 space-y-3 border-t border-stone-100 pt-4">
@@ -217,7 +228,7 @@ export function MarketingAppSettings({
             <pre className="max-h-80 overflow-auto rounded-2xl bg-stone-950 p-4 text-xs text-stone-100">{JSON.stringify({ backend, diagnostics: diagnosticsQuery.data ?? {} }, null, 2)}</pre>
           </div>
         ) : null}
-      </details>
+      </details> : null}
     </div>
   );
 }

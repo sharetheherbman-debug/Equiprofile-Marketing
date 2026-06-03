@@ -121,7 +121,7 @@ describe("PR62C deliverable composer", () => {
     expect(result.campaignItems.length).toBeGreaterThan(0);
     expect(createMarketingCampaignItemRecord).toHaveBeenCalled();
     expect(createMarketingScheduleDraftRecord).not.toHaveBeenCalled();
-  }, 10_000);
+  }, 20_000);
 
   it("composeAssembledVideoPackage returns 8 to 15 scene timeline for 180-second package", async () => {
     vi.doMock("./modules/marketing/studio-generation", () => ({

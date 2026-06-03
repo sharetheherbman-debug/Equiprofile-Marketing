@@ -1,4 +1,10 @@
+import fs from "fs";
 import { getMediaAssetById } from "../../growth-engine";
+import {
+  findServableUploadFile,
+  isSafeLocalMediaUrl,
+  resolveGeneratedMediaPath,
+} from "../../../_core/storage/runtimeFileStorage";
 import { getMarketingBrandOverlayTemplate } from "./marketingBrandOverlayTemplateService";
 import {
   getMarketingBrandKitRowById,
@@ -72,6 +78,12 @@ function sanitizeDomain(value: string | undefined, fallback: string) {
 function sanitizeUrl(value: string | null | undefined): string | null {
   const candidate = (value ?? "").trim();
   if (!candidate) return null;
+  if (!isSafeLocalMediaUrl(candidate)) {
+    throw new Error("Logo URL is not safe. Use /api/files/..., /media/generated/..., or a public https URL.");
+  }
+  if (candidate.startsWith("/api/files/") || candidate.startsWith("/media/generated/") || candidate.startsWith("/assets/") || candidate.startsWith("/management-assets/") || candidate.startsWith("/school-assets/")) {
+    return candidate;
+  }
   return SAFE_URL.test(candidate) ? candidate : null;
 }
 
@@ -139,9 +151,9 @@ function buildResolvedValues(
     primaryColor: validateColor(input.primaryColor ?? existing?.primaryColor, defaultSeed.primaryColor),
     secondaryColor: validateColor(input.secondaryColor ?? existing?.secondaryColor, defaultSeed.secondaryColor),
     accentColor: resolveAccentColor(input.accentColor, existing?.accentColor),
-    logoAssetId: input.logoAssetId ?? existing?.logoAssetId ?? null,
-    logoUrl: sanitizeUrl(input.logoUrl ?? existing?.logoUrl),
-    faviconUrl: sanitizeUrl(input.faviconUrl ?? existing?.faviconUrl),
+    logoAssetId: input.logoAssetId !== undefined ? input.logoAssetId : existing?.logoAssetId ?? null,
+    logoUrl: sanitizeUrl(input.logoUrl !== undefined ? input.logoUrl : existing?.logoUrl),
+    faviconUrl: sanitizeUrl(input.faviconUrl !== undefined ? input.faviconUrl : existing?.faviconUrl),
     overlayTemplate: input.overlayTemplate ?? existing?.overlayTemplate ?? defaultSeed.overlayTemplate,
     defaultAspectRatio: (input.defaultAspectRatio ?? existing?.defaultAspectRatio ?? defaultSeed.defaultAspectRatio).trim() || defaultSeed.defaultAspectRatio,
     safeArea: input.safeArea ?? existing?.safeArea ?? null,
@@ -238,6 +250,48 @@ export async function selectMarketingBrandLogoAsset(input: {
     logoAssetId: asset.id,
     logoUrl: sanitizeUrl(asset.publicUrl) ?? null,
   });
+}
+
+function localLogoExists(url: string | null) {
+  if (!url) return true;
+  if (url.startsWith("/api/files/")) {
+    return Boolean(findServableUploadFile(url.slice("/api/files/".length)));
+  }
+  if (url.startsWith("/media/generated/")) {
+    const filePath = resolveGeneratedMediaPath(url.slice("/media/generated/".length));
+    return Boolean(filePath && fs.existsSync(filePath));
+  }
+  return true;
+}
+
+export async function repairMarketingBrandLogo(input: {
+  tenantId: string;
+  workspaceId: string;
+  hostAppId: string;
+}) {
+  const kit = await getMarketingBrandKit(input);
+  if (!kit?.logoUrl) {
+    return { status: "no_logo" as const, brandKit: kit };
+  }
+  if (localLogoExists(kit.logoUrl)) {
+    return { status: "ok" as const, brandKit: kit };
+  }
+  const repaired = await upsertMarketingBrandKit({
+    ...input,
+    logoAssetId: null,
+    logoUrl: null,
+    metadata: {
+      ...(kit.metadata ?? {}),
+      logoRepairStatus: "cleared_missing_file",
+      logoRepairAt: new Date().toISOString(),
+      brokenLogoUrl: kit.logoUrl,
+    },
+  });
+  return {
+    status: "cleared_missing_logo" as const,
+    message: "Logo file missing - reupload or repair",
+    brandKit: repaired,
+  };
 }
 
 export async function buildMarketingRenderOverlayConfig(input: {
