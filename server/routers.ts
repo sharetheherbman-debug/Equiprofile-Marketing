@@ -214,7 +214,7 @@ import { createBrandedMediaDerivative } from "./_core/media/postProcessor";
 import { getLocalMediaStorageRoot } from "./_core/storage/localMediaStorage";
 import { getRuntimeFileStorageReadiness } from "./_core/storage/runtimeFileStorage";
 import { validateMarketingCapability } from "./modules/marketing/marketingCapabilityValidator";
-import type { MarketingContentType, MarketingStudioScene } from "@shared/_core/marketingStudioPlan";
+import type { MarketingContentType, MarketingRenderContract, MarketingStudioScene } from "@shared/_core/marketingStudioPlan";
 import { MARKETING_STUDIO_SCENE_SCHEMA } from "@shared/_core/marketingStudioSchemas";
 import {
   buildMarketingRenderOverlayConfig,
@@ -1030,11 +1030,50 @@ function inferStudioContentType(prompt: string): MarketingContentType {
 }
 
 function inferStudioDurationSeconds(contentType: MarketingContentType, requested?: number | null): number {
-  if (typeof requested === "number" && Number.isFinite(requested) && requested > 0) return requested;
+  if (typeof requested === "number" && Number.isFinite(requested) && requested > 0) {
+    if (["facebook_ad", "instagram_reel", "tiktok_video", "youtube_short"].includes(contentType)) {
+      return Math.max(30, Math.min(60, Math.round(requested)));
+    }
+    return requested;
+  }
   if (contentType === "youtube_3min_video") return 180;
   if (contentType === "youtube_short") return 45;
   if (["facebook_ad", "instagram_reel", "tiktok_video"].includes(contentType)) return 30;
   return 10;
+}
+
+function buildStudioRenderContract(input: { contentType: MarketingContentType; prompt: string }): MarketingRenderContract {
+  const lowerPrompt = input.prompt.toLowerCase();
+  const isVerticalShort = /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(lowerPrompt)
+    || ["instagram_reel", "tiktok_video", "youtube_short"].includes(input.contentType);
+  if (isVerticalShort) {
+    return {
+      aspectRatio: "9:16",
+      width: 1080,
+      height: 1920,
+      platformFormat: "vertical_short_video",
+      audioRequired: true,
+      captionsRequired: true,
+    };
+  }
+  if (input.contentType === "youtube_3min_video") {
+    return {
+      aspectRatio: "16:9",
+      width: 1920,
+      height: 1080,
+      platformFormat: "youtube_landscape",
+      audioRequired: true,
+      captionsRequired: true,
+    };
+  }
+  return {
+    aspectRatio: "16:9",
+    width: 1280,
+    height: 720,
+    platformFormat: "general_video",
+    audioRequired: false,
+    captionsRequired: true,
+  };
 }
 
 function buildStudioScenes(prompt: string, isEquine: boolean): MarketingStudioScene[] {
@@ -5056,6 +5095,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const contentType = (input.contentType ?? inferStudioContentType(input.originalUserPrompt)) as MarketingContentType;
         const requestedDurationSeconds = inferStudioDurationSeconds(contentType, input.requestedDurationSeconds);
+        const renderContract = buildStudioRenderContract({ contentType, prompt: input.originalUserPrompt });
         const capability = validateMarketingCapability({
           contentType,
           requestedDurationSeconds,
@@ -5099,19 +5139,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             script: generated.script || input.script || "",
             scenes: generated.scenePlan,
             requiredAssets: generated.requiredAssets,
-            voiceoverRequired: capability.needsVoiceover,
+            voiceoverRequired: renderContract.audioRequired || capability.needsVoiceover,
             voiceoverScript: generated.voiceoverScript || input.script || "",
             voiceId: null,
             voiceProvider: null,
             voiceAssetId: null,
             audioAssetUrl: null,
             backgroundMusicUrl: null,
-            captionsRequired: capability.needsCaptions,
-            captionMode: capability.needsCaptions ? "script" : "none",
+            captionsRequired: renderContract.captionsRequired || capability.needsCaptions,
+            captionMode: renderContract.captionsRequired || capability.needsCaptions ? "script" : "none",
             captionFormat: "srt",
             audioStatus: "pending",
             captionStatus: "pending",
             brandOverlayRequired: capability.needsBrandOverlay,
+            renderContract,
             renderMode: capability.finalDeliveryMode,
             status: generated.status === "setup_needed" || generated.status === "provider_unavailable"
               ? "brief"
@@ -5219,6 +5260,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             script: z.string().max(12000).optional(),
             scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
             voiceoverScript: z.string().max(12000).optional(),
+            renderContract: z.object({
+              aspectRatio: z.enum(["9:16", "16:9", "1:1"]),
+              width: z.number().int().min(320).max(3840),
+              height: z.number().int().min(320).max(3840),
+              platformFormat: z.enum(["vertical_short_video", "youtube_landscape", "general_video"]),
+              audioRequired: z.boolean(),
+              captionsRequired: z.boolean(),
+            }).optional(),
           }),
           voiceAssetId: z.number().int().positive().optional(),
           audioUrl: z.string().max(2000).optional(),
@@ -5262,16 +5311,40 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           });
         }
 
+        const sourcedScenes = await sourceMarketingScenesWithStockMedia({
+          plan: {
+            originalUserPrompt: input.plan.originalUserPrompt,
+            scenes: normalizedScenes,
+          },
+          providerPreference: "auto",
+          maxPerScene: 4,
+        });
+        const resolvedRenderContract = input.plan.renderContract ?? buildStudioRenderContract({
+          contentType: input.plan.contentType as MarketingContentType,
+          prompt: input.plan.originalUserPrompt,
+        });
+
         const timeline = compileMarketingTimeline({
-          scenes: normalizedScenes,
+          scenes: sourcedScenes.plan.scenes,
           script: input.plan.script ?? "",
+          contentType: input.plan.contentType as MarketingContentType,
+          originalUserPrompt: input.plan.originalUserPrompt,
+          renderContract: resolvedRenderContract,
+          captionsRequired: resolvedRenderContract.captionsRequired,
+          voiceoverRequired: resolvedRenderContract.audioRequired,
         });
         const captionSrt = generateSrtCaptions(timeline);
         const captionVtt = generateVttCaptions(timeline);
         const captionMode = input.captionMode ?? "script";
         const captionFormat = input.captionFormat ?? "srt";
+        const missingMediaCount = timeline.scenes.filter((scene) => scene.sourceType === "text_card").length;
+        const requiresAudio = resolvedRenderContract.audioRequired;
+        const hasAttachedAudio = Boolean(input.audioUrl || input.voiceAssetId);
+        const audioWarnings = requiresAudio && !hasAttachedAudio
+          ? ["audio_required_missing: no voiceover/music asset attached to this render job."]
+          : [];
         const audioMixPolicy = buildMarketingAudioMixPolicy({
-          hasVoiceover: Boolean(input.audioUrl || input.voiceAssetId),
+          hasVoiceover: hasAttachedAudio,
           hasBackgroundMusic: false,
           musicLicenseOk: false,
         });
@@ -5308,13 +5381,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: captionMode === "none" ? "pending" : "generated",
           },
           audio: {
-            status: input.audioUrl || input.voiceAssetId ? "queued" : "pending",
+            status: hasAttachedAudio ? "queued" : (requiresAudio ? "setup_needed" : "pending"),
             voiceAssetId: input.voiceAssetId ?? null,
             audioUrl: input.audioUrl ?? null,
             backgroundMusicUrl: null,
             voiceProvider: null,
             voiceModel: null,
-            mixPolicy: audioMixPolicy,
+            mixPolicy: {
+              ...audioMixPolicy,
+              warnings: [...audioMixPolicy.warnings, ...audioWarnings],
+            },
           },
           brandOverlay,
         });
@@ -5335,6 +5411,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!latest) {
           throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Render job creation failed" });
         }
+        const timelineRender = latest.timeline.render ?? {
+          aspectRatio: "16:9" as const,
+          width: 1280,
+          height: 720,
+          platformFormat: "general_video" as const,
+          audioRequired: false,
+          captionsRequired: true,
+        };
 
         return {
           id: latest.id,
@@ -5342,6 +5426,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           timelineSummary: {
             scenes: latest.timeline.scenes.length,
             totalDurationSeconds: latest.timeline.totalDurationSeconds,
+            width: timelineRender.width,
+            height: timelineRender.height,
+            aspectRatio: timelineRender.aspectRatio,
+            platformFormat: timelineRender.platformFormat,
+            fallbackScenes: missingMediaCount,
           },
         };
       }),
@@ -6933,6 +7022,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             const timeline = compileMarketingTimeline({
               scenes: plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1)),
               script: plan.script ?? "",
+              contentType: plan.contentType as MarketingContentType,
+              originalUserPrompt: plan.originalUserPrompt,
+              renderContract: plan.renderContract,
+              captionsRequired: plan.captionsRequired,
+              voiceoverRequired: plan.voiceoverRequired,
             });
             const captionSrt = generateSrtCaptions(timeline);
             const captionVtt = generateVttCaptions(timeline);

@@ -9,6 +9,7 @@ const overlay = {
   primaryColor: "#1e3a5f",
   secondaryColor: "#c5a55a",
 };
+const frame = { width: 1280, height: 720 };
 
 describe("PR44 renderer scene asset commands", () => {
   it("uses image assetUrl for image scene segment", () => {
@@ -36,6 +37,7 @@ describe("PR44 renderer scene asset commands", () => {
       sceneIndex: 0,
       totalScenes: 3,
       overlay,
+      frame,
     });
     expect(command.args).toContain("-loop");
     expect(command.args).toContain("1");
@@ -67,6 +69,7 @@ describe("PR44 renderer scene asset commands", () => {
       sceneIndex: 1,
       totalScenes: 3,
       overlay,
+      frame,
     });
     expect(command.args).toContain(scene.assetUrl);
     expect(command.args).toContain("-stream_loop");
@@ -97,6 +100,7 @@ describe("PR44 renderer scene asset commands", () => {
       sceneIndex: 2,
       totalScenes: 3,
       overlay,
+      frame,
     });
     const vf = String(command.args[command.args.indexOf("-vf") + 1] ?? "");
     expect(command.args).toContain("lavfi");
@@ -130,6 +134,7 @@ describe("PR44 renderer scene asset commands", () => {
       sceneIndex: 0,
       totalScenes: 1,
       overlay,
+      frame,
     });
     expect(command.args).not.toContain(scene.assetUrl);
     expect(command.args).toContain("lavfi");

@@ -4,6 +4,7 @@ import type {
   MarketingCaptionMode,
   MarketingCaptionStatus,
   MarketingContentType,
+  MarketingRenderContract,
   MarketingStudioPlan,
   SceneMediaKind,
   SceneSourceType,
@@ -71,6 +72,7 @@ export interface MarketingTimelineScene {
 export interface MarketingTimeline {
   scenes: MarketingTimelineScene[];
   totalDurationSeconds: number;
+  render?: MarketingRenderContract;
   captionLines: Array<{
     startSeconds: number;
     endSeconds: number;

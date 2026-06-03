@@ -31,6 +31,7 @@ import path from "path";
 import fs from "fs";
 import { resolveMarketingAttributionClick } from "../modules/marketing/results-conversion";
 import {
+  decodeUploadFileKey,
   findServableUploadFile,
   getRuntimeFileStorageReadiness,
   safeResolveInside,
@@ -1103,10 +1104,16 @@ async function startServer() {
   // (nanoid-prefixed keys).  Path traversal is prevented by resolve() check.
   app.get(/^\/api\/files\/(.+)$/, async (req, res) => {
     const match = req.path.match(/^\/api\/files\/(.+)$/);
-    const fileKey = match?.[1];
-    if (!fileKey) {
+    const rawFileKey = match?.[1];
+    if (!rawFileKey) {
       return res.status(400).json({ error: "Missing file key" });
     }
+
+    const decoded = decodeUploadFileKey(rawFileKey);
+    if (!decoded.ok) {
+      return res.status(400).json({ error: "Invalid file key encoding" });
+    }
+    const fileKey = decoded.key;
 
     const rootCheck = safeResolveInside(ENV.storagePath, fileKey);
     if (!rootCheck.ok) {
@@ -1115,7 +1122,7 @@ async function startServer() {
 
     const found = findServableUploadFile(fileKey);
     if (!found) {
-      console.warn(`[FileServe] 404 - file not found on disk: ${fileKey}`);
+      console.warn(`[FileServe] 404 - file not found on disk: ${fileKey} (raw: ${rawFileKey})`);
       return res.status(404).json({ error: "File not found" });
     }
 

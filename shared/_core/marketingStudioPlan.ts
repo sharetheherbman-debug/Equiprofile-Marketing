@@ -46,6 +46,16 @@ export type MarketingCaptionMode = "none" | "script" | "voice_aligned";
 export type MarketingCaptionFormat = "srt" | "vtt";
 export type MarketingAudioStatus = "pending" | "setup_needed" | "queued" | "completed" | "failed";
 export type MarketingCaptionStatus = "pending" | "generated" | "burned_in" | "failed";
+export type MarketingPlatformFormat = "vertical_short_video" | "youtube_landscape" | "general_video";
+
+export interface MarketingRenderContract {
+  aspectRatio: "9:16" | "16:9" | "1:1";
+  width: number;
+  height: number;
+  platformFormat: MarketingPlatformFormat;
+  audioRequired: boolean;
+  captionsRequired: boolean;
+}
 
 export interface MarketingStudioScene {
   id: string;
@@ -96,6 +106,7 @@ export interface MarketingStudioPlan {
   audioStatus: MarketingAudioStatus;
   captionStatus: MarketingCaptionStatus;
   brandOverlayRequired: boolean;
+  renderContract?: MarketingRenderContract;
   renderMode: FinalDeliveryMode;
   status: StudioPlanStatus;
 }

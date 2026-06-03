@@ -89,20 +89,40 @@ export async function resolveMarketingProviderRoute(input: {
     };
   }
 
-  const chosen = accepted[0];
-  const budget = evaluateBudgetPolicy({ policy: input.policy, costTier: chosen.costTier, task: input.task, provider: chosen.provider });
-  if (!budget.allowed) {
+  const budgetRejected = [...rejectedCandidates];
+  let chosen: typeof accepted[number] | null = null;
+
+  for (const candidate of accepted) {
+    const budget = evaluateBudgetPolicy({
+      policy: input.policy,
+      costTier: candidate.costTier,
+      task: input.task,
+      provider: candidate.provider,
+    });
+    if (budget.allowed) {
+      chosen = candidate;
+      break;
+    }
+    budgetRejected.push({
+      provider: candidate.provider,
+      modelId: candidate.modelId,
+      setupStatus: candidate.setupStatus,
+      reason: budget.reason ?? "budget_blocked",
+    });
+  }
+
+  if (!chosen) {
     return {
       status: "budget_blocked",
       marketingTask: input.task,
       canonicalTask: taskConfig.canonicalTask,
-      reason: budget.reason,
+      reason: "All accepted provider candidates are blocked by budget policy.",
       budgetStatus: "blocked",
       setupStatus: "ready",
       providerHealthStatus: null,
       selected: null,
       candidates: accepted.map((model) => ({ provider: model.provider, modelId: model.modelId, category: model.category, costTier: model.costTier, setupStatus: model.setupStatus })),
-      rejectedCandidates,
+      rejectedCandidates: budgetRejected,
     };
   }
 

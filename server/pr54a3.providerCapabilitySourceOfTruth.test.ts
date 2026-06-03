@@ -103,6 +103,58 @@ describe("PR54A-3 provider stores", () => {
     expect(result[0].lastSyncedAt).toBe("2026-05-31T00:00:00.000Z");
   });
 
+  it("providerModelStore falls back from app scope to global workspace scope", async () => {
+    const globalRow = {
+      provider: "qwen",
+      modelId: "qwen-global",
+      displayName: "Qwen Global",
+      category: "text",
+      supportedTasksJson: "[\"campaign_strategy\"]",
+      inputModalitiesJson: "[\"text\"]",
+      outputModalitiesJson: "[\"text\"]",
+      maxContextTokens: 32000,
+      maxDurationSeconds: null,
+      supportedAspectRatiosJson: null,
+      supportedLanguagesJson: "[\"en\"]",
+      costTier: "standard",
+      pricingJson: null,
+      qualityTier: "good",
+      isAvailable: 1,
+      setupStatus: "ready",
+      source: "synced",
+      metadataJson: "{}",
+      lastSyncedAt: new Date("2026-05-31T00:00:00.000Z"),
+      updatedAt: new Date("2026-05-31T00:00:00.000Z"),
+    };
+    const orderBy = vi
+      .fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([globalRow]);
+    const mockDb = {
+      select: vi.fn(() => ({
+        from: vi.fn(() => ({
+          where: vi.fn(() => ({
+            orderBy,
+          })),
+        })),
+      })),
+    };
+
+    vi.doMock("./db", () => ({
+      getDb: vi.fn(async () => mockDb),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/providerModelStore");
+    const rows = await mod.listMarketingProviderModels({
+      tenantId: "1",
+      workspaceId: "equiprofile-global",
+    });
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].modelId).toBe("qwen-global");
+    expect(orderBy).toHaveBeenCalledTimes(2);
+  });
+
   it("providerModelStore upsert inserts model records with serialized JSON fields", async () => {
     const valuesSpy = vi.fn(async () => [{ insertId: 101 }]);
     const mockDb = {
@@ -353,7 +405,112 @@ describe("PR54A-3 route/publishing truth", () => {
 
     expect(decision.status).toBe("budget_blocked");
     expect(decision.selected).toBeNull();
-    expect(decision.reason).toContain("standard mode disallows premium GenX fallback");
+    expect(decision.reason).toContain("blocked by budget policy");
+    expect(decision.rejectedCandidates.some((candidate) =>
+      candidate.provider === "genx" && candidate.reason.includes("standard mode disallows premium GenX fallback"))).toBe(true);
+  });
+
+  it("falls through budget-blocked candidates to next allowed provider", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "qwen",
+          modelId: "qwen-premium",
+          supportedTasks: ["campaign_strategy"],
+          costTier: "premium",
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+        createModel({
+          provider: "huggingface",
+          modelId: "hf-strategy",
+          supportedTasks: ["campaign_strategy"],
+          costTier: "free",
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+      ]),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const decision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "campaign_strategy",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+
+    expect(decision.status).toBe("ready");
+    expect(decision.selected?.provider).toBe("huggingface");
+  });
+
+  it("returns budget_blocked with rejected details when all accepted models are blocked", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "qwen",
+          modelId: "qwen-premium",
+          supportedTasks: ["campaign_strategy"],
+          costTier: "premium",
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+        createModel({
+          provider: "genx",
+          modelId: "genx-premium",
+          supportedTasks: ["campaign_strategy"],
+          costTier: "premium",
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+      ]),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const decision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "campaign_strategy",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+
+    expect(decision.status).toBe("budget_blocked");
+    expect(decision.rejectedCandidates.length).toBeGreaterThanOrEqual(2);
+    expect(decision.rejectedCandidates.every((candidate) => candidate.reason.includes("budget_blocked"))).toBe(true);
+  });
+
+  it("uses standard-tier Qwen for scriptwriting in standard mode when available", async () => {
+    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
+      listMarketingProviderModels: vi.fn(async () => [
+        createModel({
+          provider: "qwen",
+          modelId: "qwen-standard-text",
+          supportedTasks: ["scriptwriting"],
+          costTier: "standard",
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+        createModel({
+          provider: "huggingface",
+          modelId: "hf-script",
+          supportedTasks: ["scriptwriting"],
+          costTier: "free",
+          setupStatus: "ready",
+          isAvailable: true,
+        }),
+      ]),
+    }));
+
+    const mod = await import("./modules/marketing/provider-capabilities/marketingProviderRouteResolver");
+    const decision = await mod.resolveMarketingProviderRoute({
+      tenantId: "t",
+      workspaceId: "w",
+      task: "scriptwriting",
+      policy: defaultWorkspaceBudgetPolicy("standard"),
+    });
+
+    expect(decision.status).toBe("ready");
+    expect(decision.selected?.provider).toBe("qwen");
   });
 
   it("no ready provider model returns setup_needed with no fake selected route", async () => {

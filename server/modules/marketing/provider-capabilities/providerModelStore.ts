@@ -30,19 +30,28 @@ function parseObject(value: string | null | undefined): Record<string, unknown> 
 export async function listMarketingProviderModels(input: { tenantId: string; workspaceId: string; provider?: string }) {
   const db = await getDb();
   if (!db) return [];
-  const rows = await db
+
+  const queryScope = async (tenantId: string, workspaceId: string) => db
     .select()
     .from(marketingProviderModels)
     .where(
       input.provider
         ? and(
-          eq(marketingProviderModels.tenantId, input.tenantId),
-          eq(marketingProviderModels.workspaceId, input.workspaceId),
+          eq(marketingProviderModels.tenantId, tenantId),
+          eq(marketingProviderModels.workspaceId, workspaceId),
           eq(marketingProviderModels.provider, input.provider),
         )
-        : and(eq(marketingProviderModels.tenantId, input.tenantId), eq(marketingProviderModels.workspaceId, input.workspaceId)),
+        : and(eq(marketingProviderModels.tenantId, tenantId), eq(marketingProviderModels.workspaceId, workspaceId)),
     )
     .orderBy(desc(marketingProviderModels.updatedAt));
+
+  let rows = await queryScope(input.tenantId, input.workspaceId);
+  if (!rows.length && input.tenantId !== "global") {
+    rows = await queryScope("global", input.workspaceId);
+  }
+  if (!rows.length && !(input.tenantId === "global" && input.workspaceId === "equiprofile-global")) {
+    rows = await queryScope("global", "equiprofile-global");
+  }
 
   return rows.map((row) => ({
     provider: row.provider,

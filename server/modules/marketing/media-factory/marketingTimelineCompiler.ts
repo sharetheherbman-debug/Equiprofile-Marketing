@@ -42,7 +42,55 @@ function inferMediaKind(input: {
   return "image";
 }
 
-export function compileMarketingTimeline(plan: Pick<MarketingStudioPlan, "scenes" | "script">): MarketingTimeline {
+function inferRenderContract(
+  plan: Partial<Pick<MarketingStudioPlan, "contentType" | "originalUserPrompt" | "renderContract" | "captionsRequired" | "voiceoverRequired">>,
+): NonNullable<MarketingTimeline["render"]> {
+  if (plan.renderContract) {
+    return {
+      aspectRatio: plan.renderContract.aspectRatio,
+      width: plan.renderContract.width,
+      height: plan.renderContract.height,
+      platformFormat: plan.renderContract.platformFormat,
+      audioRequired: plan.renderContract.audioRequired,
+      captionsRequired: plan.renderContract.captionsRequired,
+    };
+  }
+  const prompt = String(plan.originalUserPrompt ?? "").toLowerCase();
+  const isVerticalShort = /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(prompt)
+    || ["instagram_reel", "tiktok_video", "youtube_short"].includes(String(plan.contentType ?? ""));
+  if (isVerticalShort) {
+    return {
+      aspectRatio: "9:16",
+      width: 1080,
+      height: 1920,
+      platformFormat: "vertical_short_video",
+      audioRequired: true,
+      captionsRequired: true,
+    };
+  }
+  if (plan.contentType === "youtube_3min_video") {
+    return {
+      aspectRatio: "16:9",
+      width: 1920,
+      height: 1080,
+      platformFormat: "youtube_landscape",
+      audioRequired: true,
+      captionsRequired: true,
+    };
+  }
+  return {
+    aspectRatio: "16:9",
+    width: 1280,
+    height: 720,
+    platformFormat: "general_video",
+    audioRequired: Boolean(plan.voiceoverRequired),
+    captionsRequired: plan.captionsRequired !== false,
+  };
+}
+
+export function compileMarketingTimeline(
+  plan: Pick<MarketingStudioPlan, "scenes" | "script"> & Partial<Pick<MarketingStudioPlan, "contentType" | "originalUserPrompt" | "renderContract" | "captionsRequired" | "voiceoverRequired">>,
+): MarketingTimeline {
   let cursor = 0;
   const scenes = [...(plan.scenes ?? [])]
     .sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -102,6 +150,7 @@ export function compileMarketingTimeline(plan: Pick<MarketingStudioPlan, "scenes
   return {
     scenes: scenes.map(({ _timing, ...scene }) => scene),
     totalDurationSeconds: captionLines.length > 0 ? captionLines[captionLines.length - 1].endSeconds : 0,
+    render: inferRenderContract(plan),
     captionLines,
   };
 }

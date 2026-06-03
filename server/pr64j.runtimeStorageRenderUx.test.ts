@@ -52,6 +52,23 @@ describe("PR64J runtime storage contract", () => {
     expect(isSafeLocalMediaUrl("/api/files/../secret")).toBe(false);
     expect(isSafeLocalMediaUrl("/var/equiprofile/storage/private.png")).toBe(false);
   });
+
+  it("decodes encoded upload keys and resolves files with spaces in names", async () => {
+    vi.resetModules();
+    const storageRoot = fs.mkdtempSync(path.join(os.tmpdir(), "pr64m-fileserve-"));
+    process.env.EQUIPROFILE_STORAGE_ROOT = storageRoot;
+    const mod = await import("./_core/storage/runtimeFileStorage");
+    const uploadRoot = mod.getCanonicalUploadRoot();
+    const encoded = "1/marketing-brand/Example%20logo.png";
+    const decoded = mod.decodeUploadFileKey(encoded);
+    expect(decoded.ok).toBe(true);
+    if (!decoded.ok) return;
+
+    fs.mkdirSync(path.join(uploadRoot, "1", "marketing-brand"), { recursive: true });
+    fs.writeFileSync(path.join(uploadRoot, decoded.key), "logo");
+    expect(mod.findServableUploadFile(decoded.key)?.filePath).toBe(path.join(uploadRoot, "1", "marketing-brand", "Example logo.png"));
+    expect(mod.decodeUploadFileKey("%E0%A4%A")).toEqual({ ok: false, reason: "invalid_encoding" });
+  });
 });
 
 describe("PR64J render completion readiness", () => {

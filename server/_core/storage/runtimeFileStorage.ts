@@ -38,6 +38,15 @@ export function safeResolveInside(root: string, key: string) {
   return { ok: false as const, filePath };
 }
 
+export function decodeUploadFileKey(rawKey: string): { ok: true; key: string } | { ok: false; reason: string } {
+  if (!rawKey || rawKey.includes("\0")) return { ok: false, reason: "invalid_key" };
+  try {
+    return { ok: true, key: decodeURIComponent(rawKey) };
+  } catch {
+    return { ok: false, reason: "invalid_encoding" };
+  }
+}
+
 export function findServableUploadFile(key: string) {
   if (!key || key.includes("\0")) return null;
   for (const root of getUploadLookupRoots()) {
