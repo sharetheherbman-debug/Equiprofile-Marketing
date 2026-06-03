@@ -44,6 +44,7 @@ export function MarketingPreviewPanel({
   const provider = typeof mediaOutput?.provider === "string" ? mediaOutput.provider : asset?.provider;
   const model = typeof mediaOutput?.model === "string" ? mediaOutput.model : asset?.model;
   const source = typeof mediaOutput?.source === "string" ? mediaOutput.source : asset?.outputMetadata?.source;
+  const supportModeEnabled = import.meta.env.VITE_MARKETING_SUPPORT_MODE === "true";
 
   return (
     <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="marketing-preview-panel">
@@ -70,7 +71,7 @@ export function MarketingPreviewPanel({
       ) : null}
       {status && !outputUrl && !failure ? <p className="mt-4 text-sm text-stone-500">Output is {status}. A playable URL will appear here when it is ready.</p> : null}
       {failure ? <p className="mt-4 rounded-2xl bg-rose-50 px-3 py-2 text-sm text-rose-800">{failure}</p> : null}
-      {renderJob?.warnings?.length ? <ul className="mt-3 space-y-1 text-xs text-amber-700">{renderJob.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul> : null}
+      {supportModeEnabled && renderJob?.warnings?.length ? <ul className="mt-3 space-y-1 text-xs text-amber-700">{renderJob.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul> : null}
       {deliverablePackage ? <div className="mt-5"><CampaignOutputPanel deliverablePackage={deliverablePackage} signupUrl={signupUrl} /></div> : null}
       {!deliverablePackage && !studioPlan && !mediaOutput && !asset ? <p className="mt-4 text-sm text-stone-500">Your latest image, video, audio, or campaign package will appear here.</p> : null}
       {provider || model || source ? <p className="mt-4 text-xs text-stone-400">Source: {[provider, model, source].filter(Boolean).join(" · ")}</p> : null}
