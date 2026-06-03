@@ -19,6 +19,10 @@ export const STORAGE_ROOT: string = path.resolve(
   process.env.EQUIPROFILE_STORAGE_ROOT ?? "/var/equiprofile/storage",
 );
 
+export function getLocalMediaStorageRoot(): string {
+  return path.resolve(process.env.EQUIPROFILE_STORAGE_ROOT ?? "/var/equiprofile/storage");
+}
+
 export const MEDIA_SUBFOLDERS = [
   "images",
   "videos",
@@ -71,9 +75,10 @@ const MIME_TO_EXT: Record<string, string> = {
  * Use this for all file operations to prevent path traversal.
  */
 export function safePathJoin(base: string, ...parts: string[]): string {
-  const resolved = path.resolve(base, ...parts);
-  if (!resolved.startsWith(base + path.sep) && resolved !== base) {
-    throw new Error(`Path traversal detected: "${resolved}" is outside base "${base}"`);
+  const resolvedBase = path.resolve(base);
+  const resolved = path.resolve(resolvedBase, ...parts);
+  if (!resolved.startsWith(resolvedBase + path.sep) && resolved !== resolvedBase) {
+    throw new Error(`Path traversal detected: "${resolved}" is outside base "${resolvedBase}"`);
   }
   return resolved;
 }
@@ -108,9 +113,10 @@ export function validateAllowedMediaType(mimeType: string): boolean {
  * Call once at server startup.
  */
 export async function ensureStorageDirs(): Promise<void> {
-  await fs.promises.mkdir(STORAGE_ROOT, { recursive: true });
+  const storageRoot = getLocalMediaStorageRoot();
+  await fs.promises.mkdir(storageRoot, { recursive: true });
   for (const folder of MEDIA_SUBFOLDERS) {
-    await fs.promises.mkdir(path.join(STORAGE_ROOT, folder), { recursive: true });
+    await fs.promises.mkdir(path.join(storageRoot, folder), { recursive: true });
   }
 }
 
@@ -122,9 +128,14 @@ export async function ensureStorageDirs(): Promise<void> {
  * Public: /media/generated/images/asset_abc.jpg
  */
 export function getPublicMediaUrl(localPath: string): string {
-  const relative = localPath.startsWith(STORAGE_ROOT)
-    ? localPath.slice(STORAGE_ROOT.length)
-    : localPath;
+  const storageRoot = getLocalMediaStorageRoot();
+  const resolvedRoot = path.resolve(storageRoot);
+  const resolvedLocalPath = path.resolve(localPath);
+  const relative = resolvedLocalPath === resolvedRoot
+    ? ""
+    : resolvedLocalPath.startsWith(resolvedRoot + path.sep)
+      ? resolvedLocalPath.slice(resolvedRoot.length)
+      : resolvedLocalPath;
   const normalised = relative.replace(/\\/g, "/").replace(/^\/+/, "");
   return `/media/generated/${normalised}`;
 }
@@ -148,10 +159,11 @@ export async function writeGeneratedAsset(opts: {
 
   const folder = MEDIA_SUBFOLDERS.includes(opts.folder as MediaFolder) ? opts.folder : "generated";
   const filename = generateSafeFilename(opts.mimeType, opts.jobId ? `job_${opts.jobId}` : undefined, opts.ext);
-  const dirPath = path.join(STORAGE_ROOT, folder);
+  const storageRoot = getLocalMediaStorageRoot();
+  const dirPath = path.join(storageRoot, folder);
 
   await fs.promises.mkdir(dirPath, { recursive: true });
-  const localPath = safePathJoin(STORAGE_ROOT, folder, filename);
+  const localPath = safePathJoin(storageRoot, folder, filename);
 
   await fs.promises.writeFile(localPath, opts.data);
 
@@ -173,9 +185,10 @@ export async function writeTempFile(
 ): Promise<string> {
   const safeExt = ext.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10) || "tmp";
   const filename = generateSafeFilename("application/pdf", prefix ?? "tmp", safeExt);
-  const tempDir = path.join(STORAGE_ROOT, "temp");
+  const storageRoot = getLocalMediaStorageRoot();
+  const tempDir = path.join(storageRoot, "temp");
   await fs.promises.mkdir(tempDir, { recursive: true });
-  const localPath = safePathJoin(STORAGE_ROOT, "temp", filename);
+  const localPath = safePathJoin(storageRoot, "temp", filename);
   await fs.promises.writeFile(localPath, data);
   return localPath;
 }
@@ -192,10 +205,11 @@ export async function moveTempToAsset(
   const safeFolder = MEDIA_SUBFOLDERS.includes(folder as MediaFolder) ? folder : "generated";
   const safeFilename = path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, "_");
 
-  const destDir = path.join(STORAGE_ROOT, safeFolder);
+  const storageRoot = getLocalMediaStorageRoot();
+  const destDir = path.join(storageRoot, safeFolder);
   await fs.promises.mkdir(destDir, { recursive: true });
 
-  const destPath = safePathJoin(STORAGE_ROOT, safeFolder, safeFilename);
+  const destPath = safePathJoin(storageRoot, safeFolder, safeFilename);
 
   await fs.promises.rename(tempPath, destPath);
 
@@ -215,9 +229,10 @@ export async function createThumbnailPlaceholder(
 ): Promise<{ localPath: string; publicUrl: string }> {
   const safeJobId = jobId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40);
   const filename = `thumb_${safeJobId}_${nanoid(8)}.txt`;
-  const thumbDir = path.join(STORAGE_ROOT, "thumbnails");
+  const storageRoot = getLocalMediaStorageRoot();
+  const thumbDir = path.join(storageRoot, "thumbnails");
   await fs.promises.mkdir(thumbDir, { recursive: true });
-  const localPath = safePathJoin(STORAGE_ROOT, "thumbnails", filename);
+  const localPath = safePathJoin(storageRoot, "thumbnails", filename);
   await fs.promises.writeFile(localPath, `placeholder:${safeJobId}`);
   return {
     localPath,
@@ -232,8 +247,9 @@ export async function createThumbnailPlaceholder(
  * Only deletes files inside STORAGE_ROOT. Silently ignores missing files.
  */
 export async function deleteAssetFile(localPath: string): Promise<void> {
+  const storageRoot = getLocalMediaStorageRoot();
   const resolved = path.resolve(localPath);
-  if (!resolved.startsWith(STORAGE_ROOT + path.sep)) {
+  if (!resolved.startsWith(storageRoot + path.sep)) {
     throw new Error(`Delete refused: path "${resolved}" is outside storage root`);
   }
   try {

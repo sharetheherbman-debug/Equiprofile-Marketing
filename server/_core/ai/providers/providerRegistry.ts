@@ -509,12 +509,12 @@ export async function runFullProviderSelfTest() {
   }
 
   try {
-    const { ensureStorageDirs, writeTempFile, deleteAssetFile, STORAGE_ROOT } = await import("../../storage/localMediaStorage");
+    const { ensureStorageDirs, writeTempFile, deleteAssetFile, getLocalMediaStorageRoot } = await import("../../storage/localMediaStorage");
     await ensureStorageDirs();
     const temp = await writeTempFile(Buffer.from("diagnostics"), "txt", "diag");
     await deleteAssetFile(temp);
     storage.status = "success";
-    storage.root = STORAGE_ROOT;
+    storage.root = getLocalMediaStorageRoot();
   } catch (error) {
     storage.status = "failed";
     storage.error = error instanceof Error ? error.message : String(error);

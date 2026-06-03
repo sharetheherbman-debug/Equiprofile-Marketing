@@ -211,7 +211,7 @@ import { compileMarketingPrompt } from "./_core/marketing/promptCompiler";
 import { getPreferredModelOrder } from "./_core/ai/modelQualityPolicy";
 import { orderMediaProviders } from "./_core/ai/providerRouting";
 import { createBrandedMediaDerivative } from "./_core/media/postProcessor";
-import { STORAGE_ROOT } from "./_core/storage/localMediaStorage";
+import { getLocalMediaStorageRoot } from "./_core/storage/localMediaStorage";
 import { getRuntimeFileStorageReadiness } from "./_core/storage/runtimeFileStorage";
 import { validateMarketingCapability } from "./modules/marketing/marketingCapabilityValidator";
 import type { MarketingContentType, MarketingStudioScene } from "@shared/_core/marketingStudioPlan";
@@ -1418,8 +1418,9 @@ function toSafeLocalMediaPathFromPublicUrl(publicUrl: string): string | null {
   if (!normalized.startsWith("/media/generated/")) return null;
   const suffix = normalized.slice("/media/generated/".length).replace(/\\/g, "/");
   if (!suffix || suffix.includes("..")) return null;
-  const resolved = path.resolve(STORAGE_ROOT, suffix);
-  const generatedRoot = path.resolve(STORAGE_ROOT, "generated");
+  const storageRoot = getLocalMediaStorageRoot();
+  const resolved = path.resolve(storageRoot, suffix);
+  const generatedRoot = path.resolve(storageRoot, "generated");
   if (!resolved.startsWith(generatedRoot + path.sep) && resolved !== generatedRoot) return null;
   return resolved;
 }
@@ -8965,7 +8966,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             return;
           }
           const resolved = path.resolve(trimmed);
-          const generatedRoot = path.resolve(STORAGE_ROOT, "generated");
+          const generatedRoot = path.resolve(getLocalMediaStorageRoot(), "generated");
           if (resolved.startsWith(generatedRoot + path.sep) || resolved === generatedRoot) {
             candidatePaths.add(resolved);
           }

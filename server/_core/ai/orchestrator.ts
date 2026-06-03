@@ -34,7 +34,7 @@ import type {
 } from "./types";
 import { getRuntimeConfig } from "../../dynamicConfig";
 import { buildPlatformReadiness, getQueueStatus, listSocialConnections } from "../../modules/growth-engine";
-import { STORAGE_ROOT, deleteAssetFile, ensureStorageDirs, writeTempFile } from "../storage/localMediaStorage";
+import { deleteAssetFile, ensureStorageDirs, getLocalMediaStorageRoot, writeTempFile } from "../storage/localMediaStorage";
 import fs from "fs/promises";
 import type { ProviderOutputResultType } from "./outputNormalization";
 
@@ -831,16 +831,16 @@ export async function getAIDiagnostics() {
     mediaJobManager.list({ state: "processing" }),
   ]);
 
-  let storageStatus: Record<string, unknown> = { root: STORAGE_ROOT, available: false };
+  let storageStatus: Record<string, unknown> = { root: getLocalMediaStorageRoot(), available: false };
   try {
     await ensureStorageDirs();
     const tempPath = await writeTempFile(Buffer.from("marketing-studio-storage-probe"), "txt", "diag");
     await fs.readFile(tempPath);
     await deleteAssetFile(tempPath);
-    storageStatus = { root: STORAGE_ROOT, available: true, probe: "write/read/delete" };
+    storageStatus = { root: getLocalMediaStorageRoot(), available: true, probe: "write/read/delete" };
   } catch (error) {
     storageStatus = {
-      root: STORAGE_ROOT,
+      root: getLocalMediaStorageRoot(),
       available: false,
       error: error instanceof Error ? error.message : String(error),
     };
