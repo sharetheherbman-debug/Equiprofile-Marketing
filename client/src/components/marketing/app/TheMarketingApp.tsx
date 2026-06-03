@@ -435,9 +435,26 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                   <p className="text-sm font-semibold text-stone-900">Next actions</p>
                   <span className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">{createBadge}</span>
                 </div>
+                {/* Upgrade hints — friendly messages shown when media or audio needs improvement */}
+                {(hasTextCardFallback || missingAudio) && (
+                  <div className="mt-2 space-y-1">
+                    {hasTextCardFallback && (
+                      <p className="text-xs text-amber-700" role="alert" data-testid="media-scenes-need-upgrade">Media scenes need upgrade — real images or video clips not yet attached.</p>
+                    )}
+                    {missingAudio && (
+                      <p className="text-xs text-amber-700" role="alert" data-testid="audio-music-missing">Audio/music missing — add a voiceover or background track before exporting.</p>
+                    )}
+                  </div>
+                )}
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button type="button" size="sm" variant="outline" onClick={() => setView("settings")}>Edit</Button>
                   <Button type="button" size="sm" variant="outline" onClick={() => setStudioOpen(true)}>Improve</Button>
+                  {hasTextCardFallback && (
+                    <Button type="button" size="sm" variant="outline" onClick={() => setStudioOpen(true)} data-testid="improve-media-btn">Improve media</Button>
+                  )}
+                  {missingAudio && (
+                    <Button type="button" size="sm" variant="outline" onClick={() => toast.info("Add a voiceover or background music track in Studio settings.")} data-testid="add-music-voice-btn">Add music/voice</Button>
+                  )}
                   <Button type="button" size="sm" variant="outline" onClick={() => toast.info("Approval is available after review checks.")}>Approve</Button>
                   <Button type="button" size="sm" variant="outline" onClick={createScheduleDraftsFromCampaign}>Schedule</Button>
                   <Button type="button" size="sm" variant="outline" onClick={exportCampaign}>Export</Button>

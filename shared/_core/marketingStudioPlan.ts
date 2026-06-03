@@ -44,7 +44,7 @@ export type StudioPlanStatus =
 
 export type MarketingCaptionMode = "none" | "script" | "voice_aligned";
 export type MarketingCaptionFormat = "srt" | "vtt";
-export type MarketingAudioStatus = "pending" | "setup_needed" | "queued" | "completed" | "failed";
+export type MarketingAudioStatus = "pending" | "setup_needed" | "queued" | "completed" | "failed" | "needs_audio_upgrade";
 export type MarketingCaptionStatus = "pending" | "generated" | "burned_in" | "failed";
 export type MarketingPlatformFormat = "vertical_short_video" | "youtube_landscape" | "general_video";
 

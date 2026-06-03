@@ -1045,7 +1045,7 @@ function inferStudioDurationSeconds(contentType: MarketingContentType, requested
 function buildStudioRenderContract(input: { contentType: MarketingContentType; prompt: string }): MarketingRenderContract {
   const lowerPrompt = input.prompt.toLowerCase();
   const isVerticalShort = /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(lowerPrompt)
-    || ["instagram_reel", "tiktok_video", "youtube_short"].includes(input.contentType);
+    || ["instagram_reel", "tiktok_video", "youtube_short", "facebook_ad"].includes(input.contentType);
   if (isVerticalShort) {
     return {
       aspectRatio: "9:16",

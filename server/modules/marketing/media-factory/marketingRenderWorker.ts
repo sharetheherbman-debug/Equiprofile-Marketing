@@ -6,6 +6,8 @@ import {
 } from "./marketingRenderJobStore";
 import { renderMarketingTimeline } from "./marketingRenderer";
 import { createMarketingAssetVersionRecord } from "./marketingMediaAssetVersionStore";
+import { createMarketingVoiceover } from "./marketingVoiceService";
+import { evaluateReelPublishReadiness } from "./reelPublishReadinessGate";
 
 let redisWorker: Worker<{ jobId: string }> | null = null;
 
@@ -33,12 +35,100 @@ export async function processMarketingRenderJob(jobId: string) {
 
   await updateMarketingRenderJobRecord({ id: job.id, status: "processing", errorMessage: null });
 
+  // ── Audio resolution ─────────────────────────────────────────────────────
+  // Attempt voiceover generation if the job requires audio and no audioUrl is
+  // set yet. Record all attempts in attemptLog regardless of outcome.
+  let resolvedAudioUrl: string | null = job.audio.audioUrl;
+  let resolvedVoiceProvider: string | null = job.audio.voiceProvider;
+  let resolvedVoiceModel: string | null = job.audio.voiceModel;
+  const audioAttemptLog: NonNullable<typeof job.audio.attemptLog> = [];
+
+  if (!resolvedAudioUrl) {
+    if (job.timeline.render?.audioRequired) {
+      const planId = job.planId ?? job.id;
+      const voiceoverResult = await createMarketingVoiceover({
+        tenantId: job.tenantId,
+        workspaceId: job.workspaceId,
+        hostAppId: job.hostAppId,
+        plan: {
+          id: planId,
+          script: "",
+          scenes: [],
+          voiceoverScript: job.originalUserPrompt,
+        },
+        voiceId: null,
+      }).catch((error: unknown) => ({
+        status: "setup_needed" as const,
+        reason: error instanceof Error ? error.message : "voice_generation_error",
+        provider: null as null,
+        model: null as null,
+        voiceAssetId: null as null,
+        audioUrl: null as null,
+      }));
+
+      const voiceReason = voiceoverResult.status === "setup_needed"
+        ? `voiceover_setup_needed:${(voiceoverResult as { reason?: string }).reason ?? "unknown"}`
+        : `Voiceover generated. provider=${voiceoverResult.provider} model=${voiceoverResult.model}`;
+
+      audioAttemptLog.push({
+        route: "voiceover_generation",
+        provider: voiceoverResult.provider,
+        model: voiceoverResult.model,
+        outcome: voiceoverResult.status === "completed" ? "success" : "setup_needed",
+        reason: voiceReason,
+      });
+
+      if (voiceoverResult.status === "completed" && voiceoverResult.audioUrl) {
+        resolvedAudioUrl = voiceoverResult.audioUrl;
+        resolvedVoiceProvider = voiceoverResult.provider;
+        resolvedVoiceModel = voiceoverResult.model;
+      }
+    } else {
+      audioAttemptLog.push({
+        route: "voiceover_generation",
+        provider: null,
+        model: null,
+        outcome: "skipped",
+        reason: "audio_not_required_for_this_content_type",
+      });
+    }
+
+    if (!resolvedAudioUrl) {
+      audioAttemptLog.push({
+        route: "music_generation",
+        provider: null,
+        model: null,
+        outcome: "setup_needed",
+        reason: "music_generation_route_not_available:no_music_provider_configured",
+      });
+    }
+  }
+
+  // Persist updated audio state before rendering
+  const audioStatus = resolvedAudioUrl
+    ? "completed" as const
+    : job.timeline.render?.audioRequired
+      ? "needs_audio_upgrade" as const
+      : "setup_needed" as const;
+
+  await updateMarketingRenderJobRecord({
+    id: job.id,
+    audioJson: JSON.stringify({
+      ...job.audio,
+      status: audioStatus,
+      audioUrl: resolvedAudioUrl,
+      voiceProvider: resolvedVoiceProvider,
+      voiceModel: resolvedVoiceModel,
+      attemptLog: audioAttemptLog.length > 0 ? audioAttemptLog : job.audio.attemptLog,
+    }),
+  });
+
   const rendered = await renderMarketingTimeline({
     jobId: job.id,
     timeline: job.timeline,
     brandOverlay: job.brandOverlay,
     audio: {
-      audioUrl: job.audio.audioUrl,
+      audioUrl: resolvedAudioUrl,
       backgroundMusicUrl: job.audio.backgroundMusicUrl,
     },
     captions: {
@@ -95,14 +185,14 @@ export async function processMarketingRenderJob(jobId: string) {
       captionFormat: job.captions.format,
       captionsBurnedIn: rendered.output.metadata?.captionsBurnedIn ?? false,
       audioIncluded: rendered.output.metadata?.audioIncluded ?? false,
-      audioStatus: rendered.output.metadata?.audioStatus ?? job.audio.status,
+      audioStatus: rendered.output.metadata?.audioStatus ?? audioStatus,
       captionStatus: rendered.output.metadata?.captionStatus ?? job.captions.status,
       captionSrt: rendered.output.metadata?.srt ?? job.captions.srt,
       captionVtt: rendered.output.metadata?.vtt ?? job.captions.vtt,
       voiceAssetId: job.audio.voiceAssetId,
-      audioUrl: job.audio.audioUrl,
-      voiceProvider: job.audio.voiceProvider,
-      voiceModel: job.audio.voiceModel,
+      audioUrl: resolvedAudioUrl,
+      voiceProvider: resolvedVoiceProvider,
+      voiceModel: resolvedVoiceModel,
       brandKitId: job.brandKitId,
       overlayTemplate: job.overlayTemplate,
       brandOverlay: {
@@ -117,6 +207,22 @@ export async function processMarketingRenderJob(jobId: string) {
     },
   });
 
+  // ── Evaluate publish-readiness quality gate ───────────────────────────────
+  const reloadedJob = await getMarketingRenderJobById(job.id);
+  const jobForGate = reloadedJob ?? job;
+  const qualityGate = evaluateReelPublishReadiness({
+    ...jobForGate,
+    outputPublicUrl: rendered.output.publicUrl,
+    audio: {
+      ...jobForGate.audio,
+      status: audioStatus,
+      audioUrl: resolvedAudioUrl,
+      voiceProvider: resolvedVoiceProvider,
+      voiceModel: resolvedVoiceModel,
+      attemptLog: audioAttemptLog.length > 0 ? audioAttemptLog : jobForGate.audio.attemptLog,
+    },
+  });
+
   const completedJob = await updateMarketingRenderJobRecord({
     id: job.id,
     status: "completed",
@@ -125,6 +231,7 @@ export async function processMarketingRenderJob(jobId: string) {
     warnings: rendered.warnings ?? [],
     errorMessage: null,
     completedAt: new Date(),
+    qualityStatus: qualityGate.status,
   });
 
   const sourceAssetIds = Array.from(new Set(
@@ -152,5 +259,6 @@ export async function processMarketingRenderJob(jobId: string) {
     status: "completed" as const,
     job: completedJob,
     output: rendered.output,
+    qualityGate,
   };
 }

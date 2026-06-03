@@ -142,6 +142,14 @@ export interface MarketingRenderJob {
     backgroundMusicUrl: string | null;
     voiceProvider: string | null;
     voiceModel: string | null;
+    /** Detailed log of audio resolution attempts — never null after a render attempt. */
+    attemptLog?: Array<{
+      route: string;
+      provider: string | null;
+      model: string | null;
+      outcome: "success" | "setup_needed" | "unavailable" | "skipped";
+      reason: string;
+    }>;
     mixPolicy?: {
       voiceoverGainDb: number;
       backgroundMusicGainDb: number;
@@ -166,4 +174,17 @@ export interface MarketingRenderJob {
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Publish-readiness quality status set by the quality gate after rendering.
+   * null = not yet evaluated.
+   */
+  qualityStatus?: ReelQualityStatus | null;
 }
+
+export type ReelQualityStatus =
+  | "draft_generated"
+  | "needs_media_upgrade"
+  | "needs_audio_upgrade"
+  | "ready_for_review"
+  | "ready_to_export"
+  | "posted";
