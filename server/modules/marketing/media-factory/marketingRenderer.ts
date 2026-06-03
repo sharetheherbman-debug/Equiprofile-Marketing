@@ -279,14 +279,21 @@ export async function getMarketingRenderRuntimeReadiness() {
   return result;
 }
 
-function sceneBaseVideoFilter(): string {
-  return "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:black,fps=30,format=yuv420p";
+function getTimelineFrame(timeline: MarketingTimeline) {
+  const width = Math.max(320, Math.min(3840, Math.round(Number(timeline.render?.width) || 1280)));
+  const height = Math.max(320, Math.min(3840, Math.round(Number(timeline.render?.height) || 720)));
+  return { width, height };
+}
+
+function sceneBaseVideoFilter(frame: { width: number; height: number }): string {
+  return `scale=${frame.width}:${frame.height}:force_original_aspect_ratio=decrease,pad=${frame.width}:${frame.height}:(ow-iw)/2:(oh-ih)/2:black,fps=30,format=yuv420p`;
 }
 
 function buildTextCardSvg(input: {
   scene: MarketingTimeline["scenes"][number];
   overlay: MarketingBrandOverlay;
   isFinalScene: boolean;
+  frame: { width: number; height: number };
 }) {
   const primary = sanitizeSvgColor(input.overlay.primaryColor, "#1e3a5f");
   const secondary = sanitizeSvgColor(input.overlay.secondaryColor, "#c5a55a");
@@ -296,19 +303,25 @@ function buildTextCardSvg(input: {
   const ctaText = input.isFinalScene && input.overlay.endCard?.enabled
     ? input.overlay.endCard.cta || input.overlay.cta
     : input.overlay.cta;
+  const sx = input.frame.width / 1280;
+  const sy = input.frame.height / 720;
+  const scale = Math.min(sx, sy);
+  const px = (value: number) => Math.round(value * sx);
+  const py = (value: number) => Math.round(value * sy);
+  const ps = (value: number) => Math.max(12, Math.round(value * scale));
   const tspans = lines.map((line, index) =>
-    `<tspan x="92" dy="${index === 0 ? 0 : 50}">${escapeXml(line)}</tspan>`).join("");
+    `<tspan x="${px(92)}" dy="${index === 0 ? 0 : ps(50)}">${escapeXml(line)}</tspan>`).join("");
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
-  <rect width="1280" height="720" fill="${primary}"/>
-  <rect x="0" y="0" width="1280" height="720" fill="rgba(0,0,0,0.14)"/>
-  <circle cx="1110" cy="145" r="220" fill="${secondary}" opacity="0.18"/>
-  <rect x="72" y="72" width="1136" height="576" rx="34" fill="rgba(255,255,255,0.10)" stroke="${accent}" stroke-width="3"/>
-  <text x="92" y="126" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">${escapeXml(input.overlay.brandName)}</text>
-  <text x="92" y="166" fill="rgba(255,255,255,0.78)" font-family="Arial, Helvetica, sans-serif" font-size="22">${escapeXml(input.overlay.domain)}</text>
-  <text x="92" y="315" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700">${tspans}</text>
-  <rect x="92" y="570" width="520" height="58" rx="29" fill="${secondary}"/>
-  <text x="122" y="608" fill="${primary}" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">${escapeXml(ctaText || "Learn more")}</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="${input.frame.width}" height="${input.frame.height}" viewBox="0 0 ${input.frame.width} ${input.frame.height}">
+  <rect width="${input.frame.width}" height="${input.frame.height}" fill="${primary}"/>
+  <rect x="0" y="0" width="${input.frame.width}" height="${input.frame.height}" fill="rgba(0,0,0,0.14)"/>
+  <circle cx="${px(1110)}" cy="${py(145)}" r="${ps(220)}" fill="${secondary}" opacity="0.18"/>
+  <rect x="${px(72)}" y="${py(72)}" width="${px(1136)}" height="${py(576)}" rx="${ps(34)}" fill="rgba(255,255,255,0.10)" stroke="${accent}" stroke-width="${Math.max(1, ps(3))}"/>
+  <text x="${px(92)}" y="${py(126)}" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="${ps(34)}" font-weight="700">${escapeXml(input.overlay.brandName)}</text>
+  <text x="${px(92)}" y="${py(166)}" fill="rgba(255,255,255,0.78)" font-family="Arial, Helvetica, sans-serif" font-size="${ps(22)}">${escapeXml(input.overlay.domain)}</text>
+  <text x="${px(92)}" y="${py(315)}" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="${ps(42)}" font-weight="700">${tspans}</text>
+  <rect x="${px(92)}" y="${py(570)}" width="${px(520)}" height="${py(58)}" rx="${ps(29)}" fill="${secondary}"/>
+  <text x="${px(122)}" y="${py(608)}" fill="${primary}" font-family="Arial, Helvetica, sans-serif" font-size="${ps(25)}" font-weight="700">${escapeXml(ctaText || "Learn more")}</text>
 </svg>`;
 }
 
@@ -318,12 +331,14 @@ async function renderTextCardPng(input: {
   sceneIndex: number;
   totalScenes: number;
   overlay: MarketingBrandOverlay;
+  frame: { width: number; height: number };
 }) {
   const outputPath = path.join(input.tmpDir, `scene-card-${input.sceneIndex + 1}.png`);
   const svg = buildTextCardSvg({
     scene: input.scene,
     overlay: input.overlay,
     isFinalScene: input.sceneIndex === input.totalScenes - 1,
+    frame: input.frame,
   });
   await sharp(Buffer.from(svg)).png().toFile(outputPath);
   return outputPath;
@@ -335,6 +350,7 @@ function buildPlainColorSceneCommand(input: {
   sceneIndex: number;
   durationSeconds: number;
   overlay: MarketingBrandOverlay;
+  frame: { width: number; height: number };
 }) {
   const outputPath = path.join(input.tmpDir, `scene-${input.sceneIndex + 1}.mp4`);
   return {
@@ -344,7 +360,7 @@ function buildPlainColorSceneCommand(input: {
       "-f",
       "lavfi",
       "-i",
-      `color=c=${svgColorToFfmpegColor(sanitizeSvgColor(input.overlay.primaryColor, "#1e3a5f"))}:s=1280x720:d=${Math.max(1, Math.round(input.durationSeconds || 1))}:r=30`,
+      `color=c=${svgColorToFfmpegColor(sanitizeSvgColor(input.overlay.primaryColor, "#1e3a5f"))}:s=${input.frame.width}x${input.frame.height}:d=${Math.max(1, Math.round(input.durationSeconds || 1))}:r=30`,
       "-an",
       "-c:v",
       "libx264",
@@ -365,6 +381,7 @@ async function renderGeneratedTextCardSegment(input: {
   sceneIndex: number;
   totalScenes: number;
   overlay: MarketingBrandOverlay;
+  frame: { width: number; height: number };
 }): Promise<{ outputPath: string; warning?: string }> {
   const duration = String(Math.max(1, Math.round(input.scene.durationSeconds || 1)));
   const outputPath = path.join(input.tmpDir, `scene-${input.sceneIndex + 1}.mp4`);
@@ -395,6 +412,7 @@ async function renderGeneratedTextCardSegment(input: {
       sceneIndex: input.sceneIndex,
       durationSeconds: input.scene.durationSeconds,
       overlay: input.overlay,
+      frame: input.frame,
     });
     await execa(plain.command, plain.args, { timeout: 25_000 });
     return {
@@ -412,13 +430,14 @@ export function buildSceneSegmentCommand(input: {
   totalScenes: number;
   overlay: MarketingBrandOverlay;
   enableLogoOverlay?: boolean;
+  frame: { width: number; height: number };
 }): { command: string; args: string[]; outputPath: string } {
   const scene = input.scene;
   const duration = String(Math.max(1, Math.round(scene.durationSeconds || 1)));
   const outputPath = path.join(input.tmpDir, `scene-${input.sceneIndex + 1}.mp4`);
   const isFinalScene = input.sceneIndex === input.totalScenes - 1;
   const sceneText = safeSceneText(scene.caption || scene.narration || scene.textCard || `Scene ${input.sceneIndex + 1}`);
-  const vf = `${sceneBaseVideoFilter()},${buildSceneOverlayFilter({ sceneText, overlay: input.overlay, isFinalScene })}`;
+  const vf = `${sceneBaseVideoFilter(input.frame)},${buildSceneOverlayFilter({ sceneText, overlay: input.overlay, isFinalScene })}`;
   const remoteAssetAllowed = Boolean(scene.assetUrl && (!isRemoteUrl(scene.assetUrl) || isAllowedRemoteStockUrl(scene.assetUrl)));
   const logoUrl = input.enableLogoOverlay !== false ? input.overlay.logoUrl : undefined;
   const useLogo = Boolean(logoUrl && input.overlay.placements?.logo !== "none");
@@ -429,7 +448,7 @@ export function buildSceneSegmentCommand(input: {
   const shouldUseAsset = Boolean(scene.assetUrl && scene.mediaKind !== "text_card" && remoteAssetAllowed);
 
   if (shouldUseAsset && scene.mediaKind === "image") {
-    const filter = `${sceneBaseVideoFilter()},${buildSceneOverlayFilter({ sceneText, overlay: input.overlay, isFinalScene })}`;
+    const filter = `${sceneBaseVideoFilter(input.frame)},${buildSceneOverlayFilter({ sceneText, overlay: input.overlay, isFinalScene })}`;
     const filterComplex = `[0:v]${filter}[base];[1:v]scale=140:-1[logo];[base][logo]overlay=${logoX}:${logoY}`;
     return {
       command: input.ffmpegPath,
@@ -457,7 +476,7 @@ export function buildSceneSegmentCommand(input: {
   }
 
   if (shouldUseAsset && scene.mediaKind === "video") {
-    const filter = `${sceneBaseVideoFilter()},${buildSceneOverlayFilter({ sceneText, overlay: input.overlay, isFinalScene })}`;
+    const filter = `${sceneBaseVideoFilter(input.frame)},${buildSceneOverlayFilter({ sceneText, overlay: input.overlay, isFinalScene })}`;
     const filterComplex = `[0:v]${filter}[base];[1:v]scale=140:-1[logo];[base][logo]overlay=${logoX}:${logoY}`;
     const args = [
       "-y",
@@ -498,7 +517,7 @@ export function buildSceneSegmentCommand(input: {
       "-f",
       "lavfi",
       "-i",
-      `color=c=${input.overlay.primaryColor}:s=1280x720:d=${duration}`,
+      `color=c=${input.overlay.primaryColor}:s=${input.frame.width}x${input.frame.height}:d=${duration}`,
       ...(useLogo ? ["-i", logoUrl!] : []),
       ...(useLogo ? ["-filter_complex", fallbackComplex] : ["-vf", fallbackFilter]),
       "-an",
@@ -522,6 +541,7 @@ async function renderSceneWithFallback(input: {
   totalScenes: number;
   overlay: MarketingBrandOverlay;
   drawtextAvailable: boolean;
+  frame: { width: number; height: number };
 }): Promise<{ outputPath: string; warning?: string }> {
   if (input.scene.sourceType === "text_card" || input.scene.mediaKind === "text_card") {
     const rendered = await renderGeneratedTextCardSegment(input);
@@ -549,6 +569,7 @@ async function renderSceneWithFallback(input: {
       sceneIndex: input.sceneIndex,
       totalScenes: input.totalScenes,
       overlay: input.overlay,
+      frame: input.frame,
     });
     return {
       outputPath: rendered.outputPath,
@@ -564,6 +585,7 @@ async function renderSceneWithFallback(input: {
     totalScenes: input.totalScenes,
     overlay: input.overlay,
     enableLogoOverlay: true,
+    frame: input.frame,
   });
   try {
     await execa(primary.command, primary.args, { timeout: 45_000 });
@@ -579,6 +601,7 @@ async function renderSceneWithFallback(input: {
           totalScenes: input.totalScenes,
           overlay: input.overlay,
           enableLogoOverlay: false,
+          frame: input.frame,
         });
         await execa(withoutLogo.command, withoutLogo.args, { timeout: 35_000 });
         return {
@@ -602,6 +625,7 @@ async function renderSceneWithFallback(input: {
       sceneIndex: input.sceneIndex,
       totalScenes: input.totalScenes,
       overlay: input.overlay,
+      frame: input.frame,
     });
     return {
       outputPath: rendered.outputPath,
@@ -633,6 +657,7 @@ export async function renderMarketingTimeline(input: {
     };
   }
   const duration = Math.max(1, Math.round(input.timeline.totalDurationSeconds || 1));
+  const frame = getTimelineFrame(input.timeline);
   const captionMode = input.captions?.mode ?? "none";
   const captionFormat = input.captions?.format ?? "srt";
   const srtText = input.captions?.srt || generateSrtCaptions(input.timeline);
@@ -711,6 +736,7 @@ export async function renderMarketingTimeline(input: {
         totalScenes: input.timeline.scenes.length,
         overlay: input.brandOverlay,
         drawtextAvailable: readiness.drawtextAvailable,
+        frame,
       });
     }));
     sceneResults.forEach((result) => {

@@ -18,6 +18,15 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
   }
 }
 
+const DEFAULT_TIMELINE_RENDER = {
+  aspectRatio: "16:9" as const,
+  width: 1280,
+  height: 720,
+  platformFormat: "general_video" as const,
+  audioRequired: false,
+  captionsRequired: true,
+};
+
 function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJob {
   const isEquiProfile = row.hostAppId.trim().toLowerCase() === "equiprofile";
   const fallbackBrandName = isEquiProfile ? "EquiProfile" : row.hostAppId.trim().replace(/[-_]+/g, " ") || "Workspace brand";
@@ -37,7 +46,7 @@ function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJo
     originalUserPrompt: row.originalUserPrompt,
     renderMode: row.renderMode as MarketingRenderJob["renderMode"],
     durationTargetSeconds: row.durationTargetSeconds,
-    timeline: parseJson<MarketingTimeline>(row.timelineJson, { scenes: [], totalDurationSeconds: 0, captionLines: [] }),
+    timeline: parseJson<MarketingTimeline>(row.timelineJson, { scenes: [], totalDurationSeconds: 0, render: DEFAULT_TIMELINE_RENDER, captionLines: [] }),
     captions: parseJson<MarketingRenderJob["captions"]>(row.captionJson, {
       mode: "script",
       format: "srt",
