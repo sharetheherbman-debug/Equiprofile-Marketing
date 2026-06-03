@@ -1,6 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { marketingRenderJobs } from "../../../../drizzle/schema";
 import type { MarketingRenderJob, MarketingTimeline, MarketingBrandOverlay, RenderJobStatus } from "./renderJobTypes";
+import type { MarketingContentType, MarketingRenderContract } from "../../../../shared/_core/marketingStudioPlan";
 
 type Db = Awaited<ReturnType<typeof import("../../../db")["getDb"]>>;
 
@@ -18,7 +19,7 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
   }
 }
 
-const DEFAULT_TIMELINE_RENDER = {
+const DEFAULT_TIMELINE_RENDER: MarketingRenderContract = {
   aspectRatio: "16:9" as const,
   width: 1280,
   height: 720,
@@ -27,9 +28,47 @@ const DEFAULT_TIMELINE_RENDER = {
   captionsRequired: true,
 };
 
+/**
+ * Compute the correct render contract from stored job metadata when the
+ * timelineJson was written before the render contract field existed.
+ * This ensures backward compatibility for jobs created prior to PR64O.
+ */
+function inferRenderContractFromJob(contentType: string, originalUserPrompt: string): MarketingRenderContract {
+  const lowerPrompt = originalUserPrompt.toLowerCase();
+  const isVerticalShort =
+    /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(lowerPrompt) ||
+    ["instagram_reel", "tiktok_video", "youtube_short", "facebook_ad"].includes(contentType as MarketingContentType);
+  if (isVerticalShort) {
+    return {
+      aspectRatio: "9:16",
+      width: 1080,
+      height: 1920,
+      platformFormat: "vertical_short_video",
+      audioRequired: true,
+      captionsRequired: true,
+    };
+  }
+  if (contentType === "youtube_3min_video") {
+    return {
+      aspectRatio: "16:9",
+      width: 1920,
+      height: 1080,
+      platformFormat: "youtube_landscape",
+      audioRequired: true,
+      captionsRequired: true,
+    };
+  }
+  return DEFAULT_TIMELINE_RENDER;
+}
+
 function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJob {
   const isEquiProfile = row.hostAppId.trim().toLowerCase() === "equiprofile";
   const fallbackBrandName = isEquiProfile ? "EquiProfile" : row.hostAppId.trim().replace(/[-_]+/g, " ") || "Workspace brand";
+  const rawTimeline = parseJson<MarketingTimeline>(row.timelineJson, { scenes: [], totalDurationSeconds: 0, render: DEFAULT_TIMELINE_RENDER, captionLines: [] });
+  // Ensure render contract is always present — old jobs stored before PR64O may have render: undefined
+  const timeline: MarketingTimeline = rawTimeline.render
+    ? rawTimeline
+    : { ...rawTimeline, render: inferRenderContractFromJob(row.contentType, row.originalUserPrompt) };
   return {
     id: String(row.id),
     tenantId: row.tenantId,
@@ -46,7 +85,7 @@ function mapRow(row: typeof marketingRenderJobs.$inferSelect): MarketingRenderJo
     originalUserPrompt: row.originalUserPrompt,
     renderMode: row.renderMode as MarketingRenderJob["renderMode"],
     durationTargetSeconds: row.durationTargetSeconds,
-    timeline: parseJson<MarketingTimeline>(row.timelineJson, { scenes: [], totalDurationSeconds: 0, render: DEFAULT_TIMELINE_RENDER, captionLines: [] }),
+    timeline,
     captions: parseJson<MarketingRenderJob["captions"]>(row.captionJson, {
       mode: "script",
       format: "srt",
@@ -170,6 +209,8 @@ export async function updateMarketingRenderJobRecord(input: {
   timeline?: MarketingTimeline;
   captions?: MarketingRenderJob["captions"];
   audio?: MarketingRenderJob["audio"];
+  /** Pre-serialized audioJson string (alternative to `audio` object). */
+  audioJson?: string;
   brandOverlay?: MarketingBrandOverlay;
   brandKitId?: number | null;
   overlayTemplate?: string;
@@ -179,12 +220,19 @@ export async function updateMarketingRenderJobRecord(input: {
   errorMessage?: string | null;
   warnings?: string[];
   completedAt?: Date | null;
+  qualityStatus?: import("./renderJobTypes").ReelQualityStatus | null;
 }) {
   const db = await resolveDb();
   if (!db) throw new Error("Database unavailable for marketing render jobs");
 
   const idNum = Number(input.id);
   if (!Number.isFinite(idNum) || idNum <= 0) throw new Error("Invalid marketing render job id");
+
+  const resolvedAudioJson = input.audioJson !== undefined
+    ? input.audioJson
+    : input.audio !== undefined
+      ? JSON.stringify(input.audio)
+      : undefined;
 
   await db
     .update(marketingRenderJobs)
@@ -193,7 +241,7 @@ export async function updateMarketingRenderJobRecord(input: {
       ...(input.reviewStatus !== undefined ? { reviewStatus: input.reviewStatus } : {}),
       ...(input.timeline !== undefined ? { timelineJson: JSON.stringify(input.timeline) } : {}),
       ...(input.captions !== undefined ? { captionJson: JSON.stringify(input.captions) } : {}),
-      ...(input.audio !== undefined ? { audioJson: JSON.stringify(input.audio) } : {}),
+      ...(resolvedAudioJson !== undefined ? { audioJson: resolvedAudioJson } : {}),
       ...(input.voiceAssetId !== undefined ? { voiceAssetId: input.voiceAssetId } : {}),
       ...(input.brandOverlay !== undefined ? { brandOverlayJson: JSON.stringify(input.brandOverlay) } : {}),
       ...(input.brandKitId !== undefined ? { brandKitId: input.brandKitId } : {}),

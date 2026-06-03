@@ -57,7 +57,7 @@ function inferRenderContract(
   }
   const prompt = String(plan.originalUserPrompt ?? "").toLowerCase();
   const isVerticalShort = /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(prompt)
-    || ["instagram_reel", "tiktok_video", "youtube_short"].includes(String(plan.contentType ?? ""));
+    || ["instagram_reel", "tiktok_video", "youtube_short", "facebook_ad"].includes(String(plan.contentType ?? ""));
   if (isVerticalShort) {
     return {
       aspectRatio: "9:16",
