@@ -26,7 +26,7 @@ export function MarketingResultsView({ workspace, onCreateWithLearning }: { work
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Results & Learning</p>
         <h2 className="mt-1 text-2xl font-semibold text-stone-950">What the Marketing App is learning</h2>
       </div>
-      {insufficient ? <p className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">Insufficient data for confident recommendations. Add a signup URL, export campaigns with tracking links, and record clicks or conversions.</p> : null}
+      {insufficient ? <p className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">Not enough data yet. Add a signup URL, post or export campaigns with tracking links, and record clicks or conversions.</p> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Metric label="Clicks" value={score?.totals.clicks ?? 0} />
         <Metric label="Conversions" value={score?.totals.conversions ?? 0} />

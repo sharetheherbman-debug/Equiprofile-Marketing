@@ -17,24 +17,29 @@ import { useMarketingWorkspaceConfig } from "./hooks/useMarketingWorkspaceConfig
 import { StudioWorkbench } from "./studio/StudioWorkbench";
 import { CampaignPlanPanel, type CampaignPlan } from "./workspace/CampaignPlanPanel";
 import { CampaignPromptPanel } from "./workspace/CampaignPromptPanel";
+import { MarketingBrandKitView } from "./workspace/MarketingBrandKitView";
 import { MarketingCalendarView } from "./workspace/MarketingCalendarView";
+import { MarketingCampaignsView } from "./workspace/MarketingCampaignsView";
+import { MarketingConnectionsView } from "./workspace/MarketingConnectionsView";
 import { MarketingLibraryView } from "./workspace/MarketingLibraryView";
 import { MarketingPreviewPanel } from "./workspace/MarketingPreviewPanel";
 import { MarketingResultsView } from "./workspace/MarketingResultsView";
 import { MarketingWorkspaceShell } from "./workspace/MarketingWorkspaceShell";
 import { ProductContextPanel } from "./workspace/ProductContextPanel";
-import { WorkflowStatusPanel } from "./workspace/WorkflowStatusPanel";
 
 type MediaTask = "text_to_image" | "text_to_video";
 type PrimaryPackage = "signup_campaign" | "weekly_content_pack" | "email_campaign" | "social_post" | "paid_social_ad" | "image_ad";
-type WorkspaceView = "create" | "library" | "calendar" | "results" | "settings";
+type WorkspaceView = "create" | "campaigns" | "library" | "calendar" | "results" | "brand" | "connections" | "settings";
 
 const RAW_VIDEO_THRESHOLD_SECONDS = 15;
 const WORKSPACE_VIEWS: Array<{ id: WorkspaceView; label: string }> = [
   { id: "create", label: "Create" },
-  { id: "library", label: "Library" },
+  { id: "campaigns", label: "Campaigns" },
+  { id: "library", label: "Media Library" },
   { id: "calendar", label: "Calendar" },
   { id: "results", label: "Results" },
+  { id: "brand", label: "Brand Kit" },
+  { id: "connections", label: "Connections" },
   { id: "settings", label: "Settings" },
 ];
 
@@ -124,9 +129,9 @@ type CreateBadgeLabel =
   | "Ready for review"
   | "Ready to export"
   | "Scheduled"
-  | "Published";
+  | "Ready to post";
 
-function inferCreateBadge(input: {
+export function inferCreateBadge(input: {
   hasOutput: boolean;
   qualityPassed: boolean;
   hasTextCardFallback: boolean;
@@ -134,7 +139,7 @@ function inferCreateBadge(input: {
   scheduledCount: number;
   publishedPlatformId: string | null;
 }): CreateBadgeLabel {
-  if (input.publishedPlatformId) return "Published";
+  if (input.publishedPlatformId) return "Ready to post";
   if (input.scheduledCount > 0) return "Scheduled";
   if (input.hasTextCardFallback) return "Needs media upgrade";
   if (input.missingAudio) return "Needs audio upgrade";
@@ -188,7 +193,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       await Promise.all([utils.admin.getMarketingCampaign.invalidate(), utils.admin.listMarketingCampaigns.invalidate()]);
     },
     onError: (error) => {
-      setLatestOutcome({ route: "Campaign package", status: "failed", detail: error.message, nextAction: "Check product details and provider setup, then try Generate again." });
+      setLatestOutcome({ route: "Campaign package", status: "failed", detail: "Campaign generation failed. Please check product setup and provider readiness.", nextAction: "Review setup, then try Generate again." });
       toast.error("Could not generate campaign", { description: error.message });
     },
   });
@@ -198,12 +203,12 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       setLastMediaOutput(image);
       setLastDeliverablePackage(null);
       setStudioOpen(false);
-      setLatestOutcome({ route: "Image advert", status: image.publicUrl ? "ready" : String(image.status ?? "queued"), detail: image.publicUrl ? "Image preview is ready." : String(image.errorMessage ?? "Image advert queued or needs provider setup."), nextAction: image.publicUrl ? "Preview the image and use it from Library." : "Open Settings and test the image provider route." });
+      setLatestOutcome({ route: "Image advert", status: image.publicUrl ? "ready" : String(image.status ?? "queued"), detail: image.publicUrl ? "Image preview is ready." : "Image draft is queued or needs setup.", nextAction: image.publicUrl ? "Preview the image and use it from Library." : "Open Settings and test the image provider route." });
       toast[image.publicUrl ? "success" : "info"](image.publicUrl ? "Image advert generated" : "Image advert queued or needs setup");
       await utils.admin.listMediaAssets.invalidate();
     },
     onError: (error) => {
-      setLatestOutcome({ route: "Image advert", status: "failed", detail: error.message, nextAction: "Open Settings and test GenX/Hugging Face image routes." });
+      setLatestOutcome({ route: "Image advert", status: "failed", detail: "Image generation failed. Review provider setup and try again.", nextAction: "Open Settings and test GenX/Hugging Face image routes." });
       toast.error("Image generation needs attention", { description: error.message });
     },
   });
@@ -294,7 +299,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
           audience,
           goal,
         }).catch((error: Error) => {
-          setLatestOutcome({ route: `${intent.label} assembled video`, status: "failed", detail: error.message, nextAction: "Check product setup and provider routes, then try Generate again." });
+          setLatestOutcome({ route: `${intent.label} assembled video`, status: "failed", detail: "Video assembly failed. Verify setup, then try again.", nextAction: "Check product setup and provider routes, then try Generate again." });
           throw error;
         });
       setLatestStudioPlan(result.plan as MarketingStudioPlan);
@@ -373,18 +378,6 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
     });
   }
 
-  function exportBeastModePack() {
-    const runId = Number(campaignState.selectedBeastModeRunData?.id);
-    if (!runId) return toast.info("Generate advanced variants before exporting.");
-    void utils.admin.exportBeastModePack.fetch({
-      runId,
-      tenantId: workspace.tenantId,
-      workspaceId: workspace.marketing_workspace_id,
-      hostAppId: workspace.host_app_id,
-      includeRejected: false,
-    }).then((pack) => triggerDownload(JSON.stringify(pack, null, 2), `advanced-variants-${runId}.json`));
-  }
-
   const productPanel = (
     <ProductContextPanel
       profile={productIntelligence.displayProfile}
@@ -398,7 +391,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       onChooseLogo={() => setView("library")}
       onUploadLogo={handleUploadLogo}
       onRepairLogo={() => repairMarketingBrandLogoMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}
-      onOpenSettings={() => setView("settings")}
+      onOpenSettings={() => setView("connections")}
       onOpenResults={() => setView("results")}
     />
   );
@@ -458,6 +451,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                   <Button type="button" size="sm" variant="outline" onClick={() => toast.info("Approval is available after review checks.")}>Approve</Button>
                   <Button type="button" size="sm" variant="outline" onClick={createScheduleDraftsFromCampaign}>Schedule</Button>
                   <Button type="button" size="sm" variant="outline" onClick={exportCampaign}>Export</Button>
+                  <Button type="button" size="sm" onClick={() => setView("connections")}>Post / Connect account</Button>
                 </div>
               </section>
               {clarifyingQuestion ? <p className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{clarifyingQuestion}</p> : null}
@@ -473,7 +467,6 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                 </section>
               ) : null}
               <CampaignPlanPanel plan={campaignPlan} />
-              <MarketingPreviewPanel deliverablePackage={lastDeliverablePackage} mediaOutput={lastMediaOutput} asset={assetsState.assetStore.resolvedPreviewAsset} renderJob={latestRenderJob} studioPlan={latestStudioPlan} signupUrl={signupUrl} />
               {studioOpen ? (
                 <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="ai-guided-studio">
                   <div className="mb-4">
@@ -484,30 +477,34 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
                     const nextJob = (job as unknown as Record<string, unknown> | null) ?? null;
                     setLatestRenderJob(nextJob);
                     if (nextJob?.status === "completed") setLatestOutcome({ route: "Assembled video", status: "ready", detail: String(nextJob.outputPublicUrl ? "Playable MP4 is ready." : "Render completed but no playable URL was returned."), nextAction: nextJob.outputPublicUrl ? "Preview the video, then export or schedule." : "Treat as render failure and check runtime storage." });
-                    if (nextJob?.status === "failed" || nextJob?.status === "setup_needed") setLatestOutcome({ route: "Assembled video", status: String(nextJob.status), detail: String(nextJob.errorMessage ?? "Render needs runtime setup."), nextAction: "Open Settings and verify FFmpeg/storage readiness." });
+                    if (nextJob?.status === "failed" || nextJob?.status === "setup_needed") setLatestOutcome({ route: "Assembled video", status: String(nextJob.status), detail: "Render needs setup before publishing.", nextAction: "Open Settings and verify media runtime readiness." });
                   }} onDone={setLatestStudioPlan} />
                 </section>
               ) : null}
-              <details className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
-                <summary className="cursor-pointer text-sm font-semibold text-stone-900">Media Studio / Advanced tools</summary>
-                <div className="mt-4 space-y-3 border-t border-stone-100 pt-4">
-                  <p className="text-sm text-stone-600">Choose manually only when you want to override the AI-guided workflow.</p>
-                  <Button type="button" size="sm" variant="outline" onClick={() => { setLatestStudioPlan(null); setStudioOpen(true); }}>Choose manually</Button>
-                  <Button type="button" size="sm" variant="outline" className="ml-2" onClick={exportCampaign}>Export campaign</Button>
-                  <Button type="button" size="sm" variant="outline" className="ml-2" onClick={createScheduleDraftsFromCampaign}>Create schedule drafts</Button>
-                  <Button type="button" size="sm" variant="outline" className="ml-2" onClick={exportBeastModePack}>Export advanced variants</Button>
-                </div>
-              </details>
             </>
           )}
-          statusRail={<WorkflowStatusPanel productReady={productIntelligence.isReady} fallbackUsed={lastDeliverablePackage?.fallbackUsed === true} hasOutput={hasOutput} signupUrl={signupUrl} qualityPassed={qualityPassed} />}
+          previewRail={<MarketingPreviewPanel deliverablePackage={lastDeliverablePackage} mediaOutput={lastMediaOutput} asset={assetsState.assetStore.resolvedPreviewAsset} renderJob={latestRenderJob} studioPlan={latestStudioPlan} signupUrl={signupUrl} />}
         />
       ) : (
         <main className="mx-auto min-w-0 max-w-[1440px] px-4 py-5 lg:px-6">
+          {view === "campaigns" ? <MarketingCampaignsView campaignState={campaignState} onExport={exportCampaign} onSchedule={createScheduleDraftsFromCampaign} /> : null}
           {view === "library" ? <MarketingLibraryView assetsState={assetsState} onUseAsLogo={(mediaAssetId) => brandKitState.selectBrandLogoMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, mediaAssetId })} onUseAsReference={(asset) => { setPrompt(`Use Library asset #${asset.id} as a visual reference. ${prompt}`); setView("create"); }} /> : null}
           {view === "calendar" ? <MarketingCalendarView calendarState={calendarState} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} /> : null}
           {view === "results" ? <MarketingResultsView workspace={workspace} onCreateWithLearning={() => setView("create")} /> : null}
-          {view === "settings" ? <div className="space-y-5">{productPanel}<MarketingAppSettings quality={quality} onQualityChange={setQuality} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} /></div> : null}
+          {view === "brand" ? <MarketingBrandKitView
+            productIntelligence={productIntelligence}
+            brandKitState={brandKitState}
+            isUploadingLogo={uploadMarketingBrandLogoMutation.isPending || repairMarketingBrandLogoMutation.isPending}
+            onScanProduct={(draft) => productIntelligence.scan.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id, landingPageUrl: draft.landingPageUrl.trim(), signupUrl: draft.signupUrl.trim() || undefined, productNotes: draft.productNotes.trim() || undefined })}
+            onSaveProduct={productIntelligence.saveDraft}
+            onUseDefaults={productIntelligence.useEquiProfileDefaults}
+            onConfirmProduct={() => productIntelligence.confirm.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}
+            onUploadLogo={handleUploadLogo}
+            onRepairLogo={() => repairMarketingBrandLogoMutation.mutate({ tenantId: workspace.tenantId, workspaceId: workspace.marketing_workspace_id, hostAppId: workspace.host_app_id })}
+            onChooseLogo={() => setView("library")}
+          /> : null}
+          {view === "connections" ? <MarketingConnectionsView tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} /> : null}
+          {view === "settings" ? <MarketingAppSettings quality={quality} onQualityChange={setQuality} tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} /> : null}
         </main>
       )}
     </div>
