@@ -107,9 +107,11 @@ describe("PR64F rescued workspace", () => {
   });
 
   it("renders clear prompt, output, and workflow panels", () => {
-    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("What would you like to create?");
+    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("What are we marketing today?");
+    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("Plan output");
+    expect(read("client/src/components/marketing/app/workspace/MarketingPreviewPanel.tsx")).toContain("Latest output");
     expect(read("client/src/components/marketing/app/workspace/CampaignOutputPanel.tsx")).toContain("Day-by-day schedule");
-    expect(read("client/src/components/marketing/app/workspace/WorkflowStatusPanel.tsx")).toContain("Direct posting needs a connected Facebook account. Export is ready.");
+    expect(read("client/src/components/marketing/app/workspace/MarketingConnectionsView.tsx")).toContain("Posting stays blocked until a connector is truly ready.");
   });
 
   it("keeps diagnostics and legacy workbench out of the primary tools panel", () => {
@@ -149,6 +151,7 @@ describe("PR64F rescued workspace", () => {
     expect(inferCreateBadge({ hasOutput: false, qualityPassed: false, hasTextCardFallback: false, missingAudio: false, scheduledCount: 0, publishedPlatformId: null })).toBe("Draft generated");
     expect(inferCreateBadge({ hasOutput: true, qualityPassed: false, hasTextCardFallback: true, missingAudio: false, scheduledCount: 0, publishedPlatformId: null })).toBe("Needs media upgrade");
     expect(inferCreateBadge({ hasOutput: true, qualityPassed: false, hasTextCardFallback: false, missingAudio: true, scheduledCount: 0, publishedPlatformId: null })).toBe("Needs audio upgrade");
+    expect(inferCreateBadge({ hasOutput: true, qualityPassed: true, hasTextCardFallback: false, missingAudio: false, scheduledCount: 0, publishedPlatformId: "fb_123" })).toBe("Published");
   });
 
   it("ensures product setup collapses after confirmation state", () => {

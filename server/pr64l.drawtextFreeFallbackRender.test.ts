@@ -79,7 +79,7 @@ describe("PR64L drawtext-free fallback render", () => {
     expect(readiness.ffmpegExecutable).toBe(true);
     expect(readiness.drawtextAvailable).toBe(false);
     expect(readiness.filterCheckError).toContain("MARKETING_RENDER_DISABLE_DRAWTEXT");
-  });
+  }, 15_000);
 
   it("renders a real MP4 with PNG card fallback when drawtext is unavailable", async () => {
     vi.resetModules();

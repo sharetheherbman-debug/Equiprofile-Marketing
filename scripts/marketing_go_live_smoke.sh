@@ -5,10 +5,9 @@ cd "$(dirname "$0")/.."
 BASE_URL="${BASE_URL:-}"
 LOGO_FILE_PATH="${LOGO_FILE_PATH:-}"
 
-pass() { echo "✅ $1"; }
-warn() { echo "⚠️  $1"; }
-fail() { echo "❌ $1"; exit 1; }
-
+pass() { echo "[PASS] $1"; }
+warn() { echo "[WARN] $1"; }
+fail() { echo "[FAIL] $1"; exit 1; }
 echo "[go-live] PR64P smoke checks"
 
 # 1) /api/files encoded logo URL returns 200 (runtime check when BASE_URL and LOGO_FILE_PATH are provided)

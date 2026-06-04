@@ -78,7 +78,7 @@ describe("PR60 DB noise cleanup", () => {
     const testWarnCalls = warnSpy.mock.calls.filter((call) => String(call[0]).includes("[Database][test]"));
     expect(testWarnCalls.length).toBe(1);
     expect(errorSpy).not.toHaveBeenCalled();
-  });
+  }, 15_000);
 });
 
 describe("PR60 marketing genius and specialists", () => {

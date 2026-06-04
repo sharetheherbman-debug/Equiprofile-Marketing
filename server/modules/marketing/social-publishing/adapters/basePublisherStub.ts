@@ -2,6 +2,9 @@ import type { SocialConnectionState, SocialPublisherAdapter, SocialPublisherPlat
 
 function validateConnectionState(connection: SocialConnectionState | null) {
   if (!connection) return { canPublish: false, readinessStatus: "setup_needed" as const, reason: "setup_needed" };
+  if (connection.status === "missing_token") return { canPublish: false, readinessStatus: "missing_token" as const, reason: "missing_token" };
+  if (connection.status === "missing_scopes") return { canPublish: false, readinessStatus: "missing_scopes" as const, reason: "missing_scopes" };
+  if (connection.status === "adapter_missing") return { canPublish: false, readinessStatus: "adapter_missing" as const, reason: "adapter_missing" };
   if (connection.status === "token_expired") return { canPublish: false, readinessStatus: "token_expired" as const, reason: "token_expired" };
   if (connection.status === "permission_missing") return { canPublish: false, readinessStatus: "permission_missing" as const, reason: "permission_missing" };
   if (connection.status === "disabled") return { canPublish: false, readinessStatus: "disabled" as const, reason: "disabled" };

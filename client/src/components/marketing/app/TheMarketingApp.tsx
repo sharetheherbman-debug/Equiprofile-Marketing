@@ -129,7 +129,8 @@ type CreateBadgeLabel =
   | "Ready for review"
   | "Ready to export"
   | "Scheduled"
-  | "Ready to post";
+  | "Ready to post"
+  | "Published";
 
 export function inferCreateBadge(input: {
   hasOutput: boolean;
@@ -139,13 +140,28 @@ export function inferCreateBadge(input: {
   scheduledCount: number;
   publishedPlatformId: string | null;
 }): CreateBadgeLabel {
-  if (input.publishedPlatformId) return "Ready to post";
+  if (input.publishedPlatformId) return "Published";
   if (input.scheduledCount > 0) return "Scheduled";
   if (input.hasTextCardFallback) return "Needs media upgrade";
   if (input.missingAudio) return "Needs audio upgrade";
   if (input.hasOutput && input.qualityPassed) return "Ready to export";
   if (input.hasOutput) return "Ready for review";
   return "Draft generated";
+}
+
+function friendlyOutcomeStatus(status: unknown) {
+  const raw = String(status ?? "").trim();
+  const normalized = raw.toLowerCase();
+  if (!normalized) return "Draft";
+  if (normalized === "setup_needed") return "Needs setup";
+  if (normalized === "provider_unavailable") return "Provider unavailable";
+  if (normalized === "queued") return "Queued";
+  if (normalized === "completed" || normalized === "ready") return "Ready";
+  if (normalized === "failed" || normalized === "provider_failed") return "Needs review";
+  if (normalized === "generating") return "Generating";
+  if (normalized === "rendering") return "Rendering";
+  if (normalized === "waiting") return "Needs input";
+  return raw.replace(/_/g, " ");
 }
 
 function SectionErrorCard({ onRetry }: { onRetry: () => void }) {
@@ -203,7 +219,7 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
       setLastMediaOutput(image);
       setLastDeliverablePackage(null);
       setStudioOpen(false);
-      setLatestOutcome({ route: "Image advert", status: image.publicUrl ? "ready" : String(image.status ?? "queued"), detail: image.publicUrl ? "Image preview is ready." : "Image draft is queued or needs setup.", nextAction: image.publicUrl ? "Preview the image and use it from Library." : "Open Settings and test the image provider route." });
+      setLatestOutcome({ route: "Image advert", status: image.publicUrl ? "Ready" : friendlyOutcomeStatus(image.status ?? "queued"), detail: image.publicUrl ? "Image preview is ready." : "Image draft is queued or needs setup.", nextAction: image.publicUrl ? "Preview the image and use it from Library." : "Open Settings and test the image provider route." });
       toast[image.publicUrl ? "success" : "info"](image.publicUrl ? "Image advert generated" : "Image advert queued or needs setup");
       await utils.admin.listMediaAssets.invalidate();
     },
@@ -470,14 +486,14 @@ export function TheMarketingApp({ onBack }: { onBack?: () => void }) {
               {studioOpen ? (
                 <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="ai-guided-studio">
                   <div className="mb-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Guided Studio</p>
-                    <h2 className="mt-1 text-xl font-semibold text-stone-950">Script → Scenes → Media → Render → Export</h2>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Video Builder</p>
+                    <h2 className="mt-1 text-xl font-semibold text-stone-950">Script / Scenes / Media / Render / Export</h2>
                   </div>
                   <StudioWorkbench tenantId={workspace.tenantId} workspaceId={workspace.marketing_workspace_id} hostAppId={workspace.host_app_id} productCategory={productIntelligence.displayProfile?.category} productName={productIntelligence.displayProfile?.appName} productProfileConfirmed={productIntelligence.isReady} initialPrompt={prompt} initialPlan={latestStudioPlan} autoStartRender onPlanChange={setLatestStudioPlan} onRenderJobChange={(job) => {
                     const nextJob = (job as unknown as Record<string, unknown> | null) ?? null;
                     setLatestRenderJob(nextJob);
                     if (nextJob?.status === "completed") setLatestOutcome({ route: "Assembled video", status: "ready", detail: String(nextJob.outputPublicUrl ? "Playable MP4 is ready." : "Render completed but no playable URL was returned."), nextAction: nextJob.outputPublicUrl ? "Preview the video, then export or schedule." : "Treat as render failure and check runtime storage." });
-                    if (nextJob?.status === "failed" || nextJob?.status === "setup_needed") setLatestOutcome({ route: "Assembled video", status: String(nextJob.status), detail: "Render needs setup before publishing.", nextAction: "Open Settings and verify media runtime readiness." });
+                    if (nextJob?.status === "failed" || nextJob?.status === "setup_needed") setLatestOutcome({ route: "Assembled video", status: friendlyOutcomeStatus(nextJob.status), detail: "Render needs setup before publishing.", nextAction: "Open Settings and verify media runtime readiness." });
                   }} onDone={setLatestStudioPlan} />
                 </section>
               ) : null}

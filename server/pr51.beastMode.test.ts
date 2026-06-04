@@ -234,13 +234,12 @@ describe("PR51 Beast Mode", () => {
 
   it("exposes Beast Mode controls from Campaigns without redesign or fake posting", () => {
     const panelSource = read("client/src/components/marketing/app/MarketingAppPanels.tsx");
-    const appSource = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const campaignsHookSource = read("client/src/components/marketing/app/hooks/useMarketingCampaigns.ts");
     expect(panelSource).toContain("Beast Mode");
     expect(panelSource).toContain("Generate Beast Mode variants");
     expect(panelSource).toContain("Send selected video variants to render planning");
     expect(campaignsHookSource).toContain("createBeastModeRun");
-    expect(appSource).toContain("exportBeastModePack");
+    expect(panelSource).toContain("Export Beast Mode pack");
     expect(panelSource).not.toContain("fake analytics");
     expect(panelSource).not.toContain("Post now");
   });

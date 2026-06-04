@@ -187,8 +187,8 @@ export function MarketingAppSettings({
             {providers.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} onTest={() => testConnection(field.id as "genx" | "qwen" | "huggingface")} testing={testProviderConnection.isPending} />)}
           </div>
           <div className="mt-3 grid gap-2 text-xs text-stone-600">
-            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Qwen text routes:</span> {routeStatus(["campaign_strategy", "platform_copywriting", "scriptwriting", "scene_planning"]) === "Ready" ? "Ready" : "Needs setup"}</p>
-            <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"><span className="font-semibold">Qwen media routes:</span> Needs setup</p>
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Qwen text:</span> {routeStatus(["campaign_strategy", "platform_copywriting", "scriptwriting", "scene_planning"]) === "Ready" ? "Ready" : "Needs setup"}</p>
+            <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"><span className="font-semibold">Qwen media:</span> Disabled until DashScope native media execution returns a usable media URL or queued job.</p>
             <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">GenX media routes:</span> {routeStatus(["image_generation", "avatar_generation", "voiceover"]) === "Ready" ? "Ready" : "Needs setup"}</p>
             <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Hugging Face fallback routes:</span> {hfReason ? "Needs key or route check" : routeStatus(["image_generation", "avatar_generation", "voiceover"]) === "Ready" ? "Ready" : "Needs setup"}</p>
           </div>

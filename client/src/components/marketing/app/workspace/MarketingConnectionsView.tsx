@@ -32,6 +32,26 @@ function truthLabel(status: string) {
   return "Not connected";
 }
 
+function missingCredentialFields(platformSpec: PlatformSpec, inputs: Record<string, string>) {
+  return platformSpec.credentials.filter((field) => !inputs[`${platformSpec.platform}.${field}`]?.trim());
+}
+
+function connectionStatusForInput(input: {
+  platformSpec: PlatformSpec;
+  inputs: Record<string, string>;
+  accountId: string;
+  tokenRef: string;
+  scopes: string[];
+  requiredScopes: string[];
+}) {
+  const missingFields = missingCredentialFields(input.platformSpec, input.inputs);
+  const missingToken = !input.tokenRef.trim() || (input.platformSpec.platform !== "Email" && !input.accountId.trim());
+  if (missingFields.length || missingToken) return "missing_token" as const;
+  const missingScopes = input.requiredScopes.filter((scope) => !input.scopes.includes(scope));
+  if (missingScopes.length) return "permission_missing" as const;
+  return "connected" as const;
+}
+
 export function MarketingConnectionsView({
   tenantId,
   workspaceId,
@@ -81,6 +101,8 @@ export function MarketingConnectionsView({
           const tokenRef = inputs[`${platform}.tokenRef`] ?? "";
           const accountId = inputs[`${platform}.accountId`] ?? "";
           const scopesValue = inputs[`${platform}.scopes`] ?? requiredScopes.join(", ");
+          const scopes = scopesValue.split(",").map((scope) => scope.trim()).filter(Boolean);
+          const nextStatus = connectionStatusForInput({ platformSpec, inputs, accountId, tokenRef, scopes, requiredScopes });
 
           return (
             <article key={platform} className="rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
@@ -112,12 +134,12 @@ export function MarketingConnectionsView({
                     workspaceId,
                     hostAppId,
                     platform,
-                    status: "connected",
+                    status: nextStatus,
                     accountName: platform,
                     accountId: accountId || null,
                     tokenRef: tokenRef || null,
-                    scopes: scopesValue.split(",").map((scope) => scope.trim()).filter(Boolean),
-                    metadata: { source: "connections_ui" },
+                    scopes,
+                    metadata: { source: "connections_ui", missingCredentialFields: missingCredentialFields(platformSpec, inputs) },
                   })}
                   disabled={connectMutation.isPending}
                 >

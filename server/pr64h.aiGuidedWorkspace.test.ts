@@ -49,7 +49,7 @@ describe("PR64H AI guided intent routing", () => {
 describe("PR64H active workspace wiring", () => {
   it("uses a top menu without adding a left sidebar", () => {
     const source = read("client/src/components/marketing/app/TheMarketingApp.tsx");
-    for (const label of ["Create", "Library", "Calendar", "Results", "Settings"]) {
+    for (const label of ["Create", "Campaigns", "Media Library", "Calendar", "Results", "Brand Kit", "Connections", "Settings"]) {
       expect(source).toContain(`label: "${label}"`);
     }
     expect(source).toContain('aria-label="Marketing workspace"');

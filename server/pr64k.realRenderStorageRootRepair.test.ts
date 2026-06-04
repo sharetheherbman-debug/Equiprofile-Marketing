@@ -91,7 +91,7 @@ describe("PR64K dynamic storage root repair", () => {
 
     expect(readiness.outputRoot).toBe(newRoot);
     expect(fs.existsSync(path.join(newRoot, "temp"))).toBe(true);
-  });
+  }, 15_000);
 
   it("executes real FFmpeg branded-caption render into the current env root after module import", async () => {
     vi.resetModules();

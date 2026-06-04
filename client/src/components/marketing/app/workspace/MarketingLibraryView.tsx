@@ -75,7 +75,7 @@ export function MarketingLibraryView({
                 {url ? <a href={url} target="_blank" rel="noreferrer" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Open</a> : null}
                 {url ? <a href={url} download className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Download</a> : null}
                 {url ? <Button type="button" variant="outline" size="sm" onClick={() => void navigator.clipboard?.writeText(url)}>Copy URL</Button> : null}
-                {onUseAsReference ? <Button type="button" variant="outline" size="sm" onClick={() => onUseAsReference(asset)}>Use in campaign</Button> : null}
+                {onUseAsReference ? <Button type="button" variant="outline" size="sm" onClick={() => onUseAsReference(asset)}>Use as reference</Button> : null}
                 {asset.type === "image" ? <Button type="button" variant="outline" size="sm" onClick={() => onUseAsLogo(asset.id)}>Use as logo</Button> : null}
                 <Button type="button" variant="ghost" size="sm" onClick={() => {
                   if (window.confirm("Delete this asset permanently? This cannot be undone.")) assetsState.deleteMediaAsset.mutate({ id: asset.id });
