@@ -690,6 +690,9 @@ const MARKETING_CAMPAIGN_ITEM_STATUSES = ["draft", "approved", "export_only", "s
 const MARKETING_SOCIAL_STATUSES = [
   "not_connected",
   "setup_needed",
+  "missing_token",
+  "missing_scopes",
+  "adapter_missing",
   "connected",
   "token_expired",
   "permission_missing",
@@ -737,8 +740,8 @@ function parseJsonSafe<T>(value: unknown, fallback: T): T {
 const SUPPORTED_AI_PROVIDERS = ["genx", "huggingface", "qwen"] as const;
 const MARKETING_PROVIDER_TASKS = MARKETING_TASKS;
 const MARKETING_PROVIDER_TASKS_ENUM = MARKETING_PROVIDER_TASKS as readonly [MarketingTask, ...MarketingTask[]];
-const MARKETING_CONNECTOR_PLATFORMS = ["Facebook", "Instagram", "TikTok", "LinkedIn", "YouTube"] as const;
-const SOCIAL_PUBLISHER_PLATFORMS = [...MARKETING_CONNECTOR_PLATFORMS, "Email", "Blog / SEO"] as const;
+const MARKETING_CONNECTOR_PLATFORMS = ["Facebook", "Instagram", "TikTok", "LinkedIn", "YouTube", "Email"] as const;
+const SOCIAL_PUBLISHER_PLATFORMS = [...MARKETING_CONNECTOR_PLATFORMS, "Blog / SEO"] as const;
 type MarketingConnectorPlatform = (typeof MARKETING_CONNECTOR_PLATFORMS)[number];
 type MarketingConnectionRecord = {
   status: string;

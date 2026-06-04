@@ -14,6 +14,19 @@ function assetUrl(asset: MarketingAssetRow | null) {
   return asset?.publicUrl || asset?.localPath || null;
 }
 
+function friendlyPreviewStatus(status: unknown) {
+  const raw = String(status ?? "").trim();
+  const normalized = raw.toLowerCase();
+  if (!normalized) return "";
+  if (normalized === "setup_needed") return "Needs setup";
+  if (normalized === "provider_unavailable") return "Provider unavailable";
+  if (normalized === "provider_failed" || normalized === "failed") return "Needs review";
+  if (normalized === "completed" || normalized === "ready") return "Ready";
+  if (normalized === "queued") return "Queued";
+  if (normalized === "processing" || normalized === "rendering") return "Processing";
+  return raw.replace(/_/g, " ");
+}
+
 export function MarketingPreviewPanel({
   deliverablePackage,
   mediaOutput,
@@ -45,6 +58,8 @@ export function MarketingPreviewPanel({
   const model = typeof mediaOutput?.model === "string" ? mediaOutput.model : asset?.model;
   const source = typeof mediaOutput?.source === "string" ? mediaOutput.source : asset?.outputMetadata?.source;
   const supportModeEnabled = import.meta.env.VITE_MARKETING_SUPPORT_MODE === "true";
+  const statusLabel = friendlyPreviewStatus(status);
+  const providerFooter = [provider, model].filter(Boolean).join(" / ");
 
   return (
     <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" data-testid="marketing-preview-panel">
@@ -53,7 +68,7 @@ export function MarketingPreviewPanel({
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Preview</p>
           <h2 className="mt-1 text-xl font-semibold text-stone-950">Latest output</h2>
         </div>
-        {status ? <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">{status}</span> : null}
+        {statusLabel ? <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">{statusLabel}</span> : null}
       </div>
       {isImage ? <img src={outputUrl!} alt="Generated marketing asset" className="mt-4 max-h-[460px] w-full rounded-2xl border border-stone-100 bg-stone-50 object-contain" /> : null}
       {isVideo ? <video src={outputUrl!} controls className="mt-4 max-h-[520px] w-full rounded-2xl border border-stone-100 bg-black" /> : null}
@@ -69,12 +84,13 @@ export function MarketingPreviewPanel({
           {studioPlan.durationTargetSeconds}s {studioPlan.platform || "video"} plan created. Follow the guided Studio steps while the render job is prepared.
         </p>
       ) : null}
-      {status && !outputUrl && !failure ? <p className="mt-4 text-sm text-stone-500">Output is {status}. A playable URL will appear here when it is ready.</p> : null}
-      {failure ? <p className="mt-4 rounded-2xl bg-rose-50 px-3 py-2 text-sm text-rose-800">{failure}</p> : null}
+      {statusLabel && !outputUrl && !failure ? <p className="mt-4 text-sm text-stone-500">Output is {statusLabel.toLowerCase()}. A playable URL will appear here when it is ready.</p> : null}
+      {failure ? <p className="mt-4 rounded-2xl bg-rose-50 px-3 py-2 text-sm text-rose-800">{missingPlayableRender || supportModeEnabled ? failure : "This draft needs setup or media improvements before it can be published."}</p> : null}
       {supportModeEnabled && renderJob?.warnings?.length ? <ul className="mt-3 space-y-1 text-xs text-amber-700">{renderJob.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul> : null}
       {deliverablePackage ? <div className="mt-5"><CampaignOutputPanel deliverablePackage={deliverablePackage} signupUrl={signupUrl} /></div> : null}
       {!deliverablePackage && !studioPlan && !mediaOutput && !asset ? <p className="mt-4 text-sm text-stone-500">Your latest image, video, audio, or campaign package will appear here.</p> : null}
-      {provider || model || source ? <p className="mt-4 text-xs text-stone-400">Source: {[provider, model, source].filter(Boolean).join(" · ")}</p> : null}
+      {providerFooter ? <p className="mt-4 text-xs text-stone-400">Generated with {providerFooter}</p> : null}
+      {supportModeEnabled && (provider || model || source) ? <p className="mt-4 text-xs text-stone-400">Source: {[provider, model, source].filter(Boolean).join(" - ")}</p> : null}
     </section>
   );
 }

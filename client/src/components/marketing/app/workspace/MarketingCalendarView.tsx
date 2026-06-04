@@ -7,6 +7,18 @@ import type { EventDropArg } from "@fullcalendar/core";
 import { Button } from "@/components/ui/button";
 import type { ReturnTypeOfUseMarketingCalendar } from "./workspaceTypes";
 
+function statusLabel(status: string) {
+  const normalized = status.toLowerCase();
+  if (normalized.includes("approved")) return "Approved";
+  if (normalized.includes("scheduled")) return "Scheduled";
+  if (normalized.includes("posted")) return "Posted";
+  if (normalized.includes("sent")) return "Sent";
+  if (normalized.includes("failed")) return "Failed";
+  if (normalized.includes("setup")) return "Needs setup";
+  if (normalized.includes("draft")) return "Draft";
+  return "Needs setup";
+}
+
 export function MarketingCalendarView({ calendarState, tenantId, workspaceId }: { calendarState: ReturnTypeOfUseMarketingCalendar; tenantId: string; workspaceId: string }) {
   const [platform, setPlatform] = useState("All");
   const [status, setStatus] = useState("All");
@@ -65,15 +77,16 @@ export function MarketingCalendarView({ calendarState, tenantId, workspaceId }: 
       )}
       <div className="space-y-3">
         {drafts.map((draft) => (
-          <article key={draft.id} className="grid gap-3 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm md:grid-cols-[180px_1fr_auto] md:items-center">
+          <article key={draft.id} className="grid gap-3 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm md:grid-cols-[180px_1fr_auto_auto] md:items-center">
             <div className="text-sm text-stone-700">
               <p className="font-semibold text-stone-900">{new Date(draft.scheduledFor).toLocaleDateString()}</p>
               <p className="text-xs">{new Date(draft.scheduledFor).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
             </div>
             <div>
               <p className="text-sm font-semibold text-stone-900">{draft.title}</p>
-              <p className="mt-1 text-xs text-stone-500">{draft.platform} · {draft.reviewStatus} · {draft.status}</p>
+              <p className="mt-1 text-xs text-stone-500">{draft.platform} · {draft.reviewStatus}</p>
             </div>
+            <span className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs text-stone-700">{statusLabel(draft.status)}</span>
             <div className="flex flex-wrap gap-2">
               <Button type="button" size="sm" variant="outline" onClick={() => calendarState.rescheduleScheduleDraftMutation.mutate({ id: draft.id, tenantId, workspaceId, scheduledFor: new Date(Date.parse(draft.scheduledFor) + 86_400_000).toISOString() })}>Move +1 day</Button>
               <Button type="button" size="sm" variant="outline" onClick={() => calendarState.cancelScheduleDraftMutation.mutate({ id: draft.id, tenantId, workspaceId })}>Cancel</Button>

@@ -3,11 +3,11 @@ import type { ReactNode } from "react";
 export function MarketingWorkspaceShell({
   productPanel,
   workflow,
-  statusRail,
+  previewRail,
 }: {
   productPanel: ReactNode;
   workflow: ReactNode;
-  statusRail: ReactNode;
+  previewRail: ReactNode;
 }) {
   return (
     <div
@@ -23,11 +23,10 @@ export function MarketingWorkspaceShell({
           </span>
         ))}
       </div>
-      <main className="min-w-0 space-y-5">{workflow}</main>
-      <details className="min-w-0 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm" data-testid="marketing-inspector">
-        <summary className="cursor-pointer text-sm font-semibold text-stone-900">Campaign inspector</summary>
-        <div className="mt-4 border-t border-stone-100 pt-4">{statusRail}</div>
-      </details>
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,1fr)]" data-testid="marketing-create-grid">
+        <main className="min-w-0 space-y-5">{workflow}</main>
+        <aside className="min-w-0 xl:sticky xl:top-5 xl:self-start" data-testid="marketing-preview-rail">{previewRail}</aside>
+      </div>
     </div>
   );
 }

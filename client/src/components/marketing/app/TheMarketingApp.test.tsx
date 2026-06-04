@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { ChatResultCard } from "./ChatResultCard";
 import { MarketingDeliverablePackageViewer } from "./MarketingDeliverablePackageViewer";
 import { normalizeSocialConnections } from "./MarketingAppSettings";
-import { inferPrimaryCampaignPackage, shouldQueueRawMediaJob } from "./TheMarketingApp";
+import { inferCreateBadge, inferPrimaryCampaignPackage, shouldQueueRawMediaJob } from "./TheMarketingApp";
 import { StudioHome } from "./studio/StudioHome";
 import { buildScenePlanFromPrompt } from "./studio/StudioWorkbench";
 
@@ -88,6 +88,8 @@ describe("PR64F rescued workspace", () => {
   it("renders an embedded desktop-first shell", () => {
     expect(read("client/src/components/marketing/app/TheMarketingApp.tsx")).toContain("<MarketingWorkspaceShell");
     expect(read("client/src/components/marketing/app/workspace/MarketingWorkspaceShell.tsx")).toContain("marketing-product-strip");
+    expect(read("client/src/components/marketing/app/workspace/MarketingWorkspaceShell.tsx")).toContain("marketing-create-grid");
+    expect(read("client/src/components/marketing/app/workspace/MarketingWorkspaceShell.tsx")).toContain("marketing-preview-rail");
   });
 
   it("makes campaign generation primary and image creative explicit-only", () => {
@@ -105,17 +107,89 @@ describe("PR64F rescued workspace", () => {
   });
 
   it("renders clear prompt, output, and workflow panels", () => {
-    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("What would you like to create?");
+    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("What are we marketing today?");
+    expect(read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx")).toContain("Plan output");
+    expect(read("client/src/components/marketing/app/workspace/MarketingPreviewPanel.tsx")).toContain("Latest output");
     expect(read("client/src/components/marketing/app/workspace/CampaignOutputPanel.tsx")).toContain("Day-by-day schedule");
-    expect(read("client/src/components/marketing/app/workspace/WorkflowStatusPanel.tsx")).toContain("Direct posting needs a connected Facebook account. Export is ready.");
+    expect(read("client/src/components/marketing/app/workspace/MarketingConnectionsView.tsx")).toContain("Posting stays blocked until a connector is truly ready.");
   });
 
   it("keeps diagnostics and legacy workbench out of the primary tools panel", () => {
     const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const drawer = read("client/src/components/marketing/app/workspace/AdvancedMarketingDrawer.tsx");
-    expect(app).toContain("Media Studio / Advanced tools");
+    expect(app).not.toContain("Campaign inspector");
+    expect(app).not.toContain("Media Studio / Advanced tools");
     expect(app).not.toContain("<StudioHome");
     expect(drawer).toContain("<details");
     expect(drawer).not.toContain("open={true}");
+  });
+
+  it("renders required top menu sections", () => {
+    const app = read("client/src/components/marketing/app/TheMarketingApp.tsx");
+    expect(app).toContain('label: "Create"');
+    expect(app).toContain('label: "Campaigns"');
+    expect(app).toContain('label: "Media Library"');
+    expect(app).toContain('label: "Calendar"');
+    expect(app).toContain('label: "Results"');
+    expect(app).toContain('label: "Brand Kit"');
+    expect(app).toContain('label: "Connections"');
+    expect(app).toContain('label: "Settings"');
+  });
+
+  it("keeps create flow guided and preview visible near top", () => {
+    const app = read("client/src/components/marketing/app/workspace/CampaignPromptPanel.tsx");
+    expect(app).toContain("What are we marketing today?");
+    expect(app).toContain("Quick actions");
+    expect(app).toContain("Image Ad");
+    expect(app).toContain("Facebook Reel");
+    expect(app).toContain("7-Day Signup Campaign");
+    expect(app).toContain("Email Campaign");
+    expect(app).toContain("Social Post");
+  });
+
+  it("keeps result badge truth states for fallback and missing audio", () => {
+    expect(inferCreateBadge({ hasOutput: false, qualityPassed: false, hasTextCardFallback: false, missingAudio: false, scheduledCount: 0, publishedPlatformId: null })).toBe("Draft generated");
+    expect(inferCreateBadge({ hasOutput: true, qualityPassed: false, hasTextCardFallback: true, missingAudio: false, scheduledCount: 0, publishedPlatformId: null })).toBe("Needs media upgrade");
+    expect(inferCreateBadge({ hasOutput: true, qualityPassed: false, hasTextCardFallback: false, missingAudio: true, scheduledCount: 0, publishedPlatformId: null })).toBe("Needs audio upgrade");
+    expect(inferCreateBadge({ hasOutput: true, qualityPassed: true, hasTextCardFallback: false, missingAudio: false, scheduledCount: 0, publishedPlatformId: "fb_123" })).toBe("Published");
+  });
+
+  it("ensures product setup collapses after confirmation state", () => {
+    const product = read("client/src/components/marketing/app/workspace/ProductContextPanel.tsx");
+    expect(product).toContain("isReady && !showEditor");
+  });
+
+  it("includes all platform cards in Connections", () => {
+    const connections = read("client/src/components/marketing/app/workspace/MarketingConnectionsView.tsx");
+    expect(connections).toContain('"Facebook"');
+    expect(connections).toContain('"Instagram"');
+    expect(connections).toContain('"TikTok"');
+    expect(connections).toContain('"YouTube"');
+    expect(connections).toContain('"LinkedIn"');
+    expect(connections).toContain('"Email"');
+  });
+
+  it("requires real platform post/upload IDs for posted state", () => {
+    const routers = read("server/routers.ts");
+    expect(routers).toContain("const hasRealPostId = Boolean(result.platformPostId ?? result.uploadId)");
+  });
+
+  it("keeps settings sectioned and admin support gated", () => {
+    const settings = read("client/src/components/marketing/app/MarketingAppSettings.tsx");
+    expect(settings).toContain("1. Product Profile");
+    expect(settings).toContain("2. Brand Kit");
+    expect(settings).toContain("3. AI Providers");
+    expect(settings).toContain("4. Stock Media");
+    expect(settings).toContain("5. Social / Email Connections");
+    expect(settings).toContain("6. Tracking");
+    expect(settings).toContain("7. Export / Schedule");
+    expect(settings).toContain("8. Admin Support");
+    expect(settings).toContain("supportModeEnabled && showAdminSupport");
+  });
+
+  it("keeps calendar, results, and media library user-facing", () => {
+    expect(read("client/src/components/marketing/app/workspace/MarketingCalendarView.tsx")).toContain("marketing-calendar-view");
+    expect(read("client/src/components/marketing/app/workspace/MarketingResultsView.tsx")).toContain("Not enough data yet.");
+    expect(read("client/src/components/marketing/app/workspace/MarketingLibraryView.tsx")).toContain("Generated media, uploads, stock, and audio");
   });
 });

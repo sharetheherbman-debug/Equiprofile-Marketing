@@ -5,6 +5,7 @@ import type { ProductMarketingProfile } from "../ProductMarketingProfileCard";
 
 const EQUI_PROFILE_DEFAULTS = {
   appName: "EquiProfile",
+  category: "equine_stable_management",
   domain: "equiprofile.com",
   targetAudiences: ["stable owners", "horse owners", "riding schools", "trainers", "yards", "equestrian businesses"],
   primaryOffer: "Free-trial signup offer",
@@ -23,6 +24,14 @@ const EQUI_PROFILE_DEFAULTS = {
     Email: "Use benefit-led education and the configured signup or free-trial CTA.",
   },
 };
+
+function inferDefaultCategory(hostAppId: string) {
+  const normalized = hostAppId.toLowerCase();
+  if (normalized.includes("equi") || normalized.includes("stable") || normalized.includes("horse")) return "equine_stable_management";
+  if (normalized.includes("property") || normalized.includes("real-estate")) return "property_management";
+  if (normalized.includes("auto") || normalized.includes("vehicle")) return "automotive_services";
+  return "saas_app";
+}
 
 export function useMarketingProductProfile(workspace: MarketingWorkspaceConfig) {
   const utils = trpc.useUtils();
@@ -73,6 +82,7 @@ export function useMarketingProductProfile(workspace: MarketingWorkspaceConfig) 
       workspaceId: workspace.marketing_workspace_id,
       hostAppId: workspace.host_app_id,
       ...(isEquiProfile ? EQUI_PROFILE_DEFAULTS : { appName: workspace.host_app_name, domain: workspace.host_app_domain }),
+      category: profile?.category || inferDefaultCategory(workspace.host_app_id),
       landingPageUrl: input.landingPageUrl.trim() || null,
       signupUrl,
       primaryOffer: signupUrl ? (isEquiProfile ? "Start a free EquiProfile trial" : "Signup offer available") : isEquiProfile ? EQUI_PROFILE_DEFAULTS.primaryOffer : null,

@@ -47,8 +47,8 @@ export function MarketingLibraryView({
   return (
     <section className="space-y-4" data-testid="marketing-library-view">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Library</p>
-        <h2 className="mt-1 text-2xl font-semibold text-stone-950">Generated assets and imports</h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">Media Library</p>
+        <h2 className="mt-1 text-2xl font-semibold text-stone-950">Generated media, uploads, stock, and audio</h2>
       </div>
       <div className="flex flex-wrap gap-2 rounded-3xl border border-stone-200 bg-white p-4 shadow-sm">
         {FILTERS.map((item) => <Button key={item} type="button" size="sm" variant={filter === item ? "default" : "outline"} onClick={() => setFilter(item)}>{item}</Button>)}
@@ -69,6 +69,7 @@ export function MarketingLibraryView({
               {url && /audio/i.test(asset.mimeType ?? asset.type ?? "") ? <audio src={url} controls className="mt-2 w-full" /> : null}
               <p className="mt-3 text-sm font-semibold text-stone-900">{asset.type || "Asset"} #{asset.id}</p>
               <p className="mt-1 text-xs text-stone-500">{asset.status || "saved"}{source ? ` · ${String(source)}` : ""}{asset.model ? ` · ${asset.model}` : ""}</p>
+              <p className="mt-1 text-xs text-stone-400">Created: {new Date(asset.createdAt ?? asset.updatedAt ?? Date.now()).toLocaleString()}</p>
               {license || attribution ? <p className="mt-1 text-xs text-stone-400">{license ? String(license) : "Source metadata saved"}{attribution ? ` · ${String(attribution)}` : ""}</p> : null}
               <div className="mt-3 flex flex-wrap gap-2">
                 {url ? <a href={url} target="_blank" rel="noreferrer" className="rounded-full border border-stone-200 px-3 py-1.5 text-xs">Open</a> : null}

@@ -18,6 +18,9 @@ export type SocialPublisherPlatform =
 export type SocialPublisherReadinessStatus =
   | "not_connected"
   | "setup_needed"
+  | "missing_token"
+  | "missing_scopes"
+  | "adapter_missing"
   | "connected"
   | "token_expired"
   | "permission_missing"

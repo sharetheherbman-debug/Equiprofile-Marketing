@@ -21,7 +21,7 @@ describe("PR64F desktop campaign workspace", () => {
   });
 
   it("puts the campaign prompt first", () => {
-    expect(prompt).toContain("What would you like to create?");
+    expect(prompt).toContain("What are we marketing today?");
     expect(prompt).toContain("Plan output");
     expect(prompt).toContain("Generate");
   });

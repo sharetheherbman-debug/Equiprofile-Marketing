@@ -18,6 +18,7 @@ function ListBlock({ title, items, emptyLabel = "No items yet" }: { title: strin
 export function MarketingDeliverablePackageViewer({ deliverablePackage }: { deliverablePackage: DeliverablePackage | null }) {
   if (!deliverablePackage) return null;
 
+  const supportModeEnabled = import.meta.env.VITE_MARKETING_SUPPORT_MODE === "true";
   const scenePlan = Array.isArray(deliverablePackage.scenePlan) ? deliverablePackage.scenePlan : [];
   const setupNeeded = Boolean(deliverablePackage.setupNeeded);
   const isAssembled = deliverablePackage.packageType === "assembled_video_3m";
@@ -62,7 +63,7 @@ export function MarketingDeliverablePackageViewer({ deliverablePackage }: { deli
         <ListBlock title="Copy" items={(Array.isArray(deliverablePackage.adCopy) ? deliverablePackage.adCopy : []).map((item) => String(item))} />
         <article className="rounded-2xl border border-stone-200 bg-stone-50 p-3">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-stone-700">Script</h4>
-          <pre className="mt-2 whitespace-pre-wrap text-xs text-stone-700">{String(deliverablePackage.script ?? "No script yet")}</pre>
+          <p className="mt-2 whitespace-pre-wrap text-xs text-stone-700">{String(deliverablePackage.script ?? "No script yet")}</p>
         </article>
         <ListBlock
           title="Scene Timeline"
@@ -104,17 +105,19 @@ export function MarketingDeliverablePackageViewer({ deliverablePackage }: { deli
         <p className="mt-3 text-xs text-stone-500">No fake video is shown because render output is missing.</p>
       ) : null}
 
-      <details className="mt-4 rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
-        <summary className="cursor-pointer font-medium text-stone-800">Details / Diagnostics</summary>
-        <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-[11px] text-stone-700">
-          {JSON.stringify({
-            packageType: deliverablePackage.packageType ?? null,
-            status: deliverablePackage.status ?? null,
-            blockers,
-            renderStatus,
-          }, null, 2)}
-        </pre>
-      </details>
+      {supportModeEnabled ? (
+        <details className="mt-4 rounded-2xl border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
+          <summary className="cursor-pointer font-medium text-stone-800">Admin package details</summary>
+          <pre className="mt-3 overflow-x-auto whitespace-pre-wrap text-[11px] text-stone-700">
+            {JSON.stringify({
+              packageType: deliverablePackage.packageType ?? null,
+              status: deliverablePackage.status ?? null,
+              blockers,
+              renderStatus,
+            }, null, 2)}
+          </pre>
+        </details>
+      ) : null}
     </section>
   );
 }

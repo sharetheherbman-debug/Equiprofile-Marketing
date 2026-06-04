@@ -36,13 +36,15 @@ export function normalizeSocialConnections(value: unknown): SocialConnection[] {
 }
 
 function connectionLabel(status: string) {
-  if (status === "ready_for_posting" || status === "ready_for_approval_posting") return "Connected";
+  if (status === "ready_for_posting" || status === "ready_for_approval_posting") return "Ready to post/send";
   if (status === "token_expired" || status === "expired_token") return "Token expired";
   if (status === "permission_missing" || status === "missing_scopes") return "Scopes missing";
   if (status === "adapter_missing") return "Adapter not implemented";
   if (status === "missing_token") return "Missing credentials";
+  if (status === "test_failed") return "Test failed";
+  if (status === "connected") return "Connected";
   if (status === "setup_needed") return "Setup required";
-  return "Connect required";
+  return "Not connected";
 }
 
 function SettingsCard({ title, status, action, children }: { title: string; status: string; action: string; children?: React.ReactNode }) {
@@ -178,25 +180,25 @@ export function MarketingAppSettings({
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <SettingsCard title="1. Product profile" status="Managed in workspace" action="Use Edit product in the top strip to scan, review, and confirm product truth." />
-        <SettingsCard title="2. Brand Kit" status="Managed in workspace" action="Use Brand Kit in the top strip to upload a logo, choose colors, set tone, CTA, and signup URL." />
-        <SettingsCard title="3. Provider keys" status={configuredProviderCount ? `${configuredProviderCount}/3 saved` : "Add a key"} action="Standard uses Qwen first. Hugging Face is fallback only after a real live pass. Elite uses GenX first.">
+        <SettingsCard title="1. Product Profile" status="Ready in Brand Kit" action="Manage website scan, product truth, and confirmation in the Brand Kit section." />
+        <SettingsCard title="2. Brand Kit" status="Ready in Brand Kit" action="Manage logo, tone, CTA, and visual profile in the Brand Kit section." />
+        <SettingsCard title="3. AI Providers" status={configuredProviderCount ? "Ready" : "Needs key"} action="Standard uses Qwen first, Elite uses GenX first, and Hugging Face remains fallback only.">
           <div className="grid gap-3">
             {providers.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} onTest={() => testConnection(field.id as "genx" | "qwen" | "huggingface")} testing={testProviderConnection.isPending} />)}
           </div>
           <div className="mt-3 grid gap-2 text-xs text-stone-600">
-            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Qwen text:</span> {routeStatus(["campaign_strategy", "platform_copywriting", "scriptwriting", "scene_planning"])}</p>
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Qwen text:</span> {routeStatus(["campaign_strategy", "platform_copywriting", "scriptwriting", "scene_planning"]) === "Ready" ? "Ready" : "Needs setup"}</p>
             <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-amber-900"><span className="font-semibold">Qwen media:</span> Disabled until DashScope native media execution returns a usable media URL or queued job.</p>
-            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">GenX media routes:</span> {routeStatus(["image_generation", "avatar_generation", "voiceover"])}</p>
-            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Hugging Face fallback routes:</span> {hfReason || routeStatus(["image_generation", "avatar_generation", "voiceover"])}</p>
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">GenX media routes:</span> {routeStatus(["image_generation", "avatar_generation", "voiceover"]) === "Ready" ? "Ready" : "Needs setup"}</p>
+            <p className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"><span className="font-semibold text-stone-900">Hugging Face fallback routes:</span> {hfReason ? "Needs key or route check" : routeStatus(["image_generation", "avatar_generation", "voiceover"]) === "Ready" ? "Ready" : "Needs setup"}</p>
           </div>
         </SettingsCard>
-        <SettingsCard title="4. Stock media" status={configuredStockCount ? `${configuredStockCount}/2 saved` : "Keys required"} action="Add Pexels or Pixabay keys for stock image and video sourcing. Text campaigns keep working without them.">
+        <SettingsCard title="4. Stock Media" status={configuredStockCount ? "Ready" : "Needs key"} action="Add Pexels or Pixabay keys for stock image and video sourcing.">
           <div className="grid gap-3">
             {stock.map((field) => <ProviderField key={field.key} field={field} entry={settingsById[field.id]} value={values[field.key] ?? ""} onChange={(value) => setValues((current) => ({ ...current, [field.key]: value }))} onTest={() => testStock(field.id as "pexels" | "pixabay")} testing={testStockConnection.isPending} testLabel="Test stock search" note={stockTestResults[field.id]} />)}
           </div>
         </SettingsCard>
-        <SettingsCard title="5. Social connections" status={socialConnections.some((connection) => connection.status === "ready_for_posting") ? "Connected" : "Connect required"} action="Connect each account with the required OAuth scopes. Export/manual posting remains available.">
+        <SettingsCard title="5. Social / Email Connections" status={socialConnections.some((connection) => connection.status === "ready_for_posting") ? "Connected" : "Needs account connection"} action="Connect each account with required scopes. Manual export remains available until ready.">
           {socialConnectionsQuery.isError ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
               <p>Could not load social connections right now.</p>
@@ -217,10 +219,11 @@ export function MarketingAppSettings({
             </div>
           )}
         </SettingsCard>
-        <SettingsCard title="6. Email / SMTP" status="Configure server credentials" action="Add valid SMTP credentials and use a test send before sending campaign email." />
-        <SettingsCard title="7. Tracking & Results" status={attributionReady ? "Ready" : "Needs setup"} action={attributionReady ? "Attribution redirects, click tracking, conversion recording, and manual metrics are available." : "Add a signup URL and verify tracking storage."} />
-        <SettingsCard title="8. Export / Schedule" status="Export-first" action="Review quality-checked drafts, export packs, and schedule drafts. Direct posting unlocks only after connector tests pass." />
-        <SettingsCard title="9. Media Studio readiness" status={mediaReady ? "Ready" : "Needs setup"} action={mediaReady ? "Media jobs can run when their provider route is executable and output is playable." : "Verify FFmpeg, storage, and model routes for optional media jobs."} />
+        <SettingsCard title="6. Tracking" status={attributionReady ? "Ready" : "Needs setup"} action={attributionReady ? "Tracking redirects and metrics collection are available." : "Add signup URL and verify tracking storage."} />
+        <SettingsCard title="7. Export / Schedule" status={mediaReady ? "Ready" : "Needs setup"} action="Review, approve, export, and schedule drafts. Direct posting unlocks only after connector readiness passes." />
+        <SettingsCard title="8. Admin Support" status={supportModeEnabled ? "Available" : "Disabled"} action="Technical diagnostics stay hidden unless support mode is enabled.">
+          {supportModeEnabled ? <Button type="button" variant="outline" size="sm" onClick={() => setShowAdminSupport((value) => !value)}>{showAdminSupport ? "Hide admin support" : "Open admin support"}</Button> : <p className="text-xs text-stone-500">Enable support mode to view diagnostics.</p>}
+        </SettingsCard>
       </div>
 
       {supportModeEnabled ? <details className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm" open={showAdminSupport} onToggle={(event) => setShowAdminSupport(event.currentTarget.open)}>
