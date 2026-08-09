@@ -1,3 +1,4 @@
+import { MarketingConnectionCard } from "@/components/admin/MarketingConnectionCard";
 import LegacyAdmin from "./Admin";
 
 /**
@@ -31,6 +32,9 @@ export default function AdminEnvironmentSafe() {
           display: none !important;
         }
       `}</style>
+      <div className="px-4 pt-4 md:px-6 md:pt-6">
+        <MarketingConnectionCard />
+      </div>
       <LegacyAdmin />
     </>
   );
