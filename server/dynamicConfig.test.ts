@@ -26,7 +26,9 @@ import { siteSettings } from "../drizzle/schema";
 
 describe("dynamicConfig source policy", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    mocks.selectRows.mockReset();
+    mocks.fromSpy.mockClear();
+    mocks.getDbMock.mockClear();
     invalidateConfigCache();
     delete process.env.GENX_API_KEY;
     delete process.env.SITE_NAME;
