@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { Express, Request, Response } from "express";
+import type { Router, Request, Response } from "express";
 import { createContext } from "./_core/context";
 
 interface ConnectorResponse<T> {
@@ -95,7 +95,6 @@ export async function sendMarketingConversionEvent(event: MarketingConversionEve
 }
 
 async function requireAdmin(req: Request, res: Response) {
-  // Express req/res is compatible with the tRPC context adapter used by EquiProfile.
   const context = await createContext({ req, res } as never);
   if (!context.user || context.user.role !== "admin") {
     res.status(403).json({ error: "Admin access required" });
@@ -104,8 +103,8 @@ async function requireAdmin(req: Request, res: Response) {
   return context.user;
 }
 
-export function registerMarketingConnectorRoutes(app: Express): void {
-  app.get("/api/admin/marketing/status", async (req, res) => {
+export function registerMarketingConnectorRoutes(router: Router): void {
+  router.get("/admin/marketing/status", async (req, res) => {
     try {
       const user = await requireAdmin(req, res);
       if (!user) return;
@@ -123,7 +122,7 @@ export function registerMarketingConnectorRoutes(app: Express): void {
     }
   });
 
-  app.post("/api/admin/marketing/sso", async (req, res) => {
+  router.post("/admin/marketing/sso", async (req, res) => {
     try {
       const user = await requireAdmin(req, res);
       if (!user) return;
