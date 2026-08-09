@@ -259,7 +259,7 @@ apiRouter.get(
 apiRouter.get("/competitions/:horseId", async (req: Request, res: Response) => {
   try {
     const userId = (req as any).apiUserId;
-    const horseId = parseInt(req.params.id);
+    const horseId = parseInt(req.params.horseId);
 
     if (isNaN(horseId)) {
       return res.status(400).json({ error: "Invalid horse ID" });
@@ -270,7 +270,7 @@ apiRouter.get("/competitions/:horseId", async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Database connection failed" });
     }
 
-    // Verify horse ownership
+    // Verify ownership
     const horse = await dbInstance
       .select()
       .from(horses)
