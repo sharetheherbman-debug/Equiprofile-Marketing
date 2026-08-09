@@ -3,27 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b2f2a" />
+    <meta name="theme-color" content="#1e3a5f" />
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <meta
       name="description"
-      content="EquiProfile is temporarily under maintenance while we complete major platform upgrades."
+      content="EquiProfile is temporarily unavailable while we complete a major platform upgrade."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>EquiProfile — Exciting upgrades underway</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>EquiProfile — A complete upgrade is underway</title>
     <style>
       :root {
-        color-scheme: dark;
-        --ink: #eef9f5;
-        --muted: #b9d5cd;
-        --deep: #061d1b;
-        --panel: rgba(9, 45, 40, 0.82);
-        --line: rgba(184, 222, 208, 0.2);
-        --emerald: #61d5aa;
-        --gold: #efc77a;
+        color-scheme: light;
+        --navy: #1e3a5f;
+        --navy-deep: #0f2238;
+        --blue: #2e6da4;
+        --sky: #4a9eca;
+        --teal: #3a9d8f;
+        --gold: #c5a55a;
+        --cream: #faf8f4;
+        --warm: #f5f0e8;
+        --ink: #1a2e3e;
+        --muted: #5a6b7a;
+        --line: #e0dbd3;
       }
 
       * {
@@ -32,289 +42,422 @@
 
       html,
       body {
+        width: 100%;
         min-height: 100%;
         margin: 0;
       }
 
       body {
-        display: grid;
-        min-height: 100svh;
-        overflow-x: hidden;
-        background:
-          radial-gradient(circle at 18% 12%, rgba(49, 155, 124, 0.27), transparent 38rem),
-          radial-gradient(circle at 86% 88%, rgba(211, 164, 78, 0.16), transparent 32rem),
-          linear-gradient(145deg, #041715 0%, #0a332d 55%, #071e1b 100%);
+        background: var(--navy-deep);
         color: var(--ink);
-        font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
-      body::before,
-      body::after {
-        position: fixed;
-        z-index: 0;
-        width: 24rem;
-        height: 24rem;
-        border: 1px solid rgba(194, 229, 216, 0.08);
-        border-radius: 50%;
-        content: "";
-        pointer-events: none;
-      }
-
-      body::before {
-        top: -12rem;
-        right: -8rem;
-      }
-
-      body::after {
-        bottom: -15rem;
-        left: -9rem;
-      }
-
-      main {
-        position: relative;
-        z-index: 1;
-        display: grid;
-        place-items: center;
+      .page {
         width: 100%;
+        min-height: 100svh;
         padding:
-          max(1.25rem, env(safe-area-inset-top))
-          max(1rem, env(safe-area-inset-right))
-          max(1.25rem, env(safe-area-inset-bottom))
-          max(1rem, env(safe-area-inset-left));
+          max(18px, env(safe-area-inset-top))
+          max(18px, env(safe-area-inset-right))
+          max(18px, env(safe-area-inset-bottom))
+          max(18px, env(safe-area-inset-left));
+        background:
+          radial-gradient(circle at 12% 12%, rgba(74, 158, 202, 0.24), transparent 28rem),
+          linear-gradient(135deg, var(--navy-deep), var(--navy));
       }
 
-      .card {
-        width: min(100%, 46rem);
-        overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: 2rem;
-        background: var(--panel);
-        box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.36);
-        -webkit-backdrop-filter: blur(20px);
-        backdrop-filter: blur(20px);
-      }
-
-      .hero {
+      .shell {
         display: grid;
-        gap: 1.5rem;
-        padding: clamp(1.5rem, 5vw, 3.5rem);
+        grid-template-columns: minmax(0, 0.94fr) minmax(420px, 1.06fr);
+        width: min(1420px, 100%);
+        height: calc(100svh - max(36px, env(safe-area-inset-top) + env(safe-area-inset-bottom)));
+        min-height: 0;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 28px;
+        background: var(--cream);
+        box-shadow: 0 30px 90px rgba(4, 15, 27, 0.36);
+      }
+
+      .copy {
+        display: flex;
+        min-width: 0;
+        min-height: 0;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: clamp(28px, 4vw, 58px);
+        background:
+          radial-gradient(circle at 5% 0%, rgba(197, 165, 90, 0.13), transparent 22rem),
+          var(--cream);
       }
 
       .brand {
         display: flex;
         align-items: center;
-        gap: 0.9rem;
+        gap: 14px;
       }
 
-      .mark {
-        display: grid;
-        flex: 0 0 auto;
-        place-items: center;
-        width: 3.4rem;
-        height: 3.4rem;
-        border: 1px solid rgba(239, 199, 122, 0.38);
-        border-radius: 1.1rem;
-        background: linear-gradient(145deg, rgba(97, 213, 170, 0.19), rgba(239, 199, 122, 0.12));
-        color: var(--gold);
-      }
-
-      .mark svg {
-        width: 2rem;
-        height: 2rem;
+      .logo {
+        width: 58px;
+        height: 58px;
+        flex: 0 0 58px;
+        border-radius: 15px;
+        box-shadow: 0 8px 24px rgba(30, 58, 95, 0.16);
       }
 
       .brand-name {
         margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(1.35rem, 4vw, 1.75rem);
-        letter-spacing: 0.01em;
+        color: var(--navy);
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(1.45rem, 2vw, 1.9rem);
+        font-weight: 700;
+        line-height: 1;
       }
 
-      .brand-note {
-        margin: 0.2rem 0 0;
+      .brand-line {
+        margin: 5px 0 0;
         color: var(--muted);
-        font-size: 0.78rem;
+        font-size: 0.77rem;
         font-weight: 700;
-        letter-spacing: 0.16em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
+      }
+
+      .message {
+        max-width: 620px;
+        padding: clamp(24px, 4vh, 46px) 0;
       }
 
       .status {
         display: inline-flex;
-        width: fit-content;
         align-items: center;
-        gap: 0.6rem;
-        padding: 0.55rem 0.8rem;
-        border: 1px solid rgba(97, 213, 170, 0.3);
+        gap: 10px;
+        margin-bottom: 20px;
+        padding: 9px 13px;
+        border: 1px solid rgba(46, 109, 164, 0.18);
         border-radius: 999px;
-        background: rgba(97, 213, 170, 0.08);
-        color: #b8f4da;
-        font-size: 0.82rem;
-        font-weight: 700;
+        background: rgba(74, 158, 202, 0.09);
+        color: var(--blue);
+        font-size: 0.77rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
-      .pulse {
-        width: 0.55rem;
-        height: 0.55rem;
+      .status-dot {
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        background: var(--emerald);
-        box-shadow: 0 0 0 0 rgba(97, 213, 170, 0.5);
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        70% {
-          box-shadow: 0 0 0 0.65rem rgba(97, 213, 170, 0);
-        }
-        100% {
-          box-shadow: 0 0 0 0 rgba(97, 213, 170, 0);
-        }
+        background: var(--teal);
+        box-shadow: 0 0 0 5px rgba(58, 157, 143, 0.13);
       }
 
       h1 {
-        max-width: 14ch;
+        max-width: 10.5ch;
         margin: 0;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(2.4rem, 9vw, 5.2rem);
-        font-weight: 500;
-        letter-spacing: -0.045em;
-        line-height: 0.98;
+        color: var(--navy);
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(3rem, 5.3vw, 5.9rem);
+        font-weight: 700;
+        letter-spacing: -0.055em;
+        line-height: 0.94;
       }
 
-      h1 span {
-        color: var(--gold);
+      h1 em {
+        color: var(--blue);
+        font-style: normal;
       }
 
       .lead {
-        max-width: 38rem;
-        margin: 0;
+        max-width: 590px;
+        margin: 24px 0 0;
         color: var(--muted);
-        font-size: clamp(1rem, 3vw, 1.2rem);
+        font-size: clamp(0.98rem, 1.3vw, 1.13rem);
         line-height: 1.7;
       }
 
-      .upgrades {
+      .highlights {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.75rem;
-        margin: 0;
-        padding: 0;
-        list-style: none;
+        gap: 10px;
+        margin-top: 28px;
       }
 
-      .upgrades li {
-        min-height: 6.2rem;
-        padding: 1rem;
+      .highlight {
+        min-width: 0;
+        padding: 14px;
         border: 1px solid var(--line);
-        border-radius: 1.1rem;
-        background: rgba(2, 21, 19, 0.42);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.78);
       }
 
-      .upgrades strong,
-      .upgrades span {
+      .highlight strong {
         display: block;
+        margin-bottom: 5px;
+        color: var(--navy);
+        font-size: 0.83rem;
       }
 
-      .upgrades strong {
-        margin-bottom: 0.45rem;
-        color: var(--ink);
-        font-size: 0.92rem;
-      }
-
-      .upgrades span {
+      .highlight span {
+        display: block;
         color: var(--muted);
-        font-size: 0.8rem;
-        line-height: 1.45;
+        font-size: 0.75rem;
+        line-height: 1.42;
       }
 
-      .footer {
+      .foot {
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 0.75rem 1.5rem;
-        padding: 1rem clamp(1.5rem, 5vw, 3.5rem);
+        gap: 16px;
+        padding-top: 18px;
         border-top: 1px solid var(--line);
-        background: rgba(2, 18, 16, 0.38);
         color: var(--muted);
-        font-size: 0.82rem;
+        font-size: 0.8rem;
       }
 
-      .footer strong {
-        color: var(--ink);
+      .foot strong {
+        color: var(--navy);
       }
 
-      @media (max-width: 640px) {
-        .card {
-          border-radius: 1.5rem;
+      .visual {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+        background: var(--navy);
+      }
+
+      .visual::before {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background:
+          linear-gradient(180deg, rgba(15, 34, 56, 0.04), rgba(15, 34, 56, 0.66)),
+          linear-gradient(90deg, rgba(30, 58, 95, 0.18), transparent 42%);
+        content: "";
+      }
+
+      .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .visual-top,
+      .visual-bottom {
+        position: absolute;
+        z-index: 2;
+        right: clamp(22px, 3vw, 42px);
+        left: clamp(22px, 3vw, 42px);
+      }
+
+      .visual-top {
+        top: clamp(22px, 3vw, 42px);
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .window {
+        padding: 10px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 999px;
+        background: rgba(15, 34, 56, 0.68);
+        color: white;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .visual-bottom {
+        bottom: clamp(24px, 4vw, 54px);
+        max-width: 560px;
+      }
+
+      .visual-kicker {
+        margin: 0 0 10px;
+        color: #f5e8c4;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .visual-title {
+        max-width: 10ch;
+        margin: 0;
+        color: white;
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: clamp(2.15rem, 3.6vw, 4.5rem);
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+      }
+
+      .visual-copy {
+        max-width: 500px;
+        margin: 15px 0 0;
+        color: rgba(255, 255, 255, 0.84);
+        font-size: clamp(0.88rem, 1.2vw, 1rem);
+        line-height: 1.6;
+      }
+
+      @media (max-height: 780px) and (min-width: 901px) {
+        .copy {
+          padding: 28px 34px;
         }
 
-        .hero {
-          gap: 1.25rem;
+        .message {
+          padding: 18px 0;
         }
 
-        .upgrades {
+        h1 {
+          font-size: clamp(2.7rem, 4.7vw, 4.7rem);
+        }
+
+        .lead {
+          margin-top: 16px;
+          line-height: 1.55;
+        }
+
+        .highlights {
+          margin-top: 18px;
+        }
+
+        .highlight {
+          padding: 11px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        body {
+          background: var(--cream);
+        }
+
+        .page {
+          padding: 0;
+          background: var(--cream);
+        }
+
+        .shell {
+          display: flex;
+          width: 100%;
+          height: auto;
+          min-height: 100svh;
+          flex-direction: column;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+
+        .copy {
+          order: 2;
+          padding:
+            26px
+            max(20px, env(safe-area-inset-right))
+            max(28px, env(safe-area-inset-bottom))
+            max(20px, env(safe-area-inset-left));
+        }
+
+        .visual {
+          order: 1;
+          min-height: 44svh;
+        }
+
+        .message {
+          padding: 34px 0 28px;
+        }
+
+        h1 {
+          max-width: 12ch;
+          font-size: clamp(2.65rem, 12vw, 4.25rem);
+        }
+
+        .highlights {
           grid-template-columns: 1fr;
         }
 
-        .upgrades li {
-          min-height: auto;
+        .highlight {
+          padding: 14px 15px;
+        }
+
+        .foot {
+          align-items: flex-start;
+          flex-direction: column;
         }
       }
 
-      @media (prefers-reduced-motion: reduce) {
-        .pulse {
-          animation: none;
+      @media (max-width: 520px) {
+        .logo {
+          width: 50px;
+          height: 50px;
+          flex-basis: 50px;
+        }
+
+        .brand-line {
+          letter-spacing: 0.09em;
+        }
+
+        .visual {
+          min-height: 39svh;
+        }
+
+        .visual-copy {
+          display: none;
         }
       }
     </style>
   </head>
   <body>
-    <main>
-      <section class="card" aria-labelledby="maintenance-title">
-        <div class="hero">
-          <div class="brand">
-            <div class="mark" aria-hidden="true">
-              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 50c1-11 5-18 13-23l-1-13 8 8c8 1 13 6 15 14-5-2-9-2-13 0 2 5 2 10-1 15H18Z" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>
-                <path d="M34 27c4 2 7 5 8 9M27 42c5 2 9 2 13 0" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
-                <circle cx="39" cy="28" r="1.8" fill="currentColor"/>
-              </svg>
-            </div>
+    <main class="page">
+      <section class="shell" aria-labelledby="maintenance-title">
+        <div class="copy">
+          <header class="brand">
+            <img class="logo" src="/favicon.svg" alt="EquiProfile logo" />
             <div>
               <p class="brand-name">EquiProfile</p>
-              <p class="brand-note">Professional horse management</p>
+              <p class="brand-line">Professional horse management</p>
+            </div>
+          </header>
+
+          <div class="message">
+            <div class="status"><span class="status-dot" aria-hidden="true"></span>Platform upgrade in progress</div>
+            <h1 id="maintenance-title">A better EquiProfile is <em>taking shape.</em></h1>
+            <p class="lead">
+              We have temporarily paused access while we improve the dashboard, accounts,
+              performance, mobile experience, and the everyday tools used to care for horses
+              and manage a stable.
+            </p>
+
+            <div class="highlights" aria-label="Upgrade focus">
+              <div class="highlight"><strong>Clearer dashboards</strong><span>Faster access to the information and actions that matter today.</span></div>
+              <div class="highlight"><strong>Stronger accounts</strong><span>Improved security, permissions, subscriptions, and user management.</span></div>
+              <div class="highlight"><strong>Smoother workflows</strong><span>A cleaner and more reliable experience on desktop and mobile.</span></div>
             </div>
           </div>
 
-          <div class="status"><span class="pulse" aria-hidden="true"></span>Scheduled maintenance in progress</div>
-
-          <h1 id="maintenance-title">Exciting upgrades are <span>underway.</span></h1>
-
-          <p class="lead">
-            EquiProfile is temporarily unavailable while we complete a major platform upgrade.
-            We are improving the dashboard, account experience, speed, reliability, and the tools
-            that help you manage every horse with greater confidence.
-          </p>
-
-          <ul class="upgrades" aria-label="Upgrade areas">
-            <li><strong>A clearer dashboard</strong><span>Faster access to horses, health, training, tasks, and stable activity.</span></li>
-            <li><strong>Stronger accounts</strong><span>Improved security, subscriptions, permissions, and user management.</span></li>
-            <li><strong>Better performance</strong><span>A more reliable mobile experience with cleaner, faster workflows.</span></li>
-          </ul>
+          <footer class="foot">
+            <span><strong>Maintenance window:</strong> up to 48 hours</span>
+            <span>No action is required. Please check back soon.</span>
+          </footer>
         </div>
 
-        <footer class="footer">
-          <span><strong>Maintenance window:</strong> up to 48 hours</span>
-          <span>No action is required. Please check back soon.</span>
-        </footer>
+        <div class="visual" aria-label="Horse and rider representing the next EquiProfile experience">
+          <img class="hero-image" src="/images/hero/image1.jpg" alt="Horse and rider" />
+          <div class="visual-top"><span class="window">The next chapter of EquiProfile</span></div>
+          <div class="visual-bottom">
+            <p class="visual-kicker">Complete platform upgrade</p>
+            <h2 class="visual-title">Built around better horse care.</h2>
+            <p class="visual-copy">A more focused, dependable and polished experience is coming back online soon.</p>
+          </div>
+        </div>
       </section>
     </main>
 
     <script>
-      // Retire cached application shells so returning PWA users see this maintenance page.
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.getRegistrations().then(function (registrations) {
           registrations.forEach(function (registration) {
