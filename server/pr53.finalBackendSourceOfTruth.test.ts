@@ -16,15 +16,16 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     expect(fs.existsSync(path.join(repoRoot, "docs/audits/PR53_FINAL_BACKEND_SOURCE_OF_TRUTH_AUDIT.md"))).toBe(true);
   });
 
-  it("keeps legacy Marketing source preserved while exposing only the owner launcher in EquiProfile", () => {
+  it("keeps legacy Marketing source migration-only and the launcher only in hidden admin", () => {
     const adminCampaigns = read("client/src/pages/AdminCampaigns.tsx");
+    const adminWrapper = read("client/src/pages/AdminEnvironmentSafe.tsx");
     const appShell = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const studioHome = read("client/src/components/marketing/app/studio/StudioHome.tsx");
 
-    expect(adminCampaigns).toContain("MarketingConnectionCard");
-    expect(adminCampaigns).toContain("Owner administration");
-    expect(adminCampaigns).toContain("not part of the customer dashboard or subscription feature set");
+    expect(adminCampaigns).toContain("Embedded Marketing retired");
+    expect(adminCampaigns).not.toContain("MarketingConnectionCard");
     expect(adminCampaigns).not.toContain("TheMarketingApp");
+    expect(adminWrapper).toContain("<MarketingConnectionCard />");
     expect(appShell).toContain("<MarketingWorkspaceShell");
     expect(studioHome).toContain("StudioWorkbench");
   });
@@ -68,7 +69,6 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     ]) {
       expect(source).toContain(hookName);
     }
-    // PR61 command-centre frontend is larger but should remain UI-only and avoid backend engine code.
     expect(lineCount).toBeLessThan(2400);
     expect(source).not.toContain("from \"server/");
     expect(source).not.toContain("ffmpeg -");
