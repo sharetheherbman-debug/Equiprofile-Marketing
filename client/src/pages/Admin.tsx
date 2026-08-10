@@ -1913,7 +1913,7 @@ function AdminContent() {
                       setWhatsappForm({
                         ...whatsappForm,
                         accountSid: e.target.value,
-                      }))
+                      })
                     }
                   />
                   <p className="text-xs text-muted-foreground">
@@ -1936,7 +1936,7 @@ function AdminContent() {
                       setWhatsappForm({
                         ...whatsappForm,
                         authToken: e.target.value,
-                      }))
+                      })
                     }
                   />
                   <p className="text-xs text-muted-foreground">
@@ -1954,7 +1954,7 @@ function AdminContent() {
                       setWhatsappForm({
                         ...whatsappForm,
                         fromNumber: e.target.value,
-                      }))
+                      })
                     }
                   />
                   <p className="text-xs text-muted-foreground">
