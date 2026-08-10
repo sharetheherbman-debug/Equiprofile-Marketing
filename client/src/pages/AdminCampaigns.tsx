@@ -1,13 +1,13 @@
-import { MarketingConnectionCard } from "@/components/admin/MarketingConnectionCard";
 import { Button } from "@/components/ui/button";
 
 /**
- * Owner-only launch surface for the standalone EquiProfile Marketing app.
+ * Temporary migration notice for the legacy embedded Marketing section.
  *
- * Marketing is not an EquiProfile customer feature. It is an operational tool
- * used by the EquiProfile owner to market the EquiProfile product. The actual
- * Marketing application runs separately and is opened through signed one-use
- * SSO from this hidden administration area.
+ * This section contains no Marketing launcher and no executable Marketing UI.
+ * The standalone EquiProfile Marketing launch control exists only in the hidden
+ * owner administration wrapper and is server-gated to PRIMARY_ADMIN_EMAIL.
+ * This legacy section will be physically removed when the oversized Admin page
+ * is split and the final migration inventory is complete.
  */
 export default function AdminCampaigns({
   onBackToAdmin,
@@ -15,24 +15,24 @@ export default function AdminCampaigns({
   onBackToAdmin?: () => void;
 }) {
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+    <div className="mx-auto max-w-5xl p-4 md:p-6">
       <section className="rounded-2xl border bg-card p-6 shadow-sm">
         <div className="max-w-2xl space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Owner administration
+            Legacy migration
           </p>
           <h1 className="text-2xl font-semibold tracking-tight">
-            EquiProfile Marketing
+            Embedded Marketing retired
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            This is the private owner launch point for the standalone white-label
-            EquiProfile Marketing application used to market EquiProfile. It is
-            not part of the customer dashboard or subscription feature set.
+            New Marketing work cannot be started from EquiProfile. Historical
+            Marketing records remain temporarily available to the migration
+            process only while useful data is reconciled into the standalone
+            owner Marketing application.
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
-            The Marketing application keeps its own database and session. Access
-            is issued from EquiProfile through a short-lived signed one-use owner
-            sign-in; connector credentials remain on the servers only.
+            This legacy section will be deleted after migration verification. It
+            is not a customer feature and contains no link to the standalone app.
           </p>
           {onBackToAdmin ? (
             <Button type="button" variant="outline" onClick={onBackToAdmin}>
@@ -41,8 +41,6 @@ export default function AdminCampaigns({
           ) : null}
         </div>
       </section>
-
-      <MarketingConnectionCard />
     </div>
   );
 }
