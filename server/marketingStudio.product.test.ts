@@ -3,16 +3,17 @@ import { resolve } from "path";
 import { describe, expect, it } from "vitest";
 
 const pageSource = readFileSync(resolve(process.cwd(), "client/src/pages/AdminCampaigns.tsx"), "utf8");
+const adminWrapperSource = readFileSync(resolve(process.cwd(), "client/src/pages/AdminEnvironmentSafe.tsx"), "utf8");
 const studioSource = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/TheMarketingApp.tsx"), "utf8");
 const settingsSource = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/MarketingAppSettings.tsx"), "utf8");
 const topBarSource = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/MarketingAppTopBar.tsx"), "utf8");
 
 describe("The Marketing App stabilized product path", () => {
-  it("keeps legacy Marketing App source preserved but disconnects it from customer-facing EquiProfile", () => {
-    expect(pageSource).toContain("MarketingConnectionCard");
-    expect(pageSource).toContain("Owner administration");
-    expect(pageSource).toContain("not part of the customer dashboard or subscription feature set");
+  it("keeps legacy source preserved but exposes the standalone launcher only in hidden admin", () => {
+    expect(pageSource).toContain("Embedded Marketing retired");
+    expect(pageSource).not.toContain("MarketingConnectionCard");
     expect(pageSource).not.toContain("TheMarketingApp");
+    expect(adminWrapperSource).toContain("<MarketingConnectionCard />");
     for (const section of ["Create", "Assets", "Campaigns", "Calendar", "Brand", "Settings"]) {
       expect(topBarSource).toContain(`label: "${section}"`);
     }
