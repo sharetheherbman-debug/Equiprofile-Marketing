@@ -10,6 +10,10 @@ const adminLauncher = readFileSync(
   resolve(process.cwd(), "client/src/pages/AdminCampaigns.tsx"),
   "utf8",
 );
+const connectionCard = readFileSync(
+  resolve(process.cwd(), "client/src/components/admin/MarketingConnectionCard.tsx"),
+  "utf8",
+);
 
 describe("EquiProfile owner-only Marketing boundary", () => {
   it("requires the primary owner identity as well as admin role", () => {
@@ -24,5 +28,11 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(adminLauncher).toContain("not part of the customer dashboard or subscription feature set");
     expect(adminLauncher).toContain("<MarketingConnectionCard />");
     expect(adminLauncher).not.toContain("TheMarketingApp");
+  });
+
+  it("does not render the Marketing launcher for non-owner admins", () => {
+    expect(connectionCard).toContain("response.status === 403");
+    expect(connectionCard).toContain("setOwnerDenied(true)");
+    expect(connectionCard).toContain("if (ownerDenied) return null");
   });
 });
