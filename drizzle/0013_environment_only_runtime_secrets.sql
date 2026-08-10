@@ -35,8 +35,9 @@ WHERE LOWER(`key`) IN (
   'whatsapp_auth_token',
   'whatsapp_from_number'
 );
-
+--> statement-breakpoint
 DROP TRIGGER IF EXISTS `siteSettings_env_only_insert`;
+--> statement-breakpoint
 CREATE TRIGGER `siteSettings_env_only_insert`
 BEFORE INSERT ON `siteSettings`
 FOR EACH ROW
@@ -73,8 +74,9 @@ SET NEW.`value` = IF(
   NULL,
   NEW.`value`
 );
-
+--> statement-breakpoint
 DROP TRIGGER IF EXISTS `siteSettings_env_only_update`;
+--> statement-breakpoint
 CREATE TRIGGER `siteSettings_env_only_update`
 BEFORE UPDATE ON `siteSettings`
 FOR EACH ROW
