@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { describe, expect, it } from "vitest";
 
@@ -14,9 +14,13 @@ const adminWrapper = readFileSync(
   resolve(process.cwd(), "client/src/pages/AdminEnvironmentSafe.tsx"),
   "utf8",
 );
-const legacyMarketingSection = readFileSync(
-  resolve(process.cwd(), "client/src/pages/AdminCampaigns.tsx"),
+const adminPage = readFileSync(
+  resolve(process.cwd(), "client/src/pages/Admin.tsx"),
   "utf8",
+);
+const legacyMarketingSectionPath = resolve(
+  process.cwd(),
+  "client/src/pages/AdminCampaigns.tsx",
 );
 const connectionCard = readFileSync(
   resolve(process.cwd(), "client/src/components/admin/MarketingConnectionCard.tsx"),
@@ -32,16 +36,24 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(connector).toContain("isTrustedCookieWrite(req)");
   });
 
-  it("routes the hidden admin page through the owner-safe wrapper", () => {
+  it("routes hidden admin through the owner-safe wrapper without a CSS-hidden Marketing menu", () => {
     expect(managementApp).toContain('import("@/pages/AdminEnvironmentSafe")');
     expect(adminWrapper).toContain("<MarketingConnectionCard />");
-    expect(adminWrapper).toContain('[role=\"menuitem\"]:has(.lucide-mail)');
+    expect(adminWrapper).not.toContain(".lucide-mail");
   });
 
-  it("keeps the old embedded Marketing section non-executable and without a launcher", () => {
-    expect(legacyMarketingSection).not.toContain("MarketingConnectionCard");
-    expect(legacyMarketingSection).not.toContain("TheMarketingApp");
-    expect(legacyMarketingSection).toContain("Embedded Marketing retired");
+  it("physically removes the old embedded Marketing admin section", () => {
+    expect(existsSync(legacyMarketingSectionPath)).toBe(false);
+    expect(adminPage).not.toContain("AdminCampaigns");
+    expect(adminPage).not.toContain("Marketing Studio");
+    expect(adminPage).not.toContain('activeSection === "campaigns"');
+    expect(adminPage).not.toContain('value: "campaigns"');
+  });
+
+  it("keeps the standalone connector disabled by default until Phase 2", () => {
+    expect(connector).toContain("MARKETING_CONNECTOR_ENABLED");
+    expect(connector).toContain("current.enabled");
+    expect(connector).toContain("Marketing connector is disabled or not configured");
   });
 
   it("does not render the Marketing launcher for non-owner admins", () => {
