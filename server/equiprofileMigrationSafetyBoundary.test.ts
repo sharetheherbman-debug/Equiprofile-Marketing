@@ -7,6 +7,11 @@ const migrateScript = readFileSync(
   "utf8",
 );
 
+const envOnlyMigration = readFileSync(
+  resolve(process.cwd(), "drizzle/0013_environment_only_runtime_secrets.sql"),
+  "utf8",
+);
+
 describe("EquiProfile production migration safety boundary", () => {
   it("supports a truly read-only production preflight", () => {
     expect(migrateScript).toContain('DRY_RUN="${DRY_RUN:-0}"');
@@ -33,5 +38,24 @@ describe("EquiProfile production migration safety boundary", () => {
     );
     expect(migrateScript).toContain("Existing production-style database has unexpected pending migrations");
     expect(migrateScript).toContain("Phase 1 allowlist");
+  });
+
+  it("splits the environment-only MySQL migration into Drizzle-safe statements", () => {
+    const breakpoints = envOnlyMigration.match(/--> statement-breakpoint/g) ?? [];
+
+    // UPDATE + DROP/CREATE insert trigger + DROP/CREATE update trigger = 5 statements.
+    expect(breakpoints).toHaveLength(4);
+    expect(envOnlyMigration).toContain(
+      ");\n--> statement-breakpoint\nDROP TRIGGER IF EXISTS `siteSettings_env_only_insert`;",
+    );
+    expect(envOnlyMigration).toContain(
+      "DROP TRIGGER IF EXISTS `siteSettings_env_only_insert`;\n--> statement-breakpoint\nCREATE TRIGGER `siteSettings_env_only_insert`",
+    );
+    expect(envOnlyMigration).toContain(
+      ");\n--> statement-breakpoint\nDROP TRIGGER IF EXISTS `siteSettings_env_only_update`;",
+    );
+    expect(envOnlyMigration).toContain(
+      "DROP TRIGGER IF EXISTS `siteSettings_env_only_update`;\n--> statement-breakpoint\nCREATE TRIGGER `siteSettings_env_only_update`",
+    );
   });
 });
