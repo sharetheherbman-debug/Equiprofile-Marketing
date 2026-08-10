@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { Request } from "express";
+import { COOKIE_NAME } from "@shared/const";
 import { isTrustedCookieWrite } from "./_core/requestSecurity";
 
 const originalNodeEnv = process.env.NODE_ENV;
@@ -20,6 +21,10 @@ function request(input: {
   } as Request;
 }
 
+function sessionCookie() {
+  return `${COOKIE_NAME}=test-token`;
+}
+
 afterEach(() => {
   process.env.NODE_ENV = originalNodeEnv;
   process.env.BASE_URL = originalBaseUrl;
@@ -37,7 +42,7 @@ describe("EquiProfile same-origin cookie write policy", () => {
       isTrustedCookieWrite(
         request({
           origin: "https://equiprofile.online",
-          cookie: "app_session=test-token",
+          cookie: sessionCookie(),
         }),
       ),
     ).toBe(true);
@@ -53,7 +58,7 @@ describe("EquiProfile same-origin cookie write policy", () => {
       isTrustedCookieWrite(
         request({
           origin: "https://attacker.example",
-          cookie: "app_session=test-token",
+          cookie: sessionCookie(),
         }),
       ),
     ).toBe(false);
@@ -65,7 +70,7 @@ describe("EquiProfile same-origin cookie write policy", () => {
 
     expect(
       isTrustedCookieWrite(
-        request({ cookie: "app_session=test-token" }),
+        request({ cookie: sessionCookie() }),
       ),
     ).toBe(false);
   });
