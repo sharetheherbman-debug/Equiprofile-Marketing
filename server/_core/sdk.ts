@@ -1,5 +1,5 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { AXIOS_TIMEOUT_MS, COOKIE_NAME } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
@@ -15,9 +15,12 @@ import type {
   GetUserInfoWithJwtRequest,
   GetUserInfoWithJwtResponse,
 } from "./types/oauthTypes";
-// Utility function
+
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
+
+const DEFAULT_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+const LOCAL_AUTH_SESSION_SECONDS = 30 * 24 * 60 * 60;
 
 export type SessionPayload = {
   openId: string;
@@ -29,7 +32,6 @@ const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
 const GET_USER_INFO_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfo`;
 const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`;
 
-// Track if OAuth error has been logged (server-side only)
 let oauthErrorLogged = false;
 
 class OAuthService {
@@ -117,11 +119,6 @@ class SDKServer {
     return first ? first.toLowerCase() : null;
   }
 
-  /**
-   * Exchange OAuth authorization code for access token
-   * @example
-   * const tokenResponse = await sdk.exchangeCodeForToken(code, state);
-   */
   async exchangeCodeForToken(
     code: string,
     state: string,
@@ -129,11 +126,6 @@ class SDKServer {
     return this.oauthService.getTokenByCode(code, state);
   }
 
-  /**
-   * Get user information using access token
-   * @example
-   * const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
-   */
   async getUserInfo(accessToken: string): Promise<GetUserInfoResponse> {
     const data = await this.oauthService.getUserInfoByToken({
       accessToken,
@@ -163,11 +155,6 @@ class SDKServer {
     return new TextEncoder().encode(secret);
   }
 
-  /**
-   * Create a session token for an OAuth user openId
-   * @example
-   * const sessionToken = await sdk.createSessionToken(userInfo.openId);
-   */
   async createSessionToken(
     openId: string,
     options: { expiresInMs?: number; name?: string } = {},
@@ -187,7 +174,7 @@ class SDKServer {
     options: { expiresInMs?: number } = {},
   ): Promise<string> {
     const issuedAt = Date.now();
-    const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
+    const expiresInMs = options.expiresInMs ?? DEFAULT_SESSION_MS;
     const expirationSeconds = Math.floor((issuedAt + expiresInMs) / 1000);
     const secretKey = this.getSessionSecret();
 
@@ -197,6 +184,7 @@ class SDKServer {
       name: payload.name,
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      .setIssuedAt()
       .setExpirationTime(expirationSeconds)
       .sign(secretKey);
   }
@@ -209,8 +197,6 @@ class SDKServer {
     issuedAt?: number;
   } | null> {
     if (!cookieValue) {
-      // Silently return null – missing cookies are normal for unauthenticated
-      // public requests and should not flood the logs.
       return null;
     }
 
@@ -220,24 +206,31 @@ class SDKServer {
         algorithms: ["HS256"],
       });
 
-      // Support both OAuth format (openId, appId, name) and local auth format (userId)
-      const { openId, appId, name, userId, iat } = payload as Record<
+      const { openId, appId, name, userId, iat, exp } = payload as Record<
         string,
         unknown
       >;
 
-      // Local auth format
       if (typeof userId === "number") {
+        // Local tokens issued before the relaunch did not include iat but did
+        // use a fixed 30-day expiry. Derive their issue time from exp so the
+        // existing passwordChangedAt invalidation watermark works without
+        // forcing all current users to sign in again during the migration.
+        const issuedAt =
+          typeof iat === "number"
+            ? iat
+            : typeof exp === "number"
+              ? exp - LOCAL_AUTH_SESSION_SECONDS
+              : undefined;
         return {
-          openId: "", // Will be filled from DB
+          openId: "",
           appId: ENV.appId,
-          name: "", // Will be filled from DB
+          name: "",
           userId,
-          issuedAt: typeof iat === "number" ? iat : undefined,
+          issuedAt,
         };
       }
 
-      // OAuth format
       if (
         !isNonEmptyString(openId) ||
         !isNonEmptyString(appId) ||
@@ -284,7 +277,6 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
-    // Regular authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);
@@ -296,27 +288,23 @@ class SDKServer {
     const signedInAt = new Date();
     let user: User | undefined;
 
-    // Handle local auth (userId-based JWT)
     if (session.userId) {
       user = await db.getUserById(session.userId);
       if (!user) {
         throw ForbiddenError("User not found");
       }
-      // If the password was changed after this JWT was issued, the session is
-      // no longer valid — the user must log in again with the new password.
-      if (
-        user.passwordChangedAt &&
-        typeof session.issuedAt === "number" &&
-        user.passwordChangedAt > new Date(session.issuedAt * 1000)
-      ) {
-        throw ForbiddenError("Your session has expired. Please log in again.");
+      if (user.passwordChangedAt) {
+        if (typeof session.issuedAt !== "number") {
+          throw ForbiddenError("Your session has expired. Please log in again.");
+        }
+        if (user.passwordChangedAt > new Date(session.issuedAt * 1000)) {
+          throw ForbiddenError("Your session has expired. Please log in again.");
+        }
       }
     } else {
-      // Handle OAuth (openId-based JWT)
       const sessionUserId = session.openId;
       user = await db.getUserByOpenId(sessionUserId);
 
-      // If user not in DB, sync from OAuth server automatically
       if (!user) {
         try {
           const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
@@ -338,8 +326,10 @@ class SDKServer {
     if (!user) {
       throw ForbiddenError("User not found");
     }
+    if (!user.isActive || user.isSuspended) {
+      throw ForbiddenError("This account is not permitted to access EquiProfile");
+    }
 
-    // Update last signed in
     await db.updateUser(user.id, {
       lastSignedIn: signedInAt,
     });
