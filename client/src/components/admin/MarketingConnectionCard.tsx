@@ -16,6 +16,7 @@ export function MarketingConnectionCard() {
   const [status, setStatus] = useState<MarketingStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState(false);
+  const [ownerDenied, setOwnerDenied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadStatus = useCallback(async () => {
@@ -26,7 +27,18 @@ export function MarketingConnectionCard() {
         credentials: "include",
       });
       const payload = await response.json().catch(() => ({}));
+
+      // The Marketing launcher is an EquiProfile-owner tool, not a general
+      // administrator feature. A non-owner admin should not see the launcher at
+      // all; the server independently enforces the same owner boundary.
+      if (response.status === 403) {
+        setOwnerDenied(true);
+        setStatus(null);
+        return;
+      }
+
       if (!response.ok) throw new Error(payload.error || "Could not read Marketing connection status");
+      setOwnerDenied(false);
       setStatus(payload as MarketingStatus);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not read Marketing connection status");
@@ -59,6 +71,8 @@ export function MarketingConnectionCard() {
       setOpening(false);
     }
   };
+
+  if (ownerDenied) return null;
 
   return (
     <Card className="border-emerald-500/20 bg-emerald-500/[0.03]">
