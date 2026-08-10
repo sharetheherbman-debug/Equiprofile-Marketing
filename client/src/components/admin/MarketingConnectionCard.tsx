@@ -70,7 +70,7 @@ export function MarketingConnectionCard() {
               EquiProfile Marketing
             </CardTitle>
             <CardDescription className="mt-2">
-              Open the standalone autonomous Marketing workspace through a signed, one-use administrator login.
+              Private owner access to the standalone white-label Marketing workspace used to market EquiProfile.
             </CardDescription>
           </div>
           {loading ? (
@@ -89,8 +89,8 @@ export function MarketingConnectionCard() {
             <p className="mt-1 font-medium">{status?.applicationId || "equiprofile"}</p>
           </div>
           <div className="rounded-lg border bg-background/70 p-3">
-            <p className="text-xs text-muted-foreground">Authentication</p>
-            <p className="mt-1 font-medium">{status?.authentication || "Signed one-use SSO"}</p>
+            <p className="text-xs text-muted-foreground">Access</p>
+            <p className="mt-1 font-medium">{status?.authentication || "Owner-only signed one-use SSO"}</p>
           </div>
           <div className="rounded-lg border bg-background/70 p-3">
             <p className="text-xs text-muted-foreground">Connector secret</p>
@@ -107,7 +107,7 @@ export function MarketingConnectionCard() {
         <div className="flex flex-wrap gap-3">
           <Button onClick={openMarketing} disabled={!status?.configured || opening || loading}>
             {opening ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowUpRight className="mr-2 h-4 w-4" />}
-            Open Marketing
+            Open EquiProfile Marketing
           </Button>
           <Button variant="outline" onClick={() => void loadStatus()} disabled={loading || opening}>
             <RefreshCw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
