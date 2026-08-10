@@ -42,6 +42,7 @@ function config() {
     ),
     applicationId: process.env.EQUIPROFILE_APP_ID || "equiprofile",
     connectorKey: process.env.EQUIPROFILE_CONNECTOR_KEY || "",
+    ownerEmail: (process.env.PRIMARY_ADMIN_EMAIL || "").trim().toLowerCase(),
   };
 }
 
@@ -175,9 +176,7 @@ async function syncRecentConversionSignals(): Promise<void> {
     let allDelivered = true;
     for (const user of recentUsers) {
       const anonymousId = anonymousSubjectId(user.id);
-      const createdAt = user.createdAt
-        ? new Date(user.createdAt)
-        : null;
+      const createdAt = user.createdAt ? new Date(user.createdAt) : null;
       const lastPaymentAt = user.lastPaymentAt
         ? new Date(user.lastPaymentAt)
         : null;
@@ -241,12 +240,27 @@ function startMarketingConversionSync(): void {
   connectorRuntime.__equiprofileMarketingSyncTimer = timer;
 }
 
-async function requireAdmin(req: Request, res: Response) {
+async function requireOwner(req: Request, res: Response) {
   const context = await createContext({ req, res } as never);
   if (!context.user || context.user.role !== "admin") {
-    res.status(403).json({ error: "Admin access required" });
+    res.status(403).json({ error: "Owner access required" });
     return null;
   }
+
+  const ownerEmail = config().ownerEmail;
+  if (!ownerEmail) {
+    res.status(503).json({
+      error: "PRIMARY_ADMIN_EMAIL must be configured before EquiProfile Marketing can be opened",
+    });
+    return null;
+  }
+
+  const signedInEmail = String(context.user.email || "").trim().toLowerCase();
+  if (!signedInEmail || signedInEmail !== ownerEmail) {
+    res.status(403).json({ error: "EquiProfile owner access required" });
+    return null;
+  }
+
   return context.user;
 }
 
@@ -255,14 +269,14 @@ export function registerMarketingConnectorRoutes(router: Router): void {
 
   router.get("/admin/marketing/status", async (req, res) => {
     try {
-      const user = await requireAdmin(req, res);
+      const user = await requireOwner(req, res);
       if (!user) return;
       const current = config();
       res.json({
         configured: isMarketingConnectorConfigured(),
         applicationId: current.applicationId,
         marketingUrl: current.appUrl,
-        authentication: "signed one-use SSO",
+        authentication: "owner-only signed one-use SSO",
         secretLocation: "VPS environment only",
         conversionSync: isMarketingConnectorConfigured()
           ? "anonymous aggregate sync enabled"
@@ -278,11 +292,11 @@ export function registerMarketingConnectorRoutes(router: Router): void {
 
   router.post("/admin/marketing/sso", async (req, res) => {
     try {
-      const user = await requireAdmin(req, res);
+      const user = await requireOwner(req, res);
       if (!user) return;
       if (!user.email) {
         return res.status(400).json({
-          error: "The administrator account requires an email address",
+          error: "The owner account requires an email address",
         });
       }
       const payload = {
