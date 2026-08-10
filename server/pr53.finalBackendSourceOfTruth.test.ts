@@ -16,12 +16,14 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     expect(fs.existsSync(path.join(repoRoot, "docs/audits/PR53_FINAL_BACKEND_SOURCE_OF_TRUTH_AUDIT.md"))).toBe(true);
   });
 
-  it("keeps one active Marketing App route chain", () => {
+  it("disconnects the legacy Marketing App from EquiProfile Admin while preserving its source", () => {
     const adminCampaigns = read("client/src/pages/AdminCampaigns.tsx");
     const appShell = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const studioHome = read("client/src/components/marketing/app/studio/StudioHome.tsx");
 
-    expect(adminCampaigns).toContain("TheMarketingApp");
+    expect(adminCampaigns).toContain("MarketingConnectionCard");
+    expect(adminCampaigns).toContain("Embedded Marketing Studio disabled");
+    expect(adminCampaigns).not.toContain("TheMarketingApp");
     expect(appShell).toContain("<MarketingWorkspaceShell");
     expect(studioHome).toContain("StudioWorkbench");
   });
