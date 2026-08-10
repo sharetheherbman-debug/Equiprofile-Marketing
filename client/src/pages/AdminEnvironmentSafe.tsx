@@ -4,11 +4,11 @@ import LegacyAdmin from "./Admin";
 /**
  * Transitional Phase 1 wrapper around the legacy admin console.
  *
- * The legacy page contains useful user, subscription and system administration,
- * but it also contains old browser forms for infrastructure credentials. Those
- * credentials are now environment-only and database writes are blocked. This
- * wrapper removes only the credential cards from the rendered dashboard while
- * the oversized legacy Admin component is split into maintainable modules.
+ * Marketing is not an EquiProfile customer feature. The standalone owner
+ * launcher lives here, inside hidden admin, while the legacy admin console is
+ * retained temporarily for user/subscription/system administration during the
+ * source split. Legacy credential cards and the obsolete embedded Marketing
+ * menu entry are removed from the rendered admin surface.
  */
 export default function AdminEnvironmentSafe() {
   return (
@@ -28,7 +28,8 @@ export default function AdminEnvironmentSafe() {
         [data-slot="card"]:has(#twilio-whatsapp-from),
         [data-slot="card"]:has(#whatsapp-account-sid),
         [data-slot="card"]:has(#whatsapp-auth-token),
-        [data-slot="card"]:has(#whatsapp-from-number) {
+        [data-slot="card"]:has(#whatsapp-from-number),
+        [role="menuitem"]:has(.lucide-mail) {
           display: none !important;
         }
       `}</style>
