@@ -2,13 +2,12 @@ import { MarketingConnectionCard } from "@/components/admin/MarketingConnectionC
 import { Button } from "@/components/ui/button";
 
 /**
- * Phase 1 separation boundary for the legacy embedded Marketing Studio.
+ * Owner-only launch surface for the standalone EquiProfile Marketing app.
  *
- * The old Marketing implementation and its data remain in the repository and
- * database for migration/reconciliation, but administrators must not start new
- * work through the embedded UI while standalone Marketing is being completed.
- * The secure connection card is the only supported EquiProfile-side Marketing
- * surface during the separation.
+ * Marketing is not an EquiProfile customer feature. It is an operational tool
+ * used by the EquiProfile owner to market the EquiProfile product. The actual
+ * Marketing application runs separately and is opened through signed one-use
+ * SSO from this hidden administration area.
  */
 export default function AdminCampaigns({
   onBackToAdmin,
@@ -20,21 +19,20 @@ export default function AdminCampaigns({
       <section className="rounded-2xl border bg-card p-6 shadow-sm">
         <div className="max-w-2xl space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Phase 1 separation
+            Owner administration
           </p>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Embedded Marketing Studio disabled
+            EquiProfile Marketing
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            EquiProfile Marketing is moving to the standalone Marketing
-            application. The legacy embedded Marketing Studio is disabled here
-            to prevent new campaigns, publishing or generation work from being
-            started in the old system while migration is completed.
+            This is the private owner launch point for the standalone white-label
+            EquiProfile Marketing application used to market EquiProfile. It is
+            not part of the customer dashboard or subscription feature set.
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
-            Existing Marketing records and services have not been deleted. They
-            remain preserved for inventory, migration, reconciliation and
-            rollback until the standalone replacement is verified.
+            The Marketing application keeps its own database and session. Access
+            is issued from EquiProfile through a short-lived signed one-use owner
+            sign-in; connector credentials remain on the servers only.
           </p>
           {onBackToAdmin ? (
             <Button type="button" variant="outline" onClick={onBackToAdmin}>
