@@ -54,7 +54,7 @@ const Weather = lazy(() => import("@/pages/Weather"));
 const Documents = lazy(() => import("@/pages/Documents"));
 const Tasks = lazy(() => import("@/pages/Tasks"));
 const Contacts = lazy(() => import("@/pages/Contacts"));
-const Admin = lazy(() => import("@/pages/Admin"));
+const Admin = lazy(() => import("@/pages/AdminEnvironmentSafe"));
 const QAChecklist = lazy(() => import("@/pages/QAChecklist"));
 const Stable = lazy(() => import("@/pages/Stable"));
 const StableDashboard = lazy(() => import("@/pages/StableDashboard"));
