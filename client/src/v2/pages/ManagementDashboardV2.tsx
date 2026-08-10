@@ -7,10 +7,9 @@ import DashboardV2 from "./DashboardV2";
 /**
  * Management-product gate for the redesigned dashboard.
  *
- * Education plan dashboards live outside the Management product and must not be
- * routed to non-existent /student-dashboard, /teacher-dashboard or
- * /school-dashboard paths here. Stable customers are sent to the Stable
- * dashboard; Pro customers render the redesigned Management dashboard.
+ * Education plans belong to the separate education product and return to
+ * onboarding from the Management application. Stable customers are sent to the
+ * Stable dashboard; Pro customers render the redesigned Management dashboard.
  */
 export default function ManagementDashboardV2() {
   const { user } = useAuth({ redirectOnUnauthenticated: true });
