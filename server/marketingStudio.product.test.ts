@@ -8,8 +8,10 @@ const settingsSource = readFileSync(resolve(process.cwd(), "client/src/component
 const topBarSource = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/MarketingAppTopBar.tsx"), "utf8");
 
 describe("The Marketing App stabilized product path", () => {
-  it("renders The Marketing App from AdminCampaigns and keeps top-bar sections", () => {
-    expect(pageSource).toContain("TheMarketingApp");
+  it("keeps legacy Marketing App source preserved but disconnects it from AdminCampaigns", () => {
+    expect(pageSource).toContain("MarketingConnectionCard");
+    expect(pageSource).toContain("Embedded Marketing Studio disabled");
+    expect(pageSource).not.toContain("TheMarketingApp");
     for (const section of ["Create", "Assets", "Campaigns", "Calendar", "Brand", "Settings"]) {
       expect(topBarSource).toContain(`label: "${section}"`);
     }
