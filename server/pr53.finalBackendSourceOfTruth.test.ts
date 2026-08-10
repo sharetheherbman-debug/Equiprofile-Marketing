@@ -17,14 +17,14 @@ describe("PR53 final backend/source-of-truth hardening", () => {
   });
 
   it("keeps legacy Marketing source migration-only and the launcher only in hidden admin", () => {
-    const adminCampaigns = read("client/src/pages/AdminCampaigns.tsx");
+    const adminPage = read("client/src/pages/Admin.tsx");
     const adminWrapper = read("client/src/pages/AdminEnvironmentSafe.tsx");
     const appShell = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const studioHome = read("client/src/components/marketing/app/studio/StudioHome.tsx");
 
-    expect(adminCampaigns).toContain("Embedded Marketing retired");
-    expect(adminCampaigns).not.toContain("MarketingConnectionCard");
-    expect(adminCampaigns).not.toContain("TheMarketingApp");
+    expect(fs.existsSync(path.join(repoRoot, "client/src/pages/AdminCampaigns.tsx"))).toBe(false);
+    expect(adminPage).not.toContain("AdminCampaigns");
+    expect(adminPage).not.toContain("Marketing Studio");
     expect(adminWrapper).toContain("<MarketingConnectionCard />");
     expect(appShell).toContain("<MarketingWorkspaceShell");
     expect(studioHome).toContain("StudioWorkbench");
@@ -43,7 +43,7 @@ describe("PR53 final backend/source-of-truth hardening", () => {
 
   it("active route files do not import quarantined legacy layers", () => {
     const activeSources = [
-      read("client/src/pages/AdminCampaigns.tsx"),
+      read("client/src/pages/Admin.tsx"),
       read("client/src/components/marketing/app/TheMarketingApp.tsx"),
       read("client/src/components/marketing/app/studio/StudioHome.tsx"),
       read("client/src/components/marketing/app/studio/StudioWorkbench.tsx"),
