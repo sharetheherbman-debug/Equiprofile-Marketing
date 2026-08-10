@@ -9,6 +9,7 @@ import * as email from "./email";
 import { ENV } from "./env";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./cookies";
+import { isTrustedCookieWrite } from "./requestSecurity";
 
 /** Hours before a verification token expires */
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
@@ -62,6 +63,17 @@ function setSessionCookie(
 }
 
 const router: Router = express.Router();
+
+// Cookie-authenticated unsafe requests must originate from EquiProfile. Public
+// unauthenticated auth endpoints remain usable because no session cookie exists.
+router.use((req, res, next) => {
+  if (!isTrustedCookieWrite(req)) {
+    return res
+      .status(403)
+      .json({ error: "Cross-site authenticated request rejected" });
+  }
+  next();
+});
 
 // Rate limiter for signup attempts — prevents abuse and fake signups.
 const signupLimiter = rateLimit({
@@ -298,8 +310,6 @@ router.post("/login", loginLimiter, async (req, res) => {
     }
 
     if (!user.emailVerified && user.loginMethod === "email") {
-      // Preserve access for legacy users created before verification tokens were
-      // introduced, while requiring verification for all newer local accounts.
       if (!user.verificationToken) {
         try {
           await db.updateUser(user.id, { emailVerified: true });
@@ -428,8 +438,6 @@ router.post("/reset-password", async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const passwordChangedAt = new Date();
 
-    // Updating passwordChangedAt invalidates every session issued before this
-    // reset. The SDK compares it with the JWT issuance time server-side.
     await db.updateUser(user.id, {
       passwordHash,
       passwordChangedAt,
@@ -632,8 +640,6 @@ router.post("/change-password", async (req, res) => {
       passwordChangedAt,
     });
 
-    // Credential changes deliberately invalidate all existing sessions,
-    // including this one. The user signs in again with the new password.
     res.clearCookie(COOKIE_NAME, getSessionCookieOptions(req));
     res.json({
       success: true,
