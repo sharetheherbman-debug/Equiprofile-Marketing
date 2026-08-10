@@ -33,7 +33,9 @@ describe("EquiProfile release access boundary", () => {
     ]) {
       const routeIndex = managementApp.indexOf(`<Route path=\"${route}\">`);
       expect(routeIndex, `${route} route missing`).toBeGreaterThan(-1);
-      const routeBlock = managementApp.slice(routeIndex, routeIndex + 260);
+      const routeEnd = managementApp.indexOf("</Route>", routeIndex);
+      expect(routeEnd, `${route} route closing tag missing`).toBeGreaterThan(routeIndex);
+      const routeBlock = managementApp.slice(routeIndex, routeEnd + "</Route>".length);
       expect(routeBlock, `${route} must use StableRoute`).toContain("<StableRoute>");
       expect(routeBlock, `${route} must not fall back to ProtectedRoute`).not.toContain(
         "<ProtectedRoute>",
@@ -45,7 +47,9 @@ describe("EquiProfile release access boundary", () => {
     for (const route of ["/admin", "/qa-check"]) {
       const routeIndex = managementApp.indexOf(`<Route path=\"${route}\">`);
       expect(routeIndex, `${route} route missing`).toBeGreaterThan(-1);
-      const routeBlock = managementApp.slice(routeIndex, routeIndex + 220);
+      const routeEnd = managementApp.indexOf("</Route>", routeIndex);
+      expect(routeEnd, `${route} route closing tag missing`).toBeGreaterThan(routeIndex);
+      const routeBlock = managementApp.slice(routeIndex, routeEnd + "</Route>".length);
       expect(routeBlock).toContain("<ProtectedRoute requireAdmin>");
     }
   });
