@@ -6,7 +6,11 @@ const connector = readFileSync(
   resolve(process.cwd(), "server/marketingConnector.ts"),
   "utf8",
 );
-const adminLauncher = readFileSync(
+const adminWrapper = readFileSync(
+  resolve(process.cwd(), "client/src/pages/AdminEnvironmentSafe.tsx"),
+  "utf8",
+);
+const legacyMarketingSection = readFileSync(
   resolve(process.cwd(), "client/src/pages/AdminCampaigns.tsx"),
   "utf8",
 );
@@ -21,13 +25,14 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(connector).toContain('context.user.role !== "admin"');
     expect(connector).toContain("signedInEmail !== ownerEmail");
     expect(connector).toContain("EquiProfile owner access required");
+    expect(connector).toContain("isTrustedCookieWrite(req)");
   });
 
-  it("keeps Marketing as a hidden owner operational tool, not a customer feature", () => {
-    expect(adminLauncher).toContain("Owner administration");
-    expect(adminLauncher).toContain("not part of the customer dashboard or subscription feature set");
-    expect(adminLauncher).toContain("<MarketingConnectionCard />");
-    expect(adminLauncher).not.toContain("TheMarketingApp");
+  it("keeps the only standalone Marketing launcher in the hidden admin wrapper", () => {
+    expect(adminWrapper).toContain("<MarketingConnectionCard />");
+    expect(legacyMarketingSection).not.toContain("MarketingConnectionCard");
+    expect(legacyMarketingSection).not.toContain("TheMarketingApp");
+    expect(legacyMarketingSection).toContain("Embedded Marketing retired");
   });
 
   it("does not render the Marketing launcher for non-owner admins", () => {
