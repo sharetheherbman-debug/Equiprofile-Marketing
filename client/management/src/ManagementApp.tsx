@@ -95,7 +95,7 @@ const Competitions = lazy(() => import("@/pages/Competitions"));
 const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
-const DashboardV2 = lazy(() => import("@/v2/pages/DashboardV2"));
+const DashboardV2 = lazy(() => import("@/v2/pages/ManagementDashboardV2"));
 const StableDashboardV2 = lazy(() => import("@/v2/pages/StableDashboardV2"));
 
 // Minimal spinner shown while lazy chunks load (doesn't block FCP)
