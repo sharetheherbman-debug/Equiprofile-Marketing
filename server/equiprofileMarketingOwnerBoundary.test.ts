@@ -6,6 +6,10 @@ const connector = readFileSync(
   resolve(process.cwd(), "server/marketingConnector.ts"),
   "utf8",
 );
+const managementApp = readFileSync(
+  resolve(process.cwd(), "client/management/src/ManagementApp.tsx"),
+  "utf8",
+);
 const adminWrapper = readFileSync(
   resolve(process.cwd(), "client/src/pages/AdminEnvironmentSafe.tsx"),
   "utf8",
@@ -28,8 +32,13 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(connector).toContain("isTrustedCookieWrite(req)");
   });
 
-  it("keeps the only standalone Marketing launcher in the hidden admin wrapper", () => {
+  it("routes the hidden admin page through the owner-safe wrapper", () => {
+    expect(managementApp).toContain('import("@/pages/AdminEnvironmentSafe")');
     expect(adminWrapper).toContain("<MarketingConnectionCard />");
+    expect(adminWrapper).toContain('[role=\"menuitem\"]:has(.lucide-mail)');
+  });
+
+  it("keeps the old embedded Marketing section non-executable and without a launcher", () => {
     expect(legacyMarketingSection).not.toContain("MarketingConnectionCard");
     expect(legacyMarketingSection).not.toContain("TheMarketingApp");
     expect(legacyMarketingSection).toContain("Embedded Marketing retired");
