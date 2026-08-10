@@ -297,7 +297,13 @@ class SDKServer {
         if (typeof session.issuedAt !== "number") {
           throw ForbiddenError("Your session has expired. Please log in again.");
         }
-        if (user.passwordChangedAt > new Date(session.issuedAt * 1000)) {
+        // JWT iat is second-precision while MySQL/JS timestamps may contain
+        // milliseconds. Compare at the same precision so a fresh login in the
+        // same second as a password change is not immediately rejected.
+        const passwordChangedAtSeconds = Math.floor(
+          user.passwordChangedAt.getTime() / 1000,
+        );
+        if (passwordChangedAtSeconds > session.issuedAt) {
           throw ForbiddenError("Your session has expired. Please log in again.");
         }
       }
