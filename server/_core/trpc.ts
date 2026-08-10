@@ -68,7 +68,6 @@ const EXPLICIT_EMBEDDED_MARKETING_WRITES = new Set([
   "testMarketingProviderTaskRoute",
   "connectMarketingPlatform",
   "permanentDeleteMediaAsset",
-  "saveAIProviderSettings",
 ]);
 
 function isEmbeddedMarketingWrite(path: string): boolean {
@@ -108,8 +107,6 @@ const requireUser = t.middleware(async (opts) => {
   }
 
   if (requiresStableEntitlement(path)) {
-    // Fetch fresh account data rather than trusting browser state or a cached UI
-    // decision. This is a temporary central backstop for legacy Stable routers.
     const db = await import("../db");
     const user = await db.getUserById(ctx.user.id);
     if (!user) {
@@ -137,7 +134,6 @@ const requireUser = t.middleware(async (opts) => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
-// Middleware to check trial expiration
 const checkTrialStatus = t.middleware(async (opts) => {
   const { ctx, next } = opts;
 
@@ -187,7 +183,6 @@ const checkTrialStatus = t.middleware(async (opts) => {
 
 export const activeUserProcedure = protectedProcedure.use(checkTrialStatus);
 
-// Secure admin procedure that requires both admin role AND active admin session.
 export const adminUnlockedProcedure = protectedProcedure.use(
   t.middleware(async (opts) => {
     const { ctx, next, path } = opts;
@@ -196,8 +191,6 @@ export const adminUnlockedProcedure = protectedProcedure.use(
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
 
-    // Legacy embedded Marketing is read-only during migration. The standalone
-    // application is the only location where new Marketing work may execute.
     if (isEmbeddedMarketingWrite(path)) {
       throw new TRPCError({
         code: "FORBIDDEN",
