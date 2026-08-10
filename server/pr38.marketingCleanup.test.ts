@@ -10,8 +10,10 @@ const routersSource = readFileSync(resolve(process.cwd(), "server/routers.ts"), 
 const auditDoc = readFileSync(resolve(process.cwd(), "docs/audits/PR38_MARKETING_APP_CLEANUP_AUDIT.md"), "utf8");
 
 describe("PR38 cleanup enforcement", () => {
-  it("AdminCampaigns renders TheMarketingApp only", () => {
-    expect(adminCampaigns).toContain("return <TheMarketingApp");
+  it("AdminCampaigns disables the embedded Marketing App and exposes the secure connector", () => {
+    expect(adminCampaigns).toContain("MarketingConnectionCard");
+    expect(adminCampaigns).toContain("Embedded Marketing Studio disabled");
+    expect(adminCampaigns).not.toContain("TheMarketingApp");
     expect(adminCampaigns).not.toContain("MarketingStudioV2");
   });
 
