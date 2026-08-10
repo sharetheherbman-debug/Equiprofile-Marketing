@@ -18,6 +18,10 @@ const cookies = readFileSync(
   resolve(process.cwd(), "server/_core/cookies.ts"),
   "utf8",
 );
+const requestSecurity = readFileSync(
+  resolve(process.cwd(), "server/_core/requestSecurity.ts"),
+  "utf8",
+);
 
 describe("EquiProfile authentication hardening boundary", () => {
   it("issues timestamped 30-day local sessions", () => {
@@ -42,6 +46,14 @@ describe("EquiProfile authentication hardening boundary", () => {
 
   it("rejects inactive or suspended accounts even with a valid cookie", () => {
     expect(sdk).toContain("!user.isActive || user.isSuspended");
+  });
+
+  it("enforces same-origin policy on cookie-authenticated auth writes", () => {
+    expect(authRouter).toContain('import { isTrustedCookieWrite } from "./requestSecurity"');
+    expect(authRouter).toContain("if (!isTrustedCookieWrite(req))");
+    expect(authRouter).toContain("Cross-site authenticated request rejected");
+    expect(requestSecurity).toContain("EQUIPROFILE_TRUSTED_ORIGINS");
+    expect(requestSecurity).toContain("hasSessionCookie(req)");
   });
 
   it("retains rate limiting, secure cookie flags and production secret validation", () => {
