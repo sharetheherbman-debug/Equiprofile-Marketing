@@ -1,27 +1,28 @@
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { describe, expect, it } from "vitest";
 
 const adminPage = readFileSync(resolve(process.cwd(), "client/src/pages/Admin.tsx"), "utf8");
-const adminCampaigns = readFileSync(resolve(process.cwd(), "client/src/pages/AdminCampaigns.tsx"), "utf8");
 const adminWrapper = readFileSync(resolve(process.cwd(), "client/src/pages/AdminEnvironmentSafe.tsx"), "utf8");
+const adminCampaignsPath = resolve(process.cwd(), "client/src/pages/AdminCampaigns.tsx");
 const marketingApp = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/TheMarketingApp.tsx"), "utf8");
 const marketingSettings = readFileSync(resolve(process.cwd(), "client/src/components/marketing/app/MarketingAppSettings.tsx"), "utf8");
 const routersSource = readFileSync(resolve(process.cwd(), "server/routers.ts"), "utf8");
 const auditDoc = readFileSync(resolve(process.cwd(), "docs/audits/PR38_MARKETING_APP_CLEANUP_AUDIT.md"), "utf8");
 
 describe("PR38 cleanup enforcement", () => {
-  it("keeps the standalone Marketing launcher only in hidden admin", () => {
+  it("keeps the standalone Marketing launcher only in hidden admin and removes the embedded admin section", () => {
     expect(adminWrapper).toContain("<MarketingConnectionCard />");
-    expect(adminCampaigns).toContain("Embedded Marketing retired");
-    expect(adminCampaigns).not.toContain("MarketingConnectionCard");
-    expect(adminCampaigns).not.toContain("TheMarketingApp");
-    expect(adminCampaigns).not.toContain("MarketingStudioV2");
+    expect(existsSync(adminCampaignsPath)).toBe(false);
+    expect(adminPage).not.toContain("AdminCampaigns");
+    expect(adminPage).not.toContain("Marketing Studio");
+    expect(adminPage).not.toContain('value: "campaigns"');
+    expect(adminPage).not.toContain('activeSection === "campaigns"');
   });
 
-  it("active routes do not import MarketingStudioV2", () => {
+  it("active EquiProfile admin routes do not import MarketingStudioV2 or AdminCampaigns", () => {
     expect(adminPage).not.toContain("MarketingStudioV2");
-    expect(adminCampaigns).not.toContain("MarketingStudioV2");
+    expect(adminPage).not.toContain("AdminCampaigns");
   });
 
   it("TheMarketingApp does not import quarantined old studio UI components", () => {
