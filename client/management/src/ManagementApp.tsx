@@ -20,7 +20,7 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { getUIVersion } from "@/config/uiVersion";
 
-// Management Marketing Pages
+// Public EquiProfile product pages
 import MgmtHome from "@/pages/management/Home";
 import MgmtFeatures from "@/pages/management/Features";
 import MgmtPricing from "@/pages/management/Pricing";
@@ -29,7 +29,6 @@ import MgmtContact from "@/pages/management/Contact";
 import StableLanding from "@/pages/management/StableLanding";
 import SchoolLanding from "@/pages/management/SchoolLanding";
 import AcademyLanding from "@/pages/management/AcademyLanding";
-import AIMarketingLanding from "@/pages/management/AIMarketingLanding";
 import AIOperationsLanding from "@/pages/management/AIOperationsLanding";
 
 // Shared public pages wrapped in ManagementLayout
@@ -142,7 +141,7 @@ function ManagementRouter() {
       <main id="main-content">
         <Suspense fallback={<PageSpinner />}>
           <Switch>
-            {/* Marketing Pages (Public) — management site */}
+            {/* Public EquiProfile product pages */}
             <Route path="/" component={MgmtHome} />
             <Route path="/features" component={MgmtFeatures} />
             <Route path="/pricing" component={MgmtPricing} />
@@ -151,7 +150,6 @@ function ManagementRouter() {
             <Route path="/for-stables" component={StableLanding} />
             <Route path="/for-schools" component={SchoolLanding} />
             <Route path="/for-academies" component={AcademyLanding} />
-            <Route path="/ai-marketing" component={AIMarketingLanding} />
             <Route path="/ai-operations" component={AIOperationsLanding} />
             {/* Shared public pages */}
             <Route path="/terms" component={TermsPage} />
@@ -357,7 +355,6 @@ function ManagementRouter() {
                 <ActiveStableDashboard />
               </StableRoute>
             </Route>
-
             {/* Stable Staff Management */}
             <Route path="/staff">
               <StableRoute>
@@ -379,11 +376,11 @@ function ManagementRouter() {
               </StableRoute>
             </Route>
 
-            {/* Messaging */}
+            {/* Messaging — Stable team feature */}
             <Route path="/messages">
-              <ProtectedRoute>
+              <StableRoute>
                 <Messages />
-              </ProtectedRoute>
+              </StableRoute>
             </Route>
 
             {/* Analytics */}
