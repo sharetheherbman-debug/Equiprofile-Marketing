@@ -86,7 +86,6 @@ import {
   Gift,
   RotateCcw,
   Smartphone,
-  Mail,
   BarChart3,
   ChevronDown,
   FlaskConical,
@@ -99,33 +98,14 @@ import { PageHeader } from "@/components/PageHeader";
 import { useAdminViewMode, type AdminViewMode } from "@/contexts/AdminViewContext";
 import { getActivityStatus, ACTIVITY_DOT } from "@/hooks/useOnlineStatus";
 
-const AdminCampaigns = lazy(() => import("./AdminCampaigns"));
 const AdminAnalytics = lazy(() => import("./AdminAnalytics"));
 
 /* ──────────────────────────────────────────────────────────────────────────
    Admin-visible HORSE TRAINING template catalogue (READ-ONLY view)
    ─────────────────────────────────────────────────────────────────────────
-   ⚠️  TEMPLATE SYSTEM SEPARATION — READ THIS BEFORE EDITING
-   -----------------------------------------------------------
-   There are TWO completely separate template systems in this codebase:
-
-   1. HORSE TRAINING TEMPLATES (user-facing)
-      File:    client/src/pages/TrainingTemplates.tsx
-      Route:   /training-templates  (protected, for authenticated users)
-      Purpose: Pre-built equine workout/exercise plan templates that users
-               apply to their horses' training schedules.
-
-   2. EMAIL / MARKETING CAMPAIGN TEMPLATES (admin-only)
-      File:    client/src/pages/AdminCampaigns.tsx
-      Section: Admin panel → "Marketing Studio" tab
-      Purpose: Branded HTML email templates used to send marketing campaigns
-               to leads, trial users, paid users, and schools.
-      Server:  server/_core/emailTemplates.ts
-
-   The READ-ONLY catalogue below (lines ~109 onwards) mirrors the
-   PREDESIGNED_TEMPLATES from TrainingTemplates.tsx so the admin can
-   browse and validate horse training content. It is NOT related to
-   AdminCampaigns.tsx email templates.
+   This catalogue mirrors the user-facing horse training templates from
+   TrainingTemplates.tsx so administrators can browse and validate equine
+   training content. It is unrelated to the standalone owner Marketing app.
    ────────────────────────────────────────────────────────────────────────── */
 
 function hasUserFreeAccess(user: { preferences?: string | null }): boolean {
@@ -158,14 +138,13 @@ function getUserPlanTier(user: { preferences?: string | null }): "standard" | "s
   }
 }
 
-type AdminSection = "users" | "overdue" | "churn" | "leads" | "campaigns" | "whatsapp" | "system" | "settings" | "analytics" | "deleted" | "portals";
+type AdminSection = "users" | "overdue" | "churn" | "leads" | "whatsapp" | "system" | "settings" | "analytics" | "deleted" | "portals";
 
 const adminSections: { value: AdminSection; label: string; icon: typeof Users; group: string }[] = [
   { value: "users", label: "Users", icon: Users, group: "People" },
   { value: "overdue", label: "Overdue", icon: AlertCircle, group: "People" },
   { value: "churn", label: "Churn", icon: Activity, group: "People" },
   { value: "leads", label: "Leads", icon: MessageSquare, group: "Communications" },
-  { value: "campaigns", label: "Marketing Studio", icon: Mail, group: "Communications" },
   { value: "whatsapp", label: "WhatsApp", icon: Smartphone, group: "Communications" },
   { value: "system", label: "System", icon: Server, group: "System" },
   { value: "settings", label: "Settings", icon: Settings, group: "System" },
@@ -478,20 +457,6 @@ function AdminContent() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
-
-  if (activeSection === "campaigns") {
-    return (
-      <Suspense
-        fallback={
-          <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
-        }
-      >
-        <AdminCampaigns onBackToAdmin={() => setActiveSection("users")} />
-      </Suspense>
-    );
-  }
 
   return (
     <div className="space-y-5">
@@ -1948,7 +1913,7 @@ function AdminContent() {
                       setWhatsappForm({
                         ...whatsappForm,
                         accountSid: e.target.value,
-                      })
+                      }))
                     }
                   />
                   <p className="text-xs text-muted-foreground">
@@ -1971,7 +1936,7 @@ function AdminContent() {
                       setWhatsappForm({
                         ...whatsappForm,
                         authToken: e.target.value,
-                      })
+                      }))
                     }
                   />
                   <p className="text-xs text-muted-foreground">
@@ -1989,7 +1954,7 @@ function AdminContent() {
                       setWhatsappForm({
                         ...whatsappForm,
                         fromNumber: e.target.value,
-                      })
+                      }))
                     }
                   />
                   <p className="text-xs text-muted-foreground">
