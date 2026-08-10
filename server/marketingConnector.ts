@@ -30,12 +30,17 @@ const connectorRuntime = globalThis as typeof globalThis & {
   __equiprofileMarketingLastScanAt?: Date;
 };
 
+function envFlagEnabled(value: string | undefined): boolean {
+  return /^(1|true|yes|on)$/i.test(String(value || "").trim());
+}
+
 function config() {
   const appUrl = (
     process.env.MARKETING_APP_URL ||
     "https://marketing.equiprofile.online"
   ).replace(/\/$/, "");
   return {
+    enabled: envFlagEnabled(process.env.MARKETING_CONNECTOR_ENABLED),
     appUrl,
     apiUrl: (process.env.MARKETING_API_URL || `${appUrl}/api/v1`).replace(
       /\/$/,
@@ -102,7 +107,9 @@ async function signedPost<T>(path: string, body: unknown): Promise<T> {
 export function isMarketingConnectorConfigured(): boolean {
   const current = config();
   return (
-    current.connectorKey.length >= 32 && current.apiUrl.startsWith("https://")
+    current.enabled &&
+    current.connectorKey.length >= 32 &&
+    current.apiUrl.startsWith("https://")
   );
 }
 
@@ -279,6 +286,7 @@ export function registerMarketingConnectorRoutes(router: Router): void {
       if (!user) return;
       const current = config();
       res.json({
+        enabled: current.enabled,
         configured: isMarketingConnectorConfigured(),
         applicationId: current.applicationId,
         marketingUrl: current.appUrl,
@@ -300,6 +308,11 @@ export function registerMarketingConnectorRoutes(router: Router): void {
     try {
       const user = await requireOwner(req, res);
       if (!user) return;
+      if (!isMarketingConnectorConfigured()) {
+        return res.status(503).json({
+          error: "EquiProfile Marketing connector is disabled or not configured",
+        });
+      }
       if (!user.email) {
         return res.status(400).json({
           error: "The owner account requires an email address",
