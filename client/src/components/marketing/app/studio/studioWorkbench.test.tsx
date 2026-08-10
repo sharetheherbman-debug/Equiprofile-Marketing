@@ -547,11 +547,16 @@ describe("Phase 7 — Academy guard", () => {
     }
   });
 
-  it("AdminCampaigns does not import MarketingStudioV2", () => {
-    const source = fs.readFileSync(
-      path.join(repoRoot, "client/src/pages/AdminCampaigns.tsx"),
+  it("retired AdminCampaigns source is physically removed", () => {
+    const retiredPath = path.join(repoRoot, "client/src/pages/AdminCampaigns.tsx");
+    expect(fs.existsSync(retiredPath)).toBe(false);
+
+    const adminSource = fs.readFileSync(
+      path.join(repoRoot, "client/src/pages/Admin.tsx"),
       "utf8",
     );
-    expect(source).not.toContain("MarketingStudioV2");
+    expect(adminSource).not.toContain("AdminCampaigns");
+    expect(adminSource).not.toContain("MarketingStudioV2");
+    expect(adminSource).not.toContain("Marketing Studio");
   });
 });
