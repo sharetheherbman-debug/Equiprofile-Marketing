@@ -3,6 +3,7 @@ import type { Router, Request, Response } from "express";
 import { gte, or } from "drizzle-orm";
 import { users } from "../drizzle/schema";
 import { createContext } from "./_core/context";
+import { isTrustedCookieWrite } from "./_core/requestSecurity";
 import { getDb } from "./db";
 
 interface ConnectorResponse<T> {
@@ -241,6 +242,11 @@ function startMarketingConversionSync(): void {
 }
 
 async function requireOwner(req: Request, res: Response) {
+  if (!isTrustedCookieWrite(req)) {
+    res.status(403).json({ error: "Cross-site authenticated request rejected" });
+    return null;
+  }
+
   const context = await createContext({ req, res } as never);
   if (!context.user || context.user.role !== "admin") {
     res.status(403).json({ error: "Owner access required" });
