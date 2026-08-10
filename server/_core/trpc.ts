@@ -10,11 +10,56 @@ const t = initTRPC.context<TrpcContext>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
+/**
+ * Legacy routers that are presented exclusively as Stable-plan features but
+ * historically used protectedProcedure rather than stablePlanProcedure.
+ * Enforce these namespaces centrally so direct tRPC calls cannot bypass the
+ * dashboard entitlement boundary while the oversized routers file is split.
+ */
+const STABLE_ONLY_PROCEDURE_PREFIXES = [
+  "lessonBookings.",
+  "trainerAvailability.",
+] as const;
+
+function requiresStableEntitlement(path: string): boolean {
+  return STABLE_ONLY_PROCEDURE_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
+function parsePreferences(raw: unknown): Record<string, unknown> {
+  if (!raw) return {};
+  if (typeof raw === "object") return raw as Record<string, unknown>;
+  if (typeof raw !== "string") return {};
+  try {
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return {};
+  }
+}
+
 const requireUser = t.middleware(async (opts) => {
-  const { ctx, next } = opts;
+  const { ctx, next, path } = opts;
 
   if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+  }
+
+  if (requiresStableEntitlement(path)) {
+    // Fetch fresh account data rather than trusting browser state or a cached UI
+    // decision. This is a temporary central backstop for legacy Stable routers.
+    const db = await import("../db");
+    const user = await db.getUserById(ctx.user.id);
+    if (!user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+    const prefs = parsePreferences(user.preferences);
+    const hasStableAccess =
+      prefs.planTier === "stable" || prefs.bothDashboardsUnlocked === true;
+    if (!hasStableAccess) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "This feature requires the Stable plan. Please upgrade to continue.",
+      });
+    }
   }
 
   return next({
