@@ -16,6 +16,9 @@ import {
   Crown,
   User,
   Zap,
+  GraduationCap,
+  ShoppingBag,
+  Clock3,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -167,6 +170,23 @@ const faqs: FaqItem[] = [
     a: "Of course. There are no long-term contracts. Cancel from your dashboard whenever you like and you'll retain access until the end of your current billing period.",
   },
 ];
+
+const comingSoonProducts = [
+  {
+    name: "EquiProfile Academy",
+    description:
+      "Practical equestrian learning pathways, progress tracking and expert-led resources in one connected experience.",
+    highlights: ["Guided learning pathways", "Progress and achievement tracking", "Resources for riders and yards"],
+    icon: GraduationCap,
+  },
+  {
+    name: "EquiProfile Shop",
+    description:
+      "A carefully organised place to discover useful equestrian products and services alongside your horse-management workflow.",
+    highlights: ["Curated equestrian essentials", "Connected product discovery", "A simpler owner experience"],
+    icon: ShoppingBag,
+  },
+] as const;
 
 /* ------------------------------------------------------------------ */
 /*  Sub-components                                                     */
@@ -486,6 +506,57 @@ export default function Pricing() {
                 </table>
               </div>
             </AnimatedSection>
+          </div>
+        </section>
+
+        {/* ================= CONNECTED PRODUCTS ================= */}
+        <section className="bg-[#0f1d2e] py-20 md:py-28" aria-labelledby="coming-soon-heading">
+          <div className="container mx-auto px-4">
+            <AnimatedSection className="mx-auto mb-12 max-w-3xl text-center">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#c5a55a]/25 bg-[#c5a55a]/10 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-[#e8d08a]">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                The EquiProfile experience is growing
+              </div>
+              <h2 id="coming-soon-heading" className="font-serif text-3xl font-bold text-white md:text-[42px]">
+                More ways to learn and shop are coming soon
+              </h2>
+              <p className="mt-4 text-lg leading-relaxed text-white/60">
+                Your current plan features are available as listed above. Academy and Shop are future
+                EquiProfile products and are not included or available for purchase yet.
+              </p>
+            </AnimatedSection>
+
+            <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
+              {comingSoonProducts.map((product) => (
+                <article key={product.name} className="h-full rounded-2xl border border-white/15 bg-white/[0.06] p-7 shadow-2xl shadow-black/10 backdrop-blur-sm md:p-8">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#c5a55a] to-[#e8d08a] text-[#0f1d2e] shadow-lg shadow-[#c5a55a]/15">
+                        <product.icon className="h-6 w-6" aria-hidden="true" />
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/70">
+                        <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                        Coming soon
+                      </span>
+                    </div>
+                    <h3 className="mt-6 font-serif text-2xl font-bold text-white">{product.name}</h3>
+                    <p className="mt-3 leading-relaxed text-white/60">{product.description}</p>
+                    <ul className="mt-6 space-y-3" aria-label={`${product.name} planned highlights`}>
+                      {product.highlights.map((highlight) => (
+                        <li key={highlight} className="flex items-start gap-2.5 text-sm text-white/70">
+                          <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#e8d08a]" aria-hidden="true" />
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                    <span
+                      aria-disabled="true"
+                      className="mt-7 inline-flex w-full cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/45"
+                    >
+                      Not available yet
+                    </span>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
