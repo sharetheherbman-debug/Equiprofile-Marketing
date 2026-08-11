@@ -91,3 +91,12 @@ No destructive deletion of embedded marketing code or tables occurs until:
 5. production smoke tests pass
 
 This document is the binding Phase 1 implementation scope unless explicitly revised.
+
+## Release-candidate completion update — 11 August 2026
+
+- The protected Phase 1 branch remains the release source; production and `main` were not changed.
+- Pro/Stable customer boundaries, hidden exact-owner administration, disabled embedded Marketing execution, signed one-use SSO and consent-safe conversion delivery are covered by the full automated suite.
+- Regression tests now normalize line endings so the same security assertions run reliably on Windows and Linux.
+- Runtime dependencies with critical/high production advisories were upgraded and revalidated. The production-only audit has no critical/high findings; two moderate `exceljs`/nested `uuid` advisories remain and require a deliberate spreadsheet-library migration rather than a release-breaking downgrade.
+- Management stays operational when standalone Marketing is unavailable. The connector remains disabled until the controlled join step.
+- Remaining gates are operational: production backup/restore evidence, migration dry run, reverse-proxy/VPS validation, deployed browser acceptance, connector activation and combined acceptance.
