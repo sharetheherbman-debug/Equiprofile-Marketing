@@ -9,7 +9,7 @@ const trpcCore = readFileSync(
 const routers = readFileSync(
   resolve(process.cwd(), "server/routers.ts"),
   "utf8",
-);
+).replace(/\r\n/g, "\n");
 
 describe("EquiProfile Stable server entitlement boundary", () => {
   it("keeps core Stable management routers on stablePlanProcedure", () => {

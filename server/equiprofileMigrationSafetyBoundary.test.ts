@@ -5,12 +5,12 @@ import { describe, expect, it } from "vitest";
 const migrateScript = readFileSync(
   resolve(process.cwd(), "scripts/migrate.sh"),
   "utf8",
-);
+).replace(/\r\n/g, "\n");
 
 const envOnlyMigration = readFileSync(
   resolve(process.cwd(), "drizzle/0013_environment_only_runtime_secrets.sql"),
   "utf8",
-);
+).replace(/\r\n/g, "\n");
 
 describe("EquiProfile production migration safety boundary", () => {
   it("supports a truly read-only production preflight", () => {

@@ -9,7 +9,7 @@ const uiVersion = readFileSync(
 const managementApp = readFileSync(
   resolve(process.cwd(), "client/management/src/ManagementApp.tsx"),
   "utf8",
-);
+).replace(/\r\n/g, "\n");
 const managementV2Gate = readFileSync(
   resolve(process.cwd(), "client/src/v2/pages/ManagementDashboardV2.tsx"),
   "utf8",
