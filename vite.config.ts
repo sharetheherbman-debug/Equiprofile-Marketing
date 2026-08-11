@@ -39,7 +39,6 @@ import path from "path";
 import { defineConfig, Plugin, loadEnv } from "vite";
 
 // ── Site target ────────────────────────────────────────────────────────────
-// Which frontend to build. Set via VITE_SITE env var.
 const SITE_TARGET = (process.env.VITE_SITE || "management") as
   | "management"
   | "school";
@@ -104,6 +103,15 @@ function injectServiceWorkerVersion(pwaEnabled: boolean): Plugin {
 
 // ── Shared config ──────────────────────────────────────────────────────────
 const sharedAlias = {
+  // Exact alias must precede the broad @ alias. It preserves the legacy admin
+  // console while removing browser credential forms during the Phase 1 split.
+  "@/pages/Admin": path.resolve(
+    import.meta.dirname,
+    "client",
+    "src",
+    "pages",
+    "AdminEnvironmentSafe.tsx",
+  ),
   "@": path.resolve(import.meta.dirname, "client", "src"),
   "@shared": path.resolve(import.meta.dirname, "shared"),
   "@assets": path.resolve(import.meta.dirname, "attached_assets"),
@@ -114,7 +122,6 @@ const sharedAlias = {
 };
 
 const sharedManualChunks = (id: string) => {
-  // PDF/export (rarely used, lazy-loaded)
   if (
     id.includes("node_modules/jspdf") ||
     id.includes("node_modules/html2canvas") ||
@@ -122,7 +129,6 @@ const sharedManualChunks = (id: string) => {
   ) {
     return "export-utils";
   }
-  // tsParticles (heavy, optional)
   if (
     id.includes("node_modules/@tsparticles") ||
     id.includes("node_modules/tsparticles")
@@ -153,10 +159,6 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: path.resolve(import.meta.dirname, "dist", "public", SITE_TARGET),
-      // Each frontend gets its own asset directory name so their URL paths never
-      // overlap.  Management HTML references /management-assets/..., school HTML
-      // references /school-assets/...  This eliminates any possibility of cross-
-      // site asset collisions without requiring a post-build merge step.
       assetsDir: `${SITE_TARGET}-assets`,
       emptyOutDir: true,
       commonjsOptions: {
@@ -172,8 +174,6 @@ export default defineConfig(({ mode }) => {
       host: true,
       allowedHosts: [".equiprofile.online", "localhost", "127.0.0.1"],
       fs: {
-        // Allow reading from parent directories since site roots reference
-        // shared code in client/src/ via @/ alias
         strict: false,
         deny: ["**/.*"],
       },

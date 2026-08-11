@@ -16,12 +16,16 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     expect(fs.existsSync(path.join(repoRoot, "docs/audits/PR53_FINAL_BACKEND_SOURCE_OF_TRUTH_AUDIT.md"))).toBe(true);
   });
 
-  it("keeps one active Marketing App route chain", () => {
-    const adminCampaigns = read("client/src/pages/AdminCampaigns.tsx");
+  it("keeps legacy Marketing source migration-only and the launcher only in hidden admin", () => {
+    const adminPage = read("client/src/pages/Admin.tsx");
+    const adminWrapper = read("client/src/pages/AdminEnvironmentSafe.tsx");
     const appShell = read("client/src/components/marketing/app/TheMarketingApp.tsx");
     const studioHome = read("client/src/components/marketing/app/studio/StudioHome.tsx");
 
-    expect(adminCampaigns).toContain("TheMarketingApp");
+    expect(fs.existsSync(path.join(repoRoot, "client/src/pages/AdminCampaigns.tsx"))).toBe(false);
+    expect(adminPage).not.toContain("AdminCampaigns");
+    expect(adminPage).not.toContain("Marketing Studio");
+    expect(adminWrapper).toContain("<MarketingConnectionCard />");
     expect(appShell).toContain("<MarketingWorkspaceShell");
     expect(studioHome).toContain("StudioWorkbench");
   });
@@ -39,7 +43,7 @@ describe("PR53 final backend/source-of-truth hardening", () => {
 
   it("active route files do not import quarantined legacy layers", () => {
     const activeSources = [
-      read("client/src/pages/AdminCampaigns.tsx"),
+      read("client/src/pages/Admin.tsx"),
       read("client/src/components/marketing/app/TheMarketingApp.tsx"),
       read("client/src/components/marketing/app/studio/StudioHome.tsx"),
       read("client/src/components/marketing/app/studio/StudioWorkbench.tsx"),
@@ -65,7 +69,6 @@ describe("PR53 final backend/source-of-truth hardening", () => {
     ]) {
       expect(source).toContain(hookName);
     }
-    // PR61 command-centre frontend is larger but should remain UI-only and avoid backend engine code.
     expect(lineCount).toBeLessThan(2400);
     expect(source).not.toContain("from \"server/");
     expect(source).not.toContain("ffmpeg -");

@@ -9,9 +9,11 @@ import * as email from "./email";
 import { ENV } from "./env";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./cookies";
+import { isTrustedCookieWrite } from "./requestSecurity";
 
 /** Hours before a verification token expires */
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
+const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Extract plan-related flags from a JSON preferences string. */
 function extractPlanInfo(preferences: string | null | undefined): {
@@ -20,7 +22,12 @@ function extractPlanInfo(preferences: string | null | undefined): {
   bothDashboardsUnlocked: boolean;
   needsOnboarding: boolean;
 } {
-  const emptyPlanInfo = { planTier: null, freeAccess: false, bothDashboardsUnlocked: false, needsOnboarding: true } as const;
+  const emptyPlanInfo = {
+    planTier: null,
+    freeAccess: false,
+    bothDashboardsUnlocked: false,
+    needsOnboarding: true,
+  } as const;
   if (!preferences) return emptyPlanInfo;
   try {
     const prefs = JSON.parse(preferences);
@@ -36,15 +43,46 @@ function extractPlanInfo(preferences: string | null | undefined): {
   }
 }
 
+async function createLocalSessionToken(userId: number): Promise<string> {
+  return new SignJWT({ userId })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setIssuedAt()
+    .setExpirationTime("30d")
+    .sign(new TextEncoder().encode(ENV.cookieSecret));
+}
+
+function setSessionCookie(
+  req: express.Request,
+  res: express.Response,
+  token: string,
+) {
+  res.cookie(COOKIE_NAME, token, {
+    ...getSessionCookieOptions(req),
+    maxAge: SESSION_MAX_AGE_MS,
+  });
+}
+
 const router: Router = express.Router();
+
+// Cookie-authenticated unsafe requests must originate from EquiProfile. Public
+// unauthenticated auth endpoints remain usable because no session cookie exists.
+router.use((req, res, next) => {
+  if (!isTrustedCookieWrite(req)) {
+    return res
+      .status(403)
+      .json({ error: "Cross-site authenticated request rejected" });
+  }
+  next();
+});
 
 // Rate limiter for signup attempts — prevents abuse and fake signups.
 const signupLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 10,
   message: {
     error: "Too many requests",
-    message: "Too many signup attempts from this IP, please try again in 15 minutes.",
+    message:
+      "Too many signup attempts from this IP, please try again in 15 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -55,7 +93,7 @@ const signupLimiter = rateLimit({
 
 // Rate limiter for verification resend — prevents email abuse.
 const resendLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 5,
   message: {
     error: "Too many requests",
@@ -68,33 +106,30 @@ const resendLimiter = rateLimit({
   },
 });
 
-// Rate limiter for login attempts — limits failed login attempts per IP.
-// skipSuccessfulRequests: true means only failed attempts count toward the limit.
-// Window of 15 min with max 30 failed attempts is permissive enough for shared
-// networks (offices, mobile carriers with NAT) while still blocking brute-force.
+// Only failed login attempts count toward the IP limit.
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 30,
   message: {
     error: "Too many requests",
-    message: "Too many login attempts from this IP, please try again in 15 minutes.",
+    message:
+      "Too many login attempts from this IP, please try again in 15 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: true, // Don't count successful logins
+  skipSuccessfulRequests: true,
   handler: (req, res, _next, options) => {
     res.status(options.statusCode).json(options.message);
   },
 });
 
-// Stricter rate limiter for password reset requests — prevents email enumeration
-// and abuse of email sending. 5 requests per 15 minutes per IP.
 const passwordResetLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 5,
   message: {
     error: "Too many requests",
-    message: "Too many password reset requests. Please try again in 15 minutes.",
+    message:
+      "Too many password reset requests. Please try again in 15 minutes.",
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -103,21 +138,15 @@ const passwordResetLimiter = rateLimit({
   },
 });
 
-/**
- * POST /api/auth/signup
- * Create a new user account with email/password.
- * Account starts as unverified — a verification email is sent.
- */
+/** POST /api/auth/signup */
 router.post("/signup", signupLimiter, async (req, res) => {
   try {
     const { email: rawEmail, password, name, planType } = req.body;
 
-    // Validation
     if (!rawEmail || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Normalise email to lowercase for consistent matching
     const userEmail = rawEmail.trim().toLowerCase();
 
     if (password.length < 8) {
@@ -126,24 +155,30 @@ router.post("/signup", signupLimiter, async (req, res) => {
         .json({ error: "Password must be at least 8 characters" });
     }
 
-    // Check if user already exists
     const existingUser = await db.getUserByEmail(userEmail);
 
     if (existingUser) {
-      // If user exists but is unverified, allow re-sending verification
-      if (existingUser.emailVerified === false && existingUser.loginMethod === "email") {
+      if (
+        existingUser.emailVerified === false &&
+        existingUser.loginMethod === "email"
+      ) {
         const verificationToken = nanoid(32);
         const verificationTokenExpiry = new Date();
-        verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
+        verificationTokenExpiry.setHours(
+          verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS,
+        );
 
         await db.updateUser(existingUser.id, {
           verificationToken,
           verificationTokenExpiry,
         } as any);
 
-        // Send verification email (async, don't wait)
         email
-          .sendVerificationEmail(userEmail, verificationToken, existingUser.name || undefined)
+          .sendVerificationEmail(
+            userEmail,
+            verificationToken,
+            existingUser.name || undefined,
+          )
           .catch((err) =>
             console.error("[Auth] Failed to send verification email:", err),
           );
@@ -151,24 +186,21 @@ router.post("/signup", signupLimiter, async (req, res) => {
         return res.json({
           success: true,
           requiresVerification: true,
-          message: "A verification email has been sent. Please check your inbox.",
+          message:
+            "A verification email has been sent. Please check your inbox.",
         });
       }
       return res.status(400).json({ error: "Email already registered" });
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
-
-    // Generate unique openId for local auth users
     const openId = `local_${nanoid(16)}`;
-
-    // Generate verification token
     const verificationToken = nanoid(32);
     const verificationTokenExpiry = new Date();
-    verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS); // 24 hour expiry
+    verificationTokenExpiry.setHours(
+      verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS,
+    );
 
-    // Create user with trial period — starts as unverified
     const trialEnd = new Date();
     trialEnd.setDate(trialEnd.getDate() + 7);
 
@@ -184,23 +216,29 @@ router.post("/signup", signupLimiter, async (req, res) => {
       lastSignedIn: new Date(),
     });
 
-    // Get the created user
     const user = await db.getUserByOpenId(openId);
     if (!user) {
       return res.status(500).json({ error: "Failed to create user" });
     }
 
-    // Store verification token and plan type preference
     const userUpdates: Record<string, unknown> = {
       verificationToken,
       verificationTokenExpiry,
     };
 
-    // Auto-grant admin role to primary admin email
-    if (ENV.primaryAdminEmail && userEmail === ENV.primaryAdminEmail && user.role !== "admin") {
+    if (
+      ENV.primaryAdminEmail &&
+      userEmail === ENV.primaryAdminEmail &&
+      user.role !== "admin"
+    ) {
       userUpdates.role = "admin";
     }
-    if (planType === "stable" || planType === "normal" || planType === "standard" || planType === "student") {
+    if (
+      planType === "stable" ||
+      planType === "normal" ||
+      planType === "standard" ||
+      planType === "student"
+    ) {
       let prefs: Record<string, unknown> = {};
       if (user.preferences) {
         try {
@@ -221,14 +259,12 @@ router.post("/signup", signupLimiter, async (req, res) => {
 
     await db.updateUser(user.id, userUpdates as any);
 
-    // Send verification email (async, don't wait)
     email
       .sendVerificationEmail(userEmail, verificationToken, name || undefined)
       .catch((err) =>
         console.error("[Auth] Failed to send verification email:", err),
       );
 
-    // Do NOT auto-login — user must verify email first
     res.json({
       success: true,
       requiresVerification: true,
@@ -245,10 +281,7 @@ router.post("/signup", signupLimiter, async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/login
- * Login with email/password
- */
+/** POST /api/auth/login */
 router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { email: rawEmail, password } = req.body;
@@ -257,37 +290,26 @@ router.post("/login", loginLimiter, async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Normalise email to lowercase for consistent matching
     const userEmail = rawEmail.trim().toLowerCase();
-
-    // Find user by email
     const user = await db.getUserByEmail(userEmail);
 
     if (!user || !user.passwordHash) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Verify password
     const validPassword = await bcrypt.compare(password, user.passwordHash);
     if (!validPassword) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Check if account is suspended
-    if (user.isSuspended) {
+    if (!user.isActive || user.isSuspended) {
       return res.status(403).json({
-        error: "Account suspended",
+        error: user.isSuspended ? "Account suspended" : "Account inactive",
         reason: user.suspendedReason,
       });
     }
 
-    // Check if email is verified
     if (!user.emailVerified && user.loginMethod === "email") {
-      // Legacy users created before email verification was introduced have
-      // emailVerified = false but no verificationToken. Auto-verify them so
-      // they are never locked out of an account they've always been able to use.
-      // The update is wrapped in try/catch so a transient DB failure never
-      // causes a 500 — the user can still log in and we log the failure.
       if (!user.verificationToken) {
         try {
           await db.updateUser(user.id, { emailVerified: true });
@@ -299,33 +321,27 @@ router.post("/login", loginLimiter, async (req, res) => {
           error: "Email not verified",
           requiresVerification: true,
           email: user.email,
-          message: "Please verify your email address before signing in. Check your inbox for the verification link.",
+          message:
+            "Please verify your email address before signing in. Check your inbox for the verification link.",
         });
       }
     }
 
-    // Update last signed in
     await db.updateUser(user.id, { lastSignedIn: new Date() });
 
-    // Auto-grant admin role to primary admin email if not already set
-    if (ENV.primaryAdminEmail && user.email === ENV.primaryAdminEmail && user.role !== "admin") {
+    if (
+      ENV.primaryAdminEmail &&
+      user.email?.toLowerCase() === ENV.primaryAdminEmail &&
+      user.role !== "admin"
+    ) {
       await db.updateUser(user.id, { role: "admin" });
     }
 
-    // Generate JWT token
-    const token = await new SignJWT({ userId: user.id })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("30d")
-      .sign(new TextEncoder().encode(ENV.cookieSecret));
+    const token = await createLocalSessionToken(user.id);
+    setSessionCookie(req, res, token);
 
-    // Set cookie — options computed from the request so secure/domain are
-    // consistent with how the tRPC logout clears it (getSessionCookieOptions).
-    res.cookie(COOKIE_NAME, token, {
-      ...getSessionCookieOptions(req),
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
-
-    const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } = extractPlanInfo(user.preferences);
+    const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } =
+      extractPlanInfo(user.preferences);
 
     res.json({
       success: true,
@@ -346,10 +362,7 @@ router.post("/login", loginLimiter, async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/request-reset
- * Request a password reset email
- */
+/** POST /api/auth/request-reset */
 router.post("/request-reset", passwordResetLimiter, async (req, res) => {
   try {
     const { email: rawEmail } = req.body;
@@ -358,13 +371,9 @@ router.post("/request-reset", passwordResetLimiter, async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
-    // Normalise email to lowercase for consistent matching
     const userEmail = rawEmail.trim().toLowerCase();
-
-    // Find user by email
     const user = await db.getUserByEmail(userEmail);
 
-    // Always return success to prevent email enumeration
     if (!user) {
       console.log(
         "[Auth] Password reset requested for non-existent email:",
@@ -376,18 +385,15 @@ router.post("/request-reset", passwordResetLimiter, async (req, res) => {
       });
     }
 
-    // Generate reset token
     const resetToken = nanoid(32);
     const resetTokenExpiry = new Date();
-    resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // 1 hour expiry
+    resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1);
 
-    // Save reset token
     await db.updateUser(user.id, {
       resetToken,
       resetTokenExpiry,
     });
 
-    // Send reset email
     await email.sendPasswordResetEmail(
       userEmail,
       resetToken,
@@ -404,10 +410,7 @@ router.post("/request-reset", passwordResetLimiter, async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/reset-password
- * Reset password with token
- */
+/** POST /api/auth/reset-password */
 router.post("/reset-password", async (req, res) => {
   try {
     const { token, password } = req.body;
@@ -422,32 +425,31 @@ router.post("/reset-password", async (req, res) => {
         .json({ error: "Password must be at least 8 characters" });
     }
 
-    // Find user by reset token (direct indexed lookup)
     const user = await db.getUserByResetToken(token);
 
     if (!user) {
       return res.status(400).json({ error: "Invalid or expired reset token" });
     }
 
-    // Check token expiry
     if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
       return res.status(400).json({ error: "Reset token has expired" });
     }
 
-    // Hash new password
     const passwordHash = await bcrypt.hash(password, 10);
+    const passwordChangedAt = new Date();
 
-    // Update user password and clear reset token
     await db.updateUser(user.id, {
       passwordHash,
+      passwordChangedAt,
       resetToken: null,
       resetTokenExpiry: null,
     });
 
+    res.clearCookie(COOKIE_NAME, getSessionCookieOptions(req));
     res.json({
       success: true,
       message:
-        "Password reset successful. You can now login with your new password.",
+        "Password reset successful. All previous sessions have been invalidated; please login with your new password.",
     });
   } catch (error) {
     console.error("[Auth] Reset password error:", error);
@@ -455,10 +457,7 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/verify-email
- * Verify email address with token
- */
+/** POST /api/auth/verify-email */
 router.post("/verify-email", async (req, res) => {
   try {
     const { token } = req.body;
@@ -467,45 +466,40 @@ router.post("/verify-email", async (req, res) => {
       return res.status(400).json({ error: "Verification token is required" });
     }
 
-    // Find user by verification token
     const user = await db.getUserByVerificationToken(token);
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid or expired verification token" });
+      return res
+        .status(400)
+        .json({ error: "Invalid or expired verification token" });
     }
 
-    // Check token expiry
-    if (!user.verificationTokenExpiry || user.verificationTokenExpiry < new Date()) {
-      return res.status(400).json({ error: "Verification token has expired. Please request a new one." });
+    if (
+      !user.verificationTokenExpiry ||
+      user.verificationTokenExpiry < new Date()
+    ) {
+      return res.status(400).json({
+        error: "Verification token has expired. Please request a new one.",
+      });
     }
 
-    // Mark email as verified and clear token
     await db.updateUser(user.id, {
       emailVerified: true,
       verificationToken: null,
       verificationTokenExpiry: null,
     } as any);
 
-    // Auto-login: generate JWT and set cookie
-    const jwtToken = await new SignJWT({ userId: user.id })
-      .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("30d")
-      .sign(new TextEncoder().encode(ENV.cookieSecret));
+    const jwtToken = await createLocalSessionToken(user.id);
+    setSessionCookie(req, res, jwtToken);
 
-    // Auto-login: generate JWT and set cookie (same options as /login for consistency)
-    res.cookie(COOKIE_NAME, jwtToken, {
-      ...getSessionCookieOptions(req),
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
-
-    // Send welcome email now that user is verified (async)
     email
       .sendWelcomeEmail(user)
       .catch((err) =>
         console.error("[Auth] Failed to send welcome email:", err),
       );
 
-    const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } = extractPlanInfo(user.preferences);
+    const { planTier, freeAccess, bothDashboardsUnlocked, needsOnboarding } =
+      extractPlanInfo(user.preferences);
 
     res.json({
       success: true,
@@ -527,10 +521,7 @@ router.post("/verify-email", async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/resend-verification
- * Resend verification email
- */
+/** POST /api/auth/resend-verification */
 router.post("/resend-verification", resendLimiter, async (req, res) => {
   try {
     const { email: rawEmail } = req.body;
@@ -542,25 +533,25 @@ router.post("/resend-verification", resendLimiter, async (req, res) => {
     const userEmail = rawEmail.trim().toLowerCase();
     const user = await db.getUserByEmail(userEmail);
 
-    // Always return success to prevent email enumeration
     if (!user || user.emailVerified) {
       return res.json({
         success: true,
-        message: "If that email needs verification, a new link has been sent.",
+        message:
+          "If that email needs verification, a new link has been sent.",
       });
     }
 
-    // Generate new verification token
     const verificationToken = nanoid(32);
     const verificationTokenExpiry = new Date();
-    verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS);
+    verificationTokenExpiry.setHours(
+      verificationTokenExpiry.getHours() + VERIFICATION_TOKEN_EXPIRY_HOURS,
+    );
 
     await db.updateUser(user.id, {
       verificationToken,
       verificationTokenExpiry,
     } as any);
 
-    // Send verification email
     await email.sendVerificationEmail(
       userEmail,
       verificationToken,
@@ -577,23 +568,13 @@ router.post("/resend-verification", resendLimiter, async (req, res) => {
   }
 });
 
-/**
- * POST /api/auth/logout
- * Logout user (clear cookie)
- */
+/** POST /api/auth/logout */
 router.post("/logout", (req, res) => {
-  // Use the same options helper so the domain/secure flags mirror exactly
-  // how the cookie was set (prevents mismatched domain from leaving the
-  // cookie alive after logout on production with COOKIE_DOMAIN set).
   res.clearCookie(COOKIE_NAME, getSessionCookieOptions(req));
   res.json({ success: true });
 });
 
-/**
- * POST /api/auth/change-password
- * Change password for the currently authenticated user.
- * Requires a valid session cookie + current password for verification.
- */
+/** POST /api/auth/change-password */
 router.post("/change-password", async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -610,7 +591,6 @@ router.post("/change-password", async (req, res) => {
         .json({ error: "New password must be at least 8 characters" });
     }
 
-    // Verify the session cookie to get the current user
     const cookieHeader = req.headers.cookie || "";
     const cookiePairs = cookieHeader.split(";").map((c) => c.trim());
     let sessionCookieValue: string | undefined;
@@ -626,7 +606,6 @@ router.post("/change-password", async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // Use SDK to authenticate
     let user;
     try {
       const { sdk } = await import("./sdk");
@@ -639,7 +618,6 @@ router.post("/change-password", async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // Verify current password
     if (!user.passwordHash) {
       return res.status(400).json({
         error:
@@ -655,11 +633,19 @@ router.post("/change-password", async (req, res) => {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    // Hash and save the new password
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
-    await db.updateUser(user.id, { passwordHash: newPasswordHash });
+    const passwordChangedAt = new Date();
+    await db.updateUser(user.id, {
+      passwordHash: newPasswordHash,
+      passwordChangedAt,
+    });
 
-    res.json({ success: true, message: "Password changed successfully" });
+    res.clearCookie(COOKIE_NAME, getSessionCookieOptions(req));
+    res.json({
+      success: true,
+      message:
+        "Password changed successfully. All previous sessions have been invalidated; please login again.",
+    });
   } catch (error) {
     console.error("[Auth] Change password error:", error);
     res.status(500).json({ error: "Internal server error" });

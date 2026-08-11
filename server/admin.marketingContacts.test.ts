@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TRPCError } from "@trpc/server";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -34,30 +35,28 @@ describe("admin marketing contacts", () => {
     vi.clearAllMocks();
   });
 
-  it("creates a marketing contact from audience add contact flow", async () => {
-    const insertValues = vi.fn(async () => [{ insertId: 1 }]);
-    const dbConn = {
-      select: () => ({
-        from: () => ({ where: vi.fn(async () => []) }),
-      }),
-      insert: () => ({ values: insertValues }),
-    } as any;
-    mocks.getDb.mockResolvedValue(dbConn);
-
+  it("rejects creation of new contacts in the legacy embedded Marketing runtime", async () => {
     const caller = appRouter.createCaller(makeAdminContext());
-    const result = await caller.admin.createMarketingContact({
-      email: "new@example.com",
-      name: "New Lead",
-      organizationName: "Stable Co",
-      source: "manual",
-      contactType: "individual",
-    });
+    const error = await caller.admin
+      .createMarketingContact({
+        email: "new@example.com",
+        name: "New Lead",
+        organizationName: "Stable Co",
+        source: "manual",
+        contactType: "individual",
+      })
+      .then(() => null)
+      .catch((caught) => caught);
 
-    expect(result).toEqual({ success: true });
-    expect(insertValues).toHaveBeenCalled();
+    expect(error).toBeInstanceOf(TRPCError);
+    expect((error as TRPCError).code).toBe("FORBIDDEN");
+    expect((error as TRPCError).message).toContain(
+      "Legacy embedded Marketing is read-only during migration",
+    );
+    expect(mocks.getDb).not.toHaveBeenCalled();
   });
 
-  it("returns suppression list rows from emailUnsubscribes + marketingContacts join", async () => {
+  it("returns suppression list rows for migration and reconciliation", async () => {
     const suppressedRows = [{
       id: 10,
       email: "blocked@example.com",

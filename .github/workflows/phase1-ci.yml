@@ -1,0 +1,48 @@
+name: EquiProfile Phase 1 CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [phase-1/equiprofile-core-relaunch]
+
+concurrency:
+  group: equiprofile-phase1-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  NODE_ENV: test
+  JWT_SECRET: phase1-ci-jwt-secret-that-is-long-enough
+  DATABASE_URL: mysql://equiprofile:test-password@127.0.0.1:3306/equiprofile_test
+  GENX_API_KEY: phase1-ci-genx-placeholder
+  GENX_BASE_URL: https://query.genx.sh
+  STRIPE_SECRET_KEY: sk_test_phase1_placeholder
+  STRIPE_WEBHOOK_SECRET: whsec_phase1_placeholder
+  SMTP_HOST: smtp.example.test
+  SMTP_PORT: '587'
+  SMTP_USER: phase1@example.test
+  SMTP_PASS: phase1-placeholder
+  SMTP_FROM: noreply@example.test
+
+jobs:
+  validate:
+    name: TypeScript and production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npm run check
+      - name: Build management, school and server targets
+        run: npm run build
+      - name: Verify expected outputs
+        run: |
+          test -f dist/index.js
+          test -f dist/public/management/index.html
+          test -f dist/public/school/index.html

@@ -17,40 +17,50 @@ vi.mock("./db", () => ({
   getDb: mocks.getDbMock,
 }));
 
-import { getRuntimeConfig, getRuntimeConfigMode, invalidateConfigCache } from "./dynamicConfig";
+import {
+  getRuntimeConfig,
+  getRuntimeConfigMode,
+  invalidateConfigCache,
+} from "./dynamicConfig";
 import { siteSettings } from "../drizzle/schema";
 
-describe("dynamicConfig provider key lookup", () => {
+describe("dynamicConfig source policy", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    mocks.selectRows.mockReset();
+    mocks.fromSpy.mockClear();
+    mocks.getDbMock.mockClear();
     invalidateConfigCache();
     delete process.env.GENX_API_KEY;
+    delete process.env.SITE_NAME;
     delete process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE;
   });
 
-  it("uses site settings before env when both are present", async () => {
+  it("uses the VPS environment and skips database reads for GenX secrets", async () => {
     process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE = "production_live";
     process.env.GENX_API_KEY = "env-genx";
     mocks.selectRows.mockResolvedValueOnce([{ value: "db-genx" }]);
 
     const value = await getRuntimeConfig("genx_api_key", "GENX_API_KEY");
 
-    expect(value).toBe("db-genx");
+    expect(value).toBe("env-genx");
+    expect(mocks.getDbMock).not.toHaveBeenCalled();
+    expect(mocks.fromSpy).not.toHaveBeenCalled();
+    expect(mocks.selectRows).not.toHaveBeenCalled();
+  });
+
+  it("still permits database-first lookup for ordinary non-secret settings", async () => {
+    process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE = "production_live";
+    process.env.SITE_NAME = "Environment name";
+    mocks.selectRows.mockResolvedValueOnce([{ value: "Database name" }]);
+
+    const value = await getRuntimeConfig("site_name", "SITE_NAME");
+
+    expect(value).toBe("Database name");
     expect(mocks.fromSpy).toHaveBeenCalledWith(siteSettings);
     expect(mocks.selectRows).toHaveBeenCalled();
   });
 
-  it("falls back to env when site setting is missing", async () => {
-    process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE = "production_live";
-    process.env.GENX_API_KEY = "env-genx";
-    mocks.selectRows.mockResolvedValueOnce([]);
-
-    const value = await getRuntimeConfig("genx_api_key", "GENX_API_KEY");
-
-    expect(value).toBe("env-genx");
-  });
-
-  it("uses unit_test_mock mode and skips DB reads in test runtime", async () => {
+  it("uses unit_test_mock mode and skips DB reads for environment-only keys", async () => {
     process.env.GENX_API_KEY = "env-genx";
 
     const value = await getRuntimeConfig("genx_api_key", "GENX_API_KEY");

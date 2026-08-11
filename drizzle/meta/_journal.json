@@ -92,6 +92,13 @@
       "when": 1743350400000,
       "tag": "0012_email_campaigns_analytics",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1786280400000,
+      "tag": "0013_environment_only_runtime_secrets",
+      "breakpoints": true
     }
   ]
 }
