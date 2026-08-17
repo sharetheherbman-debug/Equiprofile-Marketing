@@ -153,7 +153,7 @@ const adminSections: { value: AdminSection; label: string; icon: typeof Users; g
   { value: "portals", label: "Portals", icon: Eye, group: "Other" },
 ];
 
-function AdminContent() {
+export function AdminContent() {
   const [, navigate] = useLocation();
   const { viewMode, setViewMode } = useAdminViewMode();
   const [activeSection, setActiveSection] = useState<AdminSection>("users");
