@@ -148,12 +148,16 @@ const adminSections: { value: AdminSection; label: string; icon: typeof Users; g
   { value: "whatsapp", label: "WhatsApp", icon: Smartphone, group: "Communications" },
   { value: "system", label: "System", icon: Server, group: "System" },
   { value: "settings", label: "Settings", icon: Settings, group: "System" },
-  { value: "analytics", label: "Analytics", icon: BarChart3, group: "System" },
+  { value: "analytics", label: "Analytics", icon: BarChart3, group: "Insights" },
   { value: "deleted", label: "Deleted", icon: Trash2, group: "Other" },
   { value: "portals", label: "Portals", icon: Eye, group: "Other" },
 ];
 
-export function AdminContent() {
+const clientSafeAdminSections = adminSections.filter(
+  (section) => !["whatsapp", "system", "settings"].includes(section.value),
+);
+
+export function AdminContent({ clientSafe = true }: { clientSafe?: boolean }) {
   const [, navigate] = useLocation();
   const { viewMode, setViewMode } = useAdminViewMode();
   const [activeSection, setActiveSection] = useState<AdminSection>("users");
@@ -225,32 +229,32 @@ export function AdminContent() {
     { enabled: isUnlocked },
   );
   const { data: settings } = trpc.admin.getSettings.useQuery(undefined, {
-    enabled: isUnlocked,
+    enabled: isUnlocked && !clientSafe,
   });
   const siteSettingsQuery = trpc.admin.getSiteSettings.useQuery(undefined, {
-    enabled: isUnlocked,
+    enabled: isUnlocked && !clientSafe,
   });
 
   // API Key queries
   const envHealthQuery = trpc.admin.getEnvHealth.useQuery(undefined, {
-    enabled: isUnlocked,
-    refetchInterval: isUnlocked ? 30000 : false,
+    enabled: isUnlocked && !clientSafe,
+    refetchInterval: isUnlocked && !clientSafe ? 30000 : false,
   });
   const aiDiagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, {
-    enabled: isUnlocked,
-    refetchInterval: isUnlocked ? 30000 : false,
+    enabled: isUnlocked && !clientSafe,
+    refetchInterval: isUnlocked && !clientSafe ? 30000 : false,
   });
   const leadsQuery = trpc.admin.getLeads.useQuery(undefined, {
     enabled: isUnlocked,
   });
   const whatsappConfigQuery = trpc.admin.getWhatsAppConfig.useQuery(undefined, {
-    enabled: isUnlocked,
+    enabled: isUnlocked && !clientSafe,
   });
   const churnRiskQuery = trpc.admin.getChurnRisk.useQuery(undefined, {
     enabled: isUnlocked,
   });
   const docHealthQuery = trpc.admin.getDocumentHealth.useQuery(undefined, {
-    enabled: isUnlocked,
+    enabled: isUnlocked && !clientSafe,
   });
 
   // All mutations (lazy — no enabled needed)
@@ -428,6 +432,7 @@ export function AdminContent() {
       user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+  const visibleAdminSections = clientSafe ? clientSafeAdminSections : adminSections;
 
   const getSubscriptionBadge = (status: string) => {
     switch (status) {
@@ -464,8 +469,8 @@ export function AdminContent() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <PageHeader
-            title="Admin Dashboard"
-            subtitle="Monitor users, subscriptions, and system health"
+            title="Account Administration"
+            subtitle="Manage EquiProfile customers, subscriptions, and access"
           />
         </div>
       </div>
@@ -557,8 +562,9 @@ export function AdminContent() {
             <span className="text-[10px] font-bold tracking-widest uppercase text-blue-100">Control Centre</span>
           </div>
           <div className="h-4 w-px bg-white/20 mx-1 hidden sm:block shrink-0" />
-          {(["People", "Communications", "System", "Other"] as const).map((group) => {
-            const groupItems = adminSections.filter((s) => s.group === group);
+          {(["People", "Communications", "Insights", "System", "Other"] as const).map((group) => {
+            const groupItems = visibleAdminSections.filter((s) => s.group === group);
+            if (groupItems.length === 0) return null;
             const isGroupActive = groupItems.some((s) => s.value === activeSection);
             return (
               <DropdownMenu key={group}>
@@ -597,7 +603,7 @@ export function AdminContent() {
         </div>
         {/* Active section breadcrumb */}
         {(() => {
-          const active = adminSections.find((s) => s.value === activeSection);
+          const active = visibleAdminSections.find((s) => s.value === activeSection);
           if (!active) return null;
           const Icon = active.icon;
           return (
@@ -1212,7 +1218,6 @@ export function AdminContent() {
                       <TableHead>User</TableHead>
                       <TableHead>Last Payment</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1236,11 +1241,6 @@ export function AdminContent() {
                         <TableCell>
                           <Badge variant="destructive">Overdue</Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="outline" size="sm">
-                            Send Reminder
-                          </Button>
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -1250,7 +1250,7 @@ export function AdminContent() {
           </Card>
         </>)}
 
-        {activeSection === "settings" && (<>
+        {!clientSafe && activeSection === "settings" && (<>
           <div className="space-y-6">
             <Card>
               <CardHeader>
@@ -1559,7 +1559,7 @@ export function AdminContent() {
           </div>
         </>)}
 
-        {activeSection === "system" && (<>
+        {!clientSafe && activeSection === "system" && (<>
           <Card>
             <CardHeader>
               <CardTitle>Environment Health</CardTitle>
@@ -1831,7 +1831,7 @@ export function AdminContent() {
           </Card>
         </>)}
 
-        {activeSection === "whatsapp" && (<>
+        {!clientSafe && activeSection === "whatsapp" && (<>
           <div className="space-y-4">
             <Card>
               <CardHeader>
@@ -2282,7 +2282,7 @@ export function AdminContent() {
 export default function Admin() {
   return (
     <DashboardLayout>
-      <AdminContent />
+      <AdminContent clientSafe />
     </DashboardLayout>
   );
 }

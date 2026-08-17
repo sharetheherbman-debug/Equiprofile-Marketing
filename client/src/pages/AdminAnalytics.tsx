@@ -171,7 +171,7 @@ export default function AdminAnalytics() {
         <div>
           <h2 className="text-xl font-bold">Site Analytics</h2>
           <p className="text-sm text-muted-foreground">
-            Internal analytics — no external dependencies
+            Workspace activity and customer engagement
           </p>
         </div>
         <div className="flex items-center gap-2">

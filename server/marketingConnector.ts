@@ -286,15 +286,7 @@ export function registerMarketingConnectorRoutes(router: Router): void {
       if (!user) return;
       const current = config();
       res.json({
-        enabled: current.enabled,
-        configured: isMarketingConnectorConfigured(),
-        applicationId: current.applicationId,
-        marketingUrl: current.appUrl,
-        authentication: "owner-only signed one-use SSO",
-        secretLocation: "VPS environment only",
-        conversionSync: isMarketingConnectorConfigured()
-          ? "anonymous aggregate sync enabled"
-          : "disabled",
+        available: current.enabled && isMarketingConnectorConfigured(),
       });
     } catch (error) {
       console.error("[Marketing Connector] Status failed:", error);

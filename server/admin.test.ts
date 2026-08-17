@@ -257,7 +257,7 @@ describe("admin.setSiteSetting", () => {
     const caller = appRouter.createCaller(ctx);
 
     const err = await caller.admin
-      .setSiteSetting({ key: "genx_api_key", value: "genx-test" })
+      .setSiteSetting({ key: "admin_notification_email", value: "owner@example.com" })
       .catch((e) => e);
     expect(err).toBeInstanceOf(TRPCError);
     expect((err as TRPCError).code).toBe("INTERNAL_SERVER_ERROR");
@@ -285,34 +285,45 @@ describe("admin.setSiteSetting", () => {
     ).rejects.toThrow();
   });
 
-  it("rejects invalid provider base URLs", async () => {
+  it("rejects browser writes to environment-only provider configuration", async () => {
     const ctx = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
     await expect(
-      caller.admin.setSiteSetting({ key: "genx_base_url", value: "not-a-url" }),
-    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+      caller.admin.setSiteSetting({ key: "genx_base_url", value: "https://genx.example.com/v1" }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 
-  it("normalizes provider base URLs before saving", async () => {
+  it("rejects unrecognised browser settings even when they are not a known provider key", async () => {
+    const ctx = createAdminContext();
+    const caller = appRouter.createCaller(ctx);
+
+    await expect(
+      caller.admin.setSiteSetting({ key: "future_internal_toggle", value: "on" }),
+    ).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
+  it("allows ordinary non-infrastructure preferences", async () => {
     const execute = vi.fn().mockResolvedValue([]);
     vi.mocked(getDb).mockResolvedValueOnce({ execute } as any);
     const ctx = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.admin.setSiteSetting({
-      key: "genx_base_url",
-      value: "https://genx.example.com/v1/",
+      key: "admin_notification_email",
+      value: " owner@example.com ",
     });
 
-    expect(result).toEqual({ success: true, key: "genx_base_url", normalized: true });
+    expect(result).toEqual({ success: true, key: "admin_notification_email", normalized: true });
     expect(execute).toHaveBeenCalled();
   });
 
-  it("reads provider settings from the camelCase siteSettings table", async () => {
+  it("filters environment-only values out of browser-facing site settings", async () => {
     const from = vi.fn().mockResolvedValue([
       { key: "genx_api_key", value: "saved-genx-key" },
       { key: "huggingface_api_key", value: "saved-hf-key" },
+      { key: "future_internal_toggle", value: "on" },
+      { key: "admin_notification_email", value: "owner@example.com" },
     ]);
     const select = vi.fn(() => ({ from }));
     vi.mocked(getDb).mockResolvedValueOnce({ select } as any);
@@ -322,10 +333,7 @@ describe("admin.setSiteSetting", () => {
     const result = await caller.admin.getSiteSettings();
 
     expect(from).toHaveBeenCalledWith(siteSettings);
-    expect(result).toMatchObject({
-      genx_api_key: "saved-genx-key",
-      huggingface_api_key: "saved-hf-key",
-    });
+    expect(result).toEqual({ admin_notification_email: "owner@example.com" });
   });
 });
 

@@ -39,6 +39,8 @@ describe("EquiProfile owner-only Marketing boundary", () => {
   it("routes hidden admin through the owner-safe wrapper without a CSS-hidden Marketing menu", () => {
     expect(managementApp).toContain('import("@/pages/AdminEnvironmentSafe")');
     expect(adminWrapper).toContain("<MarketingConnectionCard />");
+    expect(adminWrapper).not.toContain('from "./Admin"');
+    expect(adminWrapper).not.toContain(":has(");
     expect(adminWrapper).not.toContain(".lucide-mail");
   });
 
@@ -60,5 +62,25 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(connectionCard).toContain("response.status === 403");
     expect(connectionCard).toContain("setOwnerDenied(true)");
     expect(connectionCard).toContain("if (ownerDenied) return null");
+  });
+
+  it("exposes only client-safe Marketing availability in the browser", () => {
+    expect(connectionCard).not.toContain("secretLocation");
+    expect(connectionCard).not.toContain("applicationId");
+    expect(connectionCard).not.toContain("authentication");
+    expect(connectionCard).not.toContain("VPS environment");
+    expect(connectionCard).not.toContain("Connector secret");
+    expect(connectionCard).not.toContain("GenX");
+    expect(connectionCard).not.toContain("SMTP");
+    expect(connectionCard).not.toContain("Twilio");
+  });
+
+  it("uses a dedicated client administration data contract", () => {
+    expect(adminWrapper).toContain("trpc.admin.getStats.useQuery");
+    expect(adminWrapper).toContain("trpc.admin.getUsers.useQuery");
+    expect(adminWrapper).not.toContain("getSiteSettings");
+    expect(adminWrapper).not.toContain("getEnvHealth");
+    expect(adminWrapper).not.toContain("getAIDiagnostics");
+    expect(adminWrapper).not.toContain("getWhatsAppConfig");
   });
 });

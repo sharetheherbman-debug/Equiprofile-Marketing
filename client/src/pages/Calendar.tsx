@@ -155,7 +155,7 @@ export default function CalendarPage() {
     refetchOnMount: false as const,   // reuse cached data when remounting
   };
 
-  const { data: events = [], refetch } = trpc.calendar.getEvents.useQuery({
+  const { data: eventsData, refetch } = trpc.calendar.getEvents.useQuery({
     startDate: monthStart.toISOString(),
     endDate: monthEnd.toISOString(),
   }, {
@@ -169,11 +169,18 @@ export default function CalendarPage() {
     retryDelay: (attempt) => Math.min(2000 * 2 ** attempt, 10000),
   });
 
-  const { data: horses = [] } = trpc.horses.list.useQuery(undefined, calendarQueryOpts);
+  const { data: horsesData } = trpc.horses.list.useQuery(undefined, calendarQueryOpts);
 
-  const { data: tasks = [] } = trpc.tasks.list.useQuery(undefined, calendarQueryOpts);
-  const { data: appointments = [] } = trpc.appointments.list.useQuery(undefined, calendarQueryOpts);
-  const { data: trainingSessions = [] } = trpc.training.listAll.useQuery(undefined, calendarQueryOpts);
+  const { data: tasksData } = trpc.tasks.list.useQuery(undefined, calendarQueryOpts);
+  const { data: appointmentsData } = trpc.appointments.list.useQuery(undefined, calendarQueryOpts);
+  const { data: trainingSessionsData } = trpc.training.listAll.useQuery(undefined, calendarQueryOpts);
+  // Keep Calendar usable if an older or degraded API returns null instead of
+  // the documented empty-array shape for one of its combined data sources.
+  const events = eventsData ?? [];
+  const horses = horsesData ?? [];
+  const tasks = tasksData ?? [];
+  const appointments = appointmentsData ?? [];
+  const trainingSessions = trainingSessionsData ?? [];
 
   // Stable SSE callback — passed by identity so useRealtimeModule doesn't
   // re-subscribe on every render.  refetch() is safe to call: TanStack Query

@@ -15,7 +15,6 @@ import { registerServiceWorker } from "@/bootstrap";
 import { initializeAnalytics } from "@/analytics";
 
 // Initialize admin toggle system - sets up console commands
-import "@/lib/adminToggle";
 
 // Import upgrade modal state
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";

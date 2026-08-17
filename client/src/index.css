@@ -1,4 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* ── Tailwind v4 source scanning ──────────────────────────────────────────────
    @tailwindcss/vite auto-detects source files using the Vite `root` directory.
@@ -11,9 +13,6 @@
 @source "../management";      /* client/management/  — ManagementApp.tsx and management entry */
 @source "../school";          /* client/school/      — SchoolApp.tsx and school entry */
 @source "../../shared";       /* shared/             — shared types and constants */
-
-@import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 

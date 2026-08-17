@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/sheet";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { useAdminToggle } from "@/hooks/useAdminToggle";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 import {
@@ -127,7 +126,6 @@ const stableNavItems = [
 
 const adminMenuItems = [
   { icon: Shield, label: "Admin Panel", path: "/admin" },
-  { icon: Shield, label: "QA Checklist", path: "/qa-check" },
 ];
 
 // Bottom nav tabs — plan-aware (5 primary actions + More)
@@ -327,7 +325,6 @@ function DashboardLayoutContent({
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  const { isAdminVisible } = useAdminToggle();
   const [moreSheetOpen, setMoreSheetOpen] = useState(false);
   const { viewMode, exitViewMode, isViewingAs, isAdmin: isAdminView } = useAdminViewMode();
   const isOnline = useOnlineStatus();

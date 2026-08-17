@@ -13,7 +13,11 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM, isAIConfigured } from "./_core/llm";
-import { invalidateConfigCache, getRuntimeConfig } from "./dynamicConfig";
+import {
+  invalidateConfigCache,
+  getRuntimeConfig,
+  isEnvironmentOnlyRuntimeSetting,
+} from "./dynamicConfig";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 import * as fs from "fs";
@@ -1496,12 +1500,20 @@ function normalizeSiteSettingValue(key: string, value: string): string {
     return normalizeBaseUrl(parsed.toString(), "/v1");
   }
 
-  if (PROVIDER_MODEL_SETTING_KEYS.has(key) || PROVIDER_SECRET_SETTING_KEYS.has(key)) {
+  if (
+    key === "admin_notification_email" ||
+    PROVIDER_MODEL_SETTING_KEYS.has(key) ||
+    PROVIDER_SECRET_SETTING_KEYS.has(key)
+  ) {
     return trimmed;
   }
 
   return value;
 }
+
+// The browser-facing admin surface may access only this explicit client
+// preference. Everything else is service-operator configuration.
+const BROWSER_SAFE_SITE_SETTING_KEYS = new Set(["admin_notification_email"]);
 
 export const appRouter = router({
   system: systemRouter,
@@ -4842,28 +4854,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           fromNumber: z.string().optional(),
         }),
       )
-      .mutation(async ({ input }) => {
-        const dbConn = await getDb();
-        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        const upsert = async (key: string, value: string) => {
-          await dbConn.execute(
-            sql`INSERT INTO \`siteSettings\` (\`key\`, \`value\`)
-                VALUES (${key}, ${value})
-                ON DUPLICATE KEY UPDATE \`value\` = ${value}`,
-          );
-          invalidateConfigCache(key);
-        };
-        await upsert("whatsapp_enabled", String(input.enabled));
-        if (input.accountSid) {
-          await upsert("twilio_account_sid", input.accountSid);
-        }
-        if (input.authToken) {
-          await upsert("twilio_auth_token", input.authToken);
-        }
-        if (input.fromNumber) {
-          await upsert("twilio_whatsapp_from", input.fromNumber);
-        }
-        return { success: true };
+      .mutation(async () => {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Messaging configuration is managed securely by the service operator.",
+        });
       }),
 
     // Environment Health Check
@@ -10336,12 +10331,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return aiApprovalQueue.schedule(input.id, input.scheduleAt);
       }),
 
-    // ── Site Settings (admin notification email + feature toggles) ──────────
+    // ── Site Settings (client-safe notification preference only) ────────────
     getSiteSettings: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
       if (!dbConn) return {};
       const rows = await dbConn.select().from(siteSettings);
-      return Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
+      return Object.fromEntries(
+        rows
+          .filter((row) => BROWSER_SAFE_SITE_SETTING_KEYS.has(row.key))
+          .map((row) => [row.key, row.value ?? ""]),
+      );
     }),
 
     setSiteSetting: adminUnlockedProcedure
@@ -10359,6 +10358,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }),
       )
       .mutation(async ({ input }) => {
+        if (
+          isEnvironmentOnlyRuntimeSetting(input.key) ||
+          !BROWSER_SAFE_SITE_SETTING_KEYS.has(input.key)
+        ) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Infrastructure configuration is managed securely by the service operator.",
+          });
+        }
         const normalizedValue = normalizeSiteSettingValue(input.key, input.value);
         const dbConn = await getDb();
         if (!dbConn)

@@ -419,26 +419,6 @@ export default function SchoolDashboard() {
               <StatCard label="Pending Invites" value={String(stats?.pendingInviteCount ?? 0)} />
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <a
-                href="#marketing-studio-coming-soon"
-                className="inline-flex items-center gap-2 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20 transition-colors"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                Marketing Studio
-              </a>
-            </div>
-
-            <Card id="marketing-studio-coming-soon">
-              <h3 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-indigo-400" />
-                Marketing Studio — Coming Soon
-              </h3>
-              <p className="text-sm text-gray-400">
-                Marketing planning, CRM, email campaign tools and approval-first content workflows are coming soon for Stable and School plans. Direct social publishing is not enabled in beta.
-              </p>
-            </Card>
-
             {/* Invite button */}
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-white flex items-center gap-2">

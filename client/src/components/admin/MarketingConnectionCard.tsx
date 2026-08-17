@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface MarketingStatus {
-  configured: boolean;
-  applicationId: string;
-  marketingUrl: string;
-  authentication: string;
-  secretLocation: string;
+  available: boolean;
 }
 
 export function MarketingConnectionCard() {
@@ -37,11 +33,12 @@ export function MarketingConnectionCard() {
         return;
       }
 
-      if (!response.ok) throw new Error(payload.error || "Could not read Marketing connection status");
+      if (!response.ok) throw new Error("Marketing is temporarily unavailable");
       setOwnerDenied(false);
       setStatus(payload as MarketingStatus);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not read Marketing connection status");
+    } catch {
+      setStatus(null);
+      setError("Marketing is temporarily unavailable. Management is still fully available.");
     } finally {
       setLoading(false);
     }
@@ -63,11 +60,11 @@ export function MarketingConnectionCard() {
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || !payload.redirect_url) {
-        throw new Error(payload.error || "Could not create the secure Marketing sign-in");
+        throw new Error("Marketing is temporarily unavailable. Management is still fully available.");
       }
       window.location.assign(String(payload.redirect_url));
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not open EquiProfile Marketing");
+    } catch {
+      setError("Marketing is temporarily unavailable. Management is still fully available.");
       setOpening(false);
     }
   };
@@ -84,42 +81,27 @@ export function MarketingConnectionCard() {
               EquiProfile Marketing
             </CardTitle>
             <CardDescription className="mt-2">
-              Private owner access to the standalone white-label Marketing workspace used to market EquiProfile.
+              Open your EquiProfile Marketing workspace without leaving your Management account.
             </CardDescription>
           </div>
           {loading ? (
             <Badge variant="secondary"><Loader2 className="mr-1 h-3 w-3 animate-spin" />Checking</Badge>
-          ) : status?.configured ? (
-            <Badge className="bg-emerald-600 text-white"><CheckCircle2 className="mr-1 h-3 w-3" />Connected</Badge>
+          ) : status?.available ? (
+            <Badge className="bg-emerald-600 text-white"><CheckCircle2 className="mr-1 h-3 w-3" />Available</Badge>
           ) : (
-            <Badge variant="destructive"><XCircle className="mr-1 h-3 w-3" />Not configured</Badge>
+            <Badge variant="secondary"><XCircle className="mr-1 h-3 w-3" />Unavailable</Badge>
           )}
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-3 text-sm sm:grid-cols-3">
-          <div className="rounded-lg border bg-background/70 p-3">
-            <p className="text-xs text-muted-foreground">Application</p>
-            <p className="mt-1 font-medium">{status?.applicationId || "equiprofile"}</p>
-          </div>
-          <div className="rounded-lg border bg-background/70 p-3">
-            <p className="text-xs text-muted-foreground">Access</p>
-            <p className="mt-1 font-medium">{status?.authentication || "Owner-only signed one-use SSO"}</p>
-          </div>
-          <div className="rounded-lg border bg-background/70 p-3">
-            <p className="text-xs text-muted-foreground">Connector secret</p>
-            <p className="mt-1 font-medium">{status?.secretLocation || "VPS environment only"}</p>
-          </div>
-        </div>
-
         {error && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             {error}
           </div>
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button onClick={openMarketing} disabled={!status?.configured || opening || loading}>
+          <Button onClick={openMarketing} disabled={!status?.available || opening || loading}>
             {opening ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowUpRight className="mr-2 h-4 w-4" />}
             Open EquiProfile Marketing
           </Button>

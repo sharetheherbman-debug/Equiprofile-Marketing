@@ -24,12 +24,5 @@ export function initializeAnalytics() {
     // Append to head
     document.head.appendChild(script);
 
-    if (import.meta.env.DEV) {
-      console.log("Analytics initialized:", { endpoint, websiteId });
-    }
-  } else if (import.meta.env.DEV) {
-    console.log(
-      "Analytics not initialized: Environment variables not configured",
-    );
   }
 }

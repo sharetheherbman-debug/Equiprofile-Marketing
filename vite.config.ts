@@ -103,8 +103,8 @@ function injectServiceWorkerVersion(pwaEnabled: boolean): Plugin {
 
 // ── Shared config ──────────────────────────────────────────────────────────
 const sharedAlias = {
-  // Exact alias must precede the broad @ alias. It preserves the legacy admin
-  // console while removing browser credential forms during the Phase 1 split.
+  // Exact alias must precede the broad @ alias. It routes every Management
+  // admin import through the structurally client-safe administration surface.
   "@/pages/Admin": path.resolve(
     import.meta.dirname,
     "client",
