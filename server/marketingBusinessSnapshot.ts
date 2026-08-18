@@ -169,6 +169,11 @@ function profileRank(profile: ProductSnapshotSource): number {
   return score;
 }
 
+function usefulCategory(value: string | null | undefined): boolean {
+  const normalized = String(value || "").trim().toLowerCase();
+  return Boolean(normalized && !["unknown", "other", "uncategorized"].includes(normalized));
+}
+
 export function selectAuthoritativeProduct(
   profiles: ProductSnapshotSource[],
 ): ProductSnapshotSource {
@@ -178,6 +183,21 @@ export function selectAuthoritativeProduct(
     if (rankDelta !== 0) return rankDelta;
     return right.updatedAt.getTime() - left.updatedAt.getTime();
   })[0];
+}
+
+function selectCategory(
+  selected: ProductSnapshotSource,
+  profiles: ProductSnapshotSource[],
+): string {
+  if (usefulCategory(selected.category)) return selected.category;
+  const fallback = [...profiles]
+    .filter((profile) => usefulCategory(profile.category))
+    .sort((left, right) => {
+      const confidenceDelta = Number(right.confidenceScore || 0) - Number(left.confidenceScore || 0);
+      if (confidenceDelta !== 0) return confidenceDelta;
+      return right.updatedAt.getTime() - left.updatedAt.getTime();
+    })[0];
+  return fallback?.category || "unknown";
 }
 
 export function buildBusinessSnapshotFromRows(
@@ -207,7 +227,7 @@ export function buildBusinessSnapshotFromRows(
 
   const productRecord: Record<string, unknown> = {
     name: brand.brandName,
-    category: product.category || "unknown",
+    category: selectCategory(product, profiles),
     domain,
     landing_page_url: landingPageUrl,
     signup_url: signupUrl,
