@@ -1,49 +1,46 @@
 {
-  "_comment": "Visual Configuration - Edit to customize branding without rebuilding",
-  "_usage": "Edit this file to update site branding, colors, and images. Changes take effect on page reload.",
+  "_comment": "Canonical EquiProfile visual configuration",
+  "_usage": "This file mirrors the authenticated product design system and is the single runtime branding configuration for supported public surfaces.",
   "_location": "For post-deployment: /var/www/equiprofile/dist/public/visual-config.json",
-
   "branding": {
     "siteName": "EquiProfile",
     "tagline": "Professional Horse Management Platform",
     "description": "Comprehensive horse management for equestrian professionals"
   },
-
   "colors": {
-    "primary": "#2e6da4",
-    "primaryHover": "#3578b0",
-    "secondary": "#4a9eca",
-    "accent": "#c5a55a",
-    "background": "#f8f9fb",
-    "foreground": "#0f1d2e",
-    "dark": "#0f1d2e",
-    "darkDeep": "#070f1c",
-    "darkAlt": "#0a1628"
+    "primary": "#167cc1",
+    "primaryHover": "#1069a7",
+    "secondary": "#052b57",
+    "accent": "#167cc1",
+    "background": "#f5f8fc",
+    "surface": "#ffffff",
+    "foreground": "#10263b",
+    "muted": "#5f7184",
+    "border": "#d7e0ea",
+    "dark": "#052b57",
+    "darkDeep": "#031a35",
+    "darkAlt": "#0b3e72"
   },
-
   "logos": {
     "header": "/logo.png",
     "footer": "/logo.png",
     "favicon": "/favicon.svg",
     "alt": "EquiProfile Logo"
   },
-
   "hero": {
     "backgroundImage": "/images/hero/image1.jpg",
-    "backgroundGradient": "linear-gradient(to bottom, rgba(7,15,28,0.70), rgba(10,22,40,0.60), rgba(10,22,40,0.80))",
+    "backgroundGradient": "linear-gradient(to bottom, rgba(3,26,53,0.72), rgba(5,43,87,0.60), rgba(3,26,53,0.82))",
     "title": "Professional Horse Management Software",
-    "subtitle": "The all-in-one platform trusted by trainers, owners and stables",
-    "ctaText": "Get Started Free",
+    "subtitle": "The all-in-one platform for owners, trainers and stables",
+    "ctaText": "Get Started",
     "ctaLink": "/register"
   },
-
   "features": {
     "showFeatureIcons": true,
     "iconStyle": "rounded"
   },
-
   "footer": {
-    "copyrightText": "© 2025 EquiProfile. All rights reserved.",
+    "copyrightText": "© 2026 EquiProfile. All rights reserved.",
     "showSocialLinks": false,
     "socialLinks": {
       "facebook": null,
@@ -52,7 +49,6 @@
       "linkedin": null
     }
   },
-
   "customization": {
     "enableDarkMode": true,
     "defaultTheme": "light",
