@@ -73,7 +73,7 @@ describe("EquiProfile business snapshot export", () => {
     expect(selectAuthoritativeProduct([scraped, confirmed]).id).toBe(2);
   });
 
-  test("forces canonical brand identity and excludes stale scraped fields", () => {
+  test("forces canonical identity, fills only missing classification, and excludes stale scraped fields", () => {
     const snapshot = buildBusinessSnapshotFromRows("equiprofile", brand, [scraped, confirmed]);
     const product = snapshot.products[0] as Record<string, unknown>;
 
@@ -82,6 +82,7 @@ describe("EquiProfile business snapshot export", () => {
       name: "EquiProfile",
       domain: "equiprofile.online",
     });
+    expect(product.category).toBe("equine_stable_management");
     expect(product.domain).toBe("equiprofile.online");
     expect(product.landing_page_url).toBe("https://equiprofile.online/");
     expect(product.signup_url).toBe("https://equiprofile.online/");
