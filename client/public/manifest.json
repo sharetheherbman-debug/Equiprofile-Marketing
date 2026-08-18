@@ -1,106 +1,32 @@
 {
   "name": "EquiProfile — Professional Horse Management",
   "short_name": "EquiProfile",
-  "description": "Professional equine management platform. Manage horses, track health records, training logs, nutrition plans and run your stable — all in one premium system.",
+  "description": "Professional equine management platform. Manage horses, track health records, training logs, nutrition plans and run your stable — all in one system.",
   "id": "/dashboard",
   "start_url": "/dashboard",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone"],
-  "background_color": "#1e3a5f",
-  "theme_color": "#1e3a5f",
+  "background_color": "#f5f8fc",
+  "theme_color": "#052b57",
   "orientation": "portrait-primary",
   "icons": [
-    {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "/icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-384x384.png", "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "categories": ["business", "lifestyle", "productivity"],
   "shortcuts": [
-    {
-      "name": "My Horses",
-      "short_name": "Horses",
-      "description": "View and manage your horses",
-      "url": "/horses",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
-    },
-    {
-      "name": "Health Records",
-      "short_name": "Health",
-      "description": "View horse health records and vet logs",
-      "url": "/health",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
-    },
-    {
-      "name": "Calendar",
-      "short_name": "Calendar",
-      "description": "View upcoming events and appointments",
-      "url": "/calendar",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
-    },
-    {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "Go to your main dashboard",
-      "url": "/dashboard",
-      "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}]
-    }
+    { "name": "My Horses", "short_name": "Horses", "description": "View and manage your horses", "url": "/horses", "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}] },
+    { "name": "Health Records", "short_name": "Health", "description": "View horse health records and vet logs", "url": "/health", "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}] },
+    { "name": "Calendar", "short_name": "Calendar", "description": "View upcoming events and appointments", "url": "/calendar", "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}] },
+    { "name": "Dashboard", "short_name": "Dashboard", "description": "Open your EquiProfile dashboard", "url": "/dashboard", "icons": [{"src": "/icons/icon-96x96.png", "sizes": "96x96"}] }
   ],
   "screenshots": [],
   "prefer_related_applications": false
