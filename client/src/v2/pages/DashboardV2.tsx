@@ -1,75 +1,76 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useEffect, useState, useMemo } from "react";
-import { useLocation } from "wouter";
+import { useEffect, useMemo } from "react";
+import { useLocation, Link } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
-import { Link } from "wouter";
 import type { LucideIcon } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useRecentVisits } from "@/hooks/useRecentVisits";
 import {
-  Heart,
-  Calendar,
-  CloudSun,
-  Cloud,
-  Plus,
-  ChevronRight,
-  AlertCircle,
-  Clock,
   Activity,
-  Stethoscope,
-  Dumbbell,
+  AlertCircle,
   Apple,
-  CalendarDays,
-  Brain,
-  FileText,
-  Baby,
-  DollarSign,
   BarChart3,
-  Settings,
-  Users,
-  MessageSquare,
-  Shield,
-  Syringe,
-  Pill,
-  Scissors,
-  XCircle,
-  GitBranch,
-  Tag,
-  Sparkles,
   BookOpen,
-  TrendingUp,
-  Navigation,
-  ShoppingCart,
-  Home,
-  UserCog,
-  Star,
-  Zap,
+  Brain,
+  Calendar,
+  CalendarDays,
+  ChevronRight,
+  CircleDot,
   ClipboardList,
+  Clock,
+  Cloud,
+  DollarSign,
+  Dumbbell,
+  FileText,
+  GitBranch,
+  Heart,
+  Navigation,
+  Pill,
+  Plus,
+  Scissors,
+  Settings,
+  Shield,
+  ShoppingCart,
+  Sparkles,
+  Stethoscope,
+  Syringe,
+  Tag,
+  TrendingUp,
+  Users,
+  XCircle,
 } from "lucide-react";
 
-// ─── Design Tokens ───────────────────────────────────────────────────────────
+const BRAND = "#167cc1";
+const BRAND_HOVER = "#1069a7";
+const NAVY = "#052b57";
+const PAGE = "#f5f8fc";
+const BORDER = "#d7e0ea";
+const TEXT = "#10263b";
+const MUTED = "#5f7184";
+const SOFT = "#eef3f8";
 
-const ACCENT = "#4f5fd6";
-
-// ─── Module Navigation Data ──────────────────────────────────────────────────
-
-const dashboardModuleGroups = [
+const dashboardModuleGroups: Array<{
+  label: string;
+  description: string;
+  items: Array<{ icon: LucideIcon; label: string; path: string }>;
+}> = [
   {
-    label: "Core",
-    color: "#0ea5e9",
-    gradient: "from-sky-500 to-blue-600",
+    label: "Horse & Daily Management",
+    description: "The core records and day-to-day tools for your horses.",
     items: [
+      { icon: CircleDot, label: "My Horses", path: "/horses" },
       { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
       { icon: Cloud, label: "Weather", path: "/weather" },
       { icon: Users, label: "Contacts", path: "/contacts" },
       { icon: Clock, label: "Appointments", path: "/appointments" },
+      { icon: Calendar, label: "Calendar", path: "/calendar" },
+      { icon: ClipboardList, label: "Tasks", path: "/tasks" },
     ],
   },
   {
-    label: "Health",
-    color: "#f43f5e",
-    gradient: "from-rose-500 to-red-600",
+    label: "Health & Care",
+    description: "Keep clinical, preventative and routine care records together.",
     items: [
       { icon: Stethoscope, label: "Health Hub", path: "/health" },
       { icon: Syringe, label: "Vaccinations", path: "/vaccinations" },
@@ -81,19 +82,18 @@ const dashboardModuleGroups = [
     ],
   },
   {
-    label: "Training & Activity",
-    color: "#10b981",
-    gradient: "from-emerald-500 to-green-600",
+    label: "Training & Performance",
+    description: "Track work, movement, competition and training history.",
     items: [
       { icon: Dumbbell, label: "Training Log", path: "/training" },
-      { icon: BookOpen, label: "Templates", path: "/training-templates" },
+      { icon: BookOpen, label: "Training Templates", path: "/training-templates" },
       { icon: Navigation, label: "GPS Tracking", path: "/ride-tracking" },
+      { icon: TrendingUp, label: "Competitions", path: "/competitions" },
     ],
   },
   {
     label: "Nutrition",
-    color: "#f59e0b",
-    gradient: "from-amber-500 to-orange-600",
+    description: "Plan feeding, record nutrition and understand feed costs.",
     items: [
       { icon: Apple, label: "Feeding Plans", path: "/feeding" },
       { icon: FileText, label: "Nutrition Plans", path: "/nutrition-plans" },
@@ -102,40 +102,32 @@ const dashboardModuleGroups = [
     ],
   },
   {
-    label: "Management & Docs",
-    color: "#8b5cf6",
-    gradient: "from-violet-500 to-purple-600",
+    label: "Records, Insights & Account",
+    description: "Documents, ownership records, reporting and workspace settings.",
     items: [
-      { icon: Calendar, label: "Calendar", path: "/calendar" },
       { icon: FileText, label: "Documents", path: "/documents" },
-      { icon: ClipboardList, label: "Tasks", path: "/tasks" },
-      { icon: Tag, label: "Tags", path: "/tags" },
       { icon: BarChart3, label: "Analytics", path: "/analytics" },
       { icon: FileText, label: "Reports", path: "/reports" },
+      { icon: Tag, label: "Tags", path: "/tags" },
       { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
       { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
-      { icon: TrendingUp, label: "Competitions", path: "/competitions" },
-      { icon: Settings, label: "Settings", path: "/settings" },
       { icon: DollarSign, label: "Billing", path: "/billing" },
+      { icon: Settings, label: "Settings", path: "/settings" },
     ],
   },
 ];
 
-// ─── Quick Actions ───────────────────────────────────────────────────────────
-
 const quickActions = [
   { icon: Plus, label: "Add Horse", path: "/horses/new", description: "Register a new horse" },
-  { icon: Dumbbell, label: "Log Training", path: "/training", description: "Record a training session" },
-  { icon: Stethoscope, label: "Record Health", path: "/health", description: "Log a health observation" },
-  { icon: Calendar, label: "View Calendar", path: "/calendar", description: "Check upcoming events" },
-  { icon: Apple, label: "Feeding Plan", path: "/feeding", description: "Manage feeding schedules" },
-  { icon: FileText, label: "Documents", path: "/documents", description: "Access your files" },
+  { icon: Dumbbell, label: "Log Training", path: "/training", description: "Record today's work" },
+  { icon: Stethoscope, label: "Record Health", path: "/health", description: "Add a health observation" },
+  { icon: Calendar, label: "Open Calendar", path: "/calendar", description: "Review appointments and events" },
+  { icon: Apple, label: "Feeding Plans", path: "/feeding", description: "Manage daily nutrition" },
+  { icon: FileText, label: "Documents", path: "/documents", description: "Open horse and business files" },
 ];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-ZA", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -143,477 +135,165 @@ function formatDate(date: Date): string {
   });
 }
 
-// ─── Skeleton Components ─────────────────────────────────────────────────────
-
-function SkeletonPulse({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={`animate-pulse rounded-lg bg-gray-200 dark:bg-[#242a38] ${className}`}
-      aria-hidden="true"
-    />
-  );
+function Skeleton({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse rounded-xl bg-[#e8eef5] ${className}`} aria-hidden="true" />;
 }
-
-function MetricCardSkeleton() {
-  return (
-    <div className="rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5">
-      <div className="flex items-center gap-4">
-        <SkeletonPulse className="h-11 w-11 shrink-0 rounded-lg" />
-        <div className="flex-1 space-y-2">
-          <SkeletonPulse className="h-3 w-20" />
-          <SkeletonPulse className="h-7 w-12" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FocusCardSkeleton() {
-  return (
-    <div className="space-y-3">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="flex items-center gap-3 rounded-lg border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4"
-        >
-          <SkeletonPulse className="h-5 w-5 shrink-0 rounded" />
-          <SkeletonPulse className="h-4 flex-1" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─── Metric Card ─────────────────────────────────────────────────────────────
 
 function MetricCard({
   icon: Icon,
   label,
   value,
   href,
-  color = ACCENT,
+  attention = false,
 }: {
   icon: LucideIcon;
   label: string;
   value: number;
-  href?: string;
-  color?: string;
+  href: string;
+  attention?: boolean;
 }) {
   const animatedValue = useCountUp(value);
-  const card = (
-    <div className={`rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-5 transition-all duration-200 hover:shadow-md ${href ? "cursor-pointer" : ""}`}>
-      <div className="flex items-center gap-4">
-        <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: `${color}18` }}
-        >
-          <Icon className="h-5 w-5" style={{ color }} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wide text-[#5c6370] dark:text-[#9ca3b0]">
-            {label}
-          </p>
-          <p className="mt-0.5 text-2xl font-bold text-[#1a1d24] dark:text-[#e8eaef]">
-            {animatedValue}
-          </p>
-        </div>
-        {href && <ChevronRight className="h-4 w-4 shrink-0 text-[#5c6370]/40" />}
-      </div>
-    </div>
-  );
-  if (href) return <Link href={href}>{card}</Link>;
-  return card;
-}
-
-// ─── Focus Item ──────────────────────────────────────────────────────────────
-
-function FocusItem({
-  icon: Icon,
-  text,
-  variant = "info",
-  href,
-}: {
-  icon: LucideIcon;
-  text: string;
-  variant?: "alert" | "warning" | "info";
-  href?: string;
-}) {
-  const colors = {
-    alert: "text-red-500 bg-red-50 dark:bg-red-950/30",
-    warning: "text-amber-500 bg-amber-50 dark:bg-amber-950/30",
-    info: "text-[#4f5fd6] bg-[#4f5fd6]/10",
-  };
-  const iconBg = colors[variant];
-
-  const content = (
-    <div className={`flex items-center gap-3 rounded-lg border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4 transition-colors duration-200 hover:border-[#4f5fd6]/30 ${href ? "cursor-pointer" : ""}`}>
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${iconBg}`}>
-        <Icon className="h-4 w-4" />
-      </div>
-      <p className="text-sm text-[#1a1d24] dark:text-[#e8eaef] flex-1">{text}</p>
-      {href && <ChevronRight className="h-4 w-4 shrink-0 text-[#5c6370]/40" />}
-    </div>
-  );
-
-  if (href) {
-    return <Link href={href}>{content}</Link>;
-  }
-  return content;
-}
-
-// ─── Quick Action Card ───────────────────────────────────────────────────────
-
-function QuickActionCard({
-  icon: Icon,
-  label,
-  description,
-  path,
-  onNavigate,
-}: {
-  icon: LucideIcon;
-  label: string;
-  description: string;
-  path: string;
-  onNavigate?: () => void;
-}) {
   return (
-    <Link
-      href={path}
-      onClick={onNavigate}
-      className="group flex items-center gap-4 rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-4 transition-all duration-200 hover:border-[#4f5fd6]/40 hover:shadow-md active:scale-95"
-    >
-      <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors duration-200 group-hover:bg-[#4f5fd6] group-hover:text-white"
-        style={{ backgroundColor: `${ACCENT}14`, color: ACCENT }}
-      >
-        <Icon className="h-5 w-5" />
+    <Link href={href} className="group rounded-2xl border bg-white p-5 shadow-[0_1px_2px_rgba(5,43,87,.04),0_10px_28px_rgba(5,43,87,.05)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(5,43,87,.10)]" style={{ borderColor: BORDER }}>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: attention ? "#fff4e5" : "#eef7fd", color: attention ? "#9a6700" : BRAND }}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" style={{ color: "#9aabba" }} />
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-[#1a1d24] dark:text-[#e8eaef]">{label}</p>
-        <p className="text-xs text-[#5c6370] dark:text-[#9ca3b0]">{description}</p>
-      </div>
-      <ChevronRight className="h-4 w-4 shrink-0 text-[#5c6370]/40 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-[#4f5fd6]" />
+      <p className="mt-5 text-3xl font-extrabold tracking-tight" style={{ color: NAVY }}>{animatedValue}</p>
+      <p className="mt-1 text-xs font-bold uppercase tracking-[.08em]" style={{ color: MUTED }}>{label}</p>
     </Link>
   );
 }
 
-// ─── Module Group Card ───────────────────────────────────────────────────────
-
-function ModuleGroupCard({
-  label,
-  items,
-  color = ACCENT,
-  gradient,
-  onNavigate,
-}: {
-  label: string;
-  items: { icon: LucideIcon; label: string; path: string }[];
-  color?: string;
-  gradient?: string;
-  onNavigate?: (path: string) => void;
-}) {
+function FocusItem({ icon: Icon, text, href, tone = "normal" }: { icon: LucideIcon; text: string; href: string; tone?: "normal" | "warning" | "danger" }) {
+  const palette = tone === "danger"
+    ? { bg: "#fff2f0", fg: "#b42318", border: "#edc2bd" }
+    : tone === "warning"
+      ? { bg: "#fff8e6", fg: "#9a6700", border: "#ead7a2" }
+      : { bg: "#eef7fd", fg: BRAND, border: "#d4e8f6" };
   return (
-    <div className="rounded-xl border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] overflow-hidden">
-      {gradient && (
-        <div className={`h-1 w-full bg-gradient-to-r ${gradient}`} aria-hidden="true" />
-      )}
-      <div className="p-5">
-        <h3
-          className="mb-4 text-xs font-bold uppercase tracking-[0.15em]"
-          style={{ color }}
-        >
-          {label}
-        </h3>
-        <div className="grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {items.map((item) => {
-            const ItemIcon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                href={item.path}
-                onClick={() => onNavigate?.(item.path)}
-                className="group flex flex-col items-center gap-2 rounded-lg p-3 text-center transition-all duration-200 hover:bg-[#f7f8fa] dark:hover:bg-[#242a38]"
-                aria-label={item.label}
-              >
-                <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 group-hover:scale-110"
-                  style={{ backgroundColor: `${color}18`, color }}
-                >
-                  <ItemIcon className="h-4 w-4" />
-                </div>
-                <span className="text-xs font-medium text-[#1a1d24] dark:text-[#e8eaef] leading-tight">
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
+    <Link href={href} className="group flex items-center gap-3 rounded-xl border bg-white p-4 transition hover:shadow-sm" style={{ borderColor: palette.border }}>
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: palette.bg, color: palette.fg }}><Icon className="h-4 w-4" /></span>
+      <span className="min-w-0 flex-1 text-sm font-semibold" style={{ color: TEXT }}>{text}</span>
+      <ChevronRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-0.5" style={{ color: "#9aabba" }} />
+    </Link>
+  );
+}
+
+function ModuleGroup({ group, onVisit }: { group: (typeof dashboardModuleGroups)[number]; onVisit: (path: string) => void }) {
+  return (
+    <section className="overflow-hidden rounded-2xl border bg-white shadow-[0_1px_2px_rgba(5,43,87,.04)]" style={{ borderColor: BORDER }}>
+      <div className="border-b px-5 py-4 sm:px-6" style={{ borderColor: BORDER }}>
+        <h3 className="text-base font-extrabold" style={{ color: NAVY }}>{group.label}</h3>
+        <p className="mt-1 text-xs leading-5" style={{ color: MUTED }}>{group.description}</p>
       </div>
-    </div>
-  );
-}
-
-// ─── Empty State ─────────────────────────────────────────────────────────────
-
-function GettingStarted() {
-  return (
-    <div className="rounded-xl border border-dashed border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] p-8 text-center sm:p-12">
-      <div
-        className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
-        style={{ backgroundColor: `${ACCENT}14` }}
-      >
-        <Sparkles className="h-7 w-7" style={{ color: ACCENT }} />
+      <div className="grid grid-cols-2 gap-px bg-[#e7edf4] sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {group.items.map(({ icon: Icon, label, path }) => (
+          <Link key={path} href={path} onClick={() => onVisit(path)} className="group flex min-h-28 flex-col justify-between bg-white p-4 transition hover:bg-[#f4f9fd]">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eef7fd]" style={{ color: BRAND }}><Icon className="h-4 w-4" /></span>
+            <div className="mt-4 flex items-end justify-between gap-2"><span className="text-xs font-bold leading-4" style={{ color: TEXT }}>{label}</span><ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-40 transition group-hover:translate-x-0.5 group-hover:opacity-100" style={{ color: BRAND }} /></div>
+          </Link>
+        ))}
       </div>
-      <h3 className="font-serif text-lg font-semibold text-[#1a1d24] dark:text-[#e8eaef]">
-        Welcome to EquiProfile
-      </h3>
-      <p className="mx-auto mt-2 max-w-md text-sm text-[#5c6370] dark:text-[#9ca3b0]">
-        Get started by adding your first horse. You&apos;ll be able to track health records,
-        training sessions, nutrition plans, and much more.
-      </p>
-      <Link
-        href="/horses/new"
-        className="mt-6 inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
-        style={{ backgroundColor: ACCENT }}
-      >
-        <Plus className="h-4 w-4" />
-        Add Your First Horse
-      </Link>
-    </div>
+    </section>
   );
 }
-
-// ─── Section Heading ─────────────────────────────────────────────────────────
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="font-serif text-base font-semibold text-[#1a1d24] dark:text-[#e8eaef] tracking-tight">
-      {children}
-    </h2>
-  );
-}
-
-// ─── Dashboard Content ───────────────────────────────────────────────────────
 
 function DashboardContent() {
   const { user } = useAuth();
-  const [, navigate] = useLocation();
   const { recentPaths, trackVisit } = useRecentVisits();
-
   const { data: horses, isLoading: horsesLoading } = trpc.horses.list.useQuery();
   const { data: healthAlerts } = trpc.timeline.getHealthAlerts.useQuery({});
   const { data: tasks } = trpc.tasks.list.useQuery();
-  const { data: upcomingAppointments } = trpc.appointments.list.useQuery();
-  const { data: recentTraining } = trpc.training.listAll.useQuery();
+  const { data: appointments } = trpc.appointments.list.useQuery();
 
   const today = useMemo(() => formatDate(new Date()), []);
-
+  const todayKey = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const horseCount = horses?.length ?? 0;
   const alertCount = Array.isArray(healthAlerts) ? healthAlerts.length : 0;
+  const activeTaskCount = useMemo(() => Array.isArray(tasks) ? tasks.filter((task: any) => task.status !== "completed" && task.status !== "done").length : 0, [tasks]);
+  const todayAppointments = useMemo(() => Array.isArray(appointments) ? appointments.filter((appointment: any) => {
+    const date = appointment.date ?? appointment.appointmentDate ?? appointment.scheduledDate;
+    return date && String(date).slice(0, 10) === todayKey;
+  }) : [], [appointments, todayKey]);
 
-  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
-
-  const todayAppointments = useMemo(() => {
-    if (!Array.isArray(upcomingAppointments)) return [];
-    return upcomingAppointments.filter((a: any) => {
-      const d = a.date ?? a.appointmentDate ?? a.scheduledDate;
-      if (!d) return false;
-      return String(d).slice(0, 10) === todayStr;
-    });
-  }, [upcomingAppointments, todayStr]);
-
-  const upcomingTaskCount = useMemo(() => {
-    if (!Array.isArray(tasks)) return 0;
-    return tasks.filter(
-      (t: any) => t.status !== "completed" && t.status !== "done"
-    ).length;
-  }, [tasks]);
-
-  // Build today's focus items
   const focusItems = useMemo(() => {
-    const items: { icon: LucideIcon; text: string; variant: "alert" | "warning" | "info"; href: string }[] = [];
-
+    const items: Array<{ icon: LucideIcon; text: string; href: string; tone: "normal" | "warning" | "danger" }> = [];
     if (Array.isArray(healthAlerts)) {
-      healthAlerts.slice(0, 3).forEach((alert: any) => {
-        const name = alert.horseName ?? alert.horse?.name ?? "A horse";
-        const message = alert.message ?? alert.description ?? "needs attention";
-        items.push({
-          icon: AlertCircle,
-          text: `${name}: ${message}`,
-          variant: "alert",
-          href: "/health",
-        });
-      });
+      healthAlerts.slice(0, 3).forEach((alert: any) => items.push({
+        icon: AlertCircle,
+        text: `${alert.horseName ?? alert.horse?.name ?? "Horse"}: ${alert.message ?? alert.description ?? "needs attention"}`,
+        href: "/health",
+        tone: "danger",
+      }));
     }
-
     if (Array.isArray(tasks)) {
-      tasks
-        .filter((t: any) => {
-          if (t.status === "completed" || t.status === "done") return false;
-          if (!t.dueDate) return false;
-          return String(t.dueDate).slice(0, 10) <= todayStr;
-        })
-        .slice(0, 3)
-        .forEach((t: any) => {
-          const overdue = String(t.dueDate).slice(0, 10) < todayStr;
-          items.push({
-            icon: ClipboardList,
-            text: `${overdue ? "Overdue: " : "Due today: "}${t.title ?? t.name ?? "Task"}`,
-            variant: overdue ? "warning" : "info",
-            href: "/tasks",
-          });
-        });
-    }
-
-    if (todayAppointments.length > 0) {
-      todayAppointments.slice(0, 2).forEach((a: any) => {
-        items.push({
-          icon: Clock,
-          text: `Appointment: ${a.title ?? a.type ?? "Scheduled today"}`,
-          variant: "info",
-          href: "/appointments",
-        });
+      tasks.filter((task: any) => task.status !== "completed" && task.status !== "done" && task.dueDate && String(task.dueDate).slice(0, 10) <= todayKey).slice(0, 3).forEach((task: any) => {
+        const overdue = String(task.dueDate).slice(0, 10) < todayKey;
+        items.push({ icon: ClipboardList, text: `${overdue ? "Overdue" : "Due today"}: ${task.title ?? task.name ?? "Task"}`, href: "/tasks", tone: overdue ? "warning" : "normal" });
       });
     }
-
+    todayAppointments.slice(0, 2).forEach((appointment: any) => items.push({ icon: Clock, text: `Appointment: ${appointment.title ?? appointment.type ?? "Scheduled today"}`, href: "/appointments", tone: "normal" }));
     return items;
-  }, [healthAlerts, tasks, todayAppointments, todayStr]);
+  }, [healthAlerts, tasks, todayAppointments, todayKey]);
 
-  const isLoading = horsesLoading;
-  const hasHorses = horseCount > 0;
-  const firstName = user?.name?.split(" ")[0] ?? "there";
-
-  // ── Recent-visit label lookup ─────────────────────────────────────────────
-  const pathLabelMap = useMemo(() => {
+  const pathLabels = useMemo(() => {
     const map: Record<string, string> = {};
-    for (const group of dashboardModuleGroups) {
-      for (const item of group.items) {
-        map[item.path] = item.label;
-      }
-    }
-    for (const action of quickActions) {
-      map[action.path] = action.label;
-    }
+    dashboardModuleGroups.forEach((group) => group.items.forEach((item) => { map[item.path] = item.label; }));
+    quickActions.forEach((item) => { map[item.path] = item.label; });
     return map;
   }, []);
 
-  return (
-    <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219] relative">
-      {/* ── Subtle Premium Background Depth ────────────────────── */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-[#4f5fd6]/[0.04] blur-3xl" />
-        <div className="absolute top-1/3 -left-24 h-72 w-72 rounded-full bg-[#3b7dd8]/[0.03] blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-[#2d8a56]/[0.03] blur-3xl" />
-      </div>
+  const firstName = user?.name?.split(" ")[0] ?? "there";
+  const loading = horsesLoading;
 
-      <div className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* ── Header ─────────────────────────────────────────────── */}
-        <header className="mb-8">
-          <h1 className="font-serif text-2xl font-semibold text-[#1a1d24] dark:text-[#e8eaef] sm:text-3xl">
-            Welcome back, {firstName}
-          </h1>
-          <p className="mt-1 text-sm text-[#5c6370] dark:text-[#9ca3b0]">{today}</p>
-          {!isLoading && (horseCount > 0 || upcomingTaskCount > 0) && (
-            <p className="mt-0.5 text-xs text-[#5c6370] dark:text-[#9ca3b0]">
-              {horseCount > 0 && `${horseCount} horse${horseCount !== 1 ? "s" : ""}`}
-              {horseCount > 0 && upcomingTaskCount > 0 && " · "}
-              {upcomingTaskCount > 0 && `${upcomingTaskCount} active task${upcomingTaskCount !== 1 ? "s" : ""}`}
-            </p>
-          )}
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: PAGE }}>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <header className="rounded-[24px] border bg-white p-6 shadow-[0_14px_40px_rgba(5,43,87,.06)] sm:p-8" style={{ borderColor: BORDER }}>
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-[.16em]" style={{ color: BRAND }}>EquiProfile Management</p>
+              <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight sm:text-4xl" style={{ color: NAVY }}>Welcome back, {firstName}.</h1>
+              <p className="mt-2 text-sm" style={{ color: MUTED }}>{today}</p>
+              {!loading && <p className="mt-1 text-xs" style={{ color: "#8190a0" }}>{horseCount} horse{horseCount === 1 ? "" : "s"} · {activeTaskCount} active task{activeTaskCount === 1 ? "" : "s"}</p>}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/horses/new" className="inline-flex min-h-10 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-px" style={{ backgroundColor: BRAND }}><Plus className="h-4 w-4" /> Add horse</Link>
+              <Link href="/calendar" className="inline-flex min-h-10 items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm font-bold transition hover:bg-[#eef7fd]" style={{ borderColor: BORDER, color: NAVY }}><Calendar className="h-4 w-4" /> Calendar</Link>
+            </div>
+          </div>
         </header>
 
-        {/* ── Key Metrics ────────────────────────────────────────── */}
-        <section aria-label="Key metrics" className="mb-8">
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            {isLoading ? (
-              <>
-                <MetricCardSkeleton />
-                <MetricCardSkeleton />
-                <MetricCardSkeleton />
-                <MetricCardSkeleton />
-              </>
-            ) : (
-              <>
-                <MetricCard icon={Heart} label="Total Horses" value={horseCount} href="/horses" color="#f43f5e" />
-                <MetricCard icon={AlertCircle} label="Health Alerts" value={alertCount} href="/health" color="#f59e0b" />
-                <MetricCard icon={ClipboardList} label="Upcoming Tasks" value={upcomingTaskCount} href="/tasks" color="#8b5cf6" />
-                <MetricCard icon={CalendarDays} label="Today's Appts" value={todayAppointments.length} href="/appointments" color="#0ea5e9" />
-              </>
-            )}
-          </div>
+        <section className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Key management metrics">
+          {loading ? <><Skeleton className="h-36" /><Skeleton className="h-36" /><Skeleton className="h-36" /><Skeleton className="h-36" /></> : <>
+            <MetricCard icon={CircleDot} label="Total horses" value={horseCount} href="/horses" />
+            <MetricCard icon={AlertCircle} label="Health alerts" value={alertCount} href="/health" attention={alertCount > 0} />
+            <MetricCard icon={ClipboardList} label="Active tasks" value={activeTaskCount} href="/tasks" attention={activeTaskCount > 0} />
+            <MetricCard icon={CalendarDays} label="Today's appointments" value={todayAppointments.length} href="/appointments" />
+          </>}
         </section>
 
-        {/* ── Today's Focus — only show when items exist ──────────── */}
-        {isLoading ? (
-          <section aria-label="Today's focus" className="mb-8">
-            <SectionHeading>Today&apos;s Focus</SectionHeading>
-            <div className="mt-4">
-              <FocusCardSkeleton />
-            </div>
-          </section>
-        ) : focusItems.length > 0 ? (
-          <section aria-label="Today's focus" className="mb-8">
-            <SectionHeading>Today&apos;s Focus</SectionHeading>
-            <div className="mt-4 space-y-2">
-              {focusItems.map((item, i) => (
-                <FocusItem key={i} icon={item.icon} text={item.text} variant={item.variant} href={item.href} />
-              ))}
-            </div>
-          </section>
-        ) : null}
+        {focusItems.length > 0 && <section className="mt-7"><div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-[10px] font-extrabold uppercase tracking-[.14em]" style={{ color: BRAND }}>Needs attention</p><h2 className="mt-1 font-serif text-xl font-semibold" style={{ color: NAVY }}>Today&apos;s focus</h2></div><Link href="/tasks" className="text-xs font-bold" style={{ color: BRAND }}>View tasks →</Link></div><div className="space-y-2">{focusItems.map((item, index) => <FocusItem key={`${item.href}-${index}`} {...item} />)}</div></section>}
 
-        {/* ── Quick Actions ──────────────────────────────────────── */}
-        <section aria-label="Quick actions" className="mb-8">
-          <SectionHeading>Quick Actions</SectionHeading>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {quickActions.map((action) => (
-              <QuickActionCard
-                key={action.path}
-                {...action}
-                onNavigate={() => trackVisit(action.path)}
-              />
-            ))}
-          </div>
-          {/* Recent visited chips */}
-          {recentPaths.length > 0 && (
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-[#5c6370] dark:text-[#9ca3b0] shrink-0">Recent:</span>
-              {recentPaths.map((path) => (
-                <Link key={path} href={path}>
-                  <button
-                    onClick={() => trackVisit(path)}
-                    className="px-3 py-1 rounded-full border border-[#e4e7ec] dark:border-[#2a3040] bg-white dark:bg-[#181d27] text-xs text-[#5c6370] dark:text-[#9ca3b0] hover:border-[#4f5fd6]/40 hover:text-[#4f5fd6] active:scale-95 transition-all duration-200"
-                  >
-                    {pathLabelMap[path] ?? path}
-                  </button>
-                </Link>
-              ))}
-            </div>
-          )}
+        <section className="mt-7">
+          <div className="mb-3"><p className="text-[10px] font-extrabold uppercase tracking-[.14em]" style={{ color: BRAND }}>Quick actions</p><h2 className="mt-1 font-serif text-xl font-semibold" style={{ color: NAVY }}>Common work</h2></div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{quickActions.map(({ icon: Icon, label, path, description }) => <Link key={path} href={path} onClick={() => trackVisit(path)} className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition hover:-translate-y-px hover:shadow-md" style={{ borderColor: BORDER }}><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#eef7fd]" style={{ color: BRAND }}><Icon className="h-5 w-5" /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold" style={{ color: TEXT }}>{label}</span><span className="mt-0.5 block text-xs" style={{ color: MUTED }}>{description}</span></span><ChevronRight className="h-4 w-4 shrink-0 transition group-hover:translate-x-0.5" style={{ color: "#9aabba" }} /></Link>)}</div>
+          {recentPaths.length > 0 && <div className="mt-3 flex flex-wrap items-center gap-2"><span className="text-xs" style={{ color: MUTED }}>Recent:</span>{recentPaths.map((path) => <Link key={path} href={path} onClick={() => trackVisit(path)} className="rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition hover:bg-[#eef7fd]" style={{ borderColor: BORDER, color: MUTED }}>{pathLabels[path] ?? path}</Link>)}</div>}
         </section>
 
-        {/* ── Module Navigation — desktop only ───────────────────── */}
-        <section aria-label="Modules" className="mb-8 hidden md:block">
-          <SectionHeading>Modules</SectionHeading>
-          <div className="mt-4 space-y-4">
-            {dashboardModuleGroups.map((group) => (
-              <ModuleGroupCard key={group.label} label={group.label} items={group.items} color={group.color} gradient={group.gradient} onNavigate={trackVisit} />
-            ))}
-          </div>
-        </section>
+        {horseCount === 0 && !loading && <section className="mt-7 rounded-2xl border border-dashed bg-white p-8 text-center sm:p-12" style={{ borderColor: "#b9c9d8" }}><div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef7fd]" style={{ color: BRAND }}><Sparkles className="h-7 w-7" /></div><h2 className="mt-4 font-serif text-xl font-semibold" style={{ color: NAVY }}>Build your EquiProfile workspace</h2><p className="mx-auto mt-2 max-w-lg text-sm leading-6" style={{ color: MUTED }}>Add your first horse to start using the health, training, nutrition, documents, calendar and reporting tools already available in your account.</p><Link href="/horses/new" className="mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white" style={{ backgroundColor: BRAND }}><Plus className="h-4 w-4" /> Add your first horse</Link></section>}
 
-        {/* ── Getting Started (empty state) ──────────────────────── */}
-        {!isLoading && !hasHorses && (
-          <section aria-label="Getting started" className="mb-8">
-            <GettingStarted />
-          </section>
-        )}
+        <section className="mt-8 pb-8" aria-label="EquiProfile modules">
+          <div className="mb-4"><p className="text-[10px] font-extrabold uppercase tracking-[.14em]" style={{ color: BRAND }}>Your EquiProfile tools</p><h2 className="mt-1 font-serif text-xl font-semibold" style={{ color: NAVY }}>Everything in your management workspace</h2><p className="mt-1 text-sm" style={{ color: MUTED }}>The dashboard no longer hides modules behind different colour-coded visual systems.</p></div>
+          <div className="space-y-4">{dashboardModuleGroups.map((group) => <ModuleGroup key={group.label} group={group} onVisit={trackVisit} />)}</div>
+        </section>
       </div>
     </div>
   );
 }
-
-// ─── Page Component ──────────────────────────────────────────────────────────
 
 export default function DashboardV2() {
   const { loading, user } = useAuth({ redirectOnUnauthenticated: true });
@@ -621,7 +301,6 @@ export default function DashboardV2() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    // Admin users bypass all redirects — they can view any dashboard
     if (user?.role === "admin") return;
     if (subscription?.planTier === "stable" && !subscription?.bothDashboardsUnlocked) {
       setLocation("/stable-dashboard");
@@ -637,25 +316,12 @@ export default function DashboardV2() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen bg-[#f7f8fa] dark:bg-[#0f1219]">
-          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-            <SkeletonPulse className="mb-2 h-8 w-64" />
-            <SkeletonPulse className="mb-8 h-4 w-48" />
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-              <MetricCardSkeleton />
-              <MetricCardSkeleton />
-              <MetricCardSkeleton />
-              <MetricCardSkeleton />
-            </div>
-          </div>
+        <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8" style={{ backgroundColor: PAGE }}>
+          <div className="mx-auto max-w-7xl"><Skeleton className="h-48" /><div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4"><Skeleton className="h-36" /><Skeleton className="h-36" /><Skeleton className="h-36" /><Skeleton className="h-36" /></div></div>
         </div>
       </DashboardLayout>
     );
   }
 
-  return (
-    <DashboardLayout>
-      <DashboardContent />
-    </DashboardLayout>
-  );
+  return <DashboardLayout><DashboardContent /></DashboardLayout>;
 }
