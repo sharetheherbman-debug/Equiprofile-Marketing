@@ -29,8 +29,10 @@ describe("static route hardening", () => {
     }
   });
 
-  it("returns a safe frontend-unavailable response when a built index is missing", () => {
-    expect(viteSource).toContain('res.status(503).type("text/plain").send("Frontend temporarily unavailable")');
+  it("returns a safe Management-specific 503 when the built index is missing", () => {
+    expect(viteSource).toContain(".status(503)");
+    expect(viteSource).toContain('.type("text/plain")');
+    expect(viteSource).toContain('.send("Management frontend temporarily unavailable")');
     expect(viteSource).not.toContain('res.status(500).send("Frontend build not found")');
   });
 });
