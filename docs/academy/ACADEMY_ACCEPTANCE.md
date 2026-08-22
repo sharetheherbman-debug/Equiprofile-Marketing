@@ -131,7 +131,7 @@ The latest corrective PR report at the Manus stopping point records:
 - Management/Academy/Shop/server build: passed
 - PR-scoped Prettier/whitespace: passed
 
-Core CI run `32565926495` passed Security Scan, Changed Code Quality, deterministic Test & Build, and UI Smoke Test for the current draft candidate branch; deployment remained skipped.
+Core CI run `32566392878` passed Security Scan, Changed Code Quality, deterministic Test & Build, and UI Smoke Test for the latest individual Academy factual-review candidate; deployment remained skipped.
 
 ## 10. External dependencies still outstanding
 
