@@ -8951,76 +8951,80 @@ Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on th
     category: "Handling & Groundwork",
     sortOrder: 3,
     objectives: [
-      "Tie a quick-release knot correctly",
-      "Choose appropriate tying locations and equipment",
-      "Understand why baler twine breakpoints are used",
-      "Handle a horse that pulls back when tied",
+      "Recognise that tying requires individual-horse assessment, qualified instruction, appropriate equipment, and current site emergency procedures",
+      "Understand that the responsible person or qualified handler must select and inspect the tie point, equipment, and supervision for the individual context",
+      "Recognise that breakaway arrangements and knot choice are site- and equipment-specific safety decisions, not universal instructions",
+      "Know when to move to safety and obtain experienced-handler or emergency support rather than attempting a pull-back remedy independently",
     ],
-    content: `Tying a horse up safely is an essential everyday skill.
+    content: `Tying a horse is a handling activity that requires individual-horse assessment, qualified instruction, appropriate equipment, active supervision, and current site emergency procedures. A generic lesson cannot decide whether a horse is safe to tie, identify the cause of a pull-back, select an appropriate tie point or breakaway arrangement, guarantee that any knot will release in an emergency, or replace the responsible person, experienced handler, veterinarian, or emergency response.
 
-## The Quick-Release Knot
+## Before a Horse Is Tied
 
-The quick-release knot is the only knot you should use. It can be undone instantly by pulling the free end. Loop the rope through the tie ring, create a bight, pass it through the loop, and tighten.
+The responsible person or qualified handler must assess the horse, handling history, location, tie point, equipment condition, rope material and length, surrounding hazards, supervision, access, group context, weather, footing, welfare, and emergency arrangements. Do not tie a horse, select a location, alter equipment, or practise a knot if you do not have current permission, in-person instruction, and the required support.
 
-## Tying Height and Length
+Mississippi State Extension describes using a quick-release knot as part of safe tying practice and explains that a sturdy tie point and an appropriate amount of rope can reduce entanglement risk. Its approximate examples are context-specific; they are not a universal height, length, or equipment prescription. A qualified handler must demonstrate the knot, tie point, rope handling, supervision, emergency release, and any site-specific breakaway arrangement for the individual horse and setting.
 
-Tie at approximately the horse's eye level. The rope should be short enough that the horse cannot get a leg over it, but long enough for comfort — roughly 60-80cm.
+## Knot and Equipment Boundaries
 
-## Baler Twine Breakpoints
+A quick-release knot may be appropriate when it is selected and taught by the qualified handler under the current site procedure. Do not claim that it is the only acceptable knot, copy a sequence from text alone, assume it can be released instantly under load, or use a knot as a substitute for supervision and emergency planning. The handler must know the site’s designated emergency response before tying begins.
 
-Always tie to a piece of baler twine attached to a solid ring, not directly to a fixed ring. If the horse panics and pulls back, the baler twine breaks before the horse injures itself.
+Do not use a fixed centimetre measurement, an “eye-level” rule, baler twine, cross-tie, fixed ring, bridle rein, rope, or breakaway material as a universal recommendation. The responsible person must select equipment that is in good condition and appropriate to the horse, task, tie point, local procedure, and current risks. Never wrap rope around the hand or body, leave it where it may entangle a person or horse, or use damaged equipment.
 
-## Dealing with Horses That Pull Back
+## If a Horse Pulls Back or Becomes Unsettled
 
-Never punish a horse for pulling back. Use a longer rope initially and stand nearby. Build confidence with short tying sessions.`,
+If a horse becomes tense, pulls back, moves unexpectedly, entangles equipment, or conditions change, do not punish, hold against the horse, lengthen a rope, start a training session, or attempt a self-directed remedy from this lesson. Move to safety as directed, follow the current emergency procedure, and obtain the responsible person or an experienced handler. Call emergency or veterinary support when the current procedure requires it.
+
+## Supervision and Review
+
+A tied horse requires the supervision and safety arrangements set by the responsible person. Do not assume a generic maximum unattended time, “short session,” repeated practice count, or progress schedule is safe. Use factual observation and ask the qualified handler how the tie point, equipment, horse suitability, supervision, welfare checks, and stop/escalation route were assessed.`,
     keyPoints: [
-      "Always use a quick-release knot",
-      "Tie at eye level with 60-80cm of rope",
-      "Use baler twine as a breakpoint",
-      "Never leave a tied horse unattended for long periods",
-      "Build confidence gradually with horses that pull back",
+      "Tying requires individual-horse assessment, qualified instruction, appropriate equipment, active supervision, and current site emergency procedures",
+      "A qualified handler must select and demonstrate the appropriate tie point, rope handling, knot, equipment, supervision, and emergency release for the individual context",
+      "Do not treat a fixed height, length, knot, rope, breakaway material, baler twine, or tie point as a universal recommendation",
+      "Follow the responsible person’s current supervision and welfare arrangements; no generic unattended-time rule applies to every horse and setting",
+      "If a horse becomes tense, pulls back, moves unexpectedly, or entangles equipment, move to safety as directed and obtain experienced-handler or emergency support",
     ],
     safetyNote:
-      "Never tie a horse using the reins of a bridle. If the horse pulls back, it can injure its mouth.",
+      "Do not tie, alter equipment, choose a knot, or attempt a pull-back remedy outside the current qualified handling and emergency procedure. Never wrap rope around the hand or body, use damaged equipment, or continue if horse behaviour, welfare, tie point, equipment, supervision, or emergency arrangements are unsuitable.",
     practicalApplication:
-      "Practise tying a quick-release knot 10 times until you can do it smoothly.",
+      "Only under qualified in-person instruction and the responsible person’s current procedure, observe how the appropriate tie point, equipment, knot, supervision, emergency release, welfare checks, and escalation route are selected. Do not practise knot tying, tie a horse, test an emergency release, or respond to a pull-back from this lesson alone.",
     commonMistakes: [
-      "Using a dead knot",
-      "Tying the rope too long",
-      "Tying directly to a solid object without baler twine",
-      "Leaving a tied horse completely unattended",
-      "Tying with the reins",
+      "Using a knot, tie point, rope, breakaway material, height, length, or equipment arrangement without the individual qualified method and current site procedure",
+      "Assuming a fixed rope measurement, eye-level reference, or generic unattended-time rule applies to every horse and setting",
+      "Copying a breakaway, baler-twine, cross-tie, or emergency-release arrangement without qualified assessment of the horse, tie point, equipment, and current risks",
+      "Continuing to tie or attempting a self-directed pull-back remedy when horse behaviour, welfare, equipment, tie point, supervision, or emergency arrangements are unsuitable",
+      "Wrapping rope around the hand or body, allowing entanglement, using damaged equipment, punishing a horse, or trying to hold against the horse",
     ],
     knowledgeCheck: [
       {
-        question: "Why should you always use baler twine when tying a horse?",
+        question: "Who decides the appropriate tie point, knot, rope handling, breakaway arrangement, supervision, and emergency release for a horse?",
         options: [
-          "It looks neater",
-          "It acts as a breakpoint if the horse panics",
-          "It's cheaper than rope",
-          "It's tradition",
+          "Any learner using a generic online measurement or knot diagram",
+          "The responsible person or qualified handler after assessing the individual horse, equipment, location, risks, and current site procedure",
+          "The horse’s previous tie arrangement alone",
+          "A fixed baler-twine rule",
         ],
         correctIndex: 1,
         explanation:
-          "Baler twine breaks under extreme force, preventing injury.",
+          "Tying arrangements are context-specific. A generic lesson cannot select a safe knot, tie point, breakaway material, height, length, or supervision plan for every horse and setting.",
       },
       {
-        question: "What type of knot should you use?",
+        question: "What should happen if a tied horse becomes tense, pulls back, moves unexpectedly, or entangles equipment?",
         options: [
-          "A reef knot",
-          "A bowline",
-          "A quick-release knot",
-          "A double knot",
+          "Hold against the horse and add more rope",
+          "Punish the horse or begin a training session alone",
+          "Move to safety as directed, follow the current emergency procedure, and obtain responsible-person or experienced-handler support",
+          "Assume a generic knot will solve the problem",
         ],
         correctIndex: 2,
         explanation:
-          "A quick-release knot can be undone instantly in emergencies.",
+          "A pull-back or entanglement can become an emergency. Do not use a generic remedy; move to safety, follow the current procedure, and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How to tie a quick-release knot step by step?",
-      "My horse always pulls back when tied",
-      "Is it safe to cross-tie a horse?",
+      "What current qualified-handler and site procedure governs tying, supervision, emergency release, and escalation for this individual horse?",
+      "How should I report a factual tie-point, equipment, rope, horse-welfare, behaviour, or safety concern to the responsible person?",
+      "What authority, in-person instruction, equipment check, supervision, and emergency procedure are required before I tie a horse?",
     ],
     linkedCompetencies: ["safety_awareness", "groundwork_skills"],
   },
