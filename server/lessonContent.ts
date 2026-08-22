@@ -2344,80 +2344,59 @@ Before every ride, verify:
     category: "Rider Foundations",
     sortOrder: 8,
     objectives: [
-      "Understand the biomechanics of the rider's position and how it influences the horse",
-      "Identify and correct common rider asymmetries",
-      "Develop an effective, independent seat at walk, trot, and canter",
-      "Assess and improve riding without stirrups as a diagnostic tool",
+      "Use qualified coaching observation to reflect on rider position and comfort",
+      "Recognise when a position concern needs qualified coaching or health-professional input",
+      "Work toward an individual, coach-approved balanced seat at suitable paces",
+      "Understand that any no-stirrup exercise requires individual coach approval and safety controls",
     ],
-    content: `An advanced understanding of rider position goes far beyond "heels down, shoulders back." At this level, you need to understand the biomechanics of how your body interacts with the horse's movement, recognise and correct your own asymmetries, and develop the kind of independent, following seat that allows you to influence the horse with subtlety and precision. This lesson examines position from a biomechanical perspective and provides the tools for ongoing self-analysis.
+    content: `Rider position is individual to the rider, horse, saddle, activity, pace, experience, health, comfort, and current coaching plan. This lesson offers a vocabulary for reflection; it does not diagnose a rider or horse, prescribe exercise, prove the cause of a movement concern, or replace a qualified coach, medical professional, physiotherapist, saddle fitter, or veterinarian. Any mounted exercise must be approved for the individual partnership and current conditions by the responsible qualified person.
 
 ## Biomechanics of the Rider
 
-The rider's body is a dynamic system that must constantly adapt to the horse's movement. At walk, the horse's back swings in a figure-of-eight pattern. At trot, the movement is vertical and diagonal. At canter, it is a rolling, rocking motion. An effective rider absorbs and follows all of these movements without stiffening, gripping, or falling behind or ahead of the motion.
+Rider and horse movement are dynamic and vary between individual partnerships, paces, footing, tack, fatigue, training, and the task. A qualified coach can observe whether a rider appears balanced, comfortable, and able to respond safely without excessive tension. Learners should not use a generic description to diagnose a horse’s back movement, a rider’s body, saddle fit, or the cause of a performance issue.
 
-**The pelvis** is the foundation of the rider's seat. It must be level, centred, and able to move freely with the horse. A tilted pelvis — whether tipping forward (anterior tilt) or backward (posterior tilt) — affects the entire kinetic chain above and below. An anterior tilt hollows the lower back and pushes the seat out of the saddle. A posterior tilt rounds the back and causes the rider to sit heavily on the horse's back.
+A coach may use neutral terms such as **pelvis**, **upper body**, **shoulders**, **hands**, **legs**, **feet**, and **stirrups** when describing what they observe. The coach should adapt any position cue to the individual rider, horse, saddle, task, and discipline. Avoid treating a cue, posture, or apparent asymmetry as a medical finding, a guarantee of horse comfort, or a universal correction.
 
-**The core muscles** — not just the abdominals, but the deep stabilisers including the pelvic floor and multifidus — provide the stability that allows the limbs to move independently. A rider with a strong core can give refined leg and hand aids without losing their balance or disturbing the horse.
-
-**The shoulder girdle** must be relaxed and level. Tension in the shoulders transmits through the arms to the hands, creating a rigid, unforgiving contact. The elbows should hang naturally at the rider's sides, with a soft bend and a straight line from elbow to bit.
-
-**The leg** should drape around the horse with weight dropping through a long, soft thigh into a deep heel. The knee acts as a hinge, not a clamp. Gripping with the knee lifts the seat and pushes the lower leg away, reducing its effectiveness.
+University of Missouri Extension advises riders to use tack that fits both horse and rider, footwear and stirrups that fit safely, and—when appropriate for the riding context—place the ball of the foot over the stirrup tread with the heel lower than the toe. It also recognises rider and discipline variation. A qualified coach should decide whether any additional position cue is suitable.
 
 ## Asymmetry Correction
 
-Every rider has asymmetries. You may collapse one hip, weight one stirrup more heavily, or carry one hand higher than the other. These asymmetries affect the horse — a rider who consistently sits heavier on the left will cause the horse to drift left, and a rider with one stiff hip will block the horse's movement on that rein.
+A rider or coach may notice that the two sides of a rider’s position do not look or feel identical. Observation alone cannot establish the cause, whether it affects the horse, or what intervention is appropriate. A qualified coach should assess the riding context; persistent pain, limitation, or a health concern requires an appropriately qualified health professional.
 
-**Identifying asymmetry:**
-- Have someone photograph or video you from behind at halt, walk, trot, and canter. Look for differences between left and right.
-- Notice which rein feels easier. The "better" rein is often the one where your asymmetry helps the horse; the "worse" rein is where it hinders.
-- Use a physiotherapist or sports therapist who understands equestrian biomechanics to assess your body off the horse.
+**Observing with qualified help:**
+- A qualified coach may use live observation or, where appropriate and consented to, video to discuss a position cue in the actual riding context.
+- Treat a difference between reins, paces, or days as information to discuss—not proof of its cause or a reason to blame the rider or horse.
+- Seek an appropriately qualified health professional for pain, injury, persistent limitation, or questions outside coaching scope.
 
-**Correcting asymmetry:**
-- Targeted exercises off the horse — yoga, Pilates, and specific rider fitness programmes — address muscular imbalances.
-- On the horse, exercises such as riding with one hand on the pommel, or placing a hand on the hip that drops, can increase awareness.
-- Regularly change the rein you work on first to avoid always schooling the "easy" rein.
-- Be patient — asymmetry develops over years and takes time to correct.
+**Responding safely:**
+- Follow the individual coach-approved plan; do not self-prescribe a fitness, rehabilitation, or mounted correction programme from a lesson.
+- Stop an exercise that causes pain, loss of balance, horse discomfort, or an unsafe change in conditions, and obtain qualified advice.
+- Review tack, horse, rider, and environment with the relevant qualified professional rather than assuming a single cause.
 
 ## The Effective Seat at All Paces
 
-An effective seat is one that follows the horse's movement without disturbing it, while remaining ready to influence the horse at any moment.
+A coach may describe an effective seat as balanced, comfortable, responsive, and suitable for the individual partnership’s current task. The coach decides which pace, exercise, cue, and duration are appropriate. Do not treat a generic description of walk, trot, or canter as a universal prescription; stop and seek coaching if the rider feels unsafe or the horse appears uncomfortable or difficult to control.
 
-**At walk:** The pelvis follows the horse's back in a gentle figure-of-eight. The upper body remains quiet and tall. The legs hang softly, ready to apply aids.
+## Any No-Stirrup Exercise Requires Individual Approval
 
-**At sitting trot:** The pelvis absorbs the vertical movement of the trot by allowing a subtle opening and closing of the hip angle. The lower back must be supple — bracing against the movement causes bouncing. Think of your seat bones drawing small circles on the saddle.
+Riding without stirrups is not a universal diagnostic tool, progression test, fitness intervention, or indicator that a rider’s position is “sound.” It may be an appropriate coach-supervised exercise for some horse-and-rider partnerships in a suitable setting, but it can increase risk or discomfort for others.
 
-**At canter:** The pelvis follows the rolling motion of the canter by allowing the hips to swing forward and back. The shoulders remain still and upright. The common fault of "pumping" with the upper body actually disrupts the horse's canter rather than helping it.
-
-## Riding Without Stirrups — Assessment Tool
-
-Riding without stirrups is one of the most effective diagnostic tools for assessing rider position. Without the support of stirrups, any reliance on the knee or stirrup for balance becomes immediately apparent.
-
-**Benefits:**
-- Deepens the seat and develops a longer, more secure leg.
-- Reveals grip patterns and tension that stirrups mask.
-- Improves core stability and balance.
-
-**How to assess:**
-- Cross your stirrups and ride at walk for five minutes. Notice where you feel tension or insecurity.
-- Progress to sitting trot without stirrups. Can you maintain a soft, following seat, or do you grip and bounce?
-- At canter, without stirrups, the quality of your seat is fully exposed. If you can sit the canter softly without stirrups, your position is fundamentally sound.
-
-Incorporate regular no-stirrup work into your training, but build up gradually. Overdoing it when your muscles are not conditioned can cause soreness and tension, which is counterproductive.`,
+Before any no-stirrup exercise, the qualified coach and responsible person must consider the rider, horse, tack, setting, pace, supervision, current conditions, and emergency arrangements. The coach decides whether the exercise is suitable, how it is set up, whether stirrups are moved or retained, and when it stops. Do not use a fixed duration, progress alone to a faster pace, or continue if balance, comfort, horse behaviour, tack, or conditions are unsuitable.`,
     keyPoints: [
-      "The pelvis is the foundation of the seat — its position affects the entire kinetic chain",
-      "Core stability allows independent use of the aids without disturbing the horse's balance",
-      "Every rider has asymmetries that affect the horse, and targeted exercises can correct them",
-      "An effective seat follows the horse's movement at each pace without stiffening or pumping",
-      "Riding without stirrups is a powerful diagnostic tool that reveals hidden grip patterns and tension",
+      "Position cues must be adapted by a qualified coach to the individual rider, horse, saddle, activity, and current conditions",
+      "A position concern is not a diagnosis; persistent pain, limitation, or comfort concern needs the appropriate qualified professional",
+      "Observation can inform a coach-led discussion but does not establish the cause of an apparent asymmetry or its effect on the horse",
+      "The coach determines which pace and exercise are appropriate; stop if the rider feels unsafe or the horse appears uncomfortable or difficult to control",
+      "No-stirrup work is not a universal test and requires coach approval, a suitable partnership, and current safety controls",
     ],
     safetyNote:
-      "When riding without stirrups, always work in an enclosed arena on a calm, steady horse. Build up gradually — do not attempt extended periods of no-stirrup canter until you are comfortable at walk and trot. If you feel yourself becoming tense or unbalanced, take the stirrups back and regroup. Never cross your stirrups over the withers on a horse that is likely to spook, as the buckles can dig into the horse and provoke a reaction.",
+      "Do not start or progress any no-stirrup exercise without coach approval and the responsible person’s current safety arrangements. Stop if balance, rider comfort, horse behaviour, tack, footing, weather, supervision, or emergency arrangements become unsuitable; obtain qualified advice before resuming.",
     practicalApplication:
-      "Ask someone to video you from behind at walk, trot, and canter. Analyse the footage for asymmetries — hip collapse, uneven stirrup pressure, one hand higher than the other. Choose one asymmetry to work on and research two off-horse exercises to address it. Incorporate five minutes of no-stirrup walk and trot at the start of each schooling session for the next four weeks and note any changes in your balance and feel.",
+      "Ask a qualified coach which current position and safety observations are appropriate for your horse-and-rider partnership. With consent, the coach may use observation or video as part of an individual coaching discussion. Do not prescribe a no-stirrup, fitness, rehabilitation, or position-correction programme from this lesson; discuss pain, persistent limitation, tack, or horse-comfort concerns with the appropriate qualified professional.",
     commonMistakes: [
-      "Gripping with the knee to compensate for a weak core, which lifts the seat out of the saddle and reduces leg effectiveness",
-      "Bracing the lower back against the sitting trot instead of allowing the hips to absorb the movement",
-      "Ignoring rider asymmetry and blaming the horse for being one-sided when the issue originates from the rider",
+      "Assuming a position cue proves a rider’s strength, injury status, horse comfort, saddle fit, or cause of a performance concern",
+      "Continuing a mounted exercise despite pain, loss of balance, horse discomfort, unsafe conditions, or a qualified instruction to stop",
+      "Blaming either rider or horse without a qualified assessment of the individual partnership and current context",
     ],
     knowledgeCheck: [
       {
