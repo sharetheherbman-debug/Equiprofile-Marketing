@@ -882,22 +882,6 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
 function VirtualHorseView() {
   const utils = trpc.useUtils();
   const { data: vHorse, isLoading } = trpc.student.getVirtualHorse.useQuery();
-  const { data: taskEngineStatus } =
-    trpc.student.getTaskEngineStatus.useQuery();
-  const toggleEngineMut = trpc.student.toggleTaskEngine.useMutation({
-    onSuccess: (res) => {
-      utils.student.getTaskEngineStatus.invalidate();
-      // Auto-generate if just enabled
-      if (res.enabled) {
-        generateTasksMut.mutate();
-      }
-    },
-  });
-  const generateTasksMut = trpc.student.generateDailyTasks.useMutation({
-    onSuccess: (res) => {
-      if (res.generated > 0) utils.student.listTasks.invalidate();
-    },
-  });
   const createMut = trpc.student.createVirtualHorse.useMutation({
     onSuccess: () => utils.student.getVirtualHorse.invalidate(),
   });
@@ -1029,51 +1013,14 @@ function VirtualHorseView() {
           ))}
         </div>
 
-        {/* Daily Task Engine toggle */}
-        <div className="mt-5 pt-4 border-t border-gray-200 flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
-              <Flame className="w-4 h-4 text-amber-600" /> Daily Care Tasks
-              {taskEngineStatus?.enabled && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-semibold">
-                  ON
-                </span>
-              )}
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {taskEngineStatus?.enabled
-                ? "Auto-generates 3 daily care tasks each morning based on your level."
-                : "Turn on to automatically receive daily virtual horse care tasks."}
-            </p>
-          </div>
-          <button
-            onClick={() => toggleEngineMut.mutate()}
-            disabled={toggleEngineMut.isPending}
-            className={`relative shrink-0 w-11 h-6 rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-              taskEngineStatus?.enabled ? "bg-emerald-500" : "bg-gray-300"
-            }`}
-            aria-label="Toggle daily task engine"
-          >
-            <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                taskEngineStatus?.enabled ? "translate-x-5" : "translate-x-0"
-              }`}
-            />
-          </button>
+        <div className="mt-5 pt-4 border-t border-gray-200">
+          <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
+            <Flame className="w-4 h-4 text-amber-600" /> Virtual-horse task templates withheld
+          </p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Legacy automated care prompts are unavailable while their factual and safety review is completed. Use reviewed Academy lessons, authorised teacher assignments, or your own non-clinical task records.
+          </p>
         </div>
-        {taskEngineStatus?.enabled &&
-          generateTasksMut.data?.generated === 0 && (
-            <p className="text-xs text-gray-400 mt-2 text-center">
-              Today's tasks already generated. Check your Tasks view.
-            </p>
-          )}
-        {taskEngineStatus?.enabled &&
-          (generateTasksMut.data?.generated ?? 0) > 0 && (
-            <p className="text-xs text-emerald-600 mt-2 text-center">
-              ✓ {generateTasksMut.data?.generated} daily tasks added to your
-              task list.
-            </p>
-          )}
       </SCard>
     </div>
   );
@@ -1083,13 +1030,6 @@ function VirtualHorseView() {
 function TasksView() {
   const utils = trpc.useUtils();
   const { data: tasks, isLoading } = trpc.student.listTasks.useQuery({});
-  const { data: taskEngineStatus } =
-    trpc.student.getTaskEngineStatus.useQuery();
-  const generateTasksMut = trpc.student.generateDailyTasks.useMutation({
-    onSuccess: (res) => {
-      if (res.generated > 0) utils.student.listTasks.invalidate();
-    },
-  });
   const createMut = trpc.student.createTask.useMutation({
     onSuccess: () => utils.student.listTasks.invalidate(),
   });
@@ -1110,14 +1050,6 @@ function TasksView() {
     frequency: "daily" as const,
   });
 
-  // Auto-generate daily tasks once when engine is enabled
-  useEffect(() => {
-    if (taskEngineStatus?.enabled) {
-      generateTasksMut.mutate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskEngineStatus?.enabled]);
-
   if (isLoading)
     return (
       <SCard>
@@ -1127,9 +1059,6 @@ function TasksView() {
 
   const pending = (tasks ?? []).filter((t) => !t.isCompleted);
   const completed = (tasks ?? []).filter((t) => t.isCompleted);
-
-  const isAutoTask = (t: { description?: string | null }) =>
-    !!t.description?.startsWith("__vhorse__");
 
   return (
     <div className="space-y-4">
@@ -1229,11 +1158,6 @@ function TasksView() {
                 <span className="text-sm text-gray-600 flex-1">
                   {task.title}
                 </span>
-                {isAutoTask(task) && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium border border-amber-500/20 flex items-center gap-1 shrink-0">
-                    <Sparkles className="w-2.5 h-2.5" /> Daily
-                  </span>
-                )}
                 <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-[#2e6da4] font-medium">
                   {task.category}
                 </span>

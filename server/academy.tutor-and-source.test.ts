@@ -64,4 +64,25 @@ describe("Academy curriculum and Tutor boundaries", () => {
     expect(serviceWorker).not.toContain("/api/trpc/student.getDailyScenarios");
     expect(serviceWorker).toContain("academy-scenarios-withheld-20260822");
   });
+
+  it("withholds unreviewed virtual-horse task templates without deleting stored task history", () => {
+    const router = read("server/studentRouter.ts");
+    const start = router.indexOf("// Virtual Horse Daily Task Engine");
+    const end = router.indexOf("// STUDENT MESSAGING", start);
+    const taskEngine = router.slice(start, end);
+    const dashboard = read("client/src/pages/StudentDashboard.tsx");
+
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    expect(router).toContain("isWithheldLegacyVirtualHorseTask");
+    expect(router).toContain("return tasks.filter((task) => !isWithheldLegacyVirtualHorseTask(task));");
+    expect(taskEngine).toContain("Legacy template prompts are intentionally withheld");
+    expect(router).toContain("withheld_pending_factual_and_safety_review");
+    expect(taskEngine).toContain("PRECONDITION_FAILED");
+    expect(taskEngine).not.toContain("TASK_POOLS");
+    expect(taskEngine).not.toContain("insert(studentTasks).values");
+    expect(dashboard).toContain("Virtual-horse task templates withheld");
+    expect(dashboard).not.toContain("trpc.student.generateDailyTasks.useMutation");
+    expect(dashboard).not.toContain("trpc.student.toggleTaskEngine.useMutation");
+  });
 });

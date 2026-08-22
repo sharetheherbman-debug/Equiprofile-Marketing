@@ -45,14 +45,16 @@ Do **not** replace these unresolved states with generated or inferred PASS value
 
 Corrective rewrites already made are documented in `docs/academy/factual-source-findings.md`; those corrections do not imply that every remaining material statement in the affected lesson has been independently accepted.
 
-### Legacy static Daily Practice scenario boundary
+### Legacy static learner-content boundaries
 
 | Surface | Status | Evidence / remaining work |
 | --- | --- | --- |
 | Legacy static scenario source | **Not accepted** | The old 50-scenario source includes unreviewed medical, welfare, handling, feeding, tack, riding and competition claims. It is not counted as accepted Academy curriculum. |
 | Student list/daily/answer scenario procedures | **Fail-closed** | The server returns no static scenarios and rejects answer revelation while the individual factual and safety review is outstanding. |
 | Student UI and offline cache | **Fail-closed** | The Daily Practice view explains the withholding, directs learners to reviewed lessons or authorised teacher work, and the service worker no longer caches the endpoint; its cache revision is advanced to evict stale scenario payloads. |
-| Re-enablement | **Blocked** | Requires a complete per-scenario source-to-claim review, learner-content rewrite where needed, assessment/Tutor review, explicit acceptance record, and relevant server/UI validation. |
+| Legacy virtual-horse daily-task templates | **Not accepted / fail-closed** | The template source contains unreviewed feeding, health, welfare, handling, tack, exercise and emergency prompts. Generation and toggling reject requests; existing template-marked records remain stored for history but are filtered from student overview and task-list responses. |
+| Legacy virtual-horse task UI | **Fail-closed** | The student dashboard no longer offers automated care-task generation and explains the withholding; independent user task records and authorised teacher work remain available. |
+| Re-enablement | **Blocked** | Requires a complete per-scenario and per-template source-to-claim review, learner-content rewrite where needed, assessment/Tutor review, explicit acceptance record, and relevant server/UI validation. |
 
 ## 3. Disposable authenticated Academy acceptance
 
