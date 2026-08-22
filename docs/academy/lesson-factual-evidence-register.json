@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 62,
-    "claimReviewedAndAccepted": 40
+    "sourceMappedRequiresSpecificClaimReview": 63,
+    "claimReviewedAndAccepted": 39
   },
   "lessons": [
     {
@@ -4288,23 +4288,17 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "must",
         "required",
         "rule",
         "legal"
       ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: Generic workload bands, pre-exercise and recovery timing, transition intervals, ration templates and supplement assumptions were removed; qualified review now uses factual individual records.",
-      "lessonChangeMade": "Removed generic workload bands, pre-exercise/recovery timing, feed-transition intervals, ration-template adjustments and supplement assumptions from both base and enhancement text; now uses factual records and qualified individual-plan review.",
-      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
-      "reviewDecision": {
-        "reviewedAt": "2026-08-21",
-        "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/feeding-horses/",
-        "claimReviewed": "Generic workload bands, pre-exercise and recovery timing, transition intervals, ration templates and supplement assumptions were removed; qualified review now uses factual individual records.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
-      }
+      "whatWasVerified": "Prior acceptance documents removal of generic workload and feeding prescriptions, but it does not record individual source-to-claim decisions for the remaining material workload, condition, forage, behaviour, appetite, water, droppings, dental, health, seasonal, management, nutrition, veterinary-escalation and assessment claims.",
+      "lessonChangeMade": "The prior safety-bounded rewrite is retained, but the lesson is returned to unresolved status pending a complete individual claim review and any necessary corrective rewrite.",
+      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
+      "reviewDecision": null
     },
     {
       "lessonSlug": "supplements-and-special-diets",
