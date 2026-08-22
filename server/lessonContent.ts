@@ -3261,122 +3261,97 @@ Risk assessment and incident reporting work best when everyone on the yard takes
       "Understand the safety considerations for lone working on a yard",
       "Apply risk management principles to complex real-world scenarios",
     ],
-    content: `As your experience and responsibility increase, your understanding of safety must deepen beyond personal awareness to encompass the safety of others. Advanced safety awareness covers duty of care, supervision responsibilities, lone working procedures and the ability to apply risk management thinking to novel situations.
+    content: `As experience and responsibility increase, safety decisions must remain within the learner’s competence, authority, current site procedure, and applicable law. Advanced safety awareness means recognising a hazard, stopping when needed, reporting it through the designated route, and obtaining competent help rather than making legal, safeguarding, medical, welfare, or horse-management decisions alone.
 
 ## Duty of Care
 
-In law, a **duty of care** means a legal obligation to ensure the safety of others who may be affected by your actions or omissions. On an equestrian yard, this applies to:
+The legal meaning and allocation of **duty of care** varies by jurisdiction, employment/volunteer arrangement, contract, safeguarding role, insurance, and the facts of an incident. This lesson is not legal advice and does not allocate legal liability.
 
-- **Yard owners and managers** — Have a duty of care to staff, clients, visitors and contractors. This includes providing a safe working environment, maintaining equipment, providing training and supervision, and carrying adequate insurance.
-- **Instructors and coaches** — Have a duty of care to their pupils. This includes assessing the rider's ability, matching the horse to the rider, checking tack and equipment, managing the lesson environment and responding appropriately to incidents.
-- **Staff and volunteers** — Have a duty to work safely, follow procedures and report hazards. Even without formal authority, anyone who sees a danger has a responsibility to act — by reporting it, warning others or fixing it if they can do so safely.
-- **Horse owners** — Have a duty to disclose known behavioural issues (e.g., a horse that kicks, bolts or is difficult to handle) to anyone who may work with their horse.
-
-Failing in a duty of care can result in legal action, compensation claims, criminal prosecution and reputational damage. More importantly, it can result in someone being seriously hurt.
+At a yard, learners should follow the current designated roles and procedures. A responsible person should arrange competent risk management, supervision, equipment and premises controls, emergency arrangements, and any required disclosures. Staff, volunteers, owners, instructors, and visitors should report observable hazards and follow the site procedure; no one should repair equipment, supervise others, handle a difficult horse, or make formal safety, welfare, or safeguarding decisions unless authorised and competent.
 
 ## Supervision Responsibilities
 
-If you are asked to supervise less experienced handlers, volunteers or younger riders:
+Supervision arrangements must be set by the responsible person and reflect the activity, horse, person’s capability, safeguarding requirements, local law, and current risk assessment. If you are not authorised and competent to supervise, do not take on that role.
 
-1. **Assess their competence** — What can they do safely? What do they need help with? Never assume someone knows more than they do.
-2. **Brief them clearly** — Before any task, explain what needs to be done, how to do it safely, and what to do if something goes wrong.
-3. **Stay present and attentive** — Supervision means being there, watching and ready to intervene. It does not mean giving instructions and walking away.
-4. **Match tasks to ability** — Do not ask a novice to handle a difficult horse or operate machinery. Stretch their skills gradually, with support.
-5. **Correct unsafe behaviour immediately** — If you see someone doing something dangerous, stop them calmly and explain why it is unsafe. Do not wait for an accident to teach the lesson.
+When acting within an approved role, follow the documented plan, verify that the activity is authorised and appropriately supervised, explain the stop/escalation route, and stop or report an activity that becomes unsafe. Do not teach handling, riding, machinery, child-contact, or safeguarding techniques from this lesson alone; obtain qualified instruction and use the current site policy.
 
 ## Lone Working
 
-Working alone on a yard carries specific risks:
-- If you are injured, there is no one to call for help
-- Tasks that require two people (e.g., handling a difficult horse, moving heavy equipment) should never be attempted alone
-- If a horse escapes, you cannot pursue it and call for help simultaneously
+Working alone may add risks because assistance, communication, emergency response, supervision, access, and the worker’s circumstances can differ from a staffed setting. HSE requires UK employers to assess, control, train, supervise, monitor, keep in contact with, and respond to incidents involving lone workers; applicable duties and arrangements vary elsewhere.
 
-**Precautions for lone working:**
-- Tell someone where you are and when you expect to finish. Check in at agreed times.
-- Carry a charged mobile phone at all times.
-- Avoid high-risk tasks (e.g., lungeing difficult horses, riding in remote areas, working with young or unpredictable horses).
-- Ensure you know the location of first aid kits and emergency equipment.
-- If something feels unsafe, do not do it. Wait until another person is available.
+**Before working alone:**
+- Follow the written lone-working assessment and authorisation for the actual activity, location, horse, equipment, and conditions.
+- Use the authorised contact, monitoring, emergency, access, and escalation arrangements; do not assume a personal phone or a generic check-in plan is sufficient.
+- Do not begin or continue a task where the assessment, competence, equipment, conditions, support, or emergency arrangements are inadequate.
+- Stop, move to a safe position if possible, and contact the designated responsible person or applicable emergency service if circumstances become unsafe.
 
 ## Applying Risk Management to Complex Scenarios
 
-Advanced safety awareness means being able to think through unfamiliar situations and make sound decisions. Consider:
+Advanced safety awareness means recognising when a situation exceeds a learner’s authority or competence. For example, a new horse, changing weather, a child visitor, unfamiliar equipment, a behavioural concern, or a welfare/safeguarding issue must be referred to the responsible person and managed under the current written site policy and qualified guidance.
 
-**Scenario: A new horse arrives at the yard. It is described as 'a bit sharp.' You are asked to turn it out in the field with the other horses.**
-- Risk: The new horse may fight with the established herd, causing injuries to horses or the handler.
-- Precautions: Turn the new horse out in an adjacent paddock first so horses can meet over the fence. If introducing directly, have experienced handlers present, remove hind shoes to reduce kick injuries, choose a large field with plenty of space, and be ready to separate the horses if aggression occurs.
-
-**Scenario: A thunderstorm is approaching while you are riding in an outdoor arena.**
-- Risk: Lightning strike, horse panic from thunder, slippery surfaces.
-- Precautions: Dismount and return to the stable before the storm arrives. Do not shelter under isolated trees. Stay away from metal fences and gates.
-
-**Scenario: A child visitor wants to stroke a horse over the stable door.**
-- Risk: The horse may bite or the child may startle the horse.
-- Precautions: Assess the horse's temperament. Supervise the child directly. Teach them to offer a flat hand. Do not leave them unsupervised.
-
-The ability to think through these scenarios — identifying the hazard, assessing the risk and deciding on precautions — is the mark of an advanced, safety-conscious equestrian.`,
+In an unfamiliar or changing situation, pause before acting. Identify immediate danger, move to a safe position without creating further risk, raise the appropriate alarm, and report factual observations through the designated route. Do not improvise turnout, weather, riding, child-contact, safeguarding, medical, or horse-handling procedures from a generic scenario. Ask the responsible person or an appropriate qualified professional which current procedure applies before any further action.`,
     keyPoints: [
-      "Duty of care is a legal obligation to ensure the safety of others affected by your actions",
-      "Supervision means being present, attentive and ready to intervene — not just giving instructions",
-      "When lone working, always tell someone where you are and carry a charged mobile phone",
-      "Match tasks to the ability of the person — never ask a novice to handle a high-risk situation alone",
-      "Advanced safety awareness means thinking through unfamiliar scenarios to identify and mitigate risks before they materialise",
+      "Legal duties and responsibilities depend on the jurisdiction, role, site, and facts; follow the responsible person’s current procedure",
+      "Supervision must be authorised, competent, activity-specific, and consistent with current safeguarding and site requirements",
+      "Lone-working controls must come from the current risk assessment, authorised contact and emergency arrangements, not a generic checklist",
+      "Do not undertake or supervise a task beyond your authority or competence; stop and obtain qualified help when risk changes",
+      "In an unfamiliar situation, identify immediate danger, use the designated stop/escalation route, and follow the responsible person’s current plan",
     ],
     safetyNote:
-      "If you are working alone and feel unsafe at any point, stop immediately. No task is worth risking a serious injury when there is no one available to help. If you are supervising others and an emergency occurs, prioritise human safety above all else. Evacuate people first, secure horses second and deal with property last. Always know where the nearest telephone and first aid kit are located.",
+      "Do not begin or continue lone work, supervision, horse handling, or an emergency action outside the current authorised assessment, your competence, and a safe escalation route. In immediate danger, raise the alarm and contact the applicable emergency service; then follow the current site plan and emergency-service instructions.",
     practicalApplication:
-      "Think about the scenarios described in this lesson and consider how you would handle each one. Discuss them with your instructor or yard manager. If you are asked to supervise novice handlers, plan a brief safety talk covering the key points: how to approach, how to handle, what to do if something goes wrong. If you work alone regularly, establish a buddy system with someone who can check on you at agreed intervals.",
+      "Ask the responsible person how the yard authorises supervision, lone work, adverse-weather decisions, visitor access, and emergency escalation. Review the current procedure with a qualified person and report any gap or changed condition. Do not create a supervision, child-contact, horse-introduction, or lone-working plan independently from this lesson.",
     commonMistakes: [
       "Assuming novice handlers understand basic safety without being told",
-      "Failing to disclose known behavioural issues about a horse to others who will handle it",
-      "Lone working without telling anyone where you are or when you expect to finish",
-      "Attempting tasks alone that require two or more people",
+      "Failing to report an observable hazard or changed condition through the designated responsible-person route",
+      "Working alone without the current authorised risk assessment, contact, monitoring, and emergency arrangements",
+      "Attempting a task alone when the current assessment, conditions, competence, or support make it unsafe",
       "Waiting for accidents to happen before addressing unsafe behaviour",
     ],
     knowledgeCheck: [
       {
-        question: "What does 'duty of care' mean in an equestrian context?",
+        question: "What should a learner do when a safety decision may exceed their authority or competence?",
         options: [
-          "A voluntary code of conduct with no legal standing",
-          "A legal obligation to ensure the safety of others who may be affected by your actions",
-          "An insurance term that only applies to yard owners",
-          "A moral guideline that applies only to instructors",
+          "Make the legal and risk decision alone to avoid delay",
+          "Follow the designated stop/escalation route and obtain competent help",
+          "Ignore the concern if no incident has occurred yet",
+          "Apply a generic online scenario as the site procedure",
         ],
         correctIndex: 1,
         explanation:
-          "Duty of care is a legal obligation, not just a moral one. Yard owners, instructors, staff and horse owners all have a duty to ensure the safety of others affected by their actions or omissions.",
+          "Legal duties and risk controls depend on the jurisdiction, role, site, and facts. A learner should stop or move to safety where necessary, report factual observations through the designated route, and obtain competent help.",
       },
       {
         question:
-          "What is the most important precaution when working alone on a yard?",
+          "What should determine whether and how someone works alone at a yard?",
         options: [
-          "Lock all the gates",
-          "Work faster to finish quickly",
-          "Tell someone where you are and when you expect to finish, and carry a charged phone",
-          "Only work with calm horses",
+          "A generic lesson checklist",
+          "Whether the horse seems calm that day",
+          "The current authorised risk assessment, competence, contact, monitoring, and emergency arrangements",
+          "Finishing the job as quickly as possible",
         ],
         correctIndex: 2,
         explanation:
-          "When working alone, someone must know where you are and when to expect you. If you are injured and cannot call for help, this check-in system is your safety net. Always carry a charged mobile phone.",
+          "HSE requires UK employers to manage lone-worker risks through assessment, training, supervision, monitoring, contact, and incident response. The site’s current authorised arrangements—not a generic checklist—must govern the work.",
       },
       {
         question:
-          "How should a new horse be introduced to an existing herd in a field?",
+          "What should happen when a new-horse turnout or group-management decision is outside the learner’s authority or competence?",
         options: [
-          "Turn it straight out and let them sort it out",
-          "Introduce it gradually — first over a fence, then with supervised direct contact",
-          "Remove all other horses first and let the new horse settle alone",
-          "Only introduce it at night when horses are calmer",
+          "Use the first generic method they remember",
+          "Refer the decision to the responsible person and follow the current written site policy",
+          "Proceed alone if the field appears large enough",
+          "Ask a child visitor to help observe",
         ],
         correctIndex: 1,
         explanation:
-          "Gradual introduction reduces the risk of aggressive encounters. Allowing horses to meet over a fence first lets them establish a relationship without the risk of kicks and bites.",
+          "Turnout and group-management decisions depend on the individual horses, facilities, supervision, welfare needs, and site procedure. A learner should not improvise a generic introduction method.",
       },
     ],
     aiTutorPrompts: [
       "Can you give me a scenario-based safety question and talk me through how to assess the risk?",
-      "What are the legal implications of duty of care for a riding school owner?",
-      "How should I brief a novice handler before asking them to lead a horse?",
+      "How can I identify when a safety decision should be escalated to the responsible person or a qualified professional?",
+      "What information should I obtain from the responsible person before an authorised supervised handling activity?",
     ],
     linkedCompetencies: ["risk_awareness", "welfare_awareness"],
   },
