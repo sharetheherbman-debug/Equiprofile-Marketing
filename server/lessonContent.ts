@@ -2987,23 +2987,23 @@ In some yards, horses are cross-tied using two ropes attached to opposite walls.
       "Describe safe storage and handling of chemicals and equipment",
       "Understand the importance of a tidy, well-maintained yard for accident prevention",
     ],
-    content: `An equestrian yard is a working environment with many potential hazards. Horses, heavy equipment, vehicles, chemicals, electrical systems and variable weather all create risks. Awareness of these hazards — and knowing how to mitigate them — is essential for everyone who works on or visits a yard. Many accidents are preventable through good housekeeping, routine maintenance and sensible working practices.
+    content: `An equestrian yard is a working environment with many potential hazards. Horses, heavy equipment, vehicles, chemicals, electrical systems and variable weather all create risks. Awareness of hazards, local procedures, and appropriate escalation can reduce risk for everyone who works on or visits a yard. Housekeeping, maintenance, supervision, and current site-specific procedures should be reviewed by the responsible person.
 
 ## Common Yard Hazards
 
 ### Slips, Trips and Falls
-The most frequent type of yard accident. Causes include:
+Common yard hazards can include:
 - Wet concrete or cobblestones, especially in winter
 - Loose bedding, straw or muck on walkways
 - Hose pipes left across paths
 - Uneven surfaces, potholes or damaged drain covers
-- Icy conditions — grit or salt should be applied to walkways and parking areas
+- Icy, muddy, or otherwise unsafe conditions — use the responsible yard’s current access-control and surface-safety procedure
 
 ### Equipment Hazards
 - **Pitchforks** left prongs-up or propped against walls
 - **Wheelbarrows** blocking doorways or paths
 - **Ladders** not secured or stored properly
-- **Machinery** (tractors, ATVs) operated without proper training or when people and horses are nearby
+- **Machinery** (tractors, ATVs) used without the required training, suitable controls, or separation from people and horses
 - **Riding equipment** left on the ground (whips, poles, jump cups)
 
 ### Animal-Related Hazards
@@ -3013,28 +3013,26 @@ The most frequent type of yard accident. Causes include:
 
 ## Fire Safety
 
-Fire is one of the most catastrophic events that can occur on a yard. Hay, straw, shavings and wooden stables provide abundant fuel.
+Fire can spread rapidly in stables because hay, straw, shavings, wood, dust, and other materials may be combustible. Prevention and a current, rehearsed site-specific emergency plan are essential.
 
 **Prevention:**
 - No smoking anywhere on the yard
-- Store hay and straw separately from stables if possible, or at least at a safe distance
-- Ensure electrical wiring is inspected regularly by a qualified electrician — rodent damage to cables is a common cause of electrical fires on yards
-- Disconnect electrical appliances (kettles, heaters, clippers) when not in use
-- Never use portable heaters near hay, straw or bedding
-- Store flammable liquids (fuel, solvents, spirits) in labelled, sealed containers in a locked, ventilated store
+- Manage hay, bedding, fuels, rags, equipment, dust, and other combustible materials in accordance with the site fire-risk assessment and current local requirements
+- Arrange inspection, maintenance, and repair of electrical systems by a competent qualified person; remove damaged equipment from use
+- Use electrical and heating equipment only in accordance with the manufacturer instructions, the site procedure, and current fire-safety requirements
+- Store fuels, solvents, chemicals, and other hazardous materials in their original labelled containers and in accordance with their label, safety data sheet (SDS), applicable law, and the responsible person’s procedure
 
 **Preparedness:**
-- Know the location of all fire extinguishers and ensure they are serviced annually
-- Know the yard's fire evacuation plan — which way do horses go? Where is the assembly point for people?
-- Keep all exits and doorways clear at all times — a blocked exit during a fire can be fatal
-- Have a system for releasing horses quickly — headcollars on stable doors, clearly labelled stables
-- Post emergency contact numbers (fire brigade, vet, yard owner) prominently in the tack room and office
+- Know the location of fire equipment, emergency contacts, alarms, exits, and the site evacuation plan; the responsible person must maintain these in accordance with current requirements
+- Keep designated emergency routes and access for responders clear
+- Make sure the plan identifies the people responsible for emergency decisions, the safe assembly area for people, and any horse-evacuation arrangements that trained staff can carry out safely
+- Display or make available the current site emergency contacts and procedures
 
 **In a Fire:**
-1. Raise the alarm immediately — call 999.
-2. Evacuate people first, then horses if it is safe to do so.
-3. Lead horses away from the fire and secure them — panicking horses may try to run back into a burning stable.
-4. Never re-enter a burning building.
+1. Raise the alarm, call the applicable emergency service, provide the site information requested, and keep safe access clear for responders.
+2. Prioritise human safety, follow the current site evacuation plan, and do not enter a hazardous area or re-enter a burning building.
+3. Only trained, capable people should move horses, and only when the incident lead and conditions make it safe to do so; use the pre-identified safe area and follow emergency-service instructions.
+4. Do not attempt to fight a fire unless it is immediately containable, suitable equipment is available, you have been trained, and you have a safe escape route.
 
 ## Chemical Safety
 
@@ -3044,37 +3042,36 @@ Yards commonly use:
 - Cleaning products, disinfectants
 - Fuel for vehicles and machinery
 
-All chemicals should be stored in a locked cupboard or store, clearly labelled, and kept out of reach of children. Follow manufacturers' instructions for use, storage and disposal. Wear appropriate PPE (gloves, masks, goggles) when handling chemicals.
+Keep chemicals and veterinary products secure and accessible only to authorised people. Retain original labels, follow the current product label and SDS for use, storage, disposal, and required protective equipment, and seek competent advice when the product, task, or legal requirement is unclear.
 
 ## Electrical Safety
 
-- All electrical installations should be inspected by a qualified electrician at regular intervals
-- Use circuit breakers (RCDs) on all outdoor sockets and any sockets near water
-- Keep electrical cables away from horses — chewed cables cause electric shock and fire
-- Protect light bulbs in stables with wire guards
-- Never use damaged or frayed cables or plugs
+- Use electrical installations and equipment only in accordance with current legal, manufacturer, and site requirements; arrange competent inspection and repair where required
+- Use appropriate residual-current protection where specified for the equipment and setting
+- Keep cables away from horses, water, traffic routes, and damage; remove damaged or frayed cables and plugs from use and report them
+- Use protective fittings or guards where required by the current electrical and fire-safety assessment
 
 ## Yard Maintenance and Tidiness
 
-A tidy yard is a safe yard. The discipline of putting things away, keeping paths clear, repairing broken fittings and maintaining good drainage prevents the majority of yard accidents.
+Good housekeeping, clear routes, timely reporting of damaged fittings, and suitable drainage can reduce hazards. The responsible person should set and maintain the current inspection, reporting, and repair procedure for the site.
 
 - Sweep the yard regularly
 - Repair broken door bolts, latches and hinges promptly
 - Fill potholes in the yard surface
 - Ensure adequate lighting in all working areas, especially during winter when work is done in the dark
-- Keep first aid kits (human and equine) stocked and accessible`,
+- Know the location of the current first-aid provisions and follow the responsible person’s restocking, training, and emergency procedure`,
     keyPoints: [
-      "Slips, trips and falls are the most common yard accident — keep paths clear, grit icy surfaces and tidy equipment away",
-      "Fire is the most dangerous yard hazard — never smoke on the yard, store hay away from stables and check electrical wiring regularly",
-      "Know the location of fire extinguishers and the yard's fire evacuation plan",
-      "Store all chemicals in locked, labelled containers away from animals and children",
-      "A tidy, well-maintained yard prevents the majority of accidents",
-      "In a fire: call 999, evacuate people first, then horses if safe",
+      "Keep walkways, exits, and emergency access clear; report unsafe surfaces, fittings, and equipment through the yard’s current procedure",
+      "Reduce fire risk through a no-smoking control, management of combustible materials, competent electrical maintenance, and the current site fire-risk procedure",
+      "Know the location of the site’s fire equipment, alarm, exits, emergency contacts, and current evacuation plan",
+      "Keep chemicals and veterinary products secure in their original labelled containers and follow the current label, SDS, and site procedure",
+      "Good housekeeping, clear routes, maintenance, and reporting can reduce hazards but do not remove the need for supervision and site-specific controls",
+      "In an emergency: raise the alarm, call the applicable emergency service, prioritise people, and follow the trained site evacuation plan",
     ],
     safetyNote:
-      "Never attempt to fight a fire that is beyond the capacity of a single fire extinguisher. Your life is more important than property. If you must evacuate horses during a fire, lead them firmly and quickly to a secure area well away from the fire. Cover their eyes with a damp cloth if they are panicking, but only if this can be done quickly and safely. Panicking horses may rear, kick or try to run back toward the fire.",
+      "Do not enter a hazardous area, re-enter a burning building, or improvise a horse-handling technique during a fire. Prioritise people, raise the alarm, follow the current trained site plan, and act only within your competence and a safe escape route while following emergency-service instructions.",
     practicalApplication:
-      "Walk around your yard and identify every hazard you can see. Write them down and discuss with the yard manager. Check that fire extinguishers are in date, exits are clear, and chemicals are stored correctly. Ask about the yard's fire evacuation plan — if one does not exist, suggest that one is created. Good safety awareness is a shared responsibility, and every person on the yard should be part of it.",
+      "With the responsible person’s permission, walk around the yard to identify observable hazards and report them through the current procedure. Confirm how to locate the emergency plan, exits, contacts, and fire equipment. Do not inspect, service, move, or handle fire equipment, chemicals, electrical systems, or horse-evacuation arrangements unless authorised and competent to do so. Good safety awareness includes timely reporting and following the site plan.",
     commonMistakes: [
       "Leaving tools and equipment out where they can be tripped over or stepped on by horses",
       "Assuming fire safety is someone else's responsibility",
@@ -3093,14 +3090,14 @@ A tidy yard is a safe yard. The discipline of putting things away, keeping paths
         ],
         correctIndex: 1,
         explanation:
-          "Slips, trips and falls are the most common yard accident, caused by wet surfaces, loose bedding on paths, hose pipes, uneven ground and icy conditions.",
+          "Wet or uneven surfaces, loose bedding, hoses, and unsafe weather conditions can create slip, trip, and fall hazards. The responsible yard procedure should control, report, and address them.",
       },
       {
         question: "In a fire on the yard, who should be evacuated first?",
         options: ["Horses", "Equipment and tack", "People", "Feed and hay"],
         correctIndex: 2,
         explanation:
-          "People are always evacuated first. Horses are evacuated next, only if it is safe to do so. Equipment and property are never prioritised over life.",
+          "Human safety is the priority. Follow the current site emergency plan and emergency-service instructions; horses are moved only when trained capable people can do so safely.",
       },
       {
         question:
@@ -3113,7 +3110,7 @@ A tidy yard is a safe yard. The discipline of putting things away, keeping paths
         ],
         correctIndex: 1,
         explanation:
-          "Rodents frequently chew through the plastic insulation on cables, exposing live wires. This can cause electric shock to humans or horses, or start fires in hay and bedding.",
+          "Damaged electrical cables can create a shock or fire hazard. Remove damaged equipment from use, report it, and arrange competent inspection or repair under the current site procedure.",
       },
     ],
     aiTutorPrompts: [
