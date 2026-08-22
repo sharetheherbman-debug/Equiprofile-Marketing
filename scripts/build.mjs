@@ -28,7 +28,6 @@ function runScript(script) {
 try {
   await runScript("build:sw");
   await runScript("build:management");
-  await runScript("build:school");
   await runScript("build:server");
   await runScript("build:fingerprint");
 } catch (error) {
