@@ -6,6 +6,36 @@
 
 > Migrations `0014` through `0024` are treated as **untrusted historical/orphaned migration artifacts**. They must not be automatically executed, retroactively marked as applied, renamed, reordered, or used for automatic baseline adoption. The canonical forward path is defined separately by the baseline strategy and a new reconciliation migration.
 
+## ORIGINAL JOURNALLED MIGRATION FILE HASHES
+
+The following canonical files are immutable for the purpose of this release-candidate investigation. On 22 August 2026, each was verified byte-for-byte identical to the Management-authoritative base commit `b20a622039c65503f8d54dceeff5b072f1521cc6`. These hashes are forensic evidence only; the files, their whitespace, comments, statement boundaries, names, journal entries, timestamps and ordering were not modified.
+
+| Canonical file                       | SHA-256                                                            | Byte identity to Management-authoritative base |
+| ------------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------- |
+| `0002_add_missing_user_columns.sql`  | `14ead9550e1f8108f81d83950b24461f72c93af8257e5d197e3e37e761ed5c89` | Yes                                            |
+| `0005_fix_site_settings.sql`         | `be952a48a09c31f6fb6c3e019071dae440e0c559419c362965a8f86d178c356b` | Yes                                            |
+| `0008_create_missing_tables.sql`     | `8e75969086a86adcf1116f396e226813cf66771848170d6cdd11134ef5e772f5` | Yes                                            |
+| `0012_email_campaigns_analytics.sql` | `fb6878f738ac0e5f5a2be518eec90fb5a270df9901ba55d3b47d24c5557dfcdc` | Yes                                            |
+| `0013_email_verification.sql`        | `8fcffc914796a9d38a2c440054ca13e24123c8ebb7adc909023908c4df38152c` | Yes                                            |
+
+The orphaned range `0014`–`0024` was also verified clean in the current working tree and remains untouched, unregistered and unexecuted.
+
+## Disposable replay evidence
+
+A committed `scripts/build-migration-replay-fixture.ts` generator creates an ignored `.tmp/migrations-replay-fixed/` directory by copying `drizzle/`. It never writes into `drizzle/`, does not invoke `scripts/migrate.sh`, and does not modify the journal. The generated fixture preserves `0002` and `0013` byte-for-byte because their existing inline markers protect stored-procedure bodies. It adds only non-terminal literal `--> statement-breakpoint` parser comments to the copied versions of `0005`, `0008`, and `0012`.
+
+| File                                 | Canonical SHA-256                                                  | Fixture SHA-256                                                    | Marker-only / semantic comparison                          |
+| ------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `0002_add_missing_user_columns.sql`  | `14ead9550e1f8108f81d83950b24461f72c93af8257e5d197e3e37e761ed5c89` | `14ead9550e1f8108f81d83950b24461f72c93af8257e5d197e3e37e761ed5c89` | **Pass** — copied byte-for-byte; existing markers retained |
+| `0005_fix_site_settings.sql`         | `be952a48a09c31f6fb6c3e019071dae440e0c559419c362965a8f86d178c356b` | `759e4685b50f33b8252bab5bb552445bed177acd1ca2d0908ab967c83d3847b9` | **Pass** — two non-terminal parser markers only            |
+| `0008_create_missing_tables.sql`     | `8e75969086a86adcf1116f396e226813cf66771848170d6cdd11134ef5e772f5` | `a2fc6e1eaa944af57e0c3c38a40518d1c159e6a90573dc69b5e410b12694e0f2` | **Pass** — 38 non-terminal parser markers only             |
+| `0012_email_campaigns_analytics.sql` | `fb6878f738ac0e5f5a2be518eec90fb5a270df9901ba55d3b47d24c5557dfcdc` | `ad91527c7aadf210a7fbd24f1ad614373db1505a9bbfcec2726966f91ba9812e` | **Pass** — nine non-terminal parser markers only           |
+| `0013_email_verification.sql`        | `8fcffc914796a9d38a2c440054ca13e24123c8ebb7adc909023908c4df38152c` | `8fcffc914796a9d38a2c440054ca13e24123c8ebb7adc909023908c4df38152c` | **Pass** — copied byte-for-byte; existing markers retained |
+
+The generator strips parser markers and normalises insignificant whitespace before comparing each original and fixture SQL payload; all five comparisons returned `sqlSemanticContentUnchanged: true` and `onlyBoundaryMarkersAdded: true`.
+
+On two separately created local disposable databases, canonical replay using the installed Drizzle MySQL migrator failed at `0005_fix_site_settings` after five tracking rows. The repaired-copy replay applied all 14 journal entries and reached `0013_environment_only_runtime_secrets`. The difference establishes a historical statement-boundary replay defect, but does **not** authorise any modification to canonical files or select a permanent fresh-install strategy. The immutable canonical files and orphaned `0014`–`0024` range were modified: **No**.
+
 ## Mechanical source audit
 
 The following table is generated from the SQL text. `Current schema presence` means that an affected table name is declared in the current Drizzle schema; it does not prove an existing database has the matching structure.
