@@ -327,3 +327,9 @@ The prior `CLAIM_REVIEWED_AND_ACCEPTED` decision documented removal of generic w
 | Reporting a welfare concern | [World Horse Welfare, _Worried about a horse?_](https://www.worldhorsewelfare.org/what-we-do/in-the-uk/worried-about-a-horse) | Reporting guidance is location- and circumstance-specific; it asks for first-hand factual information and distinguishes urgent scenarios. The source says a lone horse, lack of a rug, or no visible shelter does not by itself establish a reportable welfare breach. | Remove learner direction to contact named organisations as a universal route. Require factual observation and the current local responsible-person, veterinary, welfare, emergency, or relevant authority route, without diagnosis or confrontation. |
 
 > **Review decision:** `five-freedoms-of-animal-welfare` remains `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW` until every retained material welfare, legal, reporting, management, and assessment claim has individual evidence or a bounded rewrite.
+
+## 2026-08-22 — `responsible-horse-ownership` acceptance reconciliation
+
+The prior `CLAIM_REVIEWED_AND_ACCEPTED` decision covered only removal of universal lifespan and routine-service calendar claims. Review of the live lesson and binding entry identified remaining material ownership, welfare, financial, daily-care, professional-care, contingency, end-of-life, sharing, loan, written-agreement, transport, and assessment claims without individual source-to-claim decisions. The binding register has therefore been corrected to `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`.
+
+> **Review decision:** The lesson is **unresolved**. The broad responsibility framing and prior calendar rewrite do not establish whole-lesson factual acceptance. A later review must document authoritative support for each retained material claim or make any necessary correction/removal.

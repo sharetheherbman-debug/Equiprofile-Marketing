@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 63,
-    "claimReviewedAndAccepted": 39
+    "sourceMappedRequiresSpecificClaimReview": 64,
+    "claimReviewedAndAccepted": 38
   },
   "lessons": [
     {
@@ -4487,22 +4487,16 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "Legal",
         "legal",
         "must"
       ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: Universal lifespan and routine-service calendar claims were removed. The lesson now teaches long-term welfare, financial and contingency responsibility with horse-specific professional care.",
-      "lessonChangeMade": "Removed universal lifespan and routine-service calendar claims; ownership is now presented as a long-term, welfare-led responsibility with horse-specific professional care and contingency planning.",
-      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
-      "reviewDecision": {
-        "reviewedAt": "2026-08-21",
-        "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.gov.uk/keeping-horses",
-        "claimReviewed": "Universal lifespan and routine-service calendar claims were removed. The lesson now teaches long-term welfare, financial and contingency responsibility with horse-specific professional care.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
-      }
+      "whatWasVerified": "Prior acceptance covered only removal of universal lifespan and routine-service calendar claims. Full review identified remaining material ownership, welfare, financial, daily-care, professional-care, contingency, end-of-life, sharing, loan, written-agreement, transport, and assessment claims that do not yet have individual source-to-claim decisions.",
+      "lessonChangeMade": "The prior bounded rewrite is retained, but the lesson is returned to unresolved status pending a complete individual claim review and any necessary corrective rewrite.",
+      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
+      "reviewDecision": null
     },
     {
       "lessonSlug": "recognising-neglect-and-abuse",
