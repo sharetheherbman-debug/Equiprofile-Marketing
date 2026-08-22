@@ -6,13 +6,13 @@ The final Core database must support **Management**, **Academy** and **Shop** wi
 
 > **Production was not inspected or modified while this policy was prepared.** Any later production inspection must be owner-controlled, read-only, and use the baseline inspector described below.
 
-| Database state | Classification rule | Permitted action | Prohibited action |
-| --- | --- | --- | --- |
-| Fresh zero database | No application schema or migration-tracking table exists | Run the canonical fresh-install path and verify the final schema fingerprint | Import or infer orphaned migration history |
-| Tracked supported database | Tracking matches a named supported checkpoint exactly | Apply only explicitly declared forward reconciliation migrations | Reset, rebuild, or rewrite tracking history |
-| Existing untracked legacy database | Application schema exists but migration tracking is absent, incomplete or ambiguous | Run the read-only inspector only | Automatic baseline adoption or migration execution |
-| Partial, drifted, unknown or ambiguous database | Inspector detects any mismatch outside a named supported baseline | Fail closed and require human review | Any automatic adoption or mutation |
-| Current final Core database | Inspector matches the final manifest exactly | Report `CURRENT_NO_ACTION_REQUIRED` | Reapply reconciliation migrations |
+| Database state                                  | Classification rule                                                                 | Permitted action                                                             | Prohibited action                                  |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------- |
+| Fresh zero database                             | No application schema or migration-tracking table exists                            | Run the canonical fresh-install path and verify the final schema fingerprint | Import or infer orphaned migration history         |
+| Tracked supported database                      | Tracking matches a named supported checkpoint exactly                               | Apply only explicitly declared forward reconciliation migrations             | Reset, rebuild, or rewrite tracking history        |
+| Existing untracked legacy database              | Application schema exists but migration tracking is absent, incomplete or ambiguous | Run the read-only inspector only                                             | Automatic baseline adoption or migration execution |
+| Partial, drifted, unknown or ambiguous database | Inspector detects any mismatch outside a named supported baseline                   | Fail closed and require human review                                         | Any automatic adoption or mutation                 |
+| Current final Core database                     | Inspector matches the final manifest exactly                                        | Report `CURRENT_NO_ACTION_REQUIRED`                                          | Reapply reconciliation migrations                  |
 
 ## Canonical migration history
 
@@ -51,14 +51,14 @@ It must insert only a clearly documented canonical adoption marker. It must neve
 
 ## Required disposable acceptance matrix
 
-| Test | Required outcome |
-| --- | --- |
-| Fresh zero database | Canonical path reaches the final manifest exactly |
-| Tracked Management baseline | Forward reconciliation preserves representative Management data |
+| Test                                      | Required outcome                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------------- |
+| Fresh zero database                       | Canonical path reaches the final manifest exactly                                      |
+| Tracked Management baseline               | Forward reconciliation preserves representative Management data                        |
 | Untracked exact supported legacy baseline | Inspector recognises the exact baseline; explicit disposable adoption can then proceed |
-| Partial historical schema | Inspector fails closed with no mutation |
-| Unknown or drifted schema | Inspector fails closed with no mutation |
-| Current final Core schema | Inspector reports `CURRENT_NO_ACTION_REQUIRED` |
+| Partial historical schema                 | Inspector fails closed with no mutation                                                |
+| Unknown or drifted schema                 | Inspector fails closed with no mutation                                                |
+| Current final Core schema                 | Inspector reports `CURRENT_NO_ACTION_REQUIRED`                                         |
 
 ## Operational procedure
 
