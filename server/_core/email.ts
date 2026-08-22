@@ -87,6 +87,56 @@ export async function sendEmail(
   }
 }
 
+export type TransactionalEmailDeliveryResult =
+  | { delivered: true; providerMessageId: string | null }
+  | {
+      delivered: false;
+      reason: "SMTP_NOT_CONFIGURED" | "SMTP_SEND_FAILED";
+      error: string;
+    };
+
+function deliveryErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.replace(/[\r\n]+/g, " ").slice(0, 500);
+}
+
+/**
+ * Transactional delivery contract for domain workflows that must surface an
+ * explicit outcome. Existing generic email callers retain their non-throwing
+ * behavior; this helper gives invitation persistence a bounded result instead.
+ */
+export async function sendTransactionalEmailWithResult(
+  to: string,
+  subject: string,
+  html: string,
+  text?: string,
+): Promise<TransactionalEmailDeliveryResult> {
+  const transporter = await getTransporter();
+  if (!transporter) {
+    return {
+      delivered: false,
+      reason: "SMTP_NOT_CONFIGURED",
+      error: "SMTP is not configured; no invitation email was sent.",
+    };
+  }
+  try {
+    const info = await transporter.sendMail({
+      from: await getSmtpFrom(),
+      to,
+      subject,
+      html,
+      text: text || stripHtml(html),
+    });
+    return { delivered: true, providerMessageId: info.messageId ?? null };
+  } catch (error) {
+    return {
+      delivered: false,
+      reason: "SMTP_SEND_FAILED",
+      error: deliveryErrorMessage(error),
+    };
+  }
+}
+
 /**
  * Send a marketing/campaign email with CAN-SPAM/PECR compliant headers.
  * Includes List-Unsubscribe header for one-click unsubscribe in Gmail/Outlook.
@@ -165,6 +215,56 @@ function ctaBtn(text: string, url: string): string {
 </table>`;
 }
 
+export type AcademyInviteEmailInput = {
+  recipientEmail: string;
+  inviterName: string;
+  organizationName: string;
+  role: "teacher" | "student";
+  token: string;
+  expiresAt: Date;
+};
+
+/**
+ * Send a canonical Academy invitation and report delivery truth to the caller.
+ * The invitation token exists only in the recipient URL and is never returned
+ * in an outcome or persisted error string.
+ */
+export async function sendAcademyInviteEmail(
+  input: AcademyInviteEmailInput,
+): Promise<TransactionalEmailDeliveryResult> {
+  const academyBaseUrl = (
+    process.env.ACADEMY_BASE_URL || "https://academy.equiprofile.online"
+  ).replace(/\/$/, "");
+  const inviteUrl = `${academyBaseUrl}/academy-invite?token=${encodeURIComponent(input.token)}`;
+  const roleLabel = input.role === "teacher" ? "Teacher" : "Student";
+  const safeInviterName = sanitizeHtml(input.inviterName || "An Academy owner");
+  const safeOrganizationName = sanitizeHtml(input.organizationName);
+  const expiry = new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(input.expiresAt);
+  const subject = `Invitation to join ${input.organizationName} on EquiProfile Academy`;
+  const html = brandedEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">You’re invited to EquiProfile Academy</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
+      <strong>${safeInviterName}</strong> has invited you to join <strong>${safeOrganizationName}</strong> as a <strong>${roleLabel}</strong>.
+    </p>
+    ${ctaBtn("Accept Academy invitation", inviteUrl)}
+    <p style="margin:0 0 16px;font-size:14px;color:#374151;line-height:1.6;">
+      Sign in or create an EquiProfile account using this email address to accept. The invitation expires on <strong>${expiry} UTC</strong>.
+    </p>
+    <p style="font-size:13px;color:#94a3b8;margin:0 0 8px;">Button not working? Copy and paste this link:</p>
+    <p style="font-size:12px;color:#4f5fd6;word-break:break-all;margin:0 0 16px;">${inviteUrl}</p>
+    <p style="font-size:13px;color:#94a3b8;margin:0;">If you did not expect this invitation, you can ignore this email.</p>
+  `);
+  return sendTransactionalEmailWithResult(
+    input.recipientEmail,
+    subject,
+    html,
+    `You have been invited by ${input.inviterName || "an Academy owner"} to join ${input.organizationName} as a ${roleLabel}. Accept the invitation: ${inviteUrl}`,
+  );
+}
 
 export async function sendWelcomeEmail(user: User): Promise<void> {
   if (!user.email) {

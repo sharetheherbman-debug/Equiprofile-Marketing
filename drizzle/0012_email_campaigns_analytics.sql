@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `emailCampaigns` (
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `emailCampaignRecipients` (
   `id` int AUTO_INCREMENT PRIMARY KEY,
   `campaignId` int NOT NULL,
@@ -27,11 +27,13 @@ CREATE TABLE IF NOT EXISTS `emailCampaignRecipients` (
   `sentAt` timestamp NULL,
   `error` text
 );
-
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `ecr_campaign_idx` ON `emailCampaignRecipients` (`campaignId`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `ecr_email_idx` ON `emailCampaignRecipients` (`email`);
+--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS `ecr_campaign_email_idx` ON `emailCampaignRecipients` (`campaignId`, `email`);
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `siteAnalytics` (
   `id` int AUTO_INCREMENT PRIMARY KEY,
   `sessionId` varchar(64) NOT NULL,
@@ -47,8 +49,12 @@ CREATE TABLE IF NOT EXISTS `siteAnalytics` (
   `userId` int,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `sa_visitor_idx` ON `siteAnalytics` (`visitorId`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `sa_session_idx` ON `siteAnalytics` (`sessionId`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `sa_created_idx` ON `siteAnalytics` (`createdAt`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `sa_path_idx` ON `siteAnalytics` (`path`);
+--> statement-breakpoint

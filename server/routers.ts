@@ -116,7 +116,8 @@ import {
 import type { AgentId, TenantScope } from "./_core/ai";
 import { studentRouter } from "./studentRouter";
 import { teacherRouter } from "./teacherRouter";
-import { schoolRouter } from "./schoolRouter";
+import { academyRouter } from "./academyRouter";
+import { commerceRouter } from "./commerceRouter";
 import {
   normalizeCountry,
   normalizeContactType,
@@ -1519,7 +1520,10 @@ export const appRouter = router({
   system: systemRouter,
   student: studentRouter,
   teacher: teacherRouter,
-  school: schoolRouter,
+  academy: academyRouter,
+  // Legacy compatibility only: the canonical education namespace is Academy.
+  school: academyRouter,
+  commerce: commerceRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),

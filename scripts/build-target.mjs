@@ -42,14 +42,21 @@ function run(command, args, env) {
   });
 }
 
-if (!["management", "school", "server"].includes(target)) {
-  console.error("Usage: node scripts/build-target.mjs <management|school|server>");
+if (!["management", "academy", "shop", "school", "server"].includes(target)) {
+  console.error(
+    "Usage: node scripts/build-target.mjs <management|academy|shop|school|server>",
+  );
   process.exit(1);
 }
 
 try {
-  if (target === "management" || target === "school") {
-    await run(localBin("vite"), ["build"], withMemory({ ...process.env, VITE_SITE: target }));
+  if (["management", "academy", "shop", "school"].includes(target)) {
+    const site = target === "school" ? "academy" : target;
+    await run(
+      localBin("vite"),
+      ["build"],
+      withMemory({ ...process.env, VITE_SITE: site }),
+    );
   } else {
     const env = withMemory();
     await run(localBin("esbuild"), [

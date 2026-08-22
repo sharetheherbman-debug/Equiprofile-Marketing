@@ -20,9 +20,24 @@ import { nanoid } from "nanoid";
 import Stripe from "stripe";
 import * as db from "../db";
 import { getDb } from "../db";
-import { contactSubmissions, users } from "../../drizzle/schema";
+import { contactSubmissions, organizations, users } from "../../drizzle/schema";
 import { sql, eq } from "drizzle-orm";
-import { getStripe, validatePricingConfig, PRICING_PLANS } from "../stripe";
+import {
+  getStoreStripe,
+  getStripe,
+  validatePricingConfig,
+  PRICING_PLANS,
+} from "../stripe";
+import {
+  isStoreScopedMetadata,
+  reconcilePaidStoreCheckout,
+  reconcileStoreRefund,
+} from "../commerce/paymentReconciliation";
+import {
+  academySubscriptionStatus,
+  getAcademyStripe,
+  isAcademyScopedMetadata,
+} from "../academy/billing";
 import * as email from "./email";
 import { ENV } from "./env";
 import { getRuntimeConfig } from "../dynamicConfig";
@@ -63,9 +78,15 @@ async function startServer() {
         "http://127.0.0.1:3100",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://academy.localhost:3001",
+        "http://shop.localhost:3001",
+        "http://academy.localhost:3002",
         "https://equiprofile.online",
         "https://www.equiprofile.online",
+        "https://academy.equiprofile.online",
+        // Legacy compatibility only for existing Academy links.
         "https://school.equiprofile.online",
+        "https://shop.equiprofile.online",
       ];
 
   app.use(
@@ -169,6 +190,240 @@ async function startServer() {
       res.status(options.statusCode).json(options.message);
     },
   });
+
+  // Store Stripe webhook — deliberately isolated from SaaS subscription billing.
+  // It remains inactive until dedicated Store configuration is present.
+  app.post(
+    "/api/webhooks/store-stripe",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      const stripe = getStoreStripe();
+      const webhookSecret = process.env.STORE_STRIPE_WEBHOOK_SECRET;
+      if (!stripe || !webhookSecret) {
+        return res
+          .status(503)
+          .json({ error: "Store payment processing is not configured" });
+      }
+      const signature = req.headers["stripe-signature"];
+      if (!signature) {
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      }
+      let event: Stripe.Event;
+      try {
+        event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+      } catch (error: any) {
+        return res.status(400).json({
+          error: `Store webhook signature verification failed: ${error.message}`,
+        });
+      }
+      const dbConn = await getDb();
+      if (!dbConn) {
+        return res.status(503).json({ error: "Database unavailable" });
+      }
+      const existing = (
+        (await dbConn.execute(
+          sql`SELECT id FROM commercePaymentEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
+        )) as any
+      )[0] as Array<{ id: number }>;
+      if (existing?.[0]) return res.json({ received: true, cached: true });
+
+      const object = event.data.object as
+        | Stripe.Checkout.Session
+        | Stripe.PaymentIntent
+        | Stripe.Charge;
+      const metadata = "metadata" in object ? object.metadata : null;
+      if (!isStoreScopedMetadata(metadata)) {
+        await dbConn.execute(
+          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, ignored: true });
+      }
+      const orderId = Number(metadata.orderId);
+      const order = (
+        (await dbConn.execute(
+          sql`SELECT id, totalPence, currency, status, storePaymentStatus FROM commerceOrders WHERE id = ${orderId} LIMIT 1`,
+        )) as any
+      )[0] as Array<{
+        id: number;
+        totalPence: number;
+        currency: string;
+        status: string;
+        storePaymentStatus: string;
+      }>;
+      if (!order[0]) {
+        await dbConn.execute(
+          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      const paymentReference =
+        "payment_intent" in object
+          ? String(object.payment_intent ?? "")
+          : "id" in object
+            ? object.id
+            : "";
+      await dbConn.execute(
+        sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, paymentIntentId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, ${paymentReference || null}, 'received', ${JSON.stringify(event.data.object)})`,
+      );
+
+      let reconciliationFailure: string | null = null;
+      if (event.type === "checkout.session.completed") {
+        const session = object as Stripe.Checkout.Session;
+        const decision = reconcilePaidStoreCheckout({
+          order: order[0],
+          amountTotal: session.amount_total,
+          currency: session.currency,
+          paymentStatus: session.payment_status,
+        });
+        if (!decision.accepted) reconciliationFailure = decision.reason;
+        else {
+          await dbConn.execute(
+            sql`UPDATE commerceOrders SET status = 'paid', storePaymentStatus = 'paid', storePaymentReference = ${paymentReference || null} WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+          );
+        }
+      } else if (event.type === "payment_intent.payment_failed") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET status = 'payment_failed', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        );
+      } else if (event.type === "checkout.session.expired") {
+        await dbConn.execute(
+          sql`UPDATE commerceOrders SET status = 'cancelled', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        );
+      } else if (event.type === "charge.refunded") {
+        const charge = object as Stripe.Charge;
+        const decision = reconcileStoreRefund({
+          order: order[0],
+          amountRefunded: charge.amount_refunded,
+          currency: charge.currency,
+        });
+        if (!decision.accepted) reconciliationFailure = decision.reason;
+        else {
+          await dbConn.execute(
+            sql`UPDATE commerceOrders SET status = ${decision.paymentStatus}, storePaymentStatus = ${decision.paymentStatus} WHERE id = ${orderId} AND status IN ('paid', 'acknowledged', 'processing', 'partially_fulfilled', 'fulfilled', 'dispatched', 'delivered', 'returned', 'partially_refunded')`,
+          );
+        }
+      }
+      if (reconciliationFailure) {
+        await dbConn.execute(
+          sql`UPDATE commercePaymentEvents SET status = 'failed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      await dbConn.execute(
+        sql`UPDATE commercePaymentEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+      );
+      return res.json({ received: true });
+    },
+  );
+
+  // Academy Stripe TEST webhook — isolated from SaaS subscriptions and Store payments.
+  app.post(
+    "/api/webhooks/academy-stripe",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+      const stripe = getAcademyStripe();
+      const webhookSecret = process.env.ACADEMY_STRIPE_WEBHOOK_SECRET;
+      if (
+        !stripe ||
+        !webhookSecret ||
+        process.env.ACADEMY_STRIPE_TEST_MODE !== "true"
+      ) {
+        return res
+          .status(503)
+          .json({ error: "Academy TEST payment processing is not configured" });
+      }
+      const signature = req.headers["stripe-signature"];
+      if (!signature) {
+        return res.status(400).json({ error: "Missing Stripe signature" });
+      }
+      let event: Stripe.Event;
+      try {
+        event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+      } catch (error: any) {
+        return res.status(400).json({
+          error: `Academy webhook signature verification failed: ${error.message}`,
+        });
+      }
+      const dbConn = await getDb();
+      if (!dbConn) {
+        return res.status(503).json({ error: "Database unavailable" });
+      }
+      const existing = (
+        (await dbConn.execute(
+          sql`SELECT id FROM academyBillingEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
+        )) as any
+      )[0] as Array<{ id: number }>;
+      if (existing?.[0]) return res.json({ received: true, cached: true });
+
+      const object = event.data.object as
+        | Stripe.Checkout.Session
+        | Stripe.Subscription;
+      const metadata = "metadata" in object ? object.metadata : null;
+      if (!isAcademyScopedMetadata(metadata)) {
+        await dbConn.execute(
+          sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, ignored: true });
+      }
+      const organizationId = Number(metadata.organizationId);
+      const [organization] = await dbConn
+        .select({ id: organizations.id })
+        .from(organizations)
+        .where(eq(organizations.id, organizationId))
+        .limit(1);
+      if (!organization) {
+        await dbConn.execute(
+          sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
+        );
+        return res.json({ received: true, rejected: true });
+      }
+      await dbConn.execute(
+        sql`INSERT INTO academyBillingEvents (provider, providerEventId, eventType, organizationId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${organizationId}, 'received', ${JSON.stringify(event.data.object)})`,
+      );
+
+      if (event.type === "checkout.session.completed") {
+        const session = object as Stripe.Checkout.Session;
+        await dbConn
+          .update(organizations)
+          .set({
+            academyBillingStatus: "checkout_pending",
+            academyStripeCustomerId: session.customer
+              ? String(session.customer)
+              : null,
+            academyStripeSubscriptionId: session.subscription
+              ? String(session.subscription)
+              : null,
+            academyStripeCheckoutSessionId: session.id,
+          })
+          .where(eq(organizations.id, organizationId));
+      } else if (
+        event.type === "customer.subscription.created" ||
+        event.type === "customer.subscription.updated" ||
+        event.type === "customer.subscription.deleted"
+      ) {
+        const subscription = object as Stripe.Subscription;
+        const status = academySubscriptionStatus(subscription.status);
+        const currentPeriodEnd = subscription.items.data[0]?.current_period_end;
+        const currentPeriodEndsAt = currentPeriodEnd
+          ? new Date(currentPeriodEnd * 1000)
+          : null;
+        await dbConn
+          .update(organizations)
+          .set({
+            academyBillingStatus: status,
+            academyStripeCustomerId: String(subscription.customer),
+            academyStripeSubscriptionId: subscription.id,
+            academyBillingPriceId: subscription.items.data[0]?.price.id ?? null,
+            academyBillingCurrentPeriodEndsAt: currentPeriodEndsAt,
+          })
+          .where(eq(organizations.id, organizationId));
+      }
+      await dbConn.execute(
+        sql`UPDATE academyBillingEvents SET status = 'processed', processedAt = CURRENT_TIMESTAMP WHERE provider = 'stripe' AND providerEventId = ${event.id}`,
+      );
+      return res.json({ received: true });
+    },
+  );
 
   // Stripe webhook - must be before body parser
   app.post(

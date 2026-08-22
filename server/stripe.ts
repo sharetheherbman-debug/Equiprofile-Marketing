@@ -31,6 +31,24 @@ export function getStripe(): Stripe | null {
   });
 }
 
+/**
+ * Store payments are isolated from Management subscriptions. This factory must
+ * never fall back to the SaaS secret or enablement flag.
+ */
+export function getStoreStripe(): Stripe | null {
+  if (process.env.ENABLE_STORE_STRIPE !== "true") {
+    return null;
+  }
+  if (!process.env.STORE_STRIPE_SECRET_KEY) {
+    console.warn("[Store Stripe] Store secret key not configured");
+    return null;
+  }
+  return new Stripe(process.env.STORE_STRIPE_SECRET_KEY, {
+    apiVersion: "2026-01-28.clover",
+    typescript: true,
+  });
+}
+
 // Pricing configuration (should match Stripe dashboard)
 // This is the SINGLE SOURCE OF TRUTH for all pricing
 export const PRICING_PLANS = {

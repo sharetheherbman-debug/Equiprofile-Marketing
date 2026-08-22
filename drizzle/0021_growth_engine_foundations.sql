@@ -7,7 +7,7 @@ ALTER TABLE `marketingContacts`
   ADD COLUMN IF NOT EXISTS `referralCode` varchar(80) DEFAULT NULL,
   ADD COLUMN IF NOT EXISTS `engagementScore` int DEFAULT 0,
   ADD COLUMN IF NOT EXISTS `metadataJson` text;
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthQueueJobs` (
   `id` int AUTO_INCREMENT NOT NULL,
   `queueType` varchar(40) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `growthQueueJobs` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthQueueJobs_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthSocialConnections` (
   `id` int AUTO_INCREMENT NOT NULL,
   `tenantId` varchar(100) NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `growthSocialConnections` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthSocialConnections_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthOnboardingFlows` (
   `id` int AUTO_INCREMENT NOT NULL,
   `userId` int NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `growthOnboardingFlows` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthOnboardingFlows_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthAutomationRuns` (
   `id` int AUTO_INCREMENT NOT NULL,
   `tenantId` varchar(100) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `growthAutomationRuns` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthAutomationRuns_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthReferrals` (
   `id` int AUTO_INCREMENT NOT NULL,
   `tenantId` varchar(100) NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `growthReferrals` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthReferrals_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthAnalyticsEvents` (
   `id` int AUTO_INCREMENT NOT NULL,
   `tenantId` varchar(100) NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `growthAnalyticsEvents` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `growthAnalyticsEvents_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS `growthFeedback` (
   `id` int AUTO_INCREMENT NOT NULL,
   `tenantId` varchar(100) NOT NULL,
@@ -121,14 +121,24 @@ CREATE TABLE IF NOT EXISTS `growthFeedback` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthFeedback_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_mc_tenant` ON `marketingContacts` (`tenantId`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_queue_tenant` ON `growthQueueJobs` (`tenantId`, `queueType`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_queue_status` ON `growthQueueJobs` (`queueType`, `status`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_social_tenant` ON `growthSocialConnections` (`tenantId`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_social_platform` ON `growthSocialConnections` (`tenantId`, `platform`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_onboarding_user` ON `growthOnboardingFlows` (`userId`, `tenantId`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_lifecycle_tenant` ON `growthAutomationRuns` (`tenantId`, `runAt`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_referral_tenant` ON `growthReferrals` (`tenantId`, `status`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_analytics_tenant` ON `growthAnalyticsEvents` (`tenantId`, `stage`);
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_ge_feedback_tenant` ON `growthFeedback` (`tenantId`, `status`);
+--> statement-breakpoint

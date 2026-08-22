@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `marketingProductProfiles` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `marketingProductProfiles_id` PRIMARY KEY(`id`)
 );
-
+--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_mproduct_profiles_scope`
   ON `marketingProductProfiles` (`tenantId`, `workspaceId`, `hostAppId`);
+--> statement-breakpoint

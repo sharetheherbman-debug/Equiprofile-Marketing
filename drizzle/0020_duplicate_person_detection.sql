@@ -14,7 +14,8 @@
 ALTER TABLE `marketingContacts`
   ADD COLUMN `suspectedDuplicateOf` int DEFAULT NULL AFTER `lastContactedAt`,
   ADD COLUMN `dupRiskScore` tinyint unsigned DEFAULT NULL AFTER `suspectedDuplicateOf`;
-
+--> statement-breakpoint
 -- Index lets the autopilot quickly skip flagged rows
 ALTER TABLE `marketingContacts`
   ADD KEY `idx_mc_dup_of` (`suspectedDuplicateOf`);
+--> statement-breakpoint

@@ -26,9 +26,11 @@
  *   - One Express backend  (API, auth, SMTP, admin)
  *
  * Build target is selected by VITE_SITE env var:
- *   VITE_SITE=management  → builds management frontend only
- *   VITE_SITE=school      → builds school frontend only
- *   (no VITE_SITE)        → builds management (default, backward compat)
+  * VITE_SITE=management  → builds Management frontend only
+ * VITE_SITE=academy     → builds canonical Academy frontend
+ * VITE_SITE=shop        → builds Shop frontend only
+ * VITE_SITE=school      → legacy compatibility alias only
+ * (no VITE_SITE)        → builds Management (default, backward compatible)
  *
  * The `npm run build` script builds BOTH by invoking Vite twice.
  */
@@ -41,11 +43,16 @@ import { defineConfig, Plugin, loadEnv } from "vite";
 // ── Site target ────────────────────────────────────────────────────────────
 const SITE_TARGET = (process.env.VITE_SITE || "management") as
   | "management"
+  | "academy"
+  | "shop"
   | "school";
 
 const SITE_ROOTS: Record<string, string> = {
   management: path.resolve(import.meta.dirname, "client", "management"),
-  school: path.resolve(import.meta.dirname, "client", "school"),
+  academy: path.resolve(import.meta.dirname, "client", "academy"),
+  shop: path.resolve(import.meta.dirname, "client", "shop"),
+  // Retained only while legacy host compatibility remains necessary.
+  school: path.resolve(import.meta.dirname, "client", "academy"),
 };
 
 const siteRoot = SITE_ROOTS[SITE_TARGET];
