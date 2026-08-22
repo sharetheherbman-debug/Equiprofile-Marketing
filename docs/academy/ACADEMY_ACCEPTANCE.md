@@ -54,7 +54,9 @@ Corrective rewrites already made are documented in `docs/academy/factual-source-
 | Student UI and offline cache | **Fail-closed** | The Daily Practice view explains the withholding, directs learners to reviewed lessons or authorised teacher work, and the service worker no longer caches the endpoint; its cache revision is advanced to evict stale scenario payloads. |
 | Legacy virtual-horse daily-task templates | **Not accepted / fail-closed** | The template source contains unreviewed feeding, health, welfare, handling, tack, exercise and emergency prompts. Generation and toggling reject requests; existing template-marked records remain stored for history but are filtered from student overview and task-list responses. |
 | Legacy virtual-horse task UI | **Fail-closed** | The student dashboard no longer offers automated care-task generation and explains the withholding; independent user task records and authorised teacher work remain available. |
-| Re-enablement | **Blocked** | Requires a complete per-scenario and per-template source-to-claim review, learner-content rewrite where needed, assessment/Tutor review, explicit acceptance record, and relevant server/UI validation. |
+| Legacy Study Hub default catalogue | **Not accepted / fail-closed** | Its old static titles and descriptions include unreviewed health, feeding, tack, riding, safety and welfare claims. It is no longer seeded; persisted rows matching its legacy slugs are filtered from lists and rejected on detail access, while non-legacy persisted records are retained. |
+| Legacy Study Hub UI | **Fail-closed** | The dashboard explains that legacy topics are withheld and directs learners to reviewed Academy lessons or authorised teacher work. |
+| Re-enablement | **Blocked** | Requires a complete per-scenario, per-template and per-topic source-to-claim review, learner-content rewrite where needed, assessment/Tutor review, explicit acceptance record, and relevant server/UI validation. |
 
 ## 3. Disposable authenticated Academy acceptance
 

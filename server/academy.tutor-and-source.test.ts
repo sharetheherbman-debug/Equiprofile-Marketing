@@ -85,4 +85,24 @@ describe("Academy curriculum and Tutor boundaries", () => {
     expect(dashboard).not.toContain("trpc.student.generateDailyTasks.useMutation");
     expect(dashboard).not.toContain("trpc.student.toggleTaskEngine.useMutation");
   });
+
+  it("withholds legacy Study Hub defaults without deleting non-legacy persisted topics", () => {
+    const router = read("server/studentRouter.ts");
+    const dashboard = read("client/src/pages/StudentDashboard.tsx");
+    const start = router.indexOf("// ── Study Hub");
+    const end = router.indexOf("// ── AI Tutor", start);
+    const studyHub = router.slice(start, end);
+
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    expect(router).toContain("WITHHELD_LEGACY_STUDY_TOPIC_SLUGS");
+    expect(studyHub).not.toContain("insert(studyTopics).values(DEFAULT_STUDY_TOPICS)");
+    expect(studyHub).toContain(
+      "!WITHHELD_LEGACY_STUDY_TOPIC_SLUGS.has(topic.slug)",
+    );
+    expect(studyHub).toContain("PRECONDITION_FAILED");
+    expect(dashboard).toContain(
+      "Legacy Study Hub topics are withheld pending factual and safety review.",
+    );
+  });
 });

@@ -1571,7 +1571,7 @@ function StudyHubView() {
           <div className="text-center py-8">
             <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-500">
-              No topics at this level yet.
+Legacy Study Hub topics are withheld pending factual and safety review. Continue with the reviewed Academy learning path or authorised teacher-assigned work.
             </p>
           </div>
         </SCard>

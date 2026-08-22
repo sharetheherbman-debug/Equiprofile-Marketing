@@ -154,8 +154,9 @@ function shouldEscalate(question: string): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Default study topics — seeded on first request if table is empty
+// Legacy static Study Hub defaults — retained only to recognise and withhold old persisted rows
 // ─────────────────────────────────────────────────────────────────────────────
+// Legacy Study Hub defaults are retained only to identify old persisted rows. They are not seeded or delivered until individually source-to-claim reviewed.
 const DEFAULT_STUDY_TOPICS = [
   // ── BEGINNER ──────────────────────────────────────────────────────────────
   {
@@ -431,6 +432,10 @@ const DEFAULT_STUDY_TOPICS = [
     sortOrder: 43,
   },
 ];
+
+const WITHHELD_LEGACY_STUDY_TOPIC_SLUGS = new Set(
+  DEFAULT_STUDY_TOPICS.map((topic) => topic.slug),
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Scenario Training — static educational scenarios
@@ -2920,25 +2925,20 @@ export const studentRouter = router({
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
-      // Seed defaults if table is empty
-      const existing = await dbConn
-        .select({ id: studyTopics.id })
-        .from(studyTopics)
-        .limit(1);
-      if (existing.length === 0) {
-        await dbConn.insert(studyTopics).values(DEFAULT_STUDY_TOPICS);
-      }
-
       const conditions = [eq(studyTopics.isPublished, true)];
       if (input?.category) {
         conditions.push(eq(studyTopics.category, input.category));
       }
 
-      return dbConn
+      const topics = await dbConn
         .select()
         .from(studyTopics)
         .where(and(...conditions))
         .orderBy(studyTopics.sortOrder);
+
+      return topics.filter(
+        (topic) => !WITHHELD_LEGACY_STUDY_TOPIC_SLUGS.has(topic.slug),
+      );
     }),
 
   getStudyTopic: studentProcedure
@@ -2949,10 +2949,22 @@ export const studentRouter = router({
       const [topic] = await dbConn
         .select()
         .from(studyTopics)
-        .where(eq(studyTopics.slug, input.slug))
+        .where(
+          and(
+            eq(studyTopics.slug, input.slug),
+            eq(studyTopics.isPublished, true),
+          ),
+        )
         .limit(1);
       if (!topic)
         throw new TRPCError({ code: "NOT_FOUND", message: "Topic not found" });
+      if (WITHHELD_LEGACY_STUDY_TOPIC_SLUGS.has(topic.slug)) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message:
+            "This legacy Study Hub topic is unavailable pending Academy factual and safety review. Use reviewed Academy lessons or authorised teacher-assigned work.",
+        });
+      }
       return topic;
     }),
 
