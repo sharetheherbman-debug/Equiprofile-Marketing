@@ -1461,17 +1461,17 @@ The standard dismounting procedure is:
 5. Slide down the near side, landing lightly on both feet with your knees slightly bent to absorb the impact.
 6. Keep hold of the reins as you land so you maintain control of the horse.
 
-**Never dismount by swinging your leg over the front of the saddle** — this is dangerous because you have no control if the horse moves. Never leave your left foot in the stirrup while dismounting, as being dragged is one of the most dangerous riding accidents.
+Keep control of the horse through the reins while dismounting. Do not put a foot on the ground while the other is still in a stirrup: both Rutgers and Missouri Extension direct riders to release their feet from the stirrups before reaching the ground.
 
 ## Emergency Dismount
 
 Emergency dismounting carries significant risk and must not be attempted from written instructions alone. Missouri Extension describes progressive practice only with a quiet, well-trained horse and qualified supervision. Follow the instructor's, facility's, and emergency-service directions; prioritise getting both feet free of the stirrups when safe to do so.`,
     keyPoints: [
-      "Always check the girth before mounting — a loose girth can cause the saddle to slip dangerously",
+      "Check the girth and saddle under the current instructor and yard procedure before mounting",
       "Use an instructor-approved mounting aid when it is appropriate for the rider, horse, and setting",
       "When mounting from the ground, face the tail and spring up from the right foot",
       "When dismounting, always remove both feet from the stirrups before sliding down",
-      "Never dismount by swinging your leg over the front of the saddle",
+      "Remove both feet from the stirrups before ground contact and maintain control through the reins",
       "Follow the current yard and instructor procedure for girth rechecking before riding",
     ],
     safetyNote:
@@ -1481,23 +1481,23 @@ Emergency dismounting carries significant risk and must not be attempted from wr
     commonMistakes: [
       "Forgetting to check the girth before mounting, risking the saddle slipping",
       "Digging the left toe into the horse's side when mounting, causing discomfort or the horse to walk off",
-      "Thumping heavily into the saddle instead of lowering gently, which jars the horse's back",
+      "Landing abruptly in the saddle rather than mounting smoothly and sitting gently",
       "Leaving the left foot in the stirrup while dismounting, creating a dragging risk",
-      "Mounting from the ground regularly instead of using a mounting block, straining the horse's back",
+      "Improvising a mounting method instead of using the instructor-approved aid or procedure",
     ],
     knowledgeCheck: [
       {
         question:
-          "Why should you use a mounting block rather than mounting from the ground?",
+          "What must be true before using a mounting block or other mounting aid?",
         options: [
-          "It is quicker",
-          "It reduces strain on the horse's back and the saddle",
-          "It looks more professional",
-          "Horses are trained to stand only at mounting blocks",
+          "The horse can move around while the rider mounts",
+          "The aid is stable, the area is clear, and the horse is prepared to stand quietly",
+          "The rider can skip the tack and girth check",
+          "The aid is used without any instruction",
         ],
         correctIndex: 1,
         explanation:
-          "Mounting from the ground puts significant sideways and downward force on the saddle and horse's back. A mounting block reduces this strain, protecting the horse's spine and the saddle tree from twisting.",
+          "A mounting aid is appropriate only when it is stable and approved for the rider and horse, the area is clear, and the horse is standing quietly under control.",
       },
       {
         question: "What should you do if you are unsure whether the girth and saddle are ready for mounting?",

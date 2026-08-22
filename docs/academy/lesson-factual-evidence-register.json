@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 60,
-    "claimReviewedAndAccepted": 42
+    "sourceMappedRequiresSpecificClaimReview": 59,
+    "claimReviewedAndAccepted": 43
   },
   "lessons": [
     {
@@ -595,15 +595,28 @@
         "General descriptive educational content"
       ],
       "riskClass": "LOW_RISK_DESCRIPTIVE",
-      "sources": [],
-      "sourceCheckDate": "2026-08-21",
+      "sources": [
+        {
+          "organisation": "Rutgers Equine Science Center",
+          "title": "Mounting, Dismounting, and Riding Horses Safely",
+          "url": "https://esc.rutgers.edu/fact_sheet/mounting-dismounting-and-riding-horses-safely/",
+          "checkedAt": "2026-08-22"
+        },
+        {
+          "organisation": "University of Missouri Extension",
+          "title": "Safe Riding: Practical Guidelines for Horse and Rider",
+          "url": "https://extension.missouri.edu/publications/g2882",
+          "checkedAt": "2026-08-22"
+        }
+      ],
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "must"
       ],
-      "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
-      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
-      "reviewDecision": null
+      "whatWasVerified": "Rutgers Extension supports a secure girth check, clear mounting area, rein control, smooth mounting, and release of both feet before ground contact. Missouri Extension supports tack/horse readiness, snug-not-overtight girth, instructor-appropriate assistance, safe stirrup release, and supervised progressive emergency-dismount practice.",
+      "lessonChangeMade": "Removed universal girth and stirrup measurements, unsubstantiated back-damage/strain claims, and written emergency-dismount directions. Reframed the lesson around approved procedures, qualified instruction, appropriate mounting aids, tack readiness, and safe stirrup release.",
+      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
+      "reviewDecision": "ACCEPTED_AFTER_SOURCE_BACKED_REWRITE"
     },
     {
       "lessonSlug": "rider-position-basics",
