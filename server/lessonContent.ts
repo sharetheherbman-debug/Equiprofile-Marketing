@@ -6555,86 +6555,78 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
     category: "Horse Health & First Response",
     sortOrder: 1,
     objectives: [
-      "Identify the key indicators of a healthy horse",
-      "Know the normal vital signs: temperature, pulse, and respiration (TPR)",
-      "Carry out a basic daily health check",
-      "Understand why daily observation is essential for early detection of problems",
+      "Recognise that health and welfare observations, vital-sign records, clinical decisions, treatment, and emergency action require the current responsible-person, veterinary, safety, welfare, and written-care-plan route",
+      "Understand the limited World Horse Welfare adult-at-rest temperature, pulse, and respiration reference as contextual information, not a measurement method, diagnosis, self-triage threshold, or universal health profile",
+      "Record authorised factual context and observations without examining, handling, testing, diagnosing, treating, deciding fitness, or deciding a cause, correction, outcome, or emergency status",
+      "Use the current responsible-person, veterinary, yard, welfare, safety, incident, and emergency procedure when a health or welfare concern is outside the plan or unclear",
     ],
-    content: `Knowing what a healthy horse looks like — and being able to spot when something is wrong — is one of the most fundamental skills in horse care. Problems caught early are almost always easier and cheaper to treat, and early intervention can be life-saving in serious conditions like colic or laminitis.
+    content: `Health and welfare observation can involve an individual horse’s baseline, behaviour, environment, management, veterinary direction, responsible person, authorisation, safety, welfare, current written care plan, and changing circumstances. This lesson is an educational boundary only. It is not a clinical examination, a procedure for taking temperature, pulse, respiration, or any other measurement, a daily-check protocol, a health checklist, a fitness assessment, a lameness assessment, a colic assessment, a pain/stress assessment, a welfare assessment, a diagnosis, treatment, medication, emergency decision, or a substitute for veterinary advice.
 
-## The Healthy Horse
+## Individual Context and Limited Reference Information
 
-A healthy horse is bright, alert, and interested in its surroundings. Its eyes are clear and fully open, its ears are mobile, and its expression is relaxed. The coat should be smooth and glossy (though this varies with season — a thick winter coat is normal). The horse should be standing evenly on all four feet, shifting weight occasionally but not persistently resting one leg (hind leg resting is normal; foreleg resting is not).
+World Horse Welfare gives usual temperature **37.5–38.5°C**, pulse **36–42 beats per minute**, and respiration **8–12 breaths per minute** values for a healthy adult horse calmly at rest, and directs carers to learn an individual normal baseline. These values are contextual source information only. They are not a method for obtaining a reading, a universal health profile, a diagnosis, a rule for every horse, a fitness test, a pain/stress test, a treatment trigger, a self-triage threshold, or a reason to delay professional contact. Only an appropriately authorised and competent person may obtain, record, interpret, compare, or act on measurements under the current individual care plan and veterinary/responsible-person direction.
 
-## Normal Vital Signs
+A generic lesson cannot determine a horse’s normal state, health, welfare, pain, discomfort, behaviour, fitness, soundness, hydration, appetite, faeces, respiratory status, infection status, injury, lameness, colic, cause, correction, prognosis, emergency status, or treatment need. A familiar appearance, a single reading, another horse, an online example, a previous record, or an apparent lack of change does not determine that an individual horse is safe or well.
 
-Every horse owner and carer should know the normal vital signs — collectively known as TPR:
+## Authorised Factual Observation
 
-- **Temperature**: 37.5–38.5°C (99.5–101.3°F), taken rectally with a digital thermometer
-- **Pulse**: 36–42 beats per minute for a healthy adult horse calmly at rest, taken at the facial artery under the jaw
-- **Respiration**: 8–12 breaths per minute for a healthy adult horse calmly at rest, counted by watching the flank rise and fall
+Where the responsible person permits it and the current written plan requires it, a learner may record authorised factual context and observations such as date, time, location, who is responsible, current instruction, visible environment, people present, whether food or water is present, visible behaviour, a visible change, and what escalation route was used. Do not touch, restrain, move, test, measure, inspect, palpate, pick out feet, obtain a sample, assess, diagnose, treat, medicate, decide fitness, decide welfare status, determine a cause, determine a correction, or decide an emergency status from this lesson.
 
-These figures represent resting values. Exercise, stress, pain, and hot weather all increase them. Know what is normal for your horse so you can recognise deviations.
+The responsible person and current veterinary/yard procedure determine what is observed; who is authorised; what records, equipment, hygiene, supervision, access, handling, safety, welfare, incident, emergency and reporting arrangements apply; whether activity can begin, continue, change, pause, or stop; and when veterinary support is required. Do not use a generic checklist or value to override them.
 
-## The Daily Health Check
+## Escalation
 
-Follow the horse’s written daily-care and health-observation plan. Observe from a safe distance first: is the horse standing, eating and behaving as usual? Then, where you are trained and authorised to do so, complete the checks required by the yard procedure:
+If a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear, do not self-triage or seek a generic correction. Stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route. Do not delay required emergency support to gather additional observations or compare a number to a generic range.
 
-- **Eyes**: bright, clear, no discharge
-- **Nostrils**: clean, no unusual discharge
-- **Legs**: cool, tight (no heat or swelling), no cuts or scratches
-- **Feet**: pick out and check for stones, thrush, or shoe condition
-- **Body**: no new lumps, cuts, or swellings
-- **Droppings**: formed, regular colour, not too hard or too soft
-- **Water**: check intake — the bucket or trough should show evidence of drinking
-- **Appetite**: the horse should eat its feed within a reasonable time
+## Reflective Use
 
-## When Something Is Wrong
-
-Signs that something may be wrong include: dullness, loss of appetite, abnormal droppings, nasal discharge, coughing, lameness, heat or swelling in the legs, excessive sweating, rolling repeatedly (colic warning), and reluctance to move. Any significant change from normal should be reported immediately.`,
+Use this lesson to ask: who is responsible; what current written plan and veterinary direction apply; what may I safely record; what remains unknown; and what is the current escalation route? The aim is recognition of individual professional scope and safe information handling, not independent health assessment.`,
     keyPoints: [
-      "A healthy horse is bright, alert, and interested with clear eyes and a smooth coat",
-      "World Horse Welfare’s usual adult-at-rest TPR reference: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min; record an individual baseline.",
-      "Daily health checks should cover eyes, nostrils, legs, feet, body, droppings, water, and appetite",
-      "Know what is normal for your individual horse so you can spot deviations quickly",
-      "Report any significant change from normal to the yard manager or vet immediately",
+      "Health and welfare observations, vital-sign records, clinical decisions, treatment, and emergency action require the current responsible-person, veterinary, safety, welfare, and written-care-plan route",
+      "World Horse Welfare’s adult-at-rest temperature 37.5–38.5°C, pulse 36–42 bpm, and respiration 8–12 breaths/minute reference is contextual information only; it is not a measurement method, diagnosis, self-triage threshold, or universal health profile",
+      "A generic lesson cannot determine health, welfare, pain, discomfort, behaviour, fitness, soundness, hydration, appetite, respiratory status, injury, lameness, colic, cause, correction, prognosis, or emergency status",
+      "A learner may record authorised factual context and observations but must not touch, restrain, move, test, measure, inspect, palpate, pick out feet, obtain a sample, assess, diagnose, treat, medicate, decide fitness, decide welfare status, determine a cause, determine a correction, or decide an emergency status",
+      "If a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear, use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route",
     ],
     safetyNote:
-      "When taking a horse's temperature rectally, stand to the side of the hindquarters, not directly behind. Have someone hold the horse's head. Use a digital thermometer with a string attached so it cannot be lost inside the horse.",
+      "Do not use this lesson to approach, handle, restrain, move, touch, test, measure, inspect, palpate, pick out feet, obtain a sample, assess, diagnose, treat, medicate, decide fitness, decide welfare status, determine a cause, determine a correction, or decide an emergency status. Follow the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting procedure.",
     practicalApplication:
-      "With a competent person, record calm-at-rest TPR and routine observations using the yard’s approved health record. Establish the individual baseline over repeated observations appropriate to the horse’s management plan, and report concerning changes through the yard’s veterinary-escalation procedure.",
+      "With the responsible person’s permission, review the current written health-observation, welfare, safety, veterinary, incident, emergency, and reporting procedure. Identify what factual context may be recorded, who is authorised to act, and which escalation route applies. Do not undertake a health examination, handling, measurement, test, diagnosis, treatment, or emergency decision from this lesson.",
     commonMistakes: [
-      "Only checking the horse when something seems obviously wrong, rather than daily",
-      "Not knowing normal TPR values and therefore not recognising abnormal readings",
-      "Checking legs only visually — always run your hands down them to feel for heat or swelling",
-      "Dismissing subtle signs like a slightly dull coat or reduced appetite",
-      "Forgetting to check water intake as part of the daily assessment",
+      "Treating a generic temperature, pulse, respiration, appearance, behaviour, checklist, online example, previous record, another horse, or apparent lack of change as a diagnosis, self-triage threshold, universal health profile, fitness test, welfare assessment, or reason to delay professional contact",
+      "Touching, restraining, moving, testing, measuring, inspecting, palpating, picking out feet, obtaining a sample, assessing, diagnosing, treating, medicating, deciding fitness, deciding welfare status, determining a cause, determining a correction, or deciding an emergency status from a generic lesson",
+      "Using a generic value or checklist to override the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, written-care-plan, or authorised reporting route",
+      "Failing to record only authorised factual context and observations when a concern needs escalation",
+      "Continuing an activity or delaying required emergency support when a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear",
     ],
     knowledgeCheck: [
       {
-        question: "What is the normal resting pulse rate for a horse?",
-        options: ["10–15 bpm", "36–42 bpm", "60–80 bpm", "100+ bpm"],
-        correctIndex: 1,
-        explanation:
-          "World Horse Welfare lists 36–42 beats per minute as the usual pulse range for a healthy adult horse calmly at rest. Interpret a reading in context and seek advice for a concerning departure from that horse’s known baseline.",
-      },
-      {
-        question: "Which is NOT a normal sign in a healthy horse at rest?",
+        question: "What is the correct scope of World Horse Welfare’s adult-at-rest temperature 37.5–38.5°C, pulse 36–42 bpm, and respiration 8–12 breaths/minute reference?",
         options: [
-          "Bright, alert expression",
-          "Resting a hind leg occasionally",
-          "Persistently resting a foreleg",
-          "Clear, open eyes",
+          "A universal measurement procedure and self-triage threshold",
+          "A diagnosis and treatment trigger for every horse",
+          "Contextual information for a healthy adult horse calmly at rest that does not replace the individual baseline, current care plan, veterinary direction, or professional escalation route",
+          "A reason to delay professional contact until more measurements are collected",
         ],
         correctIndex: 2,
-        explanation:
-          "Horses commonly rest a hind leg. A persistent change in stance or comfort should be recorded and reported through the yard’s health procedure rather than self-diagnosed.",
+        explanation: "The reference is not a measurement method, universal health profile, diagnosis, self-triage threshold, or substitute for current responsible-person and veterinary direction.",
+      },
+      {
+        question: "What should a learner do when a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear?",
+        options: [
+          "Use a generic checklist or vital-sign range to decide the diagnosis and correction",
+          "Touch, restrain, move, test, measure, inspect, palpate, or treat the horse from this lesson",
+          "Stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route",
+          "Delay required emergency support while comparing the horse with an online example or another horse",
+        ],
+        correctIndex: 2,
+        explanation: "A learner may record authorised factual context and observations, but must not independently assess, diagnose, treat, decide fitness/welfare, or decide an emergency status.",
       },
     ],
     aiTutorPrompts: [
-      "How do I take a horse's pulse correctly?",
-      "What are the early signs of colic I should watch for?",
-      "Why must calm-at-rest TPR values be interpreted against the individual horse’s baseline and the wider clinical picture?",
+      "What current written health-observation, welfare, safety, veterinary, incident, emergency, and reporting procedure applies, and who is authorised to act?",
+      "How can I record authorised factual context and observations without examining, handling, measuring, testing, diagnosing, treating, deciding fitness/welfare, or deciding an emergency status?",
+      "Why is an adult-at-rest vital-sign reference contextual information rather than a measurement method, diagnosis, self-triage threshold, or substitute for the individual horse’s current care plan and veterinary direction?",
     ],
     linkedCompetencies: ["daily_health_check", "welfare_awareness"],
   },

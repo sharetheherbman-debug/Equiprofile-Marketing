@@ -2647,33 +2647,21 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "37.5–38.5°C",
-        "36–42 beats",
-        "required",
-        "10–20 seconds",
-        "15 seconds",
-        "60 seconds",
-        "20–30 minutes",
-        "38.2°C",
-        "36 bpm",
-        "12 bpm",
-        "legal",
-        "36–42 bpm",
-        "10–15 bpm",
-        "60–80 bpm",
-        "must"
+        "36–42 beats per minute",
+        "8–12 breaths per minute"
       ],
-      "whatWasVerified": "ACCEPTED: Healthy adult horse calmly at rest: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/minute. The lesson requires individual baseline recording and professional escalation rather than numeric self-triage.",
-      "lessonChangeMade": "Retained reviewed World Horse Welfare adult-at-rest TPR values while removing the fixed-duration and fixed-day health-check routine in favour of the individual written plan.",
+      "whatWasVerified": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REWRITE: World Horse Welfare gives the retained temperature 37.5–38.5°C, pulse 36–42 beats per minute, and respiration 8–12 breaths per minute reference for a healthy adult horse calmly at rest, plus individual-baseline and veterinary-escalation context. The rewritten lesson, assessments and Tutor prompts use it only as non-diagnostic contextual information and otherwise teach authorised factual observation, current individual care-plan/responsible-person/veterinary scope, no independent examination or clinical action, and escalation when a concern is outside the plan or unclear.",
+      "lessonChangeMade": "Removed learner-directed temperature, pulse and respiration procedures; diagnostic healthy/abnormal appearance rules; hands-on limb/hoof examination; symptom, colic and lameness interpretation; clinical safety instructions; and generic daily-check, self-triage and outcome claims. Replaced them with a source-bounded observation, individual-baseline, professional-scope and escalation boundary across learner text, assessments and Tutor prompts.",
       "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
       "reviewDecision": {
-        "reviewedAt": "2026-08-21",
+        "reviewedAt": "2026-08-22",
         "reviewedBy": "academy-source-comparison",
         "sourceUrl": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-        "claimReviewed": "Healthy adult horse calmly at rest: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/minute. The lesson requires individual baseline recording and professional escalation rather than numeric self-triage.",
-        "outcome": "ACCEPTED"
+        "claimReviewed": "Complete post-rewrite lesson scope: objectives, learner text, key points, safety note, practical activity, common-mistake warnings, knowledge-check explanations and Tutor prompts, limited to the cited healthy-adult-at-rest reference as contextual information; authorised factual observation; individual written-care-plan/responsible-person/veterinary scope; no independent examination or clinical action; and professional escalation.",
+        "outcome": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REWRITE"
       }
     },
     {
