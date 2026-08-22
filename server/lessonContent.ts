@@ -10035,71 +10035,80 @@ The purpose of this lesson is to help a learner recognise the importance of care
     category: "Equine Welfare & Ethics",
     sortOrder: 4,
     objectives: [
-      "Understand the Animal Welfare Act 2006",
-      "Know legal requirements for horse identification",
-      "Understand duty of care and offences",
-      "Recognise the role of welfare organisations",
+      "Recognise that UK welfare law, codes, passport rules, enforcement, and reporting routes require current official guidance, individual facts, and authorised advice",
+      "Understand that passport, identification, microchip, ownership, movement, sale, treatment, import/export, vaccination, and record requirements vary by jurisdiction, activity, document, and current rule",
+      "Know that a generic lesson cannot determine legal responsibility, an offence, enforcement, a penalty, jurisdiction, or the correct legal or welfare action",
+      "Use factual records and the current responsible-person, veterinary, welfare, emergency, regulatory, or authorised-advice route when an official requirement or concern arises",
     ],
-    content: `The primary UK legislation is the Animal Welfare Act 2006.
+    content: `This lesson introduces a legal-information boundary for horse welfare and identification. It is not legal advice, a statement of every current rule, a passport or microchip inspection procedure, an enforcement guide, a licence to determine legal responsibility, an offence, a penalty, a jurisdiction, a reportable matter, or the correct action in an individual case. Rules can change and differ between England, Scotland, Wales, Northern Ireland, activities, documents, horses, owners, keepers, journeys, sales, veterinary treatment, competitions, import/export, and local arrangements. Use current official guidance and authorised advice before acting.
 
-## Animal Welfare Act 2006
+## Welfare Law and Codes
 
-It makes it an offence to cause unnecessary suffering, and places a positive duty of care on owners. Five needs must be met: environment, diet, normal behaviour, appropriate housing, and protection from pain and disease.
+The Animal Welfare Act 2006 contains provisions about responsibility for animals, unnecessary suffering, welfare, enforcement, prosecution, fines, disqualification, and other matters. The DEFRA horse-welfare code describes responsibilities for a person responsible for a horse, including suitable environment, healthy diet, normal behaviour, appropriate company, and protection from pain, suffering, injury, and disease. The code also states that breach of a code provision is not itself an offence, although a court may consider compliance with the code in welfare proceedings.
 
-## Horse Passports
+A generic lesson cannot decide whether a person is responsible, whether a welfare need has been met, whether an observation proves suffering, whether an offence or breach has occurred, which law applies, which authority has jurisdiction, whether enforcement is appropriate, or what outcome, penalty, remedy, report, or action is required. Do not give legal advice, make a legal conclusion, accuse a person, investigate, enter private land, move a horse, alter management, or take action beyond competence.
 
-All UK horses must have a passport with identification details, microchip number, and vaccination records.
+## Passport and Identification Boundary
 
-## Enforcement
+GOV.UK states that a horse passport is required for listed equines and must be kept with the animal. It describes information a passport can contain and specific situations where the document is needed. The current rules include specified ownership-update and death-return actions, and GOV.UK identifies particular microchip guidance for horses born before July 2009 while noting that rules differ in Scotland, Wales, and Northern Ireland. A generic lesson cannot decide whether a particular passport is valid, current, complete, correctly issued, correctly updated, sufficient for a sale, movement, treatment, competition, import/export, or other activity; whether a microchip is required or correctly recorded; or whether vaccination information is required or sufficient for a particular purpose.
 
-Local authorities and the RSPCA enforce the Act. Offences can result in fines, disqualification, or imprisonment.`,
+Do not inspect, alter, retain, complete, transfer, destroy, submit, travel with, buy, sell, loan, import, export, treat, compete, or make a legal or commercial decision about a passport or identification document from this lesson alone. The responsible person must use the current official route, issuing organisation, veterinary professional, regulator, organiser, transport provider, insurer, or other authorised adviser appropriate to the jurisdiction and activity.
+
+## Factual Records and Authorised Routes
+
+You may record only authorised factual information such as the document that is present, the horse identity information that can be seen, date and time, location, current responsible person, stated activity, and an identified question or concern. Do not diagnose a document problem, interpret a legal effect, disclose personal information, make an allegation, or rely on another person’s account, social media, or a generic rule.
+
+If an immediate horse-welfare, health, safety, road, or emergency concern arises, follow the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority procedure without delay. For non-urgent legal, welfare, passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record questions, obtain current official guidance and authorised advice for the specific jurisdiction and activity.
+
+## Reflective Use
+
+Use this lesson to prepare appropriate questions: which current jurisdiction and activity apply; who is responsible; which official document or rule governs the situation; what factual information is known; what information is missing; and which authorised route can provide current advice?`,
     keyPoints: [
-      "The Animal Welfare Act 2006 is the key UK legislation",
-      "Owners must meet five welfare needs",
-      "All UK horses must have a passport and microchip",
-      "Offences can lead to fines, bans, or imprisonment",
-      "Duty of care applies to anyone with a horse in their charge",
+      "The Animal Welfare Act 2006 and the horse-welfare code provide an important legal and welfare context, but current rules, facts, jurisdiction, enforcement, and action require official and authorised advice",
+      "The horse-welfare code describes suitable environment, healthy diet, normal behaviour, appropriate company, and protection from pain, suffering, injury, and disease, but breach of the code itself is not an offence",
+      "Passport, identification, microchip, ownership, movement, sale, treatment, import/export, vaccination, and record requirements vary by jurisdiction, activity, document, current rule, and individual circumstances",
+      "A generic lesson cannot determine legal responsibility, an offence, enforcement, a penalty, jurisdiction, reportability, or the correct legal or welfare action",
+      "Record authorised factual information and use the current responsible-person, veterinary, welfare, emergency, regulatory, or authorised-advice route when an official requirement or concern arises",
     ],
     safetyNote:
-      "Buying or selling a horse without a valid passport is illegal.",
+      "Do not give legal advice or determine passport validity, microchip status, ownership, document sufficiency, sale, movement, treatment, competition, insurance, import/export, an offence, enforcement, a penalty, jurisdiction, or reportability from this lesson. Follow current official guidance and authorised advice for the specific jurisdiction and activity.",
     practicalApplication:
-      "Check the passport of a horse at your yard for microchip number and vaccination records.",
+      "With the responsible person’s permission, identify the current local process for passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, welfare, incident, emergency, and authorised-advice questions. Observe only authorised factual document information and ask which jurisdiction, activity, current official guidance, and responsible route apply. Do not inspect, alter, retain, complete, transfer, destroy, submit, travel with, buy, sell, loan, or make a decision about a document from this lesson alone.",
     commonMistakes: [
-      "Assuming legislation only applies to owners",
-      "Not keeping passports updated",
-      "Ignoring duty of care for others' horses",
-      "Not understanding that causing suffering can be an offence even without intent",
-      "Failing to microchip horses",
+      "Using a generic lesson, document, image, social-media post, another person’s account, or one observation to determine legal responsibility, an offence, enforcement, a penalty, jurisdiction, reportability, or the correct legal or welfare action",
+      "Deciding that a passport is valid, current, complete, correctly issued, correctly updated, sufficient for a sale, movement, treatment, competition, import/export, or other activity without current official and authorised advice",
+      "Assuming that a passport, microchip, ownership, movement, sale, treatment, competition, import/export, vaccination, or record rule is universal across jurisdictions, activities, documents, and current regulations",
+      "Giving legal advice, making a legal conclusion, accusing a person, investigating, entering private land, moving a horse, altering management, or taking action beyond competence instead of using the authorised route",
+      "Failing to use the current responsible-person, veterinary, welfare, emergency, regulatory, safeguarding, incident, or authorised-advice route when a factual horse-welfare, health, safety, road, or document concern requires escalation",
     ],
     knowledgeCheck: [
       {
-        question: "What does the Animal Welfare Act 2006 require?",
+        question: "What can this generic Academy lesson determine from a horse-welfare or legal observation?",
         options: [
-          "Ride the horse regularly",
-          "Meet five specific welfare needs",
-          "Keep the horse in a stable",
-          "Compete the horse",
-        ],
-        correctIndex: 1,
-        explanation: "The Act requires five welfare needs to be met.",
-      },
-      {
-        question: "Who has a duty of care under the Act?",
-        options: [
-          "Only the registered owner",
-          "Only vets",
-          "Anyone responsible for an animal",
-          "Only professional breeders",
+          "That an offence, legal responsibility, enforcement action, penalty, and jurisdiction have been proved",
+          "That a court will reach a particular conclusion",
+          "Only that current official guidance, individual facts, and an authorised responsible-person, professional, regulatory, welfare, or emergency route may be required",
+          "That the learner should investigate or intervene directly",
         ],
         correctIndex: 2,
-        explanation:
-          "The duty applies to any person responsible for an animal.",
+        explanation: "The lesson provides a legal-information boundary. It does not give legal advice or determine responsibility, offences, enforcement, penalties, jurisdiction, or required action.",
+      },
+      {
+        question: "What is the appropriate response to a passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record question?",
+        options: [
+          "Assume one generic rule applies across every UK jurisdiction and activity",
+          "Decide document validity or legal effect from an online lesson",
+          "Use the current official guidance and the authorised responsible-person, issuing-organisation, veterinary, regulatory, organiser, transport, insurer, or other relevant advice route for the specific jurisdiction and activity",
+          "Alter, transfer, retain, submit, or destroy the document without authority",
+        ],
+        correctIndex: 2,
+        explanation: "Official requirements can vary by jurisdiction, activity, document, and current rule. A generic lesson cannot determine validity or the correct legal or commercial action.",
       },
     ],
     aiTutorPrompts: [
-      "What happens if I break the Animal Welfare Act?",
-      "Do I need a passport for my horse?",
-      "What are the five welfare needs under UK law?",
+      "What current official guidance and authorised advice route applies to this specific horse-welfare, legal, passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record question?",
+      "How can I record only authorised factual document information without deciding validity, legal effect, responsibility, an offence, enforcement, or a penalty?",
+      "What responsible-person, veterinary, welfare, emergency, regulatory, safeguarding, incident, and authorised-advice route applies if a factual concern needs escalation?",
     ],
     linkedCompetencies: ["welfare_awareness"],
   },
