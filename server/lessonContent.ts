@@ -188,7 +188,7 @@ const BASE_LESSON_UNITS: LessonUnitData[] = [
       "Describe the basic function of key anatomical areas",
       "Use correct terminology when discussing a horse's conformation",
     ],
-    content: `Understanding the external anatomy of the horse — commonly referred to as the "points of the horse" — is one of the most fundamental skills in equestrian education. Whether you are describing a horse's conformation to a vet, reporting an injury, or discussing suitability for a discipline, you need precise vocabulary.
+    content: `Understanding external anatomy — commonly called the "points of the horse" — helps learners use clear, shared terminology. This lesson introduces the visible terms shown in the University of Kentucky anatomy reference. It does not teach diagnosis, conformation assessment, passport completion, or veterinary decision-making.
 
 ## The Head
 
@@ -202,23 +202,23 @@ Moving along the body, the **back** runs from the withers to the **loins**, whic
 
 ## The Forelegs
 
-The **elbow** is the joint at the top of the foreleg, close to the body. Below it is the **forearm**, a muscular section leading to the **knee** (technically the carpus). Below the knee is the **cannon bone**, a long, straight bone. At the back of the cannon bone runs the **tendons**, which are vital structures that must be regularly checked for heat or swelling. The **fetlock** joint sits at the bottom of the cannon bone, and below it the **pastern** slopes down to the **coronet band**, the ring of tissue at the top of the hoof. The **hoof** itself is the hard, keratinous capsule that protects the internal structures of the foot. On the back of the fetlock is a small tuft of hair called the **ergot**.
+The **elbow** is the joint at the top of the foreleg, close to the body. Below it is the **forearm**, a muscular section leading to the **knee** (technically the carpus). Below the knee is the **cannon bone**. The **tendons** run at the back of this area. The **fetlock** joint sits below the cannon bone, followed by the **pastern** and the **coronet band** at the top of the hoof. British Horse Society guidance describes the coronary band as the strip where skin meets the hoof wall and where new hoof growth begins. The hoof contains several external structures, including wall, sole and frog. On the back of the fetlock is a small tuft of hair called the **ergot**.
 
 ## The Hind Legs
 
-The hindquarters provide the horse's power. The **hip** joint is deep within the body. The visible bony prominences are the **point of hip** at the side and the **point of buttock** at the rear. The **stifle** is the equivalent of the human knee and sits high on the hind leg. Below the stifle is the **gaskin** (or second thigh), leading to the **hock**, one of the hardest-working joints in the horse. Below the hock, the structure mirrors the foreleg: cannon bone, fetlock, pastern, coronet band and hoof. The **chestnut** is a small, flat, horny growth found on the inside of each leg — on the forelegs above the knee and on the hind legs below the hock.
+The hindquarters include the **hip**, **point of hip**, **point of buttock**, **stifle**, **gaskin**, and **hock**. The stifle sits high on the hind leg. Below the hock, the visible lower-limb terms include cannon bone, fetlock, pastern, coronet band and hoof. The **chestnut** is a small, flat, horny growth found on the inside of each leg — on the forelegs above the knee and on the hind legs below the hock.
 
 ## Markings and Colours
 
-It is important to distinguish between anatomical points and **markings**. Markings are the white patches on the face (star, stripe, snip, blaze, white face) and legs (sock, stocking, ermine marks). These are used for identification purposes and are recorded on a horse's passport alongside **whorls** — small spiral patterns in the coat.
+It is important to distinguish between anatomical points and **markings**. Markings are coat-pattern terms that can be distinguished from anatomical points. This lesson uses the descriptive examples star, stripe, snip, blaze, sock and stocking. Requirements for identification records and passports vary by jurisdiction and must be checked with the relevant current authority.
 
-Knowing these terms allows you to communicate clearly with instructors, vets, and farriers. For example, saying "there is heat in the near-fore tendon below the knee" is far more useful than "his front leg feels warm somewhere."`,
+Knowing these terms helps learners follow teaching and discuss locations clearly. If a horse appears uncomfortable or a learner notices a concerning change, they should stop and report it to the responsible yard person, veterinarian, or farrier rather than attempting a diagnosis.`,
     keyPoints: [
       "The poll is the highest point of the skull; the withers is where height is measured",
-      "The cannon bone, tendons, fetlock and pastern are key lower-leg structures to check daily",
+      "The cannon bone, tendons, fetlock and pastern are lower-leg terms learners should be able to identify",
       "Markings (star, stripe, blaze, sock, stocking) are used for identification, not anatomy",
-      "The hock is one of the hardest-working joints and is prone to strain",
-      "The coronet band is the growth ring of the hoof and should be checked for injury",
+      "The hock is a named joint on the hind leg; use qualified guidance for concerns about movement or comfort",
+      "The coronary band is where skin meets the hoof wall and contributes to new hoof growth",
     ],
     safetyNote:
       "When examining or pointing out parts of the horse, always approach calmly and avoid sudden movements. Stand to the side of the horse — never directly behind — and let the horse know you are there by speaking quietly. Be especially careful when handling the lower legs, as some horses are sensitive and may kick or stamp.",
