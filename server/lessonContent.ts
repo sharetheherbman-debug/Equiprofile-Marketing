@@ -10121,76 +10121,80 @@ Use this lesson to prepare appropriate questions: which current jurisdiction and
     category: "Equine Welfare & Ethics",
     sortOrder: 5,
     objectives: [
-      "Distinguish ethical and unethical training",
-      "Understand learning theory for horses",
-      "Recognise signs of mental distress during training",
-      "Apply welfare-first principles",
+      "Recognise that compassionate, consistent training should consider the individual horse’s physical and emotional welfare, safety, current procedures, and qualified professional support",
+      "Describe high-level learning-theory terms without using the lesson as a training, handling, riding, force, reward, pressure-release, exposure, desensitisation, or behaviour-treatment procedure",
+      "Record factual behavioural observations without diagnosing stress, fear, pain, discomfort, learned helplessness, safety risk, welfare, or a training cause",
+      "Know when to stop and use the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route",
     ],
-    content: `Training methods directly impact a horse's welfare. We must use ethical, evidence-based methods.
+    content: `Training can affect a horse’s physical and emotional welfare, safety, learning, and relationship with people. This lesson introduces high-level concepts only. It is not a procedure for training, handling, riding, leading, lunging, loading, restraint, pressure-release, cueing, force, punishment, reward, treat use, exposure, desensitisation, habituation, behaviour modification, pain assessment, welfare assessment, diagnosis, treatment, or emergency response. A learner must not use a generic definition, a behaviour, an online rule, a video, or another horse’s experience to decide why an individual horse behaves as it does, whether a method is safe or suitable, whether pain, fear, stress, discomfort, distress, learned helplessness, a welfare concern, or a safety risk is present, or which intervention is appropriate.
 
-## Learning Theory
+## Learning-Theory Vocabulary
 
-Positive reinforcement: adding something pleasant. Negative reinforcement: removing pressure when the horse responds correctly. Positive punishment: adding something unpleasant (generally unethical). Negative punishment: removing something pleasant.
+The reviewed welfare guidance explains that horses learn through the consequences of actions and that every interaction can matter. In an operant-conditioning context, reinforcement aims to make a behaviour more likely and punishment aims to make a behaviour less likely; “positive” means something is added and “negative” means something is removed. Positive reinforcement can describe adding something a horse values after a desired behaviour. Negative reinforcement can describe removing something the horse finds uncomfortable after a desired behaviour. Positive punishment can describe adding something a horse finds unpleasant after an undesired behaviour. Negative punishment can describe removing something the horse values after an undesired behaviour.
 
-## Ethical Practice
+These are technical descriptions, not learner instructions or endorsements. They do not decide what a horse values, whether a stimulus is pleasant or uncomfortable, whether timing is safe, what pressure, reward, exposure, equipment, environment, progression, distance, duration, frequency, intensity, trainer, handler, rider, horse, or context is appropriate, or whether a method causes physical or emotional harm. The reviewed guidance says methods that risk injury or physical or emotional harm should not be used and identifies flooding and positive punishment as ethically questionable. A qualified professional and the responsible person must consider the individual horse, medical and welfare history, behaviour, environment, equipment, training context, human safety, current procedure, and applicable rules.
 
-Relies on negative reinforcement (correct pressure-release timing) and positive reinforcement. Avoids excessive force and fear.
+## Behaviour Is Information, Not a Diagnosis
 
-## Signs of Mental Distress
+Horses communicate through behaviour and subtle changes can be important observations. Behaviours or body-language changes may have many possible explanations and do not prove pain, fear, stress, discomfort, injury, learned helplessness, intent, defiance, a training problem, a welfare breach, or a safety outcome. Do not label a horse as difficult, stubborn, lazy, naughty, dangerous, shut down, or “in pain” from this lesson alone. Do not attempt to correct a behaviour, increase pressure, add a punishment, use food, remove food, repeat an exposure, continue a session, or change equipment, management, exercise, handling, riding, treatment, or medication based on a generic observation.
 
-Teeth grinding, excessive sweating, tail swishing, white around the eyes, tension, or complete shutdown (learned helplessness).
+Record factual observations through the current approved procedure: date, time, context, environment, activity, equipment, people present, behaviour, and any immediate safety concern. If a behaviour, welfare, health, pain, comfort, handling, riding, equipment, or safety concern is outside the current plan or unclear, stop where it is safe to do so and use the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route. Do not diagnose the cause or delay required emergency support.
 
-## Welfare-First Principle
+## Compassionate and Qualified Practice
 
-If a method causes fear, pain, or distress, it is not acceptable.`,
+Compassionate, consistent training requires a current individual plan, appropriate competence, suitable supervision, attention to the horse’s experience, human safety, welfare, environment, equipment, and escalation routes. Fear or high emotional arousal can impede learning, but a learner must not assess a horse’s emotional state, decide a threshold, or prescribe how to change it. The responsible person and appropriate qualified professional decide whether training can proceed, pause, change, or stop and what assessment, support, plan, progression, or referral is needed.
+
+## Reflective Use
+
+Use this lesson to ask: what factual observation was made; what is unknown; what current plan and supervision apply; who is responsible; what welfare and safety boundary applies; and which qualified route should review the concern? The aim is to support careful, welfare-led escalation, not self-directed technique or diagnosis.`,
     keyPoints: [
-      "Ethical training uses reinforcement, not punishment",
-      "Excessive force and fear-based methods are unethical",
-      "Signs of distress include teeth grinding and learned helplessness",
-      "Good timing of pressure-release is foundational",
-      "If a method causes fear, pain, or distress, it is not acceptable",
+      "Learning-theory terms describe possible relationships between behaviour and consequences; they are not learner instructions or endorsements",
+      "Reviewed welfare guidance states that methods risking injury or physical or emotional harm should not be used, and identifies flooding and positive punishment as ethically questionable",
+      "Behaviour and body-language changes can be factual observations but do not diagnose pain, fear, stress, discomfort, distress, learned helplessness, a welfare concern, or a safety risk",
+      "Do not choose, apply, increase, reduce, time, repeat, or evaluate pressure, reward, punishment, food, exposure, desensitisation, equipment, handling, riding, or exercise from a generic lesson",
+      "Use the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route when a behavioural, welfare, health, pain, comfort, handling, riding, equipment, or safety concern is outside the current plan or unclear",
     ],
     safetyNote:
-      "A horse trained with fear-based methods can become unpredictable and dangerous.",
+      "Do not diagnose fear, pain, stress, discomfort, distress, learned helplessness, a welfare concern, a safety risk, or a cause from behaviour. Do not correct a behaviour, increase pressure, add punishment, use food, remove food, repeat exposure, continue a session, or change equipment, management, exercise, handling, riding, treatment, or medication from this lesson alone. Follow the current procedure and obtain appropriate qualified support.",
     practicalApplication:
-      "Watch a training session and identify which learning quadrants are being used.",
+      "With the responsible person’s permission, observe how authorised people use the current horse-specific training, welfare, safety, incident, and escalation procedures. Record only authorised factual context and observations. Do not label the method, assess timing, diagnose a cause, direct a person, handle, ride, train, reward, punish, expose, desensitise, alter equipment, or change a plan from this lesson alone.",
     commonMistakes: [
-      "Using punishment because it appears to work quickly",
-      "Poor timing of pressure-release",
-      "Not recognising learned helplessness",
-      "Escalating force when the horse is confused",
-      "Ignoring emotional state during training",
+      "Treating a technical learning-theory definition as a learner instruction, endorsement, proof of safety, or proof that a method is suitable for an individual horse",
+      "Choosing, applying, increasing, reducing, timing, repeating, or evaluating pressure, reward, punishment, food, exposure, desensitisation, equipment, handling, riding, exercise, or a training progression from a generic lesson",
+      "Diagnosing fear, pain, stress, discomfort, distress, learned helplessness, intent, defiance, a training problem, welfare, or safety from a behaviour or body-language change",
+      "Labelling a horse difficult, stubborn, lazy, naughty, dangerous, shut down, or “in pain” instead of recording factual observations and using authorised assessment",
+      "Continuing, correcting a behaviour, increasing pressure, adding punishment, using food, removing food, repeating exposure, or changing equipment, management, exercise, handling, riding, treatment, or medication when a concern is outside the current plan or unclear",
     ],
     knowledgeCheck: [
       {
-        question: "What is negative reinforcement?",
+        question: "In the high-level operant-conditioning vocabulary used in this lesson, what does negative reinforcement describe?",
         options: [
-          "Punishing the horse",
-          "Removing pressure when the horse responds correctly",
+          "A synonym for punishment",
+          "Removing something the horse finds uncomfortable after a desired behaviour, with the aim of making that behaviour more likely",
           "Ignoring the horse",
-          "Using treats",
+          "A learner-approved procedure for applying pressure or timing release",
         ],
         correctIndex: 1,
         explanation:
-          "Removing an aversive stimulus when the horse responds correctly.",
+          "This is a technical description, not a technique instruction or a decision that any pressure, timing, method, or context is suitable for an individual horse.",
       },
       {
-        question: "What might learned helplessness look like?",
+        question: "What should a learner conclude from a concerning behavioural or body-language observation?",
         options: [
-          "Energetic responsive behaviour",
-          "A shut-down horse that has stopped trying",
-          "Excited bucking",
-          "Curiosity",
+          "That pain, fear, stress, learned helplessness, a welfare breach, and a specific intervention have been diagnosed",
+          "That the horse is deliberately difficult or dangerous",
+          "Only that a factual observation may require the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency review route",
+          "That the learner should independently increase pressure, add punishment, use food, repeat exposure, or change equipment",
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explanation:
-          "Learned helplessness occurs when a horse gives up because nothing it does makes discomfort stop.",
+          "Behaviour can be important information but does not diagnose a cause. Record facts, follow current procedure, and obtain appropriate qualified support.",
       },
     ],
     aiTutorPrompts: [
-      "What does ethical horse training look like?",
-      "How can I tell if my horse is stressed during training?",
-      "What is learned helplessness?",
+      "How do the current horse-specific training, welfare, safety, incident, supervision, and escalation procedures apply before any training activity?",
+      "How can I record factual behavioural and contextual observations without diagnosing fear, pain, stress, discomfort, learned helplessness, welfare, or safety?",
+      "When should I stop where safe and use the responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route?",
     ],
     linkedCompetencies: ["welfare_awareness", "coaching_skills"],
   },
