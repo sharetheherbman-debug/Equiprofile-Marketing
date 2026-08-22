@@ -97,9 +97,22 @@ import {
   buildSequenceStepHtml,
   applyMergeFields,
 } from "./_core/emailTemplates";
-import { sendEmail, sendCampaignEmail, sendStableInviteEmail, sendCompensationEmail } from "./_core/email";
+import {
+  sendEmail,
+  sendCampaignEmail,
+  sendStableInviteEmail,
+  sendCompensationEmail,
+} from "./_core/email";
+import {
+  grantComplimentaryAccess,
+  readComplimentaryAccess,
+  revokeComplimentaryAccess,
+} from "./complimentaryAccess";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
-import { detectDuplicatePeople, DUP_THRESHOLD } from "./_core/dupPersonDetection";
+import {
+  detectDuplicatePeople,
+  DUP_THRESHOLD,
+} from "./_core/dupPersonDetection";
 import {
   aiApprovalQueue,
   CANONICAL_AI_TASKS,
@@ -202,16 +215,33 @@ import {
   listMarketingScheduleDraftRecords,
   updateMarketingScheduleDraftRecord,
 } from "./modules/growth-engine";
-import { executeGenXTask, testRawGenXConnection, discoverGenXModelCatalogue } from "./_core/ai/providers/genxProvider";
+import {
+  executeGenXTask,
+  testRawGenXConnection,
+  discoverGenXModelCatalogue,
+} from "./_core/ai/providers/genxProvider";
 import { testQwenTextGeneration } from "./_core/ai/providers/qwenProvider";
-import { getHuggingFaceRoutingDiagnostics, resolveHuggingFaceTaskModel } from "./_core/ai/providers/huggingFaceProvider";
+import {
+  getHuggingFaceRoutingDiagnostics,
+  resolveHuggingFaceTaskModel,
+} from "./_core/ai/providers/huggingFaceProvider";
 import { normalizeBaseUrl } from "./_core/ai/providers/httpUtils";
-import { discoverProviderModels, getProviderTaskUnavailableReason, resolveModelCandidatesForTask } from "./_core/ai/modelRegistry";
-import { normalizeProviderOutput, persistProviderOutput } from "./_core/ai/outputNormalization";
+import {
+  discoverProviderModels,
+  getProviderTaskUnavailableReason,
+  resolveModelCandidatesForTask,
+} from "./_core/ai/modelRegistry";
+import {
+  normalizeProviderOutput,
+  persistProviderOutput,
+} from "./_core/ai/outputNormalization";
 import { resolvePendingGenXMediaAssets } from "./_core/ai/mediaResolver";
 import { getGenerationLifecycleByJobId } from "./_core/ai/generationLifecycle";
 import { getProviderTelemetrySummary } from "./_core/ai/providerTelemetry";
-import { getProviderDurationSupport, rankProvidersForTask } from "./_core/ai/providerRanking";
+import {
+  getProviderDurationSupport,
+  rankProvidersForTask,
+} from "./_core/ai/providerRanking";
 import { compileMarketingPrompt } from "./_core/marketing/promptCompiler";
 import { getPreferredModelOrder } from "./_core/ai/modelQualityPolicy";
 import { orderMediaProviders } from "./_core/ai/providerRouting";
@@ -219,7 +249,11 @@ import { createBrandedMediaDerivative } from "./_core/media/postProcessor";
 import { getLocalMediaStorageRoot } from "./_core/storage/localMediaStorage";
 import { getRuntimeFileStorageReadiness } from "./_core/storage/runtimeFileStorage";
 import { validateMarketingCapability } from "./modules/marketing/marketingCapabilityValidator";
-import type { MarketingContentType, MarketingRenderContract, MarketingStudioScene } from "@shared/_core/marketingStudioPlan";
+import type {
+  MarketingContentType,
+  MarketingRenderContract,
+  MarketingStudioScene,
+} from "@shared/_core/marketingStudioPlan";
 import { MARKETING_STUDIO_SCENE_SCHEMA } from "@shared/_core/marketingStudioSchemas";
 import {
   buildMarketingRenderOverlayConfig,
@@ -260,7 +294,10 @@ import {
   toCampaignItemMetadata,
   toWeeklyDraftPayload,
 } from "./modules/marketing/campaign-engine";
-import { MARKETING_MODEL_TASKS, executeMarketingModelTask } from "./modules/marketing/model-execution";
+import {
+  MARKETING_MODEL_TASKS,
+  executeMarketingModelTask,
+} from "./modules/marketing/model-execution";
 import {
   MARKETING_REVIEW_STATUSES,
   MARKETING_REVIEW_TARGET_TYPES,
@@ -273,8 +310,14 @@ import {
   setMarketingTargetReviewStatus,
 } from "./modules/marketing/qa-engine";
 import { buildScheduleExportPack } from "./modules/marketing/social-publishing/scheduleExportPackBuilder";
-import { getSocialPublisher, listPublisherReadiness } from "./modules/marketing/social-publishing/socialPublisherRegistry";
-import type { SocialConnectionState, SocialPublisherPlatform } from "./modules/marketing/social-publishing/socialPublisherTypes";
+import {
+  getSocialPublisher,
+  listPublisherReadiness,
+} from "./modules/marketing/social-publishing/socialPublisherRegistry";
+import type {
+  SocialConnectionState,
+  SocialPublisherPlatform,
+} from "./modules/marketing/social-publishing/socialPublisherTypes";
 import {
   MARKETING_TASKS,
   defaultWorkspaceBudgetPolicy,
@@ -512,7 +555,8 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
       // Free access period has ended — block access
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Your complimentary access period has ended. Please subscribe to continue.",
+        message:
+          "Your complimentary access period has ended. Please subscribe to continue.",
       });
     }
   }
@@ -551,8 +595,21 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
-type PlanTier = "free" | "student" | "teacher" | "pro" | "stable" | "school_owner";
-const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pro", "stable", "school_owner"];
+type PlanTier =
+  | "free"
+  | "student"
+  | "teacher"
+  | "pro"
+  | "stable"
+  | "school_owner";
+const VALID_PLAN_TIERS: readonly PlanTier[] = [
+  "free",
+  "student",
+  "teacher",
+  "pro",
+  "stable",
+  "school_owner",
+];
 
 /**
  * Extract and validate planTier from parsed preferences.
@@ -561,7 +618,10 @@ const VALID_PLAN_TIERS: readonly PlanTier[] = ["free", "student", "teacher", "pr
  */
 function parsePlanTier(prefs: Record<string, unknown>): PlanTier {
   const raw = prefs.planTier;
-  if (typeof raw === "string" && (VALID_PLAN_TIERS as readonly string[]).includes(raw)) {
+  if (
+    typeof raw === "string" &&
+    (VALID_PLAN_TIERS as readonly string[]).includes(raw)
+  ) {
     return raw as PlanTier;
   }
   return "pro";
@@ -625,7 +685,17 @@ const MAX_WEEKS_TO_SCHEDULE = 4;
 const DEFAULT_SESSION_DURATION_MINUTES = 30;
 
 // Session type mapping: template type → trainingSessions sessionType
-function mapTemplateSessionType(type: string): "flatwork" | "jumping" | "hacking" | "lunging" | "groundwork" | "competition" | "lesson" | "other" {
+function mapTemplateSessionType(
+  type: string,
+):
+  | "flatwork"
+  | "jumping"
+  | "hacking"
+  | "lunging"
+  | "groundwork"
+  | "competition"
+  | "lesson"
+  | "other" {
   const lowerType = type.toLowerCase();
   if (lowerType === "flatwork") return "flatwork";
   if (lowerType === "jumping") return "jumping";
@@ -687,11 +757,39 @@ const MARKETING_STUDIO_CONTENT_TYPES = [
   "launch_campaign",
   "lead_gen_campaign",
 ] as const;
-const FORBIDDEN_EQUINE_TERMS = ["laptop", "office", "desk", "keyboard", "gibberish"];
+const FORBIDDEN_EQUINE_TERMS = [
+  "laptop",
+  "office",
+  "desk",
+  "keyboard",
+  "gibberish",
+];
 
-const MARKETING_CAMPAIGN_STATUSES = ["draft", "planned", "approved", "archived"] as const;
-const MARKETING_CAMPAIGN_ITEM_TYPES = ["post", "video", "image", "email", "blog", "short", "script", "ad", "campaign_plan"] as const;
-const MARKETING_CAMPAIGN_ITEM_STATUSES = ["draft", "approved", "export_only", "scheduled", "posted", "failed"] as const;
+const MARKETING_CAMPAIGN_STATUSES = [
+  "draft",
+  "planned",
+  "approved",
+  "archived",
+] as const;
+const MARKETING_CAMPAIGN_ITEM_TYPES = [
+  "post",
+  "video",
+  "image",
+  "email",
+  "blog",
+  "short",
+  "script",
+  "ad",
+  "campaign_plan",
+] as const;
+const MARKETING_CAMPAIGN_ITEM_STATUSES = [
+  "draft",
+  "approved",
+  "export_only",
+  "scheduled",
+  "posted",
+  "failed",
+] as const;
 const MARKETING_SOCIAL_STATUSES = [
   "not_connected",
   "setup_needed",
@@ -706,9 +804,27 @@ const MARKETING_SOCIAL_STATUSES = [
   "export_only",
   "ready_for_approval_posting",
 ] as const;
-const MARKETING_SCHEDULE_DRAFT_STATUSES = ["draft", "approved", "export_only", "cancelled"] as const;
-const BEAST_MODE_PLATFORMS = ["Facebook", "Instagram", "TikTok", "LinkedIn", "YouTube", "Email", "Blog / SEO"] as const;
-const BEAST_MODE_EXPORT_STATUSES = ["draft", "ready", "exported", "flagged"] as const;
+const MARKETING_SCHEDULE_DRAFT_STATUSES = [
+  "draft",
+  "approved",
+  "export_only",
+  "cancelled",
+] as const;
+const BEAST_MODE_PLATFORMS = [
+  "Facebook",
+  "Instagram",
+  "TikTok",
+  "LinkedIn",
+  "YouTube",
+  "Email",
+  "Blog / SEO",
+] as const;
+const BEAST_MODE_EXPORT_STATUSES = [
+  "draft",
+  "ready",
+  "exported",
+  "flagged",
+] as const;
 
 const beastModeScopedSchema = z.object({
   tenantId: z.string().min(1).max(100).default("global"),
@@ -724,12 +840,23 @@ const beastModeRunMutationSchema = beastModeScopedSchema.extend({
   mode: z.enum(BEAST_MODE_MODES).default("standard"),
   requestedVariantCount: z.number().int().min(1).max(100).default(10),
   requestedPlatforms: z.array(z.enum(BEAST_MODE_PLATFORMS)).min(1),
-  requestedLanguages: z.array(z.enum(BEAST_MODE_LANGUAGES)).min(1).default(["English"]),
+  requestedLanguages: z
+    .array(z.enum(BEAST_MODE_LANGUAGES))
+    .min(1)
+    .default(["English"]),
 });
 
-async function requireBeastModeRun(input: { id: number; tenantId: string; workspaceId: string }) {
+async function requireBeastModeRun(input: {
+  id: number;
+  tenantId: string;
+  workspaceId: string;
+}) {
   const run = await getMarketingBeastModeRunRecord(input);
-  if (!run) throw new TRPCError({ code: "NOT_FOUND", message: "Beast Mode run not found" });
+  if (!run)
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Beast Mode run not found",
+    });
   return run;
 }
 
@@ -744,10 +871,24 @@ function parseJsonSafe<T>(value: unknown, fallback: T): T {
 
 const SUPPORTED_AI_PROVIDERS = ["genx", "huggingface", "qwen"] as const;
 const MARKETING_PROVIDER_TASKS = MARKETING_TASKS;
-const MARKETING_PROVIDER_TASKS_ENUM = MARKETING_PROVIDER_TASKS as readonly [MarketingTask, ...MarketingTask[]];
-const MARKETING_CONNECTOR_PLATFORMS = ["Facebook", "Instagram", "TikTok", "LinkedIn", "YouTube", "Email"] as const;
-const SOCIAL_PUBLISHER_PLATFORMS = [...MARKETING_CONNECTOR_PLATFORMS, "Blog / SEO"] as const;
-type MarketingConnectorPlatform = (typeof MARKETING_CONNECTOR_PLATFORMS)[number];
+const MARKETING_PROVIDER_TASKS_ENUM = MARKETING_PROVIDER_TASKS as readonly [
+  MarketingTask,
+  ...MarketingTask[],
+];
+const MARKETING_CONNECTOR_PLATFORMS = [
+  "Facebook",
+  "Instagram",
+  "TikTok",
+  "LinkedIn",
+  "YouTube",
+  "Email",
+] as const;
+const SOCIAL_PUBLISHER_PLATFORMS = [
+  ...MARKETING_CONNECTOR_PLATFORMS,
+  "Blog / SEO",
+] as const;
+type MarketingConnectorPlatform =
+  (typeof MARKETING_CONNECTOR_PLATFORMS)[number];
 type MarketingConnectionRecord = {
   status: string;
   scopes?: string[];
@@ -757,27 +898,41 @@ type MarketingConnectionRecord = {
   accountId?: string | null;
 };
 
-function readMetadataString(metadata: Record<string, unknown>, key: string): string | null {
+function readMetadataString(
+  metadata: Record<string, unknown>,
+  key: string,
+): string | null {
   return typeof metadata[key] === "string" ? metadata[key] : null;
 }
 
-function readMetadataStringArray(metadata: Record<string, unknown>, key: string): string[] {
-  return Array.isArray(metadata[key]) ? (metadata[key] as unknown[]).map((value) => String(value)) : [];
+function readMetadataStringArray(
+  metadata: Record<string, unknown>,
+  key: string,
+): string[] {
+  return Array.isArray(metadata[key])
+    ? (metadata[key] as unknown[]).map((value) => String(value))
+    : [];
 }
 
-function toSocialPublisherPlatform(platform: string): SocialPublisherPlatform | null {
+function toSocialPublisherPlatform(
+  platform: string,
+): SocialPublisherPlatform | null {
   return (SOCIAL_PUBLISHER_PLATFORMS as readonly string[]).includes(platform)
     ? (platform as SocialPublisherPlatform)
     : null;
 }
 
-function toMarketingConnectorPlatform(platform: string): MarketingConnectorPlatform | null {
+function toMarketingConnectorPlatform(
+  platform: string,
+): MarketingConnectorPlatform | null {
   return (MARKETING_CONNECTOR_PLATFORMS as readonly string[]).includes(platform)
     ? (platform as MarketingConnectorPlatform)
     : null;
 }
 
-function toSocialConnectionState(connection: MarketingConnectionRecord | null): SocialConnectionState | null {
+function toSocialConnectionState(
+  connection: MarketingConnectionRecord | null,
+): SocialConnectionState | null {
   if (!connection) return null;
   return {
     status: connection.status as SocialConnectionState["status"],
@@ -798,7 +953,10 @@ async function ensureMarketingBrandKit(input: {
   workspaceId: string;
   hostAppId: string;
 }) {
-  return await getMarketingBrandKit(input) ?? await resetMarketingBrandKitToWorkspaceDefault(input);
+  return (
+    (await getMarketingBrandKit(input)) ??
+    (await resetMarketingBrandKitToWorkspaceDefault(input))
+  );
 }
 
 async function getMarketingReviewTarget(input: {
@@ -816,15 +974,23 @@ async function getMarketingReviewTarget(input: {
     const [row] = await database
       .select()
       .from(marketingCampaignItems)
-      .where(and(eq(marketingCampaignItems.id, id), eq(marketingCampaignItems.tenantId, input.tenantId)))
+      .where(
+        and(
+          eq(marketingCampaignItems.id, id),
+          eq(marketingCampaignItems.tenantId, input.tenantId),
+        ),
+      )
       .limit(1);
     return row
       ? {
-        exists: true,
-        content: `${row.title ?? ""}\n${row.content ?? ""}`,
-        platform: row.platform,
-        metadata: parseJsonSafe<Record<string, unknown>>(row.metadataJson, {}),
-      }
+          exists: true,
+          content: `${row.title ?? ""}\n${row.content ?? ""}`,
+          platform: row.platform,
+          metadata: parseJsonSafe<Record<string, unknown>>(
+            row.metadataJson,
+            {},
+          ),
+        }
       : null;
   }
 
@@ -832,22 +998,28 @@ async function getMarketingReviewTarget(input: {
     const [row] = await database
       .select()
       .from(marketingRenderJobs)
-      .where(and(eq(marketingRenderJobs.id, id), eq(marketingRenderJobs.tenantId, input.tenantId), eq(marketingRenderJobs.workspaceId, input.workspaceId)))
+      .where(
+        and(
+          eq(marketingRenderJobs.id, id),
+          eq(marketingRenderJobs.tenantId, input.tenantId),
+          eq(marketingRenderJobs.workspaceId, input.workspaceId),
+        ),
+      )
       .limit(1);
     return row
       ? {
-        exists: true,
-        content: row.originalUserPrompt ?? "",
-        platform: null,
-        warnings: parseJsonSafe<string[]>(row.warningsJson, []),
-        metadata: {
-          ...parseJsonSafe<Record<string, unknown>>(row.timelineJson, {}),
-          ...parseJsonSafe<Record<string, unknown>>(row.captionJson, {}),
-          ...parseJsonSafe<Record<string, unknown>>(row.audioJson, {}),
-          ...parseJsonSafe<Record<string, unknown>>(row.brandOverlayJson, {}),
-          durationTargetSeconds: row.durationTargetSeconds,
-        },
-      }
+          exists: true,
+          content: row.originalUserPrompt ?? "",
+          platform: null,
+          warnings: parseJsonSafe<string[]>(row.warningsJson, []),
+          metadata: {
+            ...parseJsonSafe<Record<string, unknown>>(row.timelineJson, {}),
+            ...parseJsonSafe<Record<string, unknown>>(row.captionJson, {}),
+            ...parseJsonSafe<Record<string, unknown>>(row.audioJson, {}),
+            ...parseJsonSafe<Record<string, unknown>>(row.brandOverlayJson, {}),
+            durationTargetSeconds: row.durationTargetSeconds,
+          },
+        }
       : null;
   }
 
@@ -855,15 +1027,21 @@ async function getMarketingReviewTarget(input: {
     const [row] = await database
       .select()
       .from(marketingScheduleDrafts)
-      .where(and(eq(marketingScheduleDrafts.id, id), eq(marketingScheduleDrafts.tenantId, input.tenantId), eq(marketingScheduleDrafts.workspaceId, input.workspaceId)))
+      .where(
+        and(
+          eq(marketingScheduleDrafts.id, id),
+          eq(marketingScheduleDrafts.tenantId, input.tenantId),
+          eq(marketingScheduleDrafts.workspaceId, input.workspaceId),
+        ),
+      )
       .limit(1);
     return row
       ? {
-        exists: true,
-        content: `${row.title}\n${row.content ?? ""}`,
-        platform: row.platform,
-        metadata: {},
-      }
+          exists: true,
+          content: `${row.title}\n${row.content ?? ""}`,
+          platform: row.platform,
+          metadata: {},
+        }
       : null;
   }
 
@@ -871,15 +1049,20 @@ async function getMarketingReviewTarget(input: {
     const [row] = await database
       .select()
       .from(mediaAssets)
-      .where(and(eq(mediaAssets.id, id), eq(mediaAssets.tenantId, input.tenantId)))
+      .where(
+        and(eq(mediaAssets.id, id), eq(mediaAssets.tenantId, input.tenantId)),
+      )
       .limit(1);
     return row
       ? {
-        exists: true,
-        content: `${row.generationPrompt ?? ""}\n${row.publicUrl ?? ""}`,
-        platform: null,
-        metadata: parseJsonSafe<Record<string, unknown>>(row.outputMetadataJson, {}),
-      }
+          exists: true,
+          content: `${row.generationPrompt ?? ""}\n${row.publicUrl ?? ""}`,
+          platform: null,
+          metadata: parseJsonSafe<Record<string, unknown>>(
+            row.outputMetadataJson,
+            {},
+          ),
+        }
       : null;
   }
 
@@ -897,18 +1080,24 @@ async function getMarketingReviewTarget(input: {
       .limit(1);
     return row
       ? {
-        exists: true,
-        content: `${row.hook}\n${row.body}\n${row.cta}`,
-        platform: row.platform,
-        metadata: parseJsonSafe<Record<string, unknown>>(row.metadataJson, {}),
-      }
+          exists: true,
+          content: `${row.hook}\n${row.body}\n${row.cta}`,
+          platform: row.platform,
+          metadata: parseJsonSafe<Record<string, unknown>>(
+            row.metadataJson,
+            {},
+          ),
+        }
       : null;
   }
 
   return { exists: true, content: "", platform: null, metadata: {} };
 }
 
-function normalizeProviderError(error: unknown): { providerMissing: boolean; message: string } {
+function normalizeProviderError(error: unknown): {
+  providerMissing: boolean;
+  message: string;
+} {
   const providerError = error as any;
   if (providerError?.name === "ProviderSelectionError") {
     if (providerError.code === "provider_missing") {
@@ -923,7 +1112,11 @@ function normalizeProviderError(error: unknown): { providerMissing: boolean; mes
     };
   }
   const message = error instanceof Error ? error.message : String(error);
-  if (/provider network fetch failed|request timed out|dns\/network resolution failed|connection refused|all configured providers failed/i.test(message)) {
+  if (
+    /provider network fetch failed|request timed out|dns\/network resolution failed|connection refused|all configured providers failed/i.test(
+      message,
+    )
+  ) {
     return {
       providerMissing: false,
       message: "AI provider unavailable. Check provider settings.",
@@ -934,52 +1127,83 @@ function normalizeProviderError(error: unknown): { providerMissing: boolean; mes
       /not configured|missing\s+genx_api_key|missing\s+huggingface_api_key|missing\s+qwen_api_key|provider key missing/i.test(
         message,
       ),
-    message: /not configured|missing\s+genx_api_key|missing\s+huggingface_api_key|missing\s+qwen_api_key|provider key missing/i.test(
-      message,
-    )
-      ? "AI provider unavailable. Check provider settings."
-      : message,
+    message:
+      /not configured|missing\s+genx_api_key|missing\s+huggingface_api_key|missing\s+qwen_api_key|provider key missing/i.test(
+        message,
+      )
+        ? "AI provider unavailable. Check provider settings."
+        : message,
   };
 }
 
-async function canProducePlayableMedia(task: "text_to_image" | "image_edit" | "image_to_video" | "text_to_video" | "avatar_video" | "text_to_speech"): Promise<boolean> {
+async function canProducePlayableMedia(
+  task:
+    | "text_to_image"
+    | "image_edit"
+    | "image_to_video"
+    | "text_to_video"
+    | "avatar_video"
+    | "text_to_speech",
+): Promise<boolean> {
   const candidates = await resolveModelCandidatesForTask(task);
   if (!candidates.length) return false;
-  const configuredProviders = await Promise.all(candidates.map(async (candidate) => ({
-    provider: candidate.provider,
-    configured:
-      candidate.provider === "genx"
-        ? !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
-        : candidate.provider === "huggingface"
-          ? !!(await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"))
-          : !!(await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY")),
-  })));
+  const configuredProviders = await Promise.all(
+    candidates.map(async (candidate) => ({
+      provider: candidate.provider,
+      configured:
+        candidate.provider === "genx"
+          ? !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
+          : candidate.provider === "huggingface"
+            ? !!(await getRuntimeConfig(
+                "huggingface_api_key",
+                "HUGGINGFACE_API_KEY",
+              ))
+            : !!(await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY")),
+    })),
+  );
   return configuredProviders.some((candidate) => candidate.configured);
 }
 
-async function getMediaCapabilityTruth(task: "text_to_image" | "image_edit" | "image_to_video" | "text_to_video" | "avatar_video" | "text_to_speech") {
+async function getMediaCapabilityTruth(
+  task:
+    | "text_to_image"
+    | "image_edit"
+    | "image_to_video"
+    | "text_to_video"
+    | "avatar_video"
+    | "text_to_speech",
+) {
   const candidates = await resolveModelCandidatesForTask(task);
   if (!candidates.length) {
-    const genxConfigured = !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"));
+    const genxConfigured = !!(await getRuntimeConfig(
+      "genx_api_key",
+      "GENX_API_KEY",
+    ));
     return {
       status: "model_config_missing" as const,
       userMessage: genxConfigured
-      ? `GenX key is configured, but no ${task}-capable model was found. Configure ${task === "text_to_video" || task === "image_to_video" ? "genx_video_model" : task === "text_to_image" || task === "image_edit" ? "genx_image_model" : task === "avatar_video" ? "genx_avatar_model" : "genx_voice_model/genx_audio_model"} or confirm GenX model metadata.`
+        ? `GenX key is configured, but no ${task}-capable model was found. Configure ${task === "text_to_video" || task === "image_to_video" ? "genx_video_model" : task === "text_to_image" || task === "image_edit" ? "genx_image_model" : task === "avatar_video" ? "genx_avatar_model" : "genx_voice_model/genx_audio_model"} or confirm GenX model metadata.`
         : "Media setup needed. No provider/model is currently executable for this media task.",
       candidates: [],
     };
   }
   const configured = [];
   for (const candidate of candidates) {
-    const keyConfigured = candidate.provider === "genx"
-      ? !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
-      : candidate.provider === "huggingface"
-        ? !!(await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"))
-        : !!(await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"));
+    const keyConfigured =
+      candidate.provider === "genx"
+        ? !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
+        : candidate.provider === "huggingface"
+          ? !!(await getRuntimeConfig(
+              "huggingface_api_key",
+              "HUGGINGFACE_API_KEY",
+            ))
+          : !!(await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"));
     if (keyConfigured) configured.push(candidate);
   }
   if (!configured.length) {
-    const providerHints = Array.from(new Set(candidates.map((candidate) => candidate.provider)));
+    const providerHints = Array.from(
+      new Set(candidates.map((candidate) => candidate.provider)),
+    );
     return {
       status: "provider_config_missing" as const,
       userMessage: `Media setup needed. Add a key for ${providerHints.join(", ")} before generating playable media.`,
@@ -989,7 +1213,8 @@ async function getMediaCapabilityTruth(task: "text_to_image" | "image_edit" | "i
 
   return {
     status: "working_real_asset" as const,
-    userMessage: "Media provider/model is configured. Generated assets will be queued and only shown when a real file, URL, or valid provider job exists.",
+    userMessage:
+      "Media provider/model is configured. Generated assets will be queued and only shown when a real file, URL, or valid provider job exists.",
     candidates: configured,
     selectedProvider: configured[0].provider,
     selectedModel: configured[0].id,
@@ -1003,26 +1228,47 @@ function extractOutputText(output: unknown): string {
   const payload = output as any;
   const choiceText = payload?.choices?.[0]?.message?.content;
   if (typeof choiceText === "string" && choiceText.trim()) return choiceText;
-  if (payload?.choices?.[0]?.finish_reason === "length" && !choiceText) return "";
+  if (payload?.choices?.[0]?.finish_reason === "length" && !choiceText)
+    return "";
   const generatedText = payload?.[0]?.generated_text;
-  if (typeof generatedText === "string" && generatedText.trim()) return generatedText;
+  if (typeof generatedText === "string" && generatedText.trim())
+    return generatedText;
   const text = payload?.text;
   if (typeof text === "string" && text.trim()) return text;
   return "";
 }
 
-function inferMediaTaskFromMarketingInput(input: string): "text_to_image" | "text_to_video" | "avatar_video" | "text_to_speech" | null {
+function inferMediaTaskFromMarketingInput(
+  input: string,
+):
+  | "text_to_image"
+  | "text_to_video"
+  | "avatar_video"
+  | "text_to_speech"
+  | null {
   const value = input.toLowerCase();
-  if (/\b(avatar|presenter|talking head)\b/.test(value) && /\b(video|clip|reel|short)\b/.test(value)) return "avatar_video";
-  if (/\b(video|reel|short|youtube short|tiktok|facebook video|instagram reel|clip)\b/.test(value)) return "text_to_video";
-  if (/\b(voice|voiceover|audio|narration|speech)\b/.test(value)) return "text_to_speech";
-  if (/\b(image|poster|graphic|ad creative|visual|thumbnail)\b/.test(value)) return "text_to_image";
+  if (
+    /\b(avatar|presenter|talking head)\b/.test(value) &&
+    /\b(video|clip|reel|short)\b/.test(value)
+  )
+    return "avatar_video";
+  if (
+    /\b(video|reel|short|youtube short|tiktok|facebook video|instagram reel|clip)\b/.test(
+      value,
+    )
+  )
+    return "text_to_video";
+  if (/\b(voice|voiceover|audio|narration|speech)\b/.test(value))
+    return "text_to_speech";
+  if (/\b(image|poster|graphic|ad creative|visual|thumbnail)\b/.test(value))
+    return "text_to_image";
   return null;
 }
 
 function inferStudioContentType(prompt: string): MarketingContentType {
   const lower = prompt.toLowerCase();
-  if (/3[-\s]?minute|3min|youtube.*(explainer|long[-\s]?form)/.test(lower)) return "youtube_3min_video";
+  if (/3[-\s]?minute|3min|youtube.*(explainer|long[-\s]?form)/.test(lower))
+    return "youtube_3min_video";
   if (/youtube.*short|shorts?/.test(lower)) return "youtube_short";
   if (/facebook/.test(lower) && /ad/.test(lower)) return "facebook_ad";
   if (/instagram|reel/.test(lower)) return "instagram_reel";
@@ -1037,23 +1283,46 @@ function inferStudioContentType(prompt: string): MarketingContentType {
   return "facebook_ad";
 }
 
-function inferStudioDurationSeconds(contentType: MarketingContentType, requested?: number | null): number {
-  if (typeof requested === "number" && Number.isFinite(requested) && requested > 0) {
-    if (["facebook_ad", "instagram_reel", "tiktok_video", "youtube_short"].includes(contentType)) {
+function inferStudioDurationSeconds(
+  contentType: MarketingContentType,
+  requested?: number | null,
+): number {
+  if (
+    typeof requested === "number" &&
+    Number.isFinite(requested) &&
+    requested > 0
+  ) {
+    if (
+      [
+        "facebook_ad",
+        "instagram_reel",
+        "tiktok_video",
+        "youtube_short",
+      ].includes(contentType)
+    ) {
       return Math.max(30, Math.min(60, Math.round(requested)));
     }
     return requested;
   }
   if (contentType === "youtube_3min_video") return 180;
   if (contentType === "youtube_short") return 45;
-  if (["facebook_ad", "instagram_reel", "tiktok_video"].includes(contentType)) return 30;
+  if (["facebook_ad", "instagram_reel", "tiktok_video"].includes(contentType))
+    return 30;
   return 10;
 }
 
-function buildStudioRenderContract(input: { contentType: MarketingContentType; prompt: string }): MarketingRenderContract {
+function buildStudioRenderContract(input: {
+  contentType: MarketingContentType;
+  prompt: string;
+}): MarketingRenderContract {
   const lowerPrompt = input.prompt.toLowerCase();
-  const isVerticalShort = /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(lowerPrompt)
-    || ["instagram_reel", "tiktok_video", "youtube_short", "facebook_ad"].includes(input.contentType);
+  const isVerticalShort =
+    /facebook reel|instagram reel|tiktok|youtube short|short-form vertical video|\breel\b/.test(
+      lowerPrompt,
+    ) ||
+    ["instagram_reel", "tiktok_video", "youtube_short", "facebook_ad"].includes(
+      input.contentType,
+    );
   if (isVerticalShort) {
     return {
       aspectRatio: "9:16",
@@ -1084,22 +1353,55 @@ function buildStudioRenderContract(input: { contentType: MarketingContentType; p
   };
 }
 
-function buildStudioScenes(prompt: string, isEquine: boolean): MarketingStudioScene[] {
+function buildStudioScenes(
+  prompt: string,
+  isEquine: boolean,
+): MarketingStudioScene[] {
   const cleanPrompt = FORBIDDEN_EQUINE_TERMS.reduce(
     (value, term) => value.replace(new RegExp(term, "ig"), "stable"),
     prompt,
   );
   const sceneTemplates = isEquine
     ? [
-      { narration: "Horses and stable owners start the day with calm, practical routines.", visualPrompt: "Horse stable at sunrise, handlers and horses in motion, clean cinematic framing", subject: "horse stable context" },
-      { narration: "Show EquiProfile helping stable owners coordinate care and schedules.", visualPrompt: "Stable manager using EquiProfile near paddock and tack room", subject: "equestrian operations" },
-      { narration: "Close with healthy horses, confident teams, and a clear trial CTA.", visualPrompt: "Horse in arena with coach, polished CTA-ready composition", subject: "equestrian call to action" },
-    ]
+        {
+          narration:
+            "Horses and stable owners start the day with calm, practical routines.",
+          visualPrompt:
+            "Horse stable at sunrise, handlers and horses in motion, clean cinematic framing",
+          subject: "horse stable context",
+        },
+        {
+          narration:
+            "Show EquiProfile helping stable owners coordinate care and schedules.",
+          visualPrompt:
+            "Stable manager using EquiProfile near paddock and tack room",
+          subject: "equestrian operations",
+        },
+        {
+          narration:
+            "Close with healthy horses, confident teams, and a clear trial CTA.",
+          visualPrompt:
+            "Horse in arena with coach, polished CTA-ready composition",
+          subject: "equestrian call to action",
+        },
+      ]
     : [
-      { narration: `Opening scene for ${cleanPrompt.slice(0, 120)}`, visualPrompt: "Clear opening shot with product context", subject: "campaign opener" },
-      { narration: "Middle scene focusing on value and outcomes.", visualPrompt: "Audience using the product in a practical setting", subject: "value proof" },
-      { narration: "Closing scene with CTA and next step.", visualPrompt: "Brand-safe CTA end frame", subject: "call to action" },
-    ];
+        {
+          narration: `Opening scene for ${cleanPrompt.slice(0, 120)}`,
+          visualPrompt: "Clear opening shot with product context",
+          subject: "campaign opener",
+        },
+        {
+          narration: "Middle scene focusing on value and outcomes.",
+          visualPrompt: "Audience using the product in a practical setting",
+          subject: "value proof",
+        },
+        {
+          narration: "Closing scene with CTA and next step.",
+          visualPrompt: "Brand-safe CTA end frame",
+          subject: "call to action",
+        },
+      ];
 
   return sceneTemplates.map((scene, index) => ({
     id: nanoid(),
@@ -1107,7 +1409,9 @@ function buildStudioScenes(prompt: string, isEquine: boolean): MarketingStudioSc
     durationSeconds: index === sceneTemplates.length - 1 ? 4 : 5,
     narration: scene.narration,
     visualPrompt: scene.visualPrompt,
-    negativePrompt: isEquine ? "off-topic non-equestrian visuals and irrelevant text overlays" : "low quality, off-topic",
+    negativePrompt: isEquine
+      ? "off-topic non-equestrian visuals and irrelevant text overlays"
+      : "low quality, off-topic",
     sourceType: "stock",
     requiredSubject: scene.subject,
     assetId: null,
@@ -1123,17 +1427,18 @@ function buildStudioScenes(prompt: string, isEquine: boolean): MarketingStudioSc
   }));
 }
 
-const MARKETING_STUDIO_SCENE_DRAFT_SCHEMA = MARKETING_STUDIO_SCENE_SCHEMA.partial({
-  id: true,
-  order: true,
-  durationSeconds: true,
-  narration: true,
-  visualPrompt: true,
-  negativePrompt: true,
-  sourceType: true,
-  requiredSubject: true,
-  assetId: true,
-});
+const MARKETING_STUDIO_SCENE_DRAFT_SCHEMA =
+  MARKETING_STUDIO_SCENE_SCHEMA.partial({
+    id: true,
+    order: true,
+    durationSeconds: true,
+    narration: true,
+    visualPrompt: true,
+    negativePrompt: true,
+    sourceType: true,
+    requiredSubject: true,
+    assetId: true,
+  });
 
 function normalizeStudioScene(
   scene: Partial<MarketingStudioScene> & Pick<MarketingStudioScene, "id">,
@@ -1153,7 +1458,9 @@ function normalizeStudioScene(
     previewUrl: scene.previewUrl ?? null,
     provider: scene.provider ?? null,
     providerAssetId: scene.providerAssetId ?? null,
-    mediaKind: scene.mediaKind ?? (scene.sourceType === "text_card" ? "text_card" : "video"),
+    mediaKind:
+      scene.mediaKind ??
+      (scene.sourceType === "text_card" ? "text_card" : "video"),
     sourceMetadata: scene.sourceMetadata ?? null,
     selectedAt: scene.selectedAt ?? null,
     selectionReason: scene.selectionReason ?? null,
@@ -1161,7 +1468,15 @@ function normalizeStudioScene(
   };
 }
 
-function mediaTypeFromAdminTask(task: "text_to_image" | "image_edit" | "image_to_video" | "text_to_video" | "avatar_video" | "text_to_speech"): "image" | "video" | "avatar" | "voice" {
+function mediaTypeFromAdminTask(
+  task:
+    | "text_to_image"
+    | "image_edit"
+    | "image_to_video"
+    | "text_to_video"
+    | "avatar_video"
+    | "text_to_speech",
+): "image" | "video" | "avatar" | "voice" {
   if (task === "text_to_image" || task === "image_edit") return "image";
   if (task === "text_to_speech") return "voice";
   if (task === "avatar_video") return "avatar";
@@ -1180,49 +1495,85 @@ function inferMimeTypeFromUrl(url: string | null | undefined): string | null {
   return null;
 }
 
-function buildScenePipelinePlan(prompt: string, requestedDurationSeconds: number, maxClipDurationSeconds: number) {
-  const sceneCount = Math.max(2, Math.ceil(requestedDurationSeconds / maxClipDurationSeconds));
-  const baseSceneDuration = Math.max(5, Math.floor(requestedDurationSeconds / sceneCount));
+function buildScenePipelinePlan(
+  prompt: string,
+  requestedDurationSeconds: number,
+  maxClipDurationSeconds: number,
+) {
+  const sceneCount = Math.max(
+    2,
+    Math.ceil(requestedDurationSeconds / maxClipDurationSeconds),
+  );
+  const baseSceneDuration = Math.max(
+    5,
+    Math.floor(requestedDurationSeconds / sceneCount),
+  );
   const scenes = Array.from({ length: sceneCount }, (_, index) => ({
     scene: index + 1,
-    durationSeconds: index === sceneCount - 1
-      ? requestedDurationSeconds - baseSceneDuration * index
-      : baseSceneDuration,
+    durationSeconds:
+      index === sceneCount - 1
+        ? requestedDurationSeconds - baseSceneDuration * index
+        : baseSceneDuration,
     renderTask: "text_to_video",
     renderStatus: "planned" as const,
-    promptFocus: index === 0
-      ? "hook and establishing cinematic scene"
-      : index === sceneCount - 1
-        ? "closing scene with CTA-safe framing"
-        : "benefit-focused transition scene",
+    promptFocus:
+      index === 0
+        ? "hook and establishing cinematic scene"
+        : index === sceneCount - 1
+          ? "closing scene with CTA-safe framing"
+          : "benefit-focused transition scene",
   }));
   return {
     script: `Narrative script required for ${requestedDurationSeconds}s delivery based on: ${prompt}`,
     scenes,
     requiredRenders: scenes.length,
     narrationPlan: "Generate narration per scene, then mix in assembly stage.",
-    subtitlePlan: "Generate subtitles from narration transcript after scene renders complete.",
-    assemblyPlan: "Stitch rendered scenes, apply transitions, overlays, subtitles, and audio mastering in post-processing.",
+    subtitlePlan:
+      "Generate subtitles from narration transcript after scene renders complete.",
+    assemblyPlan:
+      "Stitch rendered scenes, apply transitions, overlays, subtitles, and audio mastering in post-processing.",
   };
 }
 
-function runPromptFidelityPreflight(input: { originalUserPrompt: string; compiledPrompt: string; inferredSubject: string }) {
+function runPromptFidelityPreflight(input: {
+  originalUserPrompt: string;
+  compiledPrompt: string;
+  inferredSubject: string;
+}) {
   const originalLower = input.originalUserPrompt.toLowerCase();
   const compiledLower = input.compiledPrompt.toLowerCase();
   const inferredLower = input.inferredSubject.toLowerCase();
   const forbiddenMismatches: string[] = [];
 
-  if (inferredLower && !compiledLower.includes(inferredLower.slice(0, Math.min(inferredLower.length, 50)))) {
+  if (
+    inferredLower &&
+    !compiledLower.includes(
+      inferredLower.slice(0, Math.min(inferredLower.length, 50)),
+    )
+  ) {
     forbiddenMismatches.push("inferred_subject_missing");
   }
 
-  const horseFocused = /\b(horse|horses|equine|equestrian|stable)\b/.test(originalLower);
-  if (horseFocused && !/\b(horse|horses|equine|equestrian|stable)\b/.test(compiledLower)) {
+  const horseFocused = /\b(horse|horses|equine|equestrian|stable)\b/.test(
+    originalLower,
+  );
+  if (
+    horseFocused &&
+    !/\b(horse|horses|equine|equestrian|stable)\b/.test(compiledLower)
+  ) {
     forbiddenMismatches.push("horse_subject_drift");
   }
 
-  const fighterJetFocused = /\b(fighter jet|fighter-jet|jet aircraft|military jet)\b/.test(originalLower);
-  if (fighterJetFocused && !/\b(fighter jet|fighter-jet|jet aircraft|military jet|aircraft)\b/.test(compiledLower)) {
+  const fighterJetFocused =
+    /\b(fighter jet|fighter-jet|jet aircraft|military jet)\b/.test(
+      originalLower,
+    );
+  if (
+    fighterJetFocused &&
+    !/\b(fighter jet|fighter-jet|jet aircraft|military jet|aircraft)\b/.test(
+      compiledLower,
+    )
+  ) {
     forbiddenMismatches.push("fighter_jet_subject_drift");
   }
 
@@ -1267,12 +1618,21 @@ function buildMarketingDraftContent(input: {
   const parsed = extractJsonBlock(input.providerText);
   if (parsed && parsed.title && parsed.script) {
     const visualDirection = parsed.visualDirection ?? parsed.imagePrompt ?? "";
-    const mediaPlan = parsed.mediaPlan ?? parsed.videoPrompt ?? parsed.avatarScript ?? "";
-    const voiceoverScript = parsed.voiceoverScript ?? parsed.avatarScript ?? parsed.script ?? "";
-    const recommendedSchedule = parsed.recommendedSchedule ?? "Weekday morning or early evening after approval.";
+    const mediaPlan =
+      parsed.mediaPlan ?? parsed.videoPrompt ?? parsed.avatarScript ?? "";
+    const voiceoverScript =
+      parsed.voiceoverScript ?? parsed.avatarScript ?? parsed.script ?? "";
+    const recommendedSchedule =
+      parsed.recommendedSchedule ??
+      "Weekday morning or early evening after approval.";
     const nextActions = Array.isArray(parsed.nextActions)
       ? parsed.nextActions
-      : ["Review copy", "Generate media if configured", "Send to approval", "Schedule"];
+      : [
+          "Review copy",
+          "Generate media if configured",
+          "Send to approval",
+          "Schedule",
+        ];
     return {
       title: parsed.title,
       platform: parsed.platform ?? input.platform,
@@ -1335,14 +1695,22 @@ function buildMarketingDraftContent(input: {
     complianceNotes: "Approval required before scheduling.",
     growthScore: null,
     mediaPlan: fallbackMediaPlan,
-    nextActions: ["Review the draft", "Generate media if configured", "Send to approval", "Schedule after approval"],
+    nextActions: [
+      "Review the draft",
+      "Generate media if configured",
+      "Send to approval",
+      "Schedule after approval",
+    ],
     approvalStatus: "draft",
     tone: input.tone,
     intent: input.intent ?? "",
   };
 }
 
-const PROVIDER_BASE_URL_SETTING_KEYS = new Set(["genx_base_url", "qwen_base_url"]);
+const PROVIDER_BASE_URL_SETTING_KEYS = new Set([
+  "genx_base_url",
+  "qwen_base_url",
+]);
 const PROVIDER_MODEL_SETTING_KEYS = new Set([
   "genx_model",
   "genx_default_model",
@@ -1435,7 +1803,10 @@ const PROVIDER_SECRET_SETTING_KEYS = new Set([
 
 const MARKETING_PROVIDER_KEY_ALIASES = {
   genx: ["marketing_genx_api_key", "genx_api_key"] as const,
-  huggingface: ["marketing_huggingface_api_key", "huggingface_api_key"] as const,
+  huggingface: [
+    "marketing_huggingface_api_key",
+    "huggingface_api_key",
+  ] as const,
   qwen: ["marketing_qwen_api_key", "qwen_api_key"] as const,
   pexels: ["marketing_pexels_api_key"] as const,
   pixabay: ["marketing_pixabay_api_key"] as const,
@@ -1452,7 +1823,11 @@ const MARKETING_PROVIDER_SAVE_KEY_MAP: Record<string, string> = {
   marketing_pixabay_api_key: "marketing_pixabay_api_key",
 };
 
-function pickSettingValue(stored: Record<string, string>, keys: readonly string[], envKey?: string) {
+function pickSettingValue(
+  stored: Record<string, string>,
+  keys: readonly string[],
+  envKey?: string,
+) {
   for (const key of keys) {
     const value = stored[key];
     if (value) return value;
@@ -1463,12 +1838,18 @@ function pickSettingValue(stored: Record<string, string>, keys: readonly string[
 function toSafeLocalMediaPathFromPublicUrl(publicUrl: string): string | null {
   const normalized = publicUrl.trim();
   if (!normalized.startsWith("/media/generated/")) return null;
-  const suffix = normalized.slice("/media/generated/".length).replace(/\\/g, "/");
+  const suffix = normalized
+    .slice("/media/generated/".length)
+    .replace(/\\/g, "/");
   if (!suffix || suffix.includes("..")) return null;
   const storageRoot = getLocalMediaStorageRoot();
   const resolved = path.resolve(storageRoot, suffix);
   const generatedRoot = path.resolve(storageRoot, "generated");
-  if (!resolved.startsWith(generatedRoot + path.sep) && resolved !== generatedRoot) return null;
+  if (
+    !resolved.startsWith(generatedRoot + path.sep) &&
+    resolved !== generatedRoot
+  )
+    return null;
   return resolved;
 }
 
@@ -1577,7 +1958,9 @@ export const appRouter = router({
     submitPassword: protectedProcedure
       .input(z.object({ password: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const isPrimaryAdmin = ENV.primaryAdminEmail ? ctx.user.email === ENV.primaryAdminEmail : false;
+        const isPrimaryAdmin = ENV.primaryAdminEmail
+          ? ctx.user.email === ENV.primaryAdminEmail
+          : false;
         const adminPassword = process.env.ADMIN_UNLOCK_PASSWORD;
 
         if (!adminPassword) {
@@ -1798,7 +2181,16 @@ export const appRouter = router({
     createCheckout: protectedProcedure
       .input(
         z.object({
-          plan: z.enum(["student", "pro", "stable", "school_10", "school_20", "school_50"]).default("pro"),
+          plan: z
+            .enum([
+              "student",
+              "pro",
+              "stable",
+              "school_10",
+              "school_20",
+              "school_50",
+            ])
+            .default("pro"),
           interval: z.enum(["monthly", "yearly"]).default("monthly"),
         }),
       )
@@ -1816,7 +2208,8 @@ export const appRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
         }
 
-        const planConfig = PRICING_PLANS[input.plan as keyof typeof PRICING_PLANS];
+        const planConfig =
+          PRICING_PLANS[input.plan as keyof typeof PRICING_PLANS];
         if (!planConfig || !("monthly" in planConfig)) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -1825,7 +2218,10 @@ export const appRouter = router({
         }
 
         // The "monthly" in planConfig check above guarantees planConfig has monthly/yearly
-        const billingConfig = planConfig as { monthly: { priceId: string }; yearly: { priceId: string } };
+        const billingConfig = planConfig as {
+          monthly: { priceId: string };
+          yearly: { priceId: string };
+        };
         const priceId =
           input.interval === "yearly"
             ? billingConfig.yearly.priceId
@@ -1978,7 +2374,9 @@ export const appRouter = router({
             action: "profile_updated",
             entityType: "user",
             entityId: ctx.user.id,
-            details: JSON.stringify({ updatedFields: Object.keys(profileFields) }),
+            details: JSON.stringify({
+              updatedFields: Object.keys(profileFields),
+            }),
           });
         } catch {
           // Activity logging failure must not block the profile update response
@@ -2009,7 +2407,9 @@ export const appRouter = router({
           ...existing,
           notifications: { ...existing.notifications, ...toggles },
           // Store WhatsApp phone at top level of prefs (not nested in notifications)
-          ...(whatsappPhone !== undefined ? { whatsappPhone: whatsappPhone || null } : {}),
+          ...(whatsappPhone !== undefined
+            ? { whatsappPhone: whatsappPhone || null }
+            : {}),
         };
         await db.updateUser(ctx.user.id, {
           preferences: JSON.stringify(updated),
@@ -2092,15 +2492,14 @@ export const appRouter = router({
         progressPercent: flow?.progressPercent ?? 0,
         onboardingType: flow?.onboardingType ?? "horse_owner",
         selectedExperience: prefs.selectedExperience ?? null,
-        activationChecklist:
-          flow?.checklist ??
+        activationChecklist: flow?.checklist ??
           prefs.activationChecklist ?? {
-          addedHorse: false,
-          choseExperience: false,
-          viewedDashboard: false,
-          addedHealthRecord: false,
-          exploredTraining: false,
-        },
+            addedHorse: false,
+            choseExperience: false,
+            viewedDashboard: false,
+            addedHealthRecord: false,
+            exploredTraining: false,
+          },
         quickWins: flow?.quickWins ?? [],
       };
     }),
@@ -2128,7 +2527,9 @@ export const appRouter = router({
           checklist,
           quickWins: [],
         });
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -2172,7 +2573,8 @@ export const appRouter = router({
         tenantId: `user:${ctx.user.id}`,
         onboardingType,
         status: "skipped",
-        step: typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
+        step:
+          typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
         progressPercent: 100,
         checklist: prefs.activationChecklist ?? {},
         quickWins: [],
@@ -2207,7 +2609,9 @@ export const appRouter = router({
     }),
 
     setExperience: protectedProcedure
-      .input(z.object({ experience: z.enum(["standard", "stable", "student"]) }))
+      .input(
+        z.object({ experience: z.enum(["standard", "stable", "student"]) }),
+      )
       .mutation(async ({ ctx, input }) => {
         const user = await db.getUserById(ctx.user.id);
         const prefs = parseUserPrefs(user?.preferences);
@@ -2223,7 +2627,9 @@ export const appRouter = router({
           prefs.activationChecklist = {};
         }
         prefs.activationChecklist.choseExperience = true;
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -2260,12 +2666,15 @@ export const appRouter = router({
           tenantId: `user:${ctx.user.id}`,
           onboardingType,
           status,
-          step: typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
+          step:
+            typeof prefs.onboardingStep === "number" ? prefs.onboardingStep : 1,
           progressPercent: Math.min(100, completedCount * 20),
           checklist,
           quickWins: completedCount > 0 ? ["first_quick_win"] : [],
         });
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -2280,7 +2689,9 @@ export const appRouter = router({
         if (!prefs.dismissedTours.includes(input.tourId)) {
           prefs.dismissedTours.push(input.tourId);
         }
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
 
@@ -2295,7 +2706,9 @@ export const appRouter = router({
         if (!prefs.dismissedTips.includes(input.tipId)) {
           prefs.dismissedTips.push(input.tipId);
         }
-        await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+        await db.updateUser(ctx.user.id, {
+          preferences: JSON.stringify(prefs),
+        });
         return { success: true };
       }),
   }),
@@ -2331,7 +2744,10 @@ export const appRouter = router({
           .limit(1);
 
         if (!horseRows[0]) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
         }
 
         const horse = horseRows[0];
@@ -2372,21 +2788,33 @@ export const appRouter = router({
 
         const link = linkRows[0];
         if (!link) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Share link not found or has been revoked" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Share link not found or has been revoked",
+          });
         }
 
         if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "This share link has expired" });
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "This share link has expired",
+          });
         }
 
         if (link.linkType !== "medical_passport" || !link.horseId) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid passport link" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid passport link",
+          });
         }
 
         // Increment view count (fire-and-forget)
         drizzleDb
           .update(shareLinks)
-          .set({ viewCount: (link.viewCount ?? 0) + 1, lastViewedAt: new Date() })
+          .set({
+            viewCount: (link.viewCount ?? 0) + 1,
+            lastViewedAt: new Date(),
+          })
           .where(eq(shareLinks.id, link.id))
           .catch(() => {});
 
@@ -2407,7 +2835,10 @@ export const appRouter = router({
           .limit(1);
 
         if (!horseRows[0]) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
         }
 
         const horse = horseRows[0];
@@ -3221,10 +3652,12 @@ export const appRouter = router({
       // Enrich with horse names
       const horsesMap: Record<number, string> = {};
       const horses = await db.getHorsesByUserId(ctx.user.id);
-      horses.forEach((h: any) => { horsesMap[h.id] = h.name; });
+      horses.forEach((h: any) => {
+        horsesMap[h.id] = h.name;
+      });
       const enriched = tasks.map((t: any) => ({
         ...t,
-        horseName: t.horseId ? (horsesMap[t.horseId] || "") : "",
+        horseName: t.horseId ? horsesMap[t.horseId] || "" : "",
       }));
       const csv = exportTasksCSV(enriched);
       return {
@@ -3720,25 +4153,29 @@ export const appRouter = router({
         // don't recognise (CSV, Word, etc.).  Falling back to extension-based
         // detection avoids a blanket "File type not allowed: " rejection.
         const EXT_TO_MIME: Record<string, string> = {
-          ".pdf":  "application/pdf",
-          ".csv":  "text/csv",
-          ".txt":  "text/plain",
-          ".doc":  "application/msword",
-          ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          ".xls":  "application/vnd.ms-excel",
-          ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          ".jpg":  "image/jpeg",
+          ".pdf": "application/pdf",
+          ".csv": "text/csv",
+          ".txt": "text/plain",
+          ".doc": "application/msword",
+          ".docx":
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ".xls": "application/vnd.ms-excel",
+          ".xlsx":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          ".jpg": "image/jpeg",
           ".jpeg": "image/jpeg",
-          ".png":  "image/png",
-          ".gif":  "image/gif",
+          ".png": "image/png",
+          ".gif": "image/gif",
           ".webp": "image/webp",
-          ".svg":  "image/svg+xml",
+          ".svg": "image/svg+xml",
           ".heic": "image/heic",
           ".heif": "image/heif",
         };
         let resolvedFileType = input.fileType;
         if (!resolvedFileType) {
-          const ext = (input.fileName.match(/\.[^.]+$/) ?? [""])[0].toLowerCase();
+          const ext = (input.fileName.match(/\.[^.]+$/) ?? [
+            "",
+          ])[0].toLowerCase();
           resolvedFileType = EXT_TO_MIME[ext] ?? "";
         }
 
@@ -3838,7 +4275,9 @@ export const appRouter = router({
           fileUrl: url,
           fileKey,
           // Auto-classify images as "gallery" when no category is specified
-          category: input.category || (finalFileType.startsWith("image/") ? "gallery" : "other"),
+          category:
+            input.category ||
+            (finalFileType.startsWith("image/") ? "gallery" : "other"),
           description: input.description,
         });
 
@@ -4405,11 +4844,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(
         z.object({
           userId: z.number(),
-          // "standard" = Standard dashboard only (pro tier, no stable)
-          // "stable"   = Stable dashboard only (stable tier, no standard)
-          // "student"  = Student portal access
-          // "teacher"  = Teacher portal access
-          tier: z.enum(["standard", "stable", "student", "teacher"]),
+          // Explicit Management overlay only. Academy roles are granted through
+          // organisation membership and invitations, not by rewriting billing.
+          tier: z.enum(["pro", "stable", "management_full"]),
           // Duration in days: admin-selected per user
           freeDays: z.number().int().min(1).max(365).default(7),
           // Reason template key for the grant (required — admin must pick a reason)
@@ -4425,49 +4862,34 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!targetUser) {
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
         }
-        const prefs = parseUserPrefs(targetUser.preferences);
-        prefs.freeAccess = true;
-
-        // Store expiry as ISO string — checked by subscribedProcedure middleware
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + input.freeDays);
-        prefs.freeAccessUntil = expiryDate.toISOString();
-        prefs.freeAccessDays = input.freeDays;
-
-        // Only the explicitly chosen dashboard is unlocked — never both by default.
-        // bothDashboardsUnlocked = false is set on every branch to prevent a
-        // previous free-access grant from inadvertently leaving it set to true.
-        if (input.tier === "stable") {
-          // Stable only needs planTier; bothDashboardsUnlocked is cleared for safety.
-          prefs.planTier = "stable";
-          prefs.bothDashboardsUnlocked = false;
-        } else if (input.tier === "student") {
-          // Both planTier and selectedExperience are set:
-          // - parsePlanTier() (server) reads planTier
-          // - ProtectedRoute (client) checks planTier OR selectedExperience
-          // Setting both ensures the check works via either path.
-          prefs.planTier = "student";
-          prefs.selectedExperience = "student";
-          prefs.bothDashboardsUnlocked = false;
-        } else if (input.tier === "teacher") {
-          // Same dual-field pattern as student — see comment above.
-          prefs.planTier = "teacher";
-          prefs.selectedExperience = "teacher";
-          prefs.bothDashboardsUnlocked = false;
-        } else {
-          prefs.planTier = "pro";
-          prefs.bothDashboardsUnlocked = false;
-        }
+        const preferences = grantComplimentaryAccess(
+          parseUserPrefs(targetUser.preferences),
+          {
+            tier: input.tier,
+            days: input.freeDays,
+            grantedByUserId: ctx.user!.id,
+            reason: input.reason,
+            note: input.customNote,
+          },
+        );
+        const grant = readComplimentaryAccess(preferences);
         await db.updateUser(input.userId, {
-          subscriptionStatus: "active",
-          preferences: JSON.stringify(prefs),
+          // Subscription status, paid plan tier, Stripe fields and previous
+          // entitlement state remain billing-owned and deliberately untouched.
+          preferences: JSON.stringify(preferences),
         });
         await db.logActivity({
           userId: ctx.user!.id,
           action: "free_access_granted",
           entityType: "user",
           entityId: input.userId,
-          details: JSON.stringify({ targetEmail: targetUser.email, tier: input.tier, freeDays: input.freeDays, reason: input.reason, customNote: input.customNote ?? null }),
+          details: JSON.stringify({
+            targetEmail: targetUser.email,
+            tier: input.tier,
+            freeDays: input.freeDays,
+            reason: input.reason,
+            customNote: input.customNote ?? null,
+          }),
         });
         // Send compensation email asynchronously (non-blocking)
         if (input.sendEmail && targetUser.email) {
@@ -4481,7 +4903,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             console.error("[Email] Failed to send compensation email:", err),
           );
         }
-        return { success: true, freeAccessUntil: expiryDate.toISOString() };
+        return { success: true, freeAccessUntil: grant?.endsAt ?? null };
       }),
 
     // Revoke free access
@@ -4492,13 +4914,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!targetUser) {
           throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
         }
-        const prefs = parseUserPrefs(targetUser.preferences);
-        prefs.freeAccess = false;
-        prefs.bothDashboardsUnlocked = false;
-        prefs.planTier = "pro";
+        const preferences = revokeComplimentaryAccess(
+          parseUserPrefs(targetUser.preferences),
+        );
         await db.updateUser(input.userId, {
-          subscriptionStatus: "trial",
-          preferences: JSON.stringify(prefs),
+          // Revocation removes only the overlay; billing-owned subscription and
+          // entitlement fields remain exactly as they were before the grant.
+          preferences: JSON.stringify(preferences),
         });
         await db.logActivity({
           userId: ctx.user!.id,
@@ -4595,12 +5017,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           createdAt: users.createdAt,
         })
         .from(users)
-        .where(and(
-          eq(users.subscriptionStatus, "trial"),
-          eq(users.isActive, true),
-          lte(users.trialEndsAt, threeDaysFromNow),
-          gte(users.trialEndsAt, now),
-        ));
+        .where(
+          and(
+            eq(users.subscriptionStatus, "trial"),
+            eq(users.isActive, true),
+            lte(users.trialEndsAt, threeDaysFromNow),
+            gte(users.trialEndsAt, now),
+          ),
+        );
 
       // Overdue users (at risk of churning)
       const atRisk = await dbConn
@@ -4612,10 +5036,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           lastPaymentAt: users.lastPaymentAt,
         })
         .from(users)
-        .where(and(
-          eq(users.isActive, true),
-          eq(users.subscriptionStatus, "overdue"),
-        ));
+        .where(
+          and(
+            eq(users.isActive, true),
+            eq(users.subscriptionStatus, "overdue"),
+          ),
+        );
 
       // Inactive users (no login in 14+ days with active subscription)
       const inactive = await dbConn
@@ -4627,11 +5053,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           updatedAt: users.updatedAt,
         })
         .from(users)
-        .where(and(
-          eq(users.isActive, true),
-          or(eq(users.subscriptionStatus, "active"), eq(users.subscriptionStatus, "trial")),
-          lte(users.updatedAt, fourteenDaysAgo),
-        ));
+        .where(
+          and(
+            eq(users.isActive, true),
+            or(
+              eq(users.subscriptionStatus, "active"),
+              eq(users.subscriptionStatus, "trial"),
+            ),
+            lte(users.updatedAt, fourteenDaysAgo),
+          ),
+        );
 
       return { atRisk, trialExpiring, inactive };
     }),
@@ -4654,7 +5085,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         })
         .from(documents);
 
-      const missing: Array<{ id: number; fileName: string; fileKey: string; userId: number; category: string | null }> = [];
+      const missing: Array<{
+        id: number;
+        fileName: string;
+        fileKey: string;
+        userId: number;
+        category: string | null;
+      }> = [];
       let orphaned = 0;
 
       const uploadsDir = path.resolve(ENV.storagePath);
@@ -4664,7 +5101,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (doc.fileKey) {
           const filePath = path.resolve(uploadsDir, doc.fileKey);
           // Path traversal protection — ensure file stays within uploads dir
-          if (!filePath.startsWith(uploadsDir + path.sep) && filePath !== uploadsDir) {
+          if (
+            !filePath.startsWith(uploadsDir + path.sep) &&
+            filePath !== uploadsDir
+          ) {
             continue;
           }
           if (!fs.existsSync(filePath)) {
@@ -4828,7 +5268,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getWhatsAppConfig: adminUnlockedProcedure.query(async () => {
       const enabled =
         process.env.ENABLE_WHATSAPP === "true" ||
-        (await getRuntimeConfig("whatsapp_enabled", "ENABLE_WHATSAPP")) === "true";
+        (await getRuntimeConfig("whatsapp_enabled", "ENABLE_WHATSAPP")) ===
+          "true";
       const hasAccountSid = !!(
         process.env.TWILIO_ACCOUNT_SID ||
         (await getRuntimeConfig("twilio_account_sid", "TWILIO_ACCOUNT_SID"))
@@ -4839,7 +5280,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       );
       const fromNumber =
         process.env.TWILIO_WHATSAPP_FROM ||
-        (await getRuntimeConfig("twilio_whatsapp_from", "TWILIO_WHATSAPP_FROM")) ||
+        (await getRuntimeConfig(
+          "twilio_whatsapp_from",
+          "TWILIO_WHATSAPP_FROM",
+        )) ||
         "";
       return {
         enabled,
@@ -4861,7 +5305,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async () => {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Messaging configuration is managed securely by the service operator.",
+          message:
+            "Messaging configuration is managed securely by the service operator.",
         });
       }),
 
@@ -4869,14 +5314,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getEnvHealth: adminUnlockedProcedure.query(async () => {
       const aiConfigured = await isAIConfigured();
       // Check SMTP config from both env and dashboard settings (DB)
-      const smtpHost = process.env.SMTP_HOST || (await getRuntimeConfig("smtp_host", "SMTP_HOST"));
-      const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-      const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpHost =
+        process.env.SMTP_HOST ||
+        (await getRuntimeConfig("smtp_host", "SMTP_HOST"));
+      const smtpUser =
+        process.env.SMTP_USER ||
+        (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass =
+        process.env.SMTP_PASS ||
+        (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
       const smtpConfigured = !!(smtpUser && smtpPass);
       const smtpHostSet = !!smtpHost;
-      const smtpSource = (process.env.SMTP_USER && process.env.SMTP_PASS)
-        ? "environment"
-        : smtpConfigured ? "dashboard settings" : "";
+      const smtpSource =
+        process.env.SMTP_USER && process.env.SMTP_PASS
+          ? "environment"
+          : smtpConfigured
+            ? "dashboard settings"
+            : "";
       const checks = [
         // Core required vars (always critical)
         {
@@ -4884,21 +5338,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: !!process.env.DATABASE_URL,
           critical: true,
           conditional: false,
-          description: "MySQL/MariaDB connection string — required for all data storage",
+          description:
+            "MySQL/MariaDB connection string — required for all data storage",
         },
         {
           name: "JWT_SECRET",
           status: !!process.env.JWT_SECRET,
           critical: true,
           conditional: false,
-          description: "Secret used to sign authentication tokens — must be long and random",
+          description:
+            "Secret used to sign authentication tokens — must be long and random",
         },
         {
           name: "ADMIN_UNLOCK_PASSWORD",
           status: !!process.env.ADMIN_UNLOCK_PASSWORD,
           critical: true,
           conditional: false,
-          description: "Password to unlock the admin panel — bcrypt hash recommended",
+          description:
+            "Password to unlock the admin panel — bcrypt hash recommended",
         },
 
         // Stripe vars (critical only if ENABLE_STRIPE=true)
@@ -4908,7 +5365,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: ENV.enableStripe,
           conditional: true,
           requiredWhen: "ENABLE_STRIPE=true",
-          description: "Stripe secret API key — required when billing is enabled",
+          description:
+            "Stripe secret API key — required when billing is enabled",
         },
         {
           name: "STRIPE_WEBHOOK_SECRET",
@@ -4916,7 +5374,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: ENV.enableStripe,
           conditional: true,
           requiredWhen: "ENABLE_STRIPE=true",
-          description: "Stripe webhook signing secret — required to verify payment events",
+          description:
+            "Stripe webhook signing secret — required to verify payment events",
         },
 
         // Upload/Storage vars (optional - falls back to local disk when not configured)
@@ -4928,7 +5387,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: false,
           conditional: true,
           requiredWhen: "ENABLE_UPLOADS=true with proxy storage",
-          description: "URL of the file storage proxy — falls back to local disk if unset",
+          description:
+            "URL of the file storage proxy — falls back to local disk if unset",
         },
         {
           name: "STORAGE_PROXY_KEY",
@@ -4938,7 +5398,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           critical: false,
           conditional: true,
           requiredWhen: "ENABLE_UPLOADS=true with proxy storage",
-          description: "API key for the storage proxy — required alongside STORAGE_PROXY_URL",
+          description:
+            "API key for the storage proxy — required alongside STORAGE_PROXY_URL",
         },
 
         // Legacy AWS vars (optional - kept for backward compatibility)
@@ -4947,14 +5408,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: !!process.env.AWS_ACCESS_KEY_ID,
           critical: false,
           conditional: false,
-          description: "AWS credentials for S3 uploads (legacy — prefer storage proxy)",
+          description:
+            "AWS credentials for S3 uploads (legacy — prefer storage proxy)",
         },
         {
           name: "AWS_SECRET_ACCESS_KEY",
           status: !!process.env.AWS_SECRET_ACCESS_KEY,
           critical: false,
           conditional: false,
-          description: "AWS secret key for S3 — required alongside AWS_ACCESS_KEY_ID",
+          description:
+            "AWS secret key for S3 — required alongside AWS_ACCESS_KEY_ID",
         },
         {
           name: "AWS_S3_BUCKET",
@@ -4970,7 +5433,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: aiConfigured,
           critical: false,
           conditional: false,
-          description: "GenX API key — primary AI orchestration provider for chat and planning",
+          description:
+            "GenX API key — primary AI orchestration provider for chat and planning",
         },
         {
           name: "SMTP_HOST",
@@ -5050,7 +5514,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           contentType: "post",
           audience: "Stable managers",
           offer: "Free onboarding call",
-          originalPrompt: "Generate concise route-validation copy with a hook and CTA.",
+          originalPrompt:
+            "Generate concise route-validation copy with a hook and CTA.",
           constraints: [
             "Return concise JSON copy.",
             "No unsupported claims.",
@@ -5095,9 +5560,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }),
       )
       .mutation(async ({ input }) => {
-        const contentType = (input.contentType ?? inferStudioContentType(input.originalUserPrompt)) as MarketingContentType;
-        const requestedDurationSeconds = inferStudioDurationSeconds(contentType, input.requestedDurationSeconds);
-        const renderContract = buildStudioRenderContract({ contentType, prompt: input.originalUserPrompt });
+        const contentType = (input.contentType ??
+          inferStudioContentType(
+            input.originalUserPrompt,
+          )) as MarketingContentType;
+        const requestedDurationSeconds = inferStudioDurationSeconds(
+          contentType,
+          input.requestedDurationSeconds,
+        );
+        const renderContract = buildStudioRenderContract({
+          contentType,
+          prompt: input.originalUserPrompt,
+        });
         const capability = validateMarketingCapability({
           contentType,
           requestedDurationSeconds,
@@ -5118,7 +5592,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           durationTargetSeconds: requestedDurationSeconds,
           existingScript: input.script,
           existingScenes: input.scenes?.length
-            ? input.scenes.map((scene, index) => normalizeStudioScene({ ...scene, id: scene.id ?? nanoid() }, index + 1))
+            ? input.scenes.map((scene, index) =>
+                normalizeStudioScene(
+                  { ...scene, id: scene.id ?? nanoid() },
+                  index + 1,
+                ),
+              )
             : undefined,
         });
 
@@ -5136,31 +5615,44 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             audience: generated.audience ?? input.audience ?? "",
             platform: input.platform ?? "",
             durationTargetSeconds: requestedDurationSeconds,
-            outputFormat: capability.finalDeliveryMode === "assembled_video" ? "Assembled video plan" : "Structured marketing plan",
-            brief: generated.brief || input.brief || `Plan for ${input.originalUserPrompt}`,
+            outputFormat:
+              capability.finalDeliveryMode === "assembled_video"
+                ? "Assembled video plan"
+                : "Structured marketing plan",
+            brief:
+              generated.brief ||
+              input.brief ||
+              `Plan for ${input.originalUserPrompt}`,
             script: generated.script || input.script || "",
             scenes: generated.scenePlan,
             requiredAssets: generated.requiredAssets,
-            voiceoverRequired: renderContract.audioRequired || capability.needsVoiceover,
+            voiceoverRequired:
+              renderContract.audioRequired || capability.needsVoiceover,
             voiceoverScript: generated.voiceoverScript || input.script || "",
             voiceId: null,
             voiceProvider: null,
             voiceAssetId: null,
             audioAssetUrl: null,
             backgroundMusicUrl: null,
-            captionsRequired: renderContract.captionsRequired || capability.needsCaptions,
-            captionMode: renderContract.captionsRequired || capability.needsCaptions ? "script" : "none",
+            captionsRequired:
+              renderContract.captionsRequired || capability.needsCaptions,
+            captionMode:
+              renderContract.captionsRequired || capability.needsCaptions
+                ? "script"
+                : "none",
             captionFormat: "srt",
             audioStatus: "pending",
             captionStatus: "pending",
             brandOverlayRequired: capability.needsBrandOverlay,
             renderContract,
             renderMode: capability.finalDeliveryMode,
-            status: generated.status === "setup_needed" || generated.status === "provider_unavailable"
-              ? "brief"
-              : capability.needsScenePlan
-                ? "scene_plan"
-                : "brief",
+            status:
+              generated.status === "setup_needed" ||
+              generated.status === "provider_unavailable"
+                ? "brief"
+                : capability.needsScenePlan
+                  ? "scene_plan"
+                  : "brief",
           },
           providerRouteMetadata: generated.providerRouteMetadata,
         };
@@ -5189,7 +5681,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         return generateMarketingStudioScriptService({
           ...input,
-          existingScenes: input.existingScenes?.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+          existingScenes: input.existingScenes?.map((scene, index) =>
+            normalizeStudioScene(scene, index + 1),
+          ),
         });
       }),
 
@@ -5216,7 +5710,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         return generateMarketingStudioScenePlanService({
           ...input,
-          existingScenes: input.existingScenes?.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+          existingScenes: input.existingScenes?.map((scene, index) =>
+            normalizeStudioScene(scene, index + 1),
+          ),
         });
       }),
 
@@ -5243,7 +5739,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         return generateMarketingStudioPlanFromPromptService({
           ...input,
-          existingScenes: input.existingScenes?.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+          existingScenes: input.existingScenes?.map((scene, index) =>
+            normalizeStudioScene(scene, index + 1),
+          ),
         });
       }),
 
@@ -5257,34 +5755,56 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             id: z.string().min(1).max(120).optional(),
             contentType: z.enum(MARKETING_STUDIO_CONTENT_TYPES),
             originalUserPrompt: z.string().min(3).max(6000),
-            renderMode: z.enum(["raw_clip", "assembled_video", "text_pack", "campaign_pack", "export_only"]),
+            renderMode: z.enum([
+              "raw_clip",
+              "assembled_video",
+              "text_pack",
+              "campaign_pack",
+              "export_only",
+            ]),
             durationTargetSeconds: z.number().min(0).max(3600),
             script: z.string().max(12000).optional(),
             scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
             voiceoverScript: z.string().max(12000).optional(),
-            renderContract: z.object({
-              aspectRatio: z.enum(["9:16", "16:9", "1:1"]),
-              width: z.number().int().min(320).max(3840),
-              height: z.number().int().min(320).max(3840),
-              platformFormat: z.enum(["vertical_short_video", "youtube_landscape", "general_video"]),
-              audioRequired: z.boolean(),
-              captionsRequired: z.boolean(),
-            }).optional(),
+            renderContract: z
+              .object({
+                aspectRatio: z.enum(["9:16", "16:9", "1:1"]),
+                width: z.number().int().min(320).max(3840),
+                height: z.number().int().min(320).max(3840),
+                platformFormat: z.enum([
+                  "vertical_short_video",
+                  "youtube_landscape",
+                  "general_video",
+                ]),
+                audioRequired: z.boolean(),
+                captionsRequired: z.boolean(),
+              })
+              .optional(),
           }),
           voiceAssetId: z.number().int().positive().optional(),
           audioUrl: z.string().max(2000).optional(),
           captionMode: z.enum(["none", "script", "voice_aligned"]).optional(),
           captionFormat: z.enum(["srt", "vtt"]).optional(),
           brandKitId: z.number().int().positive().optional(),
-          brandKit: z.object({
-            brandName: z.string().max(200).optional(),
-            domain: z.string().max(300).optional(),
-            cta: z.string().max(300).optional(),
-            primaryColor: z.string().max(30).optional(),
-            secondaryColor: z.string().max(30).optional(),
-            logoUrl: z.string().max(2000).optional(),
-            overlayTemplate: z.enum(["lower_third", "corner_logo", "end_card", "social_reel", "youtube_landscape"]).optional(),
-          }).optional(),
+          brandKit: z
+            .object({
+              brandName: z.string().max(200).optional(),
+              domain: z.string().max(300).optional(),
+              cta: z.string().max(300).optional(),
+              primaryColor: z.string().max(30).optional(),
+              secondaryColor: z.string().max(30).optional(),
+              logoUrl: z.string().max(2000).optional(),
+              overlayTemplate: z
+                .enum([
+                  "lower_third",
+                  "corner_logo",
+                  "end_card",
+                  "social_reel",
+                  "youtube_landscape",
+                ])
+                .optional(),
+            })
+            .optional(),
           campaignId: z.number().int().positive().optional(),
           campaignItemId: z.number().int().positive().optional(),
         }),
@@ -5296,16 +5816,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           userPrompt: input.plan.originalUserPrompt,
         });
 
-        if (input.plan.renderMode !== "assembled_video" || capability.finalDeliveryMode !== "assembled_video") {
+        if (
+          input.plan.renderMode !== "assembled_video" ||
+          capability.finalDeliveryMode !== "assembled_video"
+        ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "createMarketingRenderJob only supports assembled_video plans.",
+            message:
+              "createMarketingRenderJob only supports assembled_video plans.",
           });
         }
 
-        const normalizedScenes = input.plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1));
-        const invalidReadyScene = normalizedScenes.find((scene) =>
-          scene.status === "ready" && scene.sourceType !== "text_card" && !scene.assetUrl);
+        const normalizedScenes = input.plan.scenes.map((scene, index) =>
+          normalizeStudioScene(scene, index + 1),
+        );
+        const invalidReadyScene = normalizedScenes.find(
+          (scene) =>
+            scene.status === "ready" &&
+            scene.sourceType !== "text_card" &&
+            !scene.assetUrl,
+        );
         if (invalidReadyScene) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -5321,10 +5851,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           providerPreference: "auto",
           maxPerScene: 4,
         });
-        const resolvedRenderContract = input.plan.renderContract ?? buildStudioRenderContract({
-          contentType: input.plan.contentType as MarketingContentType,
-          prompt: input.plan.originalUserPrompt,
-        });
+        const resolvedRenderContract =
+          input.plan.renderContract ??
+          buildStudioRenderContract({
+            contentType: input.plan.contentType as MarketingContentType,
+            prompt: input.plan.originalUserPrompt,
+          });
 
         const timeline = compileMarketingTimeline({
           scenes: sourcedScenes.plan.scenes,
@@ -5339,12 +5871,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const captionVtt = generateVttCaptions(timeline);
         const captionMode = input.captionMode ?? "script";
         const captionFormat = input.captionFormat ?? "srt";
-        const missingMediaCount = timeline.scenes.filter((scene) => scene.sourceType === "text_card").length;
+        const missingMediaCount = timeline.scenes.filter(
+          (scene) => scene.sourceType === "text_card",
+        ).length;
         const requiresAudio = resolvedRenderContract.audioRequired;
         const hasAttachedAudio = Boolean(input.audioUrl || input.voiceAssetId);
-        const audioWarnings = requiresAudio && !hasAttachedAudio
-          ? ["audio_required_missing: no voiceover/music asset attached to this render job."]
-          : [];
+        const audioWarnings =
+          requiresAudio && !hasAttachedAudio
+            ? [
+                "audio_required_missing: no voiceover/music asset attached to this render job.",
+              ]
+            : [];
         const audioMixPolicy = buildMarketingAudioMixPolicy({
           hasVoiceover: hasAttachedAudio,
           hasBackgroundMusic: false,
@@ -5383,7 +5920,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: captionMode === "none" ? "pending" : "generated",
           },
           audio: {
-            status: hasAttachedAudio ? "queued" : (requiresAudio ? "setup_needed" : "pending"),
+            status: hasAttachedAudio
+              ? "queued"
+              : requiresAudio
+                ? "setup_needed"
+                : "pending",
             voiceAssetId: input.voiceAssetId ?? null,
             audioUrl: input.audioUrl ?? null,
             backgroundMusicUrl: null,
@@ -5400,7 +5941,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         try {
           await enqueueMarketingRenderJob(created.id);
         } catch (error) {
-          const message = error instanceof Error ? error.message : "Render queue failed";
+          const message =
+            error instanceof Error ? error.message : "Render queue failed";
           await updateMarketingRenderJobRecord({
             id: created.id,
             status: "failed",
@@ -5411,7 +5953,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         const latest = await getMarketingRenderJobById(created.id);
         if (!latest) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Render job creation failed" });
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Render job creation failed",
+          });
         }
         const timelineRender = latest.timeline.render ?? {
           aspectRatio: "16:9" as const,
@@ -5465,7 +6010,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             id: input.plan.id ?? "studio_plan",
             script: input.plan.script ?? "",
             voiceoverScript: input.plan.voiceoverScript ?? "",
-            scenes: input.plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+            scenes: input.plan.scenes.map((scene, index) =>
+              normalizeStudioScene(scene, index + 1),
+            ),
           },
         });
 
@@ -5480,7 +6027,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             script: buildMarketingVoiceoverScript({
               script: input.plan.script ?? "",
               voiceoverScript: input.plan.voiceoverScript ?? "",
-              scenes: input.plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+              scenes: input.plan.scenes.map((scene, index) =>
+                normalizeStudioScene(scene, index + 1),
+              ),
             }),
           };
         }
@@ -5502,37 +6051,59 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           workspaceId: z.string().min(1).max(120).default("default"),
           renderJobId: z.string().min(1).optional(),
           format: z.enum(["srt", "vtt", "both"]).default("both"),
-          plan: z.object({
-            script: z.string().max(12000).optional(),
-            scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
-          }).optional(),
+          plan: z
+            .object({
+              script: z.string().max(12000).optional(),
+              scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
+            })
+            .optional(),
         }),
       )
       .mutation(async ({ input }) => {
-        const job = input.renderJobId ? await getMarketingRenderJobById(input.renderJobId) : null;
-        if (job && (job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId)) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        const job = input.renderJobId
+          ? await getMarketingRenderJobById(input.renderJobId)
+          : null;
+        if (
+          job &&
+          (job.tenantId !== input.tenantId ||
+            job.workspaceId !== input.workspaceId)
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
 
-        const timeline = job?.timeline ?? (
-          input.plan
+        const timeline =
+          job?.timeline ??
+          (input.plan
             ? compileMarketingTimeline({
-              script: input.plan.script ?? "",
-              scenes: input.plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1)),
-            })
-            : null
-        );
+                script: input.plan.script ?? "",
+                scenes: input.plan.scenes.map((scene, index) =>
+                  normalizeStudioScene(scene, index + 1),
+                ),
+              })
+            : null);
         if (!timeline) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Provide renderJobId or plan to generate captions." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Provide renderJobId or plan to generate captions.",
+          });
         }
 
         const srt = generateSrtCaptions({
           ...timeline,
-          captionLines: timeline.captionLines.map((line) => ({ ...line, text: splitCaptionText(line.text) })),
+          captionLines: timeline.captionLines.map((line) => ({
+            ...line,
+            text: splitCaptionText(line.text),
+          })),
         });
         const vtt = generateVttCaptions({
           ...timeline,
-          captionLines: timeline.captionLines.map((line) => ({ ...line, text: splitCaptionText(line.text) })),
+          captionLines: timeline.captionLines.map((line) => ({
+            ...line,
+            text: splitCaptionText(line.text),
+          })),
         });
 
         if (job) {
@@ -5570,16 +6141,25 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           voiceModel: z.string().max(160).nullable().optional(),
           captionMode: z.enum(["none", "script", "voice_aligned"]).optional(),
           captionFormat: z.enum(["srt", "vtt"]).optional(),
-          captions: z.object({
-            srt: z.string().max(120000).optional(),
-            vtt: z.string().max(120000).optional(),
-          }).optional(),
+          captions: z
+            .object({
+              srt: z.string().max(120000).optional(),
+              vtt: z.string().max(120000).optional(),
+            })
+            .optional(),
         }),
       )
       .mutation(async ({ input }) => {
         const existing = await getMarketingRenderJobById(input.id);
-        if (!existing || existing.tenantId !== input.tenantId || existing.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !existing ||
+          existing.tenantId !== input.tenantId ||
+          existing.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
 
         const updated = await updateMarketingRenderJobRecord({
@@ -5589,13 +6169,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             ...existing.audio,
             voiceAssetId: input.voiceAssetId ?? existing.audio.voiceAssetId,
             audioUrl: input.audioUrl ?? existing.audio.audioUrl,
-            backgroundMusicUrl: input.backgroundMusicUrl ?? existing.audio.backgroundMusicUrl,
+            backgroundMusicUrl:
+              input.backgroundMusicUrl ?? existing.audio.backgroundMusicUrl,
             voiceProvider: input.voiceProvider ?? existing.audio.voiceProvider,
             voiceModel: input.voiceModel ?? existing.audio.voiceModel,
-            status: input.audioUrl || input.voiceAssetId ? "queued" : existing.audio.status,
+            status:
+              input.audioUrl || input.voiceAssetId
+                ? "queued"
+                : existing.audio.status,
             mixPolicy: buildMarketingAudioMixPolicy({
-              hasVoiceover: Boolean(input.audioUrl ?? existing.audio.audioUrl ?? input.voiceAssetId ?? existing.audio.voiceAssetId),
-              hasBackgroundMusic: Boolean(input.backgroundMusicUrl ?? existing.audio.backgroundMusicUrl),
+              hasVoiceover: Boolean(
+                input.audioUrl ??
+                existing.audio.audioUrl ??
+                input.voiceAssetId ??
+                existing.audio.voiceAssetId,
+              ),
+              hasBackgroundMusic: Boolean(
+                input.backgroundMusicUrl ?? existing.audio.backgroundMusicUrl,
+              ),
               musicLicenseOk: false,
             }),
           },
@@ -5625,8 +6216,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .query(async ({ input }) => {
         const job = await getMarketingRenderJobById(input.id);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         return job;
       }),
@@ -5658,7 +6256,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const result = await cancelMarketingRenderJobRecord(input);
         if (!result) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         return result;
       }),
@@ -5673,7 +6274,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .query(async ({ input }) => {
         const existing = await getMarketingBrandKit(input);
-        return existing ?? await resetMarketingBrandKitToWorkspaceDefault(input);
+        return (
+          existing ?? (await resetMarketingBrandKitToWorkspaceDefault(input))
+        );
       }),
 
     getMarketingBrandSummary: adminUnlockedProcedure
@@ -5707,7 +6310,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           logoAssetId: z.number().int().positive().nullable().optional(),
           logoUrl: z.string().max(2000).nullable().optional(),
           faviconUrl: z.string().max(2000).nullable().optional(),
-          overlayTemplate: z.enum(["lower_third", "corner_logo", "end_card", "social_reel", "youtube_landscape"]).optional(),
+          overlayTemplate: z
+            .enum([
+              "lower_third",
+              "corner_logo",
+              "end_card",
+              "social_reel",
+              "youtube_landscape",
+            ])
+            .optional(),
           defaultAspectRatio: z.string().max(20).optional(),
         }),
       )
@@ -5717,7 +6328,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         } catch (error) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: error instanceof Error ? error.message : "Failed to save Brand Kit",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Failed to save Brand Kit",
           });
         }
       }),
@@ -5746,15 +6360,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         return repairMarketingBrandLogo(input);
       }),
 
-    getMarketingRuntimeStorageReadiness: adminUnlockedProcedure
-      .query(async () => {
+    getMarketingRuntimeStorageReadiness: adminUnlockedProcedure.query(
+      async () => {
         return getRuntimeFileStorageReadiness();
-      }),
+      },
+    ),
 
-    getMarketingRenderRuntimeReadiness: adminUnlockedProcedure
-      .query(async () => {
+    getMarketingRenderRuntimeReadiness: adminUnlockedProcedure.query(
+      async () => {
         return getMarketingRenderRuntimeReadiness();
-      }),
+      },
+    ),
 
     uploadMarketingBrandLogo: adminUnlockedProcedure
       .input(
@@ -5763,15 +6379,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           workspaceId: z.string().min(1).max(120).default("default"),
           hostAppId: z.string().min(1).max(120).default("equiprofile"),
           fileName: z.string().min(1).max(240),
-          fileType: z.enum(["image/png", "image/jpeg", "image/webp", "image/gif"]),
-          fileSize: z.number().int().positive().max(5 * 1024 * 1024),
+          fileType: z.enum([
+            "image/png",
+            "image/jpeg",
+            "image/webp",
+            "image/gif",
+          ]),
+          fileSize: z
+            .number()
+            .int()
+            .positive()
+            .max(5 * 1024 * 1024),
           fileData: z.string().min(1),
         }),
       )
       .mutation(async ({ ctx, input }) => {
         const buffer = Buffer.from(input.fileData, "base64");
-        if (!buffer.length || buffer.length > 5 * 1024 * 1024 || Math.abs(buffer.length - input.fileSize) > Math.max(1024, input.fileSize * 0.05)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Logo upload is invalid or exceeds the 5MB limit." });
+        if (
+          !buffer.length ||
+          buffer.length > 5 * 1024 * 1024 ||
+          Math.abs(buffer.length - input.fileSize) >
+            Math.max(1024, input.fileSize * 0.05)
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Logo upload is invalid or exceeds the 5MB limit.",
+          });
         }
         const safeName = input.fileName.replace(/[/\\]/g, "_");
         const fileKey = `${ctx.user.id}/marketing-brand/${nanoid()}-${safeName}`;
@@ -5787,16 +6420,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           publicUrl: url,
           mimeType: input.fileType,
           generationPrompt: `Uploaded Brand Kit logo: ${safeName}`,
-          outputMetadata: { source: "brand_kit_upload", workspaceId: input.workspaceId, fileName: safeName },
+          outputMetadata: {
+            source: "brand_kit_upload",
+            workspaceId: input.workspaceId,
+            fileName: safeName,
+          },
         });
-        const brandKit = await selectMarketingBrandLogoAssetFromService({ ...input, mediaAssetId: asset.id });
+        const brandKit = await selectMarketingBrandLogoAssetFromService({
+          ...input,
+          mediaAssetId: asset.id,
+        });
         await updateMarketingProductProfileService({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
           hostAppId: input.hostAppId,
           logoAssetId: asset.id,
         }).catch(() => null);
-        return { status: "completed" as const, mediaAssetId: asset.id, publicUrl: url, brandKit };
+        return {
+          status: "completed" as const,
+          mediaAssetId: asset.id,
+          publicUrl: url,
+          brandKit,
+        };
       }),
 
     selectMarketingBrandLogoAsset: adminUnlockedProcedure
@@ -5810,21 +6455,29 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .mutation(async ({ input }) => {
         try {
-          const brandKit = await selectMarketingBrandLogoAssetFromService(input);
-          await updateMarketingProductProfileService({ ...input, logoAssetId: input.mediaAssetId }).catch(() => null);
+          const brandKit =
+            await selectMarketingBrandLogoAssetFromService(input);
+          await updateMarketingProductProfileService({
+            ...input,
+            logoAssetId: input.mediaAssetId,
+          }).catch(() => null);
           return brandKit;
         } catch (error) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: error instanceof Error ? error.message : "Failed to select logo asset",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Failed to select logo asset",
           });
         }
       }),
 
-    listMarketingBrandOverlayTemplates: adminUnlockedProcedure
-      .query(async () => {
+    listMarketingBrandOverlayTemplates: adminUnlockedProcedure.query(
+      async () => {
         return listMarketingBrandOverlayTemplates();
-      }),
+      },
+    ),
 
     previewMarketingBrandOverlay: adminUnlockedProcedure
       .input(
@@ -5864,7 +6517,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .query(async ({ input }) => {
         const timeline = compileMarketingTimeline({
-          scenes: input.plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+          scenes: input.plan.scenes.map((scene, index) =>
+            normalizeStudioScene(scene, index + 1),
+          ),
           script: input.plan.script ?? "",
         });
         return {
@@ -5897,11 +6552,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         };
 
         const inferred = inferMarketingRequest(input.prompt);
-        const platform = input.platform ?? (inferred.platform as (typeof MARKETING_PLATFORMS)[number]);
-        const format = input.format ?? (inferred.format as (typeof MARKETING_FORMATS)[number]);
-        const goal = input.goal ?? (inferred.goal as (typeof MARKETING_GOALS)[number]);
+        const platform =
+          input.platform ??
+          (inferred.platform as (typeof MARKETING_PLATFORMS)[number]);
+        const format =
+          input.format ??
+          (inferred.format as (typeof MARKETING_FORMATS)[number]);
+        const goal =
+          input.goal ?? (inferred.goal as (typeof MARKETING_GOALS)[number]);
         const tone = input.tone ?? "professional";
-        const durationSeconds = input.durationSeconds ?? inferred.durationSeconds;
+        const durationSeconds =
+          input.durationSeconds ?? inferred.durationSeconds;
         const capabilityPlan = await getCapabilityPlan(inferred.intent);
         const agentTimeline = await getAgentTimelineForIntent(inferred.intent);
 
@@ -5977,21 +6638,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               draft: null,
             };
           }
-          if (normalized.message === "AI provider unavailable. Check provider settings.") {
+          if (
+            normalized.message ===
+            "AI provider unavailable. Check provider settings."
+          ) {
             return {
               status: "provider_unavailable" as const,
               message: normalized.message,
               draft: null,
             };
           }
-          throw new TRPCError({ code: "BAD_REQUEST", message: normalized.message });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: normalized.message,
+          });
         }
 
         const outputText = extractOutputText(generationResult.output);
         if (!outputText.trim()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "AI provider returned empty content. Regenerate the draft; raw provider payload was not saved as user content.",
+            message:
+              "AI provider returned empty content. Regenerate the draft; raw provider payload was not saved as user content.",
           });
         }
         const draftContent = buildMarketingDraftContent({
@@ -6009,11 +6677,25 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         let growthScore: ReturnType<typeof scoreMarketingDraft> | null = null;
         try {
           growthScore = scoreMarketingDraft({
-            hook: typeof draftContent.hook === "string" ? draftContent.hook : undefined,
-            script: typeof draftContent.script === "string" ? draftContent.script : undefined,
-            caption: typeof draftContent.caption === "string" ? draftContent.caption : undefined,
-            cta: typeof draftContent.cta === "string" ? draftContent.cta : undefined,
-            hashtags: Array.isArray(draftContent.hashtags) ? (draftContent.hashtags as string[]) : [],
+            hook:
+              typeof draftContent.hook === "string"
+                ? draftContent.hook
+                : undefined,
+            script:
+              typeof draftContent.script === "string"
+                ? draftContent.script
+                : undefined,
+            caption:
+              typeof draftContent.caption === "string"
+                ? draftContent.caption
+                : undefined,
+            cta:
+              typeof draftContent.cta === "string"
+                ? draftContent.cta
+                : undefined,
+            hashtags: Array.isArray(draftContent.hashtags)
+              ? (draftContent.hashtags as string[])
+              : [],
             platform,
             format,
             durationSeconds,
@@ -6026,7 +6708,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         const dbConn = await getDb();
-        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        if (!dbConn)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
         const now = new Date();
         const result = await dbConn.insert(growthQueueJobs).values({
           queueType: "approval",
@@ -6053,7 +6739,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             brandEnriched: !!brandContext,
             avatarEnriched: !!avatarContext,
             agentTimeline,
-            auditLog: [{ at: now.toISOString(), action: "draft_created", actor: ctx.user.id }],
+            auditLog: [
+              {
+                at: now.toISOString(),
+                action: "draft_created",
+                actor: ctx.user.id,
+              },
+            ],
           }),
           attempts: 0,
           maxAttempts: 3,
@@ -6083,10 +6775,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         const mediaCapability: string[] = [];
-        if (await canProducePlayableMedia("text_to_image")) mediaCapability.push("image");
-        if (await canProducePlayableMedia("text_to_video")) mediaCapability.push("video");
-        if (await canProducePlayableMedia("avatar_video")) mediaCapability.push("avatar");
-        if (await canProducePlayableMedia("text_to_speech")) mediaCapability.push("voice");
+        if (await canProducePlayableMedia("text_to_image"))
+          mediaCapability.push("image");
+        if (await canProducePlayableMedia("text_to_video"))
+          mediaCapability.push("video");
+        if (await canProducePlayableMedia("avatar_video"))
+          mediaCapability.push("avatar");
+        if (await canProducePlayableMedia("text_to_speech"))
+          mediaCapability.push("voice");
 
         return {
           status: "created" as const,
@@ -6098,7 +6794,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             inferredRequest: inferred,
             capabilityPlan,
             agentTimeline,
-            recommendedMediaTask: inferMediaTaskFromMarketingInput(input.prompt),
+            recommendedMediaTask: inferMediaTaskFromMarketingInput(
+              input.prompt,
+            ),
             mediaStatus: mediaCapability.length
               ? `Script ready. Media routes available for: ${mediaCapability.join(", ")}. Video becomes ready only after a queued job or playable asset exists.`
               : "Script ready. Video model missing until a media-capable provider/model is configured.",
@@ -6115,19 +6813,47 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
-        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+        if (!dbConn)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
         const idNum = Number(input.id);
         const [existing] = await dbConn
           .select()
           .from(growthQueueJobs)
-          .where(and(eq(growthQueueJobs.id, idNum), eq(growthQueueJobs.queueType, "approval")))
+          .where(
+            and(
+              eq(growthQueueJobs.id, idNum),
+              eq(growthQueueJobs.queueType, "approval"),
+            ),
+          )
           .limit(1);
-        if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Marketing draft not found" });
-        const currentOutput = parseJsonSafe<Record<string, unknown>>(existing.outputJson, {});
-        const metadata = parseJsonSafe<Record<string, unknown>>(existing.metadataJson, {});
-        const auditLog = Array.isArray(metadata.auditLog) ? metadata.auditLog : [];
-        auditLog.unshift({ at: new Date().toISOString(), action: "draft_updated" });
-        const nextOutput = { ...currentOutput, ...input.fields, approvalStatus: existing.status };
+        if (!existing)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Marketing draft not found",
+          });
+        const currentOutput = parseJsonSafe<Record<string, unknown>>(
+          existing.outputJson,
+          {},
+        );
+        const metadata = parseJsonSafe<Record<string, unknown>>(
+          existing.metadataJson,
+          {},
+        );
+        const auditLog = Array.isArray(metadata.auditLog)
+          ? metadata.auditLog
+          : [];
+        auditLog.unshift({
+          at: new Date().toISOString(),
+          action: "draft_updated",
+        });
+        const nextOutput = {
+          ...currentOutput,
+          ...input.fields,
+          approvalStatus: existing.status,
+        };
         await dbConn
           .update(growthQueueJobs)
           .set({
@@ -6311,10 +7037,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     listMarketingCampaigns: adminUnlockedProcedure
       .input(
-        z.object({
-          tenantId: z.string().min(1).max(100).default("global"),
-          workspaceId: z.string().min(1).max(120).default("default"),
-        }).optional(),
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+          })
+          .optional(),
       )
       .query(async ({ input }) => {
         return listMarketingCampaignRecords({
@@ -6324,14 +7052,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getMarketingCampaign: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .query(async ({ input }) => {
         const campaign = await getMarketingCampaignRecord(input);
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
         const items = await listMarketingCampaignItemRecords({
           campaignId: input.id,
           tenantId: input.tenantId,
@@ -6341,17 +7075,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     createMarketingCampaign: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        name: z.string().min(1).max(220),
-        goal: z.string().max(4000).optional(),
-        audience: z.string().max(4000).optional(),
-        channels: z.array(z.string().min(1).max(120)).default([]),
-        startDate: z.string().optional(),
-        durationDays: z.number().int().min(1).max(365).default(7),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          name: z.string().min(1).max(220),
+          goal: z.string().max(4000).optional(),
+          audience: z.string().max(4000).optional(),
+          channels: z.array(z.string().min(1).max(120)).default([]),
+          startDate: z.string().optional(),
+          durationDays: z.number().int().min(1).max(365).default(7),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await createMarketingCampaignRecord({
           ...input,
@@ -6361,48 +7097,63 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     updateMarketingCampaign: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        name: z.string().min(1).max(220).optional(),
-        goal: z.string().max(4000).optional(),
-        audience: z.string().max(4000).optional(),
-        channels: z.array(z.string().min(1).max(120)).optional(),
-        startDate: z.string().nullable().optional(),
-        durationDays: z.number().int().min(1).max(365).optional(),
-        status: z.enum(MARKETING_CAMPAIGN_STATUSES).optional(),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          name: z.string().min(1).max(220).optional(),
+          goal: z.string().max(4000).optional(),
+          audience: z.string().max(4000).optional(),
+          channels: z.array(z.string().min(1).max(120)).optional(),
+          startDate: z.string().nullable().optional(),
+          durationDays: z.number().int().min(1).max(365).optional(),
+          status: z.enum(MARKETING_CAMPAIGN_STATUSES).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const { id, tenantId, workspaceId, ...patch } = input;
-        await updateMarketingCampaignRecord({ id, tenantId, workspaceId, patch });
+        await updateMarketingCampaignRecord({
+          id,
+          tenantId,
+          workspaceId,
+          patch,
+        });
         return { success: true };
       }),
 
     deleteMarketingCampaign: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await deleteMarketingCampaignRecord(input);
         return { success: true };
       }),
 
     generateCampaignPlan: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const campaign = await getMarketingCampaignRecord({
           id: input.campaignId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
         const brandKit = await ensureMarketingBrandKit({
           tenantId: campaign.tenantId,
           workspaceId: campaign.workspaceId,
@@ -6413,9 +7164,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tenantId: campaign.tenantId,
         });
         for (const item of existingItems) {
-          await deleteMarketingCampaignItemRecord({ id: item.id, tenantId: item.tenantId });
+          await deleteMarketingCampaignItemRecord({
+            id: item.id,
+            tenantId: item.tenantId,
+          });
         }
-        const { brief, deliverables } = await createCampaignEngineOutput({ campaign, brandKit });
+        const { brief, deliverables } = await createCampaignEngineOutput({
+          campaign,
+          brandKit,
+        });
         const createdItemIds: number[] = [];
         for (const deliverable of deliverables) {
           const id = await createMarketingCampaignItemRecord({
@@ -6446,21 +7203,33 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateWeeklyContentPack: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const campaign = await getMarketingCampaignRecord({
           id: input.campaignId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
-        const items = await listMarketingCampaignItemRecords({ campaignId: campaign.id, tenantId: campaign.tenantId });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
+        const items = await listMarketingCampaignItemRecords({
+          campaignId: campaign.id,
+          tenantId: campaign.tenantId,
+        });
         if (!items.length) {
-          return { success: false, message: "No campaign plan exists. Generate campaign plan first." };
+          return {
+            success: false,
+            message: "No campaign plan exists. Generate campaign plan first.",
+          };
         }
         const draftPayloads = toWeeklyDraftPayload({
           campaignId: campaign.id,
@@ -6479,7 +7248,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         });
         const createdScheduleDraftIds: number[] = [];
         for (const draft of draftPayloads) {
-          const meta = items.find((item) => item.id === draft.campaignItemId)?.metadata ?? {};
+          const meta =
+            items.find((item) => item.id === draft.campaignItemId)?.metadata ??
+            {};
           const id = await createMarketingScheduleDraftRecord({
             ...draft,
             metadataJson: JSON.stringify({
@@ -6487,7 +7258,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               hook: typeof meta.hook === "string" ? meta.hook : "",
               cta: typeof meta.cta === "string" ? meta.cta : "",
               assetUrls: Array.isArray(meta.assetUrls) ? meta.assetUrls : [],
-              videoUrl: typeof meta.videoUrl === "string" ? meta.videoUrl : null,
+              videoUrl:
+                typeof meta.videoUrl === "string" ? meta.videoUrl : null,
               imageUrls: Array.isArray(meta.imageUrls) ? meta.imageUrls : [],
               captionFileUrl: null,
               qaChecklistSummary: null,
@@ -6500,21 +7272,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     exportCampaignPack: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        includeMarkdown: z.boolean().default(true),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          includeMarkdown: z.boolean().default(true),
+        }),
+      )
       .query(async ({ input }) => {
         const campaign = await getMarketingCampaignRecord({
           id: input.campaignId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
-        const items = await listMarketingCampaignItemRecords({ campaignId: campaign.id, tenantId: campaign.tenantId });
-        const assets = await listCampaignAssetRecords({ campaignId: campaign.id });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
+        const items = await listMarketingCampaignItemRecords({
+          campaignId: campaign.id,
+          tenantId: campaign.tenantId,
+        });
+        const assets = await listCampaignAssetRecords({
+          campaignId: campaign.id,
+        });
         const brandKit = await ensureMarketingBrandKit({
           tenantId: campaign.tenantId,
           workspaceId: campaign.workspaceId,
@@ -6534,75 +7317,154 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           targetType: "campaign_item",
           limit: Math.max(items.length * 5, 100),
         });
-        const latestReviewByTargetId = new Map<string, (typeof reviewRecords)[number]>();
+        const latestReviewByTargetId = new Map<
+          string,
+          (typeof reviewRecords)[number]
+        >();
         for (const record of reviewRecords) {
-          if (!latestReviewByTargetId.has(record.targetId)) latestReviewByTargetId.set(record.targetId, record);
+          if (!latestReviewByTargetId.has(record.targetId))
+            latestReviewByTargetId.set(record.targetId, record);
         }
-        const latestVisualQaByTargetId = new Map<string, (typeof visualQaRecords)[number]>();
+        const latestVisualQaByTargetId = new Map<
+          string,
+          (typeof visualQaRecords)[number]
+        >();
         for (const record of visualQaRecords) {
-          if (!latestVisualQaByTargetId.has(record.targetId)) latestVisualQaByTargetId.set(record.targetId, record);
+          if (!latestVisualQaByTargetId.has(record.targetId))
+            latestVisualQaByTargetId.set(record.targetId, record);
         }
         const brief = buildCampaignBrief({ campaign, brandKit });
         const deliverables = items.map((item) => {
           const metadata = item.metadata ?? {};
           const review = latestReviewByTargetId.get(String(item.id));
           const visualQa = latestVisualQaByTargetId.get(String(item.id));
-          const resolvedReviewStatus = (review?.status ?? item.reviewStatus ?? "needs_review") as "needs_review" | "approved" | "rejected" | "changes_requested" | "blocked" | "exported";
-          const exportedFromMetadata = typeof (metadata as Record<string, unknown>).exported === "boolean"
-            ? Boolean((metadata as Record<string, unknown>).exported)
-            : null;
-          const exported = exportedFromMetadata ?? (resolvedReviewStatus === "exported");
-          const hashtags = Array.isArray(metadata.hashtags) ? metadata.hashtags.map((tag) => String(tag)) : [];
-          const qualityChecks = Array.isArray(metadata.qualityChecks) ? metadata.qualityChecks.map((rule) => String(rule)) : [];
-          const contentType = typeof metadata.contentType === "string" ? metadata.contentType as MarketingContentType : undefined;
-          const videoPlan = metadata.videoPlan && typeof metadata.videoPlan === "object"
-            ? (metadata.videoPlan as any)
-            : undefined;
+          const resolvedReviewStatus = (review?.status ??
+            item.reviewStatus ??
+            "needs_review") as
+            | "needs_review"
+            | "approved"
+            | "rejected"
+            | "changes_requested"
+            | "blocked"
+            | "exported";
+          const exportedFromMetadata =
+            typeof (metadata as Record<string, unknown>).exported === "boolean"
+              ? Boolean((metadata as Record<string, unknown>).exported)
+              : null;
+          const exported =
+            exportedFromMetadata ?? resolvedReviewStatus === "exported";
+          const hashtags = Array.isArray(metadata.hashtags)
+            ? metadata.hashtags.map((tag) => String(tag))
+            : [];
+          const qualityChecks = Array.isArray(metadata.qualityChecks)
+            ? metadata.qualityChecks.map((rule) => String(rule))
+            : [];
+          const contentType =
+            typeof metadata.contentType === "string"
+              ? (metadata.contentType as MarketingContentType)
+              : undefined;
+          const videoPlan =
+            metadata.videoPlan && typeof metadata.videoPlan === "object"
+              ? (metadata.videoPlan as any)
+              : undefined;
           return {
             day: Number(metadata.day ?? 1),
             dayLabel: String(metadata.dayLabel ?? "Day 1"),
             scheduledFor: item.scheduledFor ?? new Date().toISOString(),
             platform: (item.platform ?? "Facebook") as any,
-            type: (item.type as any) === "campaign_plan" ? "post" : (item.type as any),
+            type:
+              (item.type as any) === "campaign_plan"
+                ? "post"
+                : (item.type as any),
             title: item.title ?? "",
             body: item.content ?? "",
             hook: typeof metadata.hook === "string" ? metadata.hook : "",
-            cta: typeof metadata.cta === "string" ? metadata.cta : brief.primaryCta,
+            cta:
+              typeof metadata.cta === "string"
+                ? metadata.cta
+                : brief.primaryCta,
             hashtags,
-            recommendedAssetType: (typeof metadata.recommendedAssetType === "string" ? metadata.recommendedAssetType : "text") as "video" | "image" | "text",
-            visualPrompt: item.prompt ?? (typeof metadata.visualPrompt === "string" ? metadata.visualPrompt : ""),
-            status: (item.status === "draft" ? "draft" : "export_only") as "draft" | "export_only",
+            recommendedAssetType: (typeof metadata.recommendedAssetType ===
+            "string"
+              ? metadata.recommendedAssetType
+              : "text") as "video" | "image" | "text",
+            visualPrompt:
+              item.prompt ??
+              (typeof metadata.visualPrompt === "string"
+                ? metadata.visualPrompt
+                : ""),
+            status: (item.status === "draft" ? "draft" : "export_only") as
+              | "draft"
+              | "export_only",
             reviewStatus: resolvedReviewStatus,
             exported,
             metadata: {
               campaignItemId: item.id,
-              platformRule: typeof metadata.platformRule === "string" ? metadata.platformRule : "",
+              platformRule:
+                typeof metadata.platformRule === "string"
+                  ? metadata.platformRule
+                  : "",
               qualityChecks,
-              reviewChecklist: review?.checklist?.items.map((check) => `${check.label}: ${check.passed ? "pass" : "fail"}`) ?? [],
+              reviewChecklist:
+                review?.checklist?.items.map(
+                  (check) =>
+                    `${check.label}: ${check.passed ? "pass" : "fail"}`,
+                ) ?? [],
               reviewChecklistSummary: review?.checklist
                 ? {
-                  generatedAt: review.checklist.generatedAt,
-                  total: review.checklist.items.length,
-                  passed: review.checklist.items.filter((check) => check.passed).length,
-                  failed: review.checklist.items.filter((check) => !check.passed).length,
-                  blockingFailures: review.checklist.items.filter((check) => !check.passed && check.severity === "error").length,
-                }
+                    generatedAt: review.checklist.generatedAt,
+                    total: review.checklist.items.length,
+                    passed: review.checklist.items.filter(
+                      (check) => check.passed,
+                    ).length,
+                    failed: review.checklist.items.filter(
+                      (check) => !check.passed,
+                    ).length,
+                    blockingFailures: review.checklist.items.filter(
+                      (check) => !check.passed && check.severity === "error",
+                    ).length,
+                  }
                 : null,
               reviewQaScore: review?.qaScore ?? null,
               reviewReason: review?.reason ?? null,
               manualOverride: review?.metadata?.manualOverride ?? null,
               visualQaStatus: visualQa?.status ?? null,
-              generationMode: (metadata.generationMode === "model" ? "model" : metadata.generationMode === "fallback" ? "fallback" : undefined) as "model" | "fallback" | undefined,
-              provider: typeof metadata.provider === "string" ? metadata.provider : null,
+              generationMode: (metadata.generationMode === "model"
+                ? "model"
+                : metadata.generationMode === "fallback"
+                  ? "fallback"
+                  : undefined) as "model" | "fallback" | undefined,
+              provider:
+                typeof metadata.provider === "string"
+                  ? metadata.provider
+                  : null,
               model: typeof metadata.model === "string" ? metadata.model : null,
-              task: typeof metadata.task === "string" ? metadata.task : undefined,
-              mode: (metadata.mode === "elite" ? "elite" : "standard") as "standard" | "elite",
-              routeReason: typeof metadata.routeReason === "string" ? metadata.routeReason : undefined,
-              fallbackReason: typeof metadata.fallbackReason === "string" ? metadata.fallbackReason : null,
-              estimatedCostTier: typeof metadata.estimatedCostTier === "string" ? metadata.estimatedCostTier as "low" | "medium" | "high" : null,
-              generatedAt: typeof metadata.generatedAt === "string" ? metadata.generatedAt : undefined,
-              parserWarnings: Array.isArray(metadata.parserWarnings) ? metadata.parserWarnings.map((entry) => String(entry)) : [],
-              providerStatus: (metadata.providerStatus === "setup_needed" || metadata.providerStatus === "provider_unavailable"
+              task:
+                typeof metadata.task === "string" ? metadata.task : undefined,
+              mode: (metadata.mode === "elite" ? "elite" : "standard") as
+                | "standard"
+                | "elite",
+              routeReason:
+                typeof metadata.routeReason === "string"
+                  ? metadata.routeReason
+                  : undefined,
+              fallbackReason:
+                typeof metadata.fallbackReason === "string"
+                  ? metadata.fallbackReason
+                  : null,
+              estimatedCostTier:
+                typeof metadata.estimatedCostTier === "string"
+                  ? (metadata.estimatedCostTier as "low" | "medium" | "high")
+                  : null,
+              generatedAt:
+                typeof metadata.generatedAt === "string"
+                  ? metadata.generatedAt
+                  : undefined,
+              parserWarnings: Array.isArray(metadata.parserWarnings)
+                ? metadata.parserWarnings.map((entry) => String(entry))
+                : [],
+              providerStatus: (metadata.providerStatus === "setup_needed" ||
+              metadata.providerStatus === "provider_unavailable"
                 ? metadata.providerStatus
                 : "ready") as "ready" | "provider_unavailable" | "setup_needed",
               ...(contentType ? { contentType } : {}),
@@ -6659,11 +7521,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getBeastModeRun: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .query(async ({ input }) => {
         const run = await requireBeastModeRun(input);
         const variants = await listMarketingBeastModeVariantRecords({
@@ -6675,11 +7539,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     listBeastModeRuns: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        campaignId: z.number().int().positive().nullable().optional(),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+            campaignId: z.number().int().positive().nullable().optional(),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         return listMarketingBeastModeRunRecords({
           tenantId: input?.tenantId ?? "global",
@@ -6689,11 +7557,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     cancelBeastModeRun: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await requireBeastModeRun(input);
         await updateMarketingBeastModeRunRecord({
@@ -6707,23 +7577,36 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateBeastModeVariants: adminUnlockedProcedure
-      .input(z.object({
-        runId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          runId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        const run = await requireBeastModeRun({ id: input.runId, tenantId: input.tenantId, workspaceId: input.workspaceId });
+        const run = await requireBeastModeRun({
+          id: input.runId,
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+        });
         if (!run.campaignId) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Beast Mode generation requires a campaign." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Beast Mode generation requires a campaign.",
+          });
         }
         const campaign = await getMarketingCampaignRecord({
           id: run.campaignId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
         const brandKit = await ensureMarketingBrandKit({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
@@ -6767,7 +7650,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               metadata: variant.metadata,
             })),
           });
-          const variants = await listMarketingBeastModeVariantsByIds(variantIds);
+          const variants =
+            await listMarketingBeastModeVariantsByIds(variantIds);
 
           for (const variant of variants) {
             const checklist = buildMarketingQaChecklist({
@@ -6778,7 +7662,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               metadata: variant.metadata,
             });
             const qaScore = scoreMarketingQaChecklist(checklist);
-            const reviewStatus = qaScore.pass ? "needs_review" : "changes_requested";
+            const reviewStatus = qaScore.pass
+              ? "needs_review"
+              : "changes_requested";
             await createMarketingReviewRecordEntry({
               tenantId: input.tenantId,
               workspaceId: input.workspaceId,
@@ -6787,7 +7673,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               targetId: String(variant.id),
               status: reviewStatus,
               reviewerUserId: ctx.user.id,
-              reason: qaScore.pass ? null : "QA checklist has blocking failures.",
+              reason: qaScore.pass
+                ? null
+                : "QA checklist has blocking failures.",
               checklist,
               qaScore,
               reviewedAt: new Date().toISOString(),
@@ -6803,8 +7691,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                   qaChecklistSummary: {
                     generatedAt: checklist.generatedAt,
                     total: checklist.items.length,
-                    passed: checklist.items.filter((item) => item.passed).length,
-                    failed: checklist.items.filter((item) => !item.passed).length,
+                    passed: checklist.items.filter((item) => item.passed)
+                      .length,
+                    failed: checklist.items.filter((item) => !item.passed)
+                      .length,
                   },
                 },
               },
@@ -6828,28 +7718,43 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               completedAt: new Date(),
             },
           });
-          return { success: true, runId: run.id, variantIds, summary, plan: generated.plan };
+          return {
+            success: true,
+            runId: run.id,
+            variantIds,
+            summary,
+            plan: generated.plan,
+          };
         } catch (error) {
-          const message = error instanceof Error ? error.message : "Beast Mode generation failed";
+          const message =
+            error instanceof Error
+              ? error.message
+              : "Beast Mode generation failed";
           await updateMarketingBeastModeRunRecord({
             id: run.id,
             tenantId: input.tenantId,
             workspaceId: input.workspaceId,
-            patch: { status: "failed", errorMessage: message, completedAt: new Date() },
+            patch: {
+              status: "failed",
+              errorMessage: message,
+              completedAt: new Date(),
+            },
           });
           throw error;
         }
       }),
 
     approveBeastModeVariant: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        reason: z.string().max(4000).nullable().optional(),
-        manualOverride: z.boolean().default(false),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          reason: z.string().max(4000).nullable().optional(),
+          manualOverride: z.boolean().default(false),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget({
           targetType: "beast_mode_variant",
@@ -6857,10 +7762,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Variant not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Variant not found",
+          });
         const overrideReason = input.reason?.trim() ?? "";
         if (input.manualOverride && !overrideReason) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Manual override requires a reason." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Manual override requires a reason.",
+          });
         }
         const latest = await getLatestMarketingReviewForTarget({
           tenantId: input.tenantId,
@@ -6871,7 +7783,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         });
         // Visual QA gate for video beast mode variants
         const variantMetadata = target.metadata as Record<string, unknown>;
-        const hasRenderMedia = Boolean(variantMetadata.renderJobId || variantMetadata.studioPlan);
+        const hasRenderMedia = Boolean(
+          variantMetadata.renderJobId || variantMetadata.studioPlan,
+        );
         if (hasRenderMedia) {
           const latestVisualQa = await getLatestVisualQaForTarget({
             tenantId: input.tenantId,
@@ -6881,11 +7795,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             targetId: String(input.id),
           });
           const visualQaPassed = latestVisualQa?.status === "passed";
-          const visualQaOverride = input.manualOverride && overrideReason.length > 0;
+          const visualQaOverride =
+            input.manualOverride && overrideReason.length > 0;
           if (!visualQaPassed && !visualQaOverride) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Approving a video Beast Mode variant requires visual QA to have passed or a manual override with reason.",
+              message:
+                "Approving a video Beast Mode variant requires visual QA to have passed or a manual override with reason.",
             });
           }
         }
@@ -6911,13 +7827,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     rejectBeastModeVariant: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         await createMarketingReviewRecordEntry({
           tenantId: input.tenantId,
@@ -6930,18 +7848,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason,
           reviewedAt: new Date().toISOString(),
         });
-        await setMarketingTargetReviewStatus({ targetType: "beast_mode_variant", targetId: String(input.id), status: "rejected" });
+        await setMarketingTargetReviewStatus({
+          targetType: "beast_mode_variant",
+          targetId: String(input.id),
+          status: "rejected",
+        });
         return { success: true };
       }),
 
     requestBeastModeVariantChanges: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         await createMarketingReviewRecordEntry({
           tenantId: input.tenantId,
@@ -6954,25 +7878,37 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason,
           reviewedAt: new Date().toISOString(),
         });
-        await setMarketingTargetReviewStatus({ targetType: "beast_mode_variant", targetId: String(input.id), status: "changes_requested" });
+        await setMarketingTargetReviewStatus({
+          targetType: "beast_mode_variant",
+          targetId: String(input.id),
+          status: "changes_requested",
+        });
         return { success: true };
       }),
 
     planBeastModeBatchRenders: adminUnlockedProcedure
-      .input(z.object({
-        runId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        maxRenderJobs: z.number().int().min(1).max(20).default(5),
-      }))
+      .input(
+        z.object({
+          runId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          maxRenderJobs: z.number().int().min(1).max(20).default(5),
+        }),
+      )
       .query(async ({ input }) => {
-        await requireBeastModeRun({ id: input.runId, tenantId: input.tenantId, workspaceId: input.workspaceId });
+        await requireBeastModeRun({
+          id: input.runId,
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+        });
         const variants = await listMarketingBeastModeVariantRecords({
           runId: input.runId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        const approvedVariants = variants.filter((variant) => variant.reviewStatus === "approved");
+        const approvedVariants = variants.filter(
+          (variant) => variant.reviewStatus === "approved",
+        );
         return buildBeastModeBatchRenderQueue({
           variants: approvedVariants,
           maxRenderJobs: input.maxRenderJobs,
@@ -6981,16 +7917,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     createBeastModeBatchRenderJobs: adminUnlockedProcedure
-      .input(z.object({
-        runId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        maxRenderJobs: z.number().int().min(1).max(20).default(5),
-        variantIds: z.array(z.number().int().positive()).optional(),
-      }))
+      .input(
+        z.object({
+          runId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          maxRenderJobs: z.number().int().min(1).max(20).default(5),
+          variantIds: z.array(z.number().int().positive()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
-        const run = await requireBeastModeRun({ id: input.runId, tenantId: input.tenantId, workspaceId: input.workspaceId });
+        const run = await requireBeastModeRun({
+          id: input.runId,
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+        });
         const brandKit = await ensureMarketingBrandKit({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
@@ -7001,17 +7943,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        const filtered = variants.filter((variant) =>
-          variant.reviewStatus === "approved"
-          && variant.studioPlan
-          && !variant.renderJobId
-          && (!input.variantIds?.length || input.variantIds.includes(variant.id)));
+        const filtered = variants.filter(
+          (variant) =>
+            variant.reviewStatus === "approved" &&
+            variant.studioPlan &&
+            !variant.renderJobId &&
+            (!input.variantIds?.length ||
+              input.variantIds.includes(variant.id)),
+        );
         const queue = buildBeastModeBatchRenderQueue({
           variants: filtered,
           maxRenderJobs: input.maxRenderJobs,
           requested: true,
         });
-        const selected = filtered.filter((variant) => queue.eligibleVariantIds.includes(variant.id));
+        const selected = filtered.filter((variant) =>
+          queue.eligibleVariantIds.includes(variant.id),
+        );
         const createdJobIds: number[] = [];
         const failures: Array<{ variantId: number; error: string }> = [];
 
@@ -7019,10 +7966,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           try {
             const plan = variant.studioPlan;
             if (!plan || plan.renderMode !== "assembled_video") {
-              throw new Error("Variant is missing an assembled_video Studio plan.");
+              throw new Error(
+                "Variant is missing an assembled_video Studio plan.",
+              );
             }
             const timeline = compileMarketingTimeline({
-              scenes: plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1)),
+              scenes: plan.scenes.map((scene, index) =>
+                normalizeStudioScene(scene, index + 1),
+              ),
               script: plan.script ?? "",
               contentType: plan.contentType as MarketingContentType,
               originalUserPrompt: plan.originalUserPrompt,
@@ -7083,11 +8034,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             });
             const renderJobId = String(created.id);
             const renderJobNumericId = Number(created.id);
-            if (Number.isFinite(renderJobNumericId) && renderJobNumericId > 0) createdJobIds.push(renderJobNumericId);
+            if (Number.isFinite(renderJobNumericId) && renderJobNumericId > 0)
+              createdJobIds.push(renderJobNumericId);
             try {
               await enqueueMarketingRenderJob(renderJobId);
             } catch (error) {
-              const message = error instanceof Error ? error.message : "Render queue failed";
+              const message =
+                error instanceof Error ? error.message : "Render queue failed";
               await updateMarketingRenderJobRecord({
                 id: renderJobId,
                 status: "failed",
@@ -7100,7 +8053,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               tenantId: input.tenantId,
               workspaceId: input.workspaceId,
               patch: {
-                renderJobId: Number.isFinite(renderJobNumericId) ? renderJobNumericId : null,
+                renderJobId: Number.isFinite(renderJobNumericId)
+                  ? renderJobNumericId
+                  : null,
                 reviewStatus: "needs_review",
                 metadata: {
                   ...variant.metadata,
@@ -7112,7 +8067,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           } catch (error) {
             failures.push({
               variantId: variant.id,
-              error: error instanceof Error ? error.message : "Render creation failed",
+              error:
+                error instanceof Error
+                  ? error.message
+                  : "Render creation failed",
             });
           }
         }
@@ -7125,11 +8083,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     listBeastModeRenderQueue: adminUnlockedProcedure
-      .input(z.object({
-        runId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          runId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .query(async ({ input }) => {
         const variants = await listMarketingBeastModeVariantRecords({
           runId: input.runId,
@@ -7144,20 +8104,29 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             language: variant.language,
             reviewStatus: variant.reviewStatus,
             renderJobId: variant.renderJobId,
-            renderReady: variant.reviewStatus === "approved" && Boolean(variant.studioPlan) && !variant.renderJobId,
+            renderReady:
+              variant.reviewStatus === "approved" &&
+              Boolean(variant.studioPlan) &&
+              !variant.renderJobId,
           }));
       }),
 
     exportBeastModePack: adminUnlockedProcedure
-      .input(z.object({
-        runId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        includeRejected: z.boolean().default(false),
-      }))
+      .input(
+        z.object({
+          runId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          includeRejected: z.boolean().default(false),
+        }),
+      )
       .query(async ({ input }) => {
-        const run = await requireBeastModeRun({ id: input.runId, tenantId: input.tenantId, workspaceId: input.workspaceId });
+        const run = await requireBeastModeRun({
+          id: input.runId,
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+        });
         const brandKit = await ensureMarketingBrandKit({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
@@ -7182,13 +8151,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           targetType: "beast_mode_variant",
           limit: Math.max(variants.length * 5, 100),
         });
-        const latestReviewById = new Map<string, (typeof reviewRecords)[number]>();
+        const latestReviewById = new Map<
+          string,
+          (typeof reviewRecords)[number]
+        >();
         for (const record of reviewRecords) {
-          if (!latestReviewById.has(record.targetId)) latestReviewById.set(record.targetId, record);
+          if (!latestReviewById.has(record.targetId))
+            latestReviewById.set(record.targetId, record);
         }
-        const latestVisualQaById = new Map<string, (typeof visualQaRecords)[number]>();
+        const latestVisualQaById = new Map<
+          string,
+          (typeof visualQaRecords)[number]
+        >();
         for (const record of visualQaRecords) {
-          if (!latestVisualQaById.has(record.targetId)) latestVisualQaById.set(record.targetId, record);
+          if (!latestVisualQaById.has(record.targetId))
+            latestVisualQaById.set(record.targetId, record);
         }
         const exportedVariants = variants
           .map((variant) => {
@@ -7202,19 +8179,29 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                 ...variant.metadata,
                 qaChecklistSummary: latestReview?.checklist
                   ? {
-                    generatedAt: latestReview.checklist.generatedAt,
-                    total: latestReview.checklist.items.length,
-                    passed: latestReview.checklist.items.filter((item) => item.passed).length,
-                    failed: latestReview.checklist.items.filter((item) => !item.passed).length,
-                  }
-                  : (variant.metadata as Record<string, unknown>).qaChecklistSummary ?? null,
+                      generatedAt: latestReview.checklist.generatedAt,
+                      total: latestReview.checklist.items.length,
+                      passed: latestReview.checklist.items.filter(
+                        (item) => item.passed,
+                      ).length,
+                      failed: latestReview.checklist.items.filter(
+                        (item) => !item.passed,
+                      ).length,
+                    }
+                  : ((variant.metadata as Record<string, unknown>)
+                      .qaChecklistSummary ?? null),
                 visualQaStatus: latestVisualQa?.status ?? null,
                 rejected: reviewStatus === "rejected",
-                renderLink: variant.renderJobId ? `render-job:${variant.renderJobId}` : null,
+                renderLink: variant.renderJobId
+                  ? `render-job:${variant.renderJobId}`
+                  : null,
               },
             };
           })
-          .filter((variant) => input.includeRejected || variant.reviewStatus !== "rejected");
+          .filter(
+            (variant) =>
+              input.includeRejected || variant.reviewStatus !== "rejected",
+          );
         const pack = buildBeastModeExportPack({
           run,
           variants: exportedVariants,
@@ -7230,57 +8217,71 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         });
         return {
           ...pack,
-          rejectedVariantIds: variants.filter((variant) => variant.reviewStatus === "rejected").map((variant) => variant.id),
+          rejectedVariantIds: variants
+            .filter((variant) => variant.reviewStatus === "rejected")
+            .map((variant) => variant.id),
           reviewStatuses: variants.map((variant) => ({
             id: variant.id,
-            reviewStatus: latestReviewById.get(String(variant.id))?.status ?? variant.reviewStatus,
+            reviewStatus:
+              latestReviewById.get(String(variant.id))?.status ??
+              variant.reviewStatus,
             exportStatus: variant.exportStatus,
           })),
         };
       }),
 
     listMarketingCampaignItems: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingCampaignItemRecords(input);
       }),
 
     createMarketingCampaignItem: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        type: z.enum(MARKETING_CAMPAIGN_ITEM_TYPES).default("post"),
-        platform: z.string().max(80).optional(),
-        title: z.string().max(260).optional(),
-        content: z.string().max(12000).optional(),
-        prompt: z.string().max(6000).optional(),
-        status: z.enum(MARKETING_CAMPAIGN_ITEM_STATUSES).default("export_only"),
-        reviewStatus: z.enum(MARKETING_REVIEW_STATUSES).default("needs_review"),
-        scheduledFor: z.string().nullable().optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          type: z.enum(MARKETING_CAMPAIGN_ITEM_TYPES).default("post"),
+          platform: z.string().max(80).optional(),
+          title: z.string().max(260).optional(),
+          content: z.string().max(12000).optional(),
+          prompt: z.string().max(6000).optional(),
+          status: z
+            .enum(MARKETING_CAMPAIGN_ITEM_STATUSES)
+            .default("export_only"),
+          reviewStatus: z
+            .enum(MARKETING_REVIEW_STATUSES)
+            .default("needs_review"),
+          scheduledFor: z.string().nullable().optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await createMarketingCampaignItemRecord(input);
         return { success: true, id };
       }),
 
     updateMarketingCampaignItem: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        type: z.enum(MARKETING_CAMPAIGN_ITEM_TYPES).optional(),
-        platform: z.string().max(80).optional(),
-        title: z.string().max(260).optional(),
-        content: z.string().max(12000).optional(),
-        prompt: z.string().max(6000).optional(),
-        status: z.enum(MARKETING_CAMPAIGN_ITEM_STATUSES).optional(),
-        reviewStatus: z.enum(MARKETING_REVIEW_STATUSES).optional(),
-        scheduledFor: z.string().nullable().optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          type: z.enum(MARKETING_CAMPAIGN_ITEM_TYPES).optional(),
+          platform: z.string().max(80).optional(),
+          title: z.string().max(260).optional(),
+          content: z.string().max(12000).optional(),
+          prompt: z.string().max(6000).optional(),
+          status: z.enum(MARKETING_CAMPAIGN_ITEM_STATUSES).optional(),
+          reviewStatus: z.enum(MARKETING_REVIEW_STATUSES).optional(),
+          scheduledFor: z.string().nullable().optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const { id, tenantId, ...patch } = input;
         await updateMarketingCampaignItemRecord({ id, tenantId, patch });
@@ -7288,14 +8289,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     deleteMarketingCampaignItem: adminUnlockedProcedure
-      .input(z.object({ id: z.number().int().positive(), tenantId: z.string().min(1).max(100).default("global") }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await deleteMarketingCampaignItemRecord(input);
         return { success: true };
       }),
 
     approveMarketingCampaignItem: adminUnlockedProcedure
-      .input(z.object({ id: z.number().int().positive(), tenantId: z.string().min(1).max(100).default("global") }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await updateMarketingCampaignItemRecord({
           id: input.id,
@@ -7306,7 +8317,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     markMarketingCampaignItemExportOnly: adminUnlockedProcedure
-      .input(z.object({ id: z.number().int().positive(), tenantId: z.string().min(1).max(100).default("global") }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await updateMarketingCampaignItemRecord({
           id: input.id,
@@ -7317,147 +8333,210 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     attachAssetToCampaign: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        campaignItemId: z.number().int().positive().nullable().optional(),
-        mediaAssetId: z.number().int().positive(),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          campaignItemId: z.number().int().positive().nullable().optional(),
+          mediaAssetId: z.number().int().positive(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await attachAssetToCampaignRecord(input);
         return { success: true, id };
       }),
 
     detachAssetFromCampaign: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        campaignItemId: z.number().int().positive().nullable().optional(),
-        mediaAssetId: z.number().int().positive(),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          campaignItemId: z.number().int().positive().nullable().optional(),
+          mediaAssetId: z.number().int().positive(),
+        }),
+      )
       .mutation(async ({ input }) => {
         await detachAssetFromCampaignRecord(input);
         return { success: true };
       }),
 
     listCampaignAssets: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+        }),
+      )
       .query(async ({ input }) => listCampaignAssetRecords(input)),
 
     listMarketingSocialConnections: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }).optional())
-      .query(async ({ input }) => listMarketingSocialConnectionRecords({
-        tenantId: input?.tenantId ?? "global",
-        workspaceId: input?.workspaceId ?? "default",
-      })),
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+          })
+          .optional(),
+      )
+      .query(async ({ input }) =>
+        listMarketingSocialConnectionRecords({
+          tenantId: input?.tenantId ?? "global",
+          workspaceId: input?.workspaceId ?? "default",
+        }),
+      ),
 
     listMarketingPlatformConnections: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }).optional())
-      .query(async ({ input }) => listMarketingSocialConnectionRecords({
-        tenantId: input?.tenantId ?? "global",
-        workspaceId: input?.workspaceId ?? "default",
-      })),
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+          })
+          .optional(),
+      )
+      .query(async ({ input }) =>
+        listMarketingSocialConnectionRecords({
+          tenantId: input?.tenantId ?? "global",
+          workspaceId: input?.workspaceId ?? "default",
+        }),
+      ),
 
     upsertMarketingSocialConnectionStatus: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        platform: z.enum(MARKETING_PLATFORMS),
-        status: z.enum(MARKETING_SOCIAL_STATUSES),
-        accountName: z.string().max(200).nullable().optional(),
-        requiredScopes: z.array(z.string().max(200)).optional(),
-        lastCheckedAt: z.string().nullable().optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          platform: z.enum(MARKETING_PLATFORMS),
+          status: z.enum(MARKETING_SOCIAL_STATUSES),
+          accountName: z.string().max(200).nullable().optional(),
+          requiredScopes: z.array(z.string().max(200)).optional(),
+          lastCheckedAt: z.string().nullable().optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await upsertMarketingSocialConnectionRecord({
           ...input,
-          platform: input.platform as "Facebook" | "Instagram" | "TikTok" | "LinkedIn" | "YouTube",
+          platform: input.platform as
+            | "Facebook"
+            | "Instagram"
+            | "TikTok"
+            | "LinkedIn"
+            | "YouTube",
         });
         return { success: true, id };
       }),
 
     getMarketingPublishingReadiness: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         const connections = await listMarketingSocialConnectionRecords({
           tenantId: input?.tenantId ?? "global",
           workspaceId: input?.workspaceId ?? "default",
         });
-        const readyPlatforms = connections.filter((conn) => isReadyForPosting(conn)).map((conn) => conn.platform);
+        const readyPlatforms = connections
+          .filter((conn) => isReadyForPosting(conn))
+          .map((conn) => conn.platform);
         return {
           readyPlatforms,
-          exportOnlyPlatforms: connections.filter((conn) => conn.status !== "ready_for_posting").map((conn) => conn.platform),
+          exportOnlyPlatforms: connections
+            .filter((conn) => conn.status !== "ready_for_posting")
+            .map((conn) => conn.platform),
           canDirectPost: false,
           requiresPublisherBackend: true,
         };
       }),
 
     listMarketingScheduleDrafts: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }).optional())
-      .query(async ({ input }) => listMarketingScheduleDraftRecords({
-        tenantId: input?.tenantId ?? "global",
-        workspaceId: input?.workspaceId ?? "default",
-      })),
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+          })
+          .optional(),
+      )
+      .query(async ({ input }) =>
+        listMarketingScheduleDraftRecords({
+          tenantId: input?.tenantId ?? "global",
+          workspaceId: input?.workspaceId ?? "default",
+        }),
+      ),
 
     createMarketingScheduleDraft: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        campaignId: z.number().int().positive().nullable().optional(),
-        campaignItemId: z.number().int().positive().nullable().optional(),
-        platform: z.string().min(1).max(80),
-        title: z.string().min(1).max(260),
-        content: z.string().max(12000).optional(),
-        scheduledFor: z.string().datetime(),
-        status: z.enum(MARKETING_SCHEDULE_DRAFT_STATUSES).default("draft"),
-        reviewStatus: z.enum(MARKETING_REVIEW_STATUSES).default("needs_review"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          campaignId: z.number().int().positive().nullable().optional(),
+          campaignItemId: z.number().int().positive().nullable().optional(),
+          platform: z.string().min(1).max(80),
+          title: z.string().min(1).max(260),
+          content: z.string().max(12000).optional(),
+          scheduledFor: z.string().datetime(),
+          status: z.enum(MARKETING_SCHEDULE_DRAFT_STATUSES).default("draft"),
+          reviewStatus: z
+            .enum(MARKETING_REVIEW_STATUSES)
+            .default("needs_review"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const socialConnections = await listMarketingSocialConnectionRecords({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        const social = socialConnections.find((row) => row.platform === input.platform);
+        const social = socialConnections.find(
+          (row) => row.platform === input.platform,
+        );
         const status = isReadyForPosting(social)
           ? input.status
-          : input.status === "approved" ? "export_only" : input.status;
-        const id = await createMarketingScheduleDraftRecord({ ...input, status });
+          : input.status === "approved"
+            ? "export_only"
+            : input.status;
+        const id = await createMarketingScheduleDraftRecord({
+          ...input,
+          status,
+        });
         return { success: true, id };
       }),
 
     updateMarketingScheduleDraft: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        platform: z.string().min(1).max(80).optional(),
-        title: z.string().min(1).max(260).optional(),
-        content: z.string().max(12000).optional(),
-        scheduledFor: z.string().datetime().optional(),
-        status: z.enum(MARKETING_SCHEDULE_DRAFT_STATUSES).optional(),
-        reviewStatus: z.enum(MARKETING_REVIEW_STATUSES).optional(),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          platform: z.string().min(1).max(80).optional(),
+          title: z.string().min(1).max(260).optional(),
+          content: z.string().max(12000).optional(),
+          scheduledFor: z.string().datetime().optional(),
+          status: z.enum(MARKETING_SCHEDULE_DRAFT_STATUSES).optional(),
+          reviewStatus: z.enum(MARKETING_REVIEW_STATUSES).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const { id, tenantId, workspaceId, ...patch } = input;
-        await updateMarketingScheduleDraftRecord({ id, tenantId, workspaceId, patch });
+        await updateMarketingScheduleDraftRecord({
+          id,
+          tenantId,
+          workspaceId,
+          patch,
+        });
         return { success: true };
       }),
 
     cancelMarketingScheduleDraft: adminUnlockedProcedure
-      .input(z.object({ id: z.number().int().positive(), tenantId: z.string().min(1).max(100).default("global"), workspaceId: z.string().min(1).max(120).default("default") }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await updateMarketingScheduleDraftRecord({
           id: input.id,
@@ -7469,37 +8548,65 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     approveMarketingScheduleDraft: adminUnlockedProcedure
-      .input(z.object({ id: z.number().int().positive(), tenantId: z.string().min(1).max(100).default("global"), workspaceId: z.string().min(1).max(120).default("default"), platform: z.string().min(1).max(80) }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          platform: z.string().min(1).max(80),
+        }),
+      )
       .mutation(async ({ input }) => {
         const socialConnections = await listMarketingSocialConnectionRecords({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        const social = socialConnections.find((row) => row.platform === input.platform);
+        const social = socialConnections.find(
+          (row) => row.platform === input.platform,
+        );
         const status = isReadyForPosting(social) ? "approved" : "export_only";
         await updateMarketingScheduleDraftRecord({
           id: input.id,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
-          patch: { status, reviewStatus: status === "approved" ? "approved" : "needs_review" },
+          patch: {
+            status,
+            reviewStatus: status === "approved" ? "approved" : "needs_review",
+          },
         });
         return { success: true, status };
       }),
 
     rescheduleMarketingScheduleDraft: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        scheduledFor: z.string().datetime(),
-        reason: z.string().max(4000).optional(),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          scheduledFor: z.string().datetime(),
+          reason: z.string().max(4000).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
-        const drafts = await listMarketingScheduleDraftRecords({ tenantId: input.tenantId, workspaceId: input.workspaceId });
+        const drafts = await listMarketingScheduleDraftRecords({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+        });
         const existing = drafts.find((draft) => draft.id === input.id);
-        if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "Schedule draft not found" });
-        if (existing.status === "cancelled") throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot reschedule a cancelled draft" });
-        const prevMeta = parseJsonSafe<Record<string, unknown>>(existing.metadataJson, {});
+        if (!existing)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Schedule draft not found",
+          });
+        if (existing.status === "cancelled")
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Cannot reschedule a cancelled draft",
+          });
+        const prevMeta = parseJsonSafe<Record<string, unknown>>(
+          existing.metadataJson,
+          {},
+        );
         const auditEntry = {
           action: "rescheduled",
           from: existing.scheduledFor,
@@ -7507,7 +8614,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason ?? null,
           at: new Date().toISOString(),
         };
-        const auditLog = Array.isArray(prevMeta.auditLog) ? [...prevMeta.auditLog, auditEntry] : [auditEntry];
+        const auditLog = Array.isArray(prevMeta.auditLog)
+          ? [...prevMeta.auditLog, auditEntry]
+          : [auditEntry];
         await updateMarketingScheduleDraftRecord({
           id: input.id,
           tenantId: input.tenantId,
@@ -7521,21 +8630,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     createScheduleDraftsFromCampaign: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const campaign = await getMarketingCampaignRecord({
           id: input.campaignId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
-        const allItems = await listMarketingCampaignItemRecords({ campaignId: campaign.id, tenantId: campaign.tenantId });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
+        const allItems = await listMarketingCampaignItemRecords({
+          campaignId: campaign.id,
+          tenantId: campaign.tenantId,
+        });
         // Exclude rejected items; keep approved and needs_review only
-        const eligibleItems = allItems.filter((item) => item.reviewStatus !== "rejected");
+        const eligibleItems = allItems.filter(
+          (item) => item.reviewStatus !== "rejected",
+        );
         const visualQaRecords = await listVisualQaRecords({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
@@ -7543,31 +8663,52 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           targetType: "campaign_item",
           limit: Math.max(eligibleItems.length * 5, 100),
         });
-        const latestVisualQaByTargetId = new Map<string, (typeof visualQaRecords)[number]>();
+        const latestVisualQaByTargetId = new Map<
+          string,
+          (typeof visualQaRecords)[number]
+        >();
         for (const record of visualQaRecords) {
-          if (!latestVisualQaByTargetId.has(record.targetId)) latestVisualQaByTargetId.set(record.targetId, record);
+          if (!latestVisualQaByTargetId.has(record.targetId))
+            latestVisualQaByTargetId.set(record.targetId, record);
         }
         if (!eligibleItems.length) {
-          return { success: false, message: "No eligible campaign items (approved or needs_review). Rejected items are excluded.", createdScheduleDraftIds: [] };
+          return {
+            success: false,
+            message:
+              "No eligible campaign items (approved or needs_review). Rejected items are excluded.",
+            createdScheduleDraftIds: [],
+          };
         }
         const createdScheduleDraftIds: number[] = [];
         for (const item of eligibleItems) {
           const meta = item.metadata ?? {};
           const visualQa = latestVisualQaByTargetId.get(String(item.id));
-          const hashtags = Array.isArray(meta.hashtags) ? meta.hashtags.map((tag) => String(tag)) : [];
+          const hashtags = Array.isArray(meta.hashtags)
+            ? meta.hashtags.map((tag) => String(tag))
+            : [];
           const hook = typeof meta.hook === "string" ? meta.hook : "";
           const cta = typeof meta.cta === "string" ? meta.cta : "";
-          const assetUrls = Array.isArray(meta.assetUrls) ? meta.assetUrls.map((url) => String(url)) : [];
-          const videoUrl = typeof meta.videoUrl === "string" ? meta.videoUrl : null;
-          const imageUrls = Array.isArray(meta.imageUrls) ? meta.imageUrls.map((url) => String(url)) : [];
+          const assetUrls = Array.isArray(meta.assetUrls)
+            ? meta.assetUrls.map((url) => String(url))
+            : [];
+          const videoUrl =
+            typeof meta.videoUrl === "string" ? meta.videoUrl : null;
+          const imageUrls = Array.isArray(meta.imageUrls)
+            ? meta.imageUrls.map((url) => String(url))
+            : [];
           const qaChecklistSummary = meta.reviewChecklistSummary
             ? (() => {
-                const s = meta.reviewChecklistSummary as Record<string, unknown>;
+                const s = meta.reviewChecklistSummary as Record<
+                  string,
+                  unknown
+                >;
                 return `${String(s.passed ?? 0)}/${String(s.total ?? 0)} passed, ${String(s.blockingFailures ?? 0)} blocking`;
               })()
             : null;
           const draftStatus: "approved" | "export_only" =
-            item.reviewStatus === "approved" && item.status === "approved" ? "approved" : "export_only";
+            item.reviewStatus === "approved" && item.status === "approved"
+              ? "approved"
+              : "export_only";
           const id = await createMarketingScheduleDraftRecord({
             tenantId: input.tenantId,
             workspaceId: input.workspaceId,
@@ -7578,7 +8719,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             content: item.content ?? "",
             scheduledFor: item.scheduledFor ?? new Date().toISOString(),
             status: draftStatus,
-            reviewStatus: (item.reviewStatus ?? "needs_review") as "needs_review" | "approved" | "rejected" | "changes_requested" | "blocked" | "exported",
+            reviewStatus: (item.reviewStatus ?? "needs_review") as
+              | "needs_review"
+              | "approved"
+              | "rejected"
+              | "changes_requested"
+              | "blocked"
+              | "exported",
             metadataJson: JSON.stringify({
               hashtags,
               hook,
@@ -7595,15 +8742,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           });
           createdScheduleDraftIds.push(id);
         }
-        return { success: true, createdScheduleDraftIds, totalEligible: eligibleItems.length };
+        return {
+          success: true,
+          createdScheduleDraftIds,
+          totalEligible: eligibleItems.length,
+        };
       }),
 
     exportScheduleDraftPack: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        campaignId: z.number().int().positive().nullable().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          campaignId: z.number().int().positive().nullable().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const allDrafts = await listMarketingScheduleDraftRecords({
           tenantId: input.tenantId,
@@ -7612,18 +8765,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const drafts = input.campaignId
           ? allDrafts.filter((draft) => draft.campaignId === input.campaignId)
           : allDrafts;
-        return buildScheduleExportPack({ tenantId: input.tenantId, workspaceId: input.workspaceId, drafts });
+        return buildScheduleExportPack({
+          tenantId: input.tenantId,
+          workspaceId: input.workspaceId,
+          drafts,
+        });
       }),
 
-    listSocialPublisherReadiness: adminUnlockedProcedure
-      .query(() => listPublisherReadiness()),
+    listSocialPublisherReadiness: adminUnlockedProcedure.query(() =>
+      listPublisherReadiness(),
+    ),
 
     syncMarketingProviderCapabilities: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        forceRefresh: z.boolean().default(true),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+            forceRefresh: z.boolean().default(true),
+          })
+          .optional(),
+      )
       .mutation(async ({ input }) => {
         const result = await syncMarketingProviderCapabilitiesForWorkspace({
           tenantId: input?.tenantId ?? "global",
@@ -7634,10 +8796,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getMarketingProviderReadiness: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         return getMarketingProviderReadinessSummary({
           tenantId: input?.tenantId ?? "global",
@@ -7646,12 +8812,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getMarketingProviderToolingTruth: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        mode: z.enum(BEAST_MODE_MODES).default("standard"),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+            hostAppId: z.string().min(1).max(120).default("equiprofile"),
+            mode: z.enum(BEAST_MODE_MODES).default("standard"),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         return getMarketingProviderToolingTruth({
           tenantId: input?.tenantId ?? "global",
@@ -7663,12 +8833,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     getMarketingProviderModelInventory: adminUnlockedProcedure
       .input(
-        z.object({
-          tenantId: z.string().min(1).max(100).default("global"),
-          workspaceId: z.string().min(1).max(120).default("default"),
-          provider: z.enum(SUPPORTED_AI_PROVIDERS).optional(),
-          forceRefresh: z.boolean().default(false).optional(),
-        }).optional(),
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+            provider: z.enum(SUPPORTED_AI_PROVIDERS).optional(),
+            forceRefresh: z.boolean().default(false).optional(),
+          })
+          .optional(),
       )
       .query(async ({ input }) => {
         if (input?.forceRefresh) {
@@ -7696,18 +8868,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           providers: {
             genx: models.filter((model) => model.provider === "genx"),
             qwen: models.filter((model) => model.provider === "qwen"),
-            huggingface: models.filter((model) => model.provider === "huggingface"),
+            huggingface: models.filter(
+              (model) => model.provider === "huggingface",
+            ),
           },
         };
       }),
 
     getMarketingTaskCapabilityMap: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        forceRefresh: z.boolean().default(false).optional(),
-        mode: z.enum(BEAST_MODE_MODES).default("standard"),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+            forceRefresh: z.boolean().default(false).optional(),
+            mode: z.enum(BEAST_MODE_MODES).default("standard"),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         if (input?.forceRefresh) {
           await syncMarketingProviderCapabilitiesForWorkspace({
@@ -7717,23 +8895,25 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           });
         }
         const policy = defaultWorkspaceBudgetPolicy(input?.mode ?? "standard");
-        const tasks = await Promise.all(listMarketingTaskCapabilityEntries().map(async (entry) => {
-          const route = await resolveMarketingProviderRoute({
-            tenantId: input?.tenantId ?? "global",
-            workspaceId: input?.workspaceId ?? "default",
-            task: entry.task,
-            policy,
-          });
-          return {
-            task: entry.task,
-            canonicalTask: entry.canonicalTask,
-            routeType: route.selected?.routeType ?? "model",
-            primaryRoute: route.selected,
-            status: route.status,
-            reason: route.reason,
-            candidates: route.candidates,
-          };
-        }));
+        const tasks = await Promise.all(
+          listMarketingTaskCapabilityEntries().map(async (entry) => {
+            const route = await resolveMarketingProviderRoute({
+              tenantId: input?.tenantId ?? "global",
+              workspaceId: input?.workspaceId ?? "default",
+              task: entry.task,
+              policy,
+            });
+            return {
+              task: entry.task,
+              canonicalTask: entry.canonicalTask,
+              routeType: route.selected?.routeType ?? "model",
+              primaryRoute: route.selected,
+              status: route.status,
+              reason: route.reason,
+              candidates: route.candidates,
+            };
+          }),
+        );
         return { mode: policy.mode, tasks };
       }),
 
@@ -7765,7 +8945,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: route.status,
             task: input.task,
             selectedRoute: null,
-            reason: route.reason ?? "No configured provider route available for this task.",
+            reason:
+              route.reason ??
+              "No configured provider route available for this task.",
             candidates: route.candidates,
           };
         }
@@ -7784,14 +8966,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: "provider_unavailable" as const,
             task: input.task,
             selectedRoute: route.selected,
-            reason: "Long-form video routes to Media Factory assembled_video and is not direct-provider executable.",
+            reason:
+              "Long-form video routes to Media Factory assembled_video and is not direct-provider executable.",
           };
         }
 
         try {
           const execution = await executeAITaskWithProviderRoute({
-            task: route.selected.canonicalTask as (typeof CANONICAL_AI_TASKS)[number],
-            provider: route.selected.provider as (typeof SUPPORTED_AI_PROVIDERS)[number],
+            task: route.selected
+              .canonicalTask as (typeof CANONICAL_AI_TASKS)[number],
+            provider: route.selected
+              .provider as (typeof SUPPORTED_AI_PROVIDERS)[number],
             model: route.selected.modelId,
             tenantScope: {
               tenantType: "stable",
@@ -7799,7 +8984,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             },
             requiresApproval: false,
             input: {
-              prompt: input.prompt ?? `Run a short routing verification for ${input.task}.`,
+              prompt:
+                input.prompt ??
+                `Run a short routing verification for ${input.task}.`,
               max_tokens: 64,
             },
           });
@@ -7808,7 +8995,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const selectedModel = route.selected.modelId;
           const routeEnforced =
             execution.provider === route.selected.provider &&
-            (!executedModel || executedModel.toLowerCase() === selectedModel.toLowerCase());
+            (!executedModel ||
+              executedModel.toLowerCase() === selectedModel.toLowerCase());
 
           return {
             status: execution.status,
@@ -7854,7 +9042,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           });
         }
         const publisherPlatform = toSocialPublisherPlatform(connectorPlatform);
-        const publisher = publisherPlatform ? getSocialPublisher(publisherPlatform) : null;
+        const publisher = publisherPlatform
+          ? getSocialPublisher(publisherPlatform)
+          : null;
         const readiness = publisher?.validateConnection({
           status: input.status ?? "setup_needed",
           scopes: input.scopes ?? [],
@@ -7863,7 +9053,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tokenRef: input.tokenRef ?? null,
           accountId: input.accountId ?? null,
         });
-        const computedStatus = input.status ?? readiness?.readinessStatus ?? "setup_needed";
+        const computedStatus =
+          input.status ?? readiness?.readinessStatus ?? "setup_needed";
 
         const id = await upsertMarketingSocialConnectionRecord({
           tenantId: input.tenantId,
@@ -7891,7 +9082,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           success: true,
           id,
           status: computedStatus,
-          canPublish: publisher ? publisher.canPublishWithConnection({ status: computedStatus, scopes: input.scopes ?? [] }) : false,
+          canPublish: publisher
+            ? publisher.canPublishWithConnection({
+                status: computedStatus,
+                scopes: input.scopes ?? [],
+              })
+            : false,
           readinessStatus: readiness?.readinessStatus ?? "not_connected",
         };
       }),
@@ -7911,7 +9107,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           workspaceId: input.workspaceId,
         });
         const draft = drafts.find((row) => row.id === input.id);
-        if (!draft) throw new TRPCError({ code: "NOT_FOUND", message: "Schedule draft not found" });
+        if (!draft)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Schedule draft not found",
+          });
         if (draft.status !== "approved" || draft.reviewStatus !== "approved") {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -7928,7 +9128,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         const publisher = getSocialPublisher(platform);
-        const metadata = parseJsonSafe<Record<string, unknown>>(draft.metadataJson, {});
+        const metadata = parseJsonSafe<Record<string, unknown>>(
+          draft.metadataJson,
+          {},
+        );
         const payload = {
           draftId: draft.id,
           platform,
@@ -7943,23 +9146,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           imageUrls: readMetadataStringArray(metadata, "imageUrls"),
           captionFileUrl: readMetadataString(metadata, "captionFileUrl"),
           reviewStatus: draft.reviewStatus,
-          qaChecklistSummary: readMetadataString(metadata, "qaChecklistSummary"),
+          qaChecklistSummary: readMetadataString(
+            metadata,
+            "qaChecklistSummary",
+          ),
         };
 
         const connections = await listMarketingSocialConnectionRecords({
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        const connection = connections.find((row) => row.platform === platform) ?? null;
-        const connectionState = toSocialConnectionState(connection as MarketingConnectionRecord | null);
-        const connectionReadiness = publisher.validateConnection(connectionState);
+        const connection =
+          connections.find((row) => row.platform === platform) ?? null;
+        const connectionState = toSocialConnectionState(
+          connection as MarketingConnectionRecord | null,
+        );
+        const connectionReadiness =
+          publisher.validateConnection(connectionState);
         const validation = publisher.validatePayload(payload);
         if (!validation.valid || !connectionReadiness.canPublish) {
           return {
             success: false,
             publishStatus: "export_only" as const,
             validation,
-            reason: !connectionReadiness.canPublish ? connectionReadiness.reason : "payload_invalid",
+            reason: !connectionReadiness.canPublish
+              ? connectionReadiness.reason
+              : "payload_invalid",
           };
         }
 
@@ -8000,7 +9212,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         return {
           success: persistedSuccess,
-          publishStatus: persistedSuccess ? ("published" as const) : ("export_only" as const),
+          publishStatus: persistedSuccess
+            ? ("published" as const)
+            : ("export_only" as const),
           platformPostId: result.platformPostId ?? result.uploadId ?? null,
           reason: result.reason ?? null,
           readinessStatus: publisher.validateConnection(null).readinessStatus,
@@ -8027,13 +9241,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }),
         ]);
         const draft = drafts.find((row) => row.id === input.id);
-        if (!draft) throw new TRPCError({ code: "NOT_FOUND", message: "Schedule draft not found" });
+        if (!draft)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Schedule draft not found",
+          });
 
-        const metadata = parseJsonSafe<Record<string, unknown>>(draft.metadataJson, {});
-        const publish = (metadata.publish ?? null) as Record<string, unknown> | null;
-        const connection = connections.find((row) => row.platform === draft.platform) ?? null;
+        const metadata = parseJsonSafe<Record<string, unknown>>(
+          draft.metadataJson,
+          {},
+        );
+        const publish = (metadata.publish ?? null) as Record<
+          string,
+          unknown
+        > | null;
+        const connection =
+          connections.find((row) => row.platform === draft.platform) ?? null;
         const publisherPlatform = toSocialPublisherPlatform(draft.platform);
-        const publisher = publisherPlatform ? getSocialPublisher(publisherPlatform) : null;
+        const publisher = publisherPlatform
+          ? getSocialPublisher(publisherPlatform)
+          : null;
 
         return {
           id: draft.id,
@@ -8043,56 +9270,90 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           scheduledFor: draft.scheduledFor,
           publish: publish
             ? {
-              status: typeof publish.status === "string" ? publish.status : null,
-              platformPostId: typeof publish.platformPostId === "string" ? publish.platformPostId : null,
-              reason: typeof publish.reason === "string" ? publish.reason : null,
-              attemptedAt: typeof publish.attemptedAt === "string" ? publish.attemptedAt : null,
-            }
+                status:
+                  typeof publish.status === "string" ? publish.status : null,
+                platformPostId:
+                  typeof publish.platformPostId === "string"
+                    ? publish.platformPostId
+                    : null,
+                reason:
+                  typeof publish.reason === "string" ? publish.reason : null,
+                attemptedAt:
+                  typeof publish.attemptedAt === "string"
+                    ? publish.attemptedAt
+                    : null,
+              }
             : null,
           connection,
-          canDirectPost: publisher?.canPublishWithConnection(toSocialConnectionState(connection as MarketingConnectionRecord | null)) ?? false,
-          publisherReadinessStatus: publisher?.validateConnection(toSocialConnectionState(connection as MarketingConnectionRecord | null)).readinessStatus ?? "not_connected",
+          canDirectPost:
+            publisher?.canPublishWithConnection(
+              toSocialConnectionState(
+                connection as MarketingConnectionRecord | null,
+              ),
+            ) ?? false,
+          publisherReadinessStatus:
+            publisher?.validateConnection(
+              toSocialConnectionState(
+                connection as MarketingConnectionRecord | null,
+              ),
+            ).readinessStatus ?? "not_connected",
         };
       }),
 
     getMarketingReviewStatus: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+        }),
+      )
       .query(async ({ input }) => {
         const review = await getLatestMarketingReviewForTarget(input);
-        return review ?? { status: "needs_review", targetType: input.targetType, targetId: input.targetId };
+        return (
+          review ?? {
+            status: "needs_review",
+            targetType: input.targetType,
+            targetId: input.targetId,
+          }
+        );
       }),
 
     listMarketingReviews: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES).optional(),
-        targetId: z.string().min(1).max(120).optional(),
-        limit: z.number().int().min(1).max(500).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES).optional(),
+          targetId: z.string().min(1).max(120).optional(),
+          limit: z.number().int().min(1).max(500).optional(),
+        }),
+      )
       .query(async ({ input }) => listMarketingReviewRecords(input)),
 
     createMarketingReviewRecord: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        status: z.enum(MARKETING_REVIEW_STATUSES).default("needs_review"),
-        reason: z.string().max(4000).nullable().optional(),
-        checklist: z.any().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          status: z.enum(MARKETING_REVIEW_STATUSES).default("needs_review"),
+          reason: z.string().max(4000).nullable().optional(),
+          checklist: z.any().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget(input);
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Review target not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Review target not found",
+          });
         const checklist = input.checklist ?? null;
         const qaScore = checklist ? scoreMarketingQaChecklist(checklist) : null;
         const id = await createMarketingReviewRecordEntry({
@@ -8100,7 +9361,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reviewerUserId: ctx.user.id,
           checklist,
           qaScore,
-          reviewedAt: input.status === "needs_review" ? null : new Date().toISOString(),
+          reviewedAt:
+            input.status === "needs_review" ? null : new Date().toISOString(),
         });
         await setMarketingTargetReviewStatus({
           targetType: input.targetType,
@@ -8111,16 +9373,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     runMarketingQaCheck: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget(input);
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Review target not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Review target not found",
+          });
         const checklist = buildMarketingQaChecklist({
           hostAppId: input.hostAppId,
           targetType: input.targetType,
@@ -8130,7 +9398,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           metadata: target.metadata,
           warnings:
             "warnings" in target && Array.isArray(target.warnings)
-              ? target.warnings.filter((item): item is string => typeof item === "string")
+              ? target.warnings.filter(
+                  (item): item is string => typeof item === "string",
+                )
               : undefined,
         });
         const qaScore = scoreMarketingQaChecklist(checklist);
@@ -8152,42 +9422,66 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     approveMarketingOutput: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reason: z.string().max(4000).nullable().optional(),
-        manualOverride: z.boolean().default(false),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reason: z.string().max(4000).nullable().optional(),
+          manualOverride: z.boolean().default(false),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget(input);
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Target not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Target not found",
+          });
         const latest = await getLatestMarketingReviewForTarget(input);
         const overrideReason = input.reason?.trim() ?? "";
-        if (!latest?.checklist) throw new TRPCError({ code: "BAD_REQUEST", message: "Approving requires QA checklist to exist." });
+        if (!latest?.checklist)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Approving requires QA checklist to exist.",
+          });
         if (input.manualOverride && !overrideReason) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Manual override requires a reason." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Manual override requires a reason.",
+          });
         }
         if (latest.qaScore?.pass !== true && !input.manualOverride) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Approving requires a passing QA score or explicit manual override." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Approving requires a passing QA score or explicit manual override.",
+          });
         }
         // Visual QA gate: video targets require visual QA pass or manual override with reason
-        if (isVideoTarget(input.targetType as import("./modules/marketing/visual-qa").VisualQaTargetType)) {
+        if (
+          isVideoTarget(
+            input.targetType as import("./modules/marketing/visual-qa").VisualQaTargetType,
+          )
+        ) {
           const latestVisualQa = await getLatestVisualQaForTarget({
             tenantId: input.tenantId,
             workspaceId: input.workspaceId,
             hostAppId: input.hostAppId,
-            targetType: input.targetType as import("./modules/marketing/visual-qa").VisualQaTargetType,
+            targetType:
+              input.targetType as import("./modules/marketing/visual-qa").VisualQaTargetType,
             targetId: input.targetId,
           });
           const visualQaPassed = latestVisualQa?.status === "passed";
-          const visualQaOverride = input.manualOverride && overrideReason.length > 0;
+          const visualQaOverride =
+            input.manualOverride && overrideReason.length > 0;
           if (!visualQaPassed && !visualQaOverride) {
             throw new TRPCError({
               code: "BAD_REQUEST",
-              message: "Approving a rendered video requires visual QA to have passed or a manual override with reason.",
+              message:
+                "Approving a rendered video requires visual QA to have passed or a manual override with reason.",
             });
           }
         }
@@ -8198,87 +9492,123 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason ?? null,
           metadata: input.manualOverride
             ? {
-              manualOverride: {
-                used: true,
-                action: "approve",
-                reason: overrideReason,
-                latestStatus: latest.status,
-                latestQaPass: latest.qaScore?.pass ?? null,
-              },
-            }
+                manualOverride: {
+                  used: true,
+                  action: "approve",
+                  reason: overrideReason,
+                  latestStatus: latest.status,
+                  latestQaPass: latest.qaScore?.pass ?? null,
+                },
+              }
             : null,
           checklist: latest.checklist,
           qaScore: latest.qaScore,
           reviewedAt: new Date().toISOString(),
         });
-        await setMarketingTargetReviewStatus({ targetType: input.targetType, targetId: input.targetId, status: "approved" });
+        await setMarketingTargetReviewStatus({
+          targetType: input.targetType,
+          targetId: input.targetId,
+          status: "approved",
+        });
         return { success: true, id };
       }),
 
     rejectMarketingOutput: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget(input);
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Target not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Target not found",
+          });
         const id = await createMarketingReviewRecordEntry({
           ...input,
           status: "rejected",
           reviewerUserId: ctx.user.id,
           reviewedAt: new Date().toISOString(),
         });
-        await setMarketingTargetReviewStatus({ targetType: input.targetType, targetId: input.targetId, status: "rejected" });
+        await setMarketingTargetReviewStatus({
+          targetType: input.targetType,
+          targetId: input.targetId,
+          status: "rejected",
+        });
         return { success: true, id };
       }),
 
     requestMarketingOutputChanges: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget(input);
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Target not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Target not found",
+          });
         const id = await createMarketingReviewRecordEntry({
           ...input,
           status: "changes_requested",
           reviewerUserId: ctx.user.id,
           reviewedAt: new Date().toISOString(),
         });
-        await setMarketingTargetReviewStatus({ targetType: input.targetType, targetId: input.targetId, status: "changes_requested" });
+        await setMarketingTargetReviewStatus({
+          targetType: input.targetType,
+          targetId: input.targetId,
+          status: "changes_requested",
+        });
         return { success: true, id };
       }),
 
     markMarketingOutputExported: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reason: z.string().max(4000).nullable().optional(),
-        manualOverride: z.boolean().default(false),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(MARKETING_REVIEW_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reason: z.string().max(4000).nullable().optional(),
+          manualOverride: z.boolean().default(false),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const target = await getMarketingReviewTarget(input);
-        if (!target?.exists) throw new TRPCError({ code: "NOT_FOUND", message: "Target not found" });
+        if (!target?.exists)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Target not found",
+          });
         const latest = await getLatestMarketingReviewForTarget(input);
         const overrideReason = input.reason?.trim() ?? "";
         if (input.manualOverride && !overrideReason) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Manual override requires a reason." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Manual override requires a reason.",
+          });
         }
         if (latest?.status !== "approved" && !input.manualOverride) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Exported requires approved status or manual override." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Exported requires approved status or manual override.",
+          });
         }
         const id = await createMarketingReviewRecordEntry({
           ...input,
@@ -8287,34 +9617,40 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason ?? null,
           metadata: input.manualOverride
             ? {
-              manualOverride: {
-                used: true,
-                action: "export",
-                reason: overrideReason,
-                latestStatus: latest?.status ?? null,
-                latestQaPass: latest?.qaScore?.pass ?? null,
-              },
-            }
+                manualOverride: {
+                  used: true,
+                  action: "export",
+                  reason: overrideReason,
+                  latestStatus: latest?.status ?? null,
+                  latestQaPass: latest?.qaScore?.pass ?? null,
+                },
+              }
             : null,
           checklist: latest?.checklist ?? null,
           qaScore: latest?.qaScore ?? null,
           reviewedAt: new Date().toISOString(),
         });
-        await setMarketingTargetReviewStatus({ targetType: input.targetType, targetId: input.targetId, status: "exported" });
+        await setMarketingTargetReviewStatus({
+          targetType: input.targetType,
+          targetId: input.targetId,
+          status: "exported",
+        });
         return { success: true, id };
       }),
 
     runMarketingVisualQa: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        expectedSubject: z.string().max(500).nullable().optional(),
-        expectedBrand: z.string().max(500).nullable().optional(),
-        expectedAudience: z.string().max(500).nullable().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          expectedSubject: z.string().max(500).nullable().optional(),
+          expectedBrand: z.string().max(500).nullable().optional(),
+          expectedAudience: z.string().max(500).nullable().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const record = await runVisualQa({
           tenantId: input.tenantId,
@@ -8330,41 +9666,52 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getMarketingVisualQa: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+        }),
+      )
       .query(async ({ input }) => {
         const record = await getLatestVisualQaForTarget(input);
         return { record };
       }),
 
     listMarketingVisualQaRecords: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile").optional(),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES).optional(),
-        targetId: z.string().max(120).optional(),
-        limit: z.number().int().min(1).max(200).default(50),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z
+            .string()
+            .min(1)
+            .max(120)
+            .default("equiprofile")
+            .optional(),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES).optional(),
+          targetId: z.string().max(120).optional(),
+          limit: z.number().int().min(1).max(200).default(50),
+        }),
+      )
       .query(async ({ input }) => {
         const records = await listVisualQaRecords(input);
         return { records };
       }),
 
     markVisualQaPassed: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reviewNotes: z.string().max(4000).nullable().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reviewNotes: z.string().max(4000).nullable().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const existing = await getLatestVisualQaForTarget(input);
         if (existing) {
@@ -8388,18 +9735,31 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     markVisualQaFailed: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reason: z.string().min(1).max(4000),
-        reviewNotes: z.string().max(4000).nullable().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reason: z.string().min(1).max(4000),
+          reviewNotes: z.string().max(4000).nullable().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        const failedIssue = [{ code: "manual_fail", message: input.reason, severity: "error" as const }];
-        const failScore = { relevanceScore: 0, pass: false, blockingIssueCount: 1, warningCount: 0 };
+        const failedIssue = [
+          {
+            code: "manual_fail",
+            message: input.reason,
+            severity: "error" as const,
+          },
+        ];
+        const failScore = {
+          relevanceScore: 0,
+          pass: false,
+          blockingIssueCount: 1,
+          warningCount: 0,
+        };
         const existing = await getLatestVisualQaForTarget(input);
         if (existing) {
           await updateVisualQaRecord({
@@ -8411,7 +9771,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             issues: failedIssue,
             score: failScore,
           });
-          await setMarketingTargetReviewStatus({ targetType: input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType, targetId: input.targetId, status: "changes_requested" });
+          await setMarketingTargetReviewStatus({
+            targetType:
+              input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType,
+            targetId: input.targetId,
+            status: "changes_requested",
+          });
           return { success: true, id: existing.id };
         }
         const id = await createVisualQaRecord({
@@ -8423,22 +9788,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           issues: failedIssue,
           score: failScore,
         });
-        await setMarketingTargetReviewStatus({ targetType: input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType, targetId: input.targetId, status: "changes_requested" });
+        await setMarketingTargetReviewStatus({
+          targetType:
+            input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType,
+          targetId: input.targetId,
+          status: "changes_requested",
+        });
         return { success: true, id };
       }),
 
     requestVisualQaChanges: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const existing = await getLatestVisualQaForTarget(input);
-        const changeIssue = [{ code: "changes_requested", message: input.reason, severity: "warning" as const }];
+        const changeIssue = [
+          {
+            code: "changes_requested",
+            message: input.reason,
+            severity: "warning" as const,
+          },
+        ];
         if (existing) {
           await updateVisualQaRecord({
             id: existing.id,
@@ -8448,7 +9826,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             reviewedAt: new Date().toISOString(),
             issues: changeIssue,
           });
-          await setMarketingTargetReviewStatus({ targetType: input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType, targetId: input.targetId, status: "changes_requested" });
+          await setMarketingTargetReviewStatus({
+            targetType:
+              input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType,
+            targetId: input.targetId,
+            status: "changes_requested",
+          });
           return { success: true, id: existing.id };
         }
         const id = await createVisualQaRecord({
@@ -8459,22 +9842,33 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reviewedAt: new Date().toISOString(),
           issues: changeIssue,
         });
-        await setMarketingTargetReviewStatus({ targetType: input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType, targetId: input.targetId, status: "changes_requested" });
+        await setMarketingTargetReviewStatus({
+          targetType:
+            input.targetType as import("./modules/marketing/qa-engine").MarketingReviewTargetType,
+          targetId: input.targetId,
+          status: "changes_requested",
+        });
         return { success: true, id };
       }),
 
     attachVisualQaReviewNotes: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        targetType: z.enum(VISUAL_QA_TARGET_TYPES),
-        targetId: z.string().min(1).max(120),
-        reviewNotes: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          targetType: z.enum(VISUAL_QA_TARGET_TYPES),
+          targetId: z.string().min(1).max(120),
+          reviewNotes: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const existing = await getLatestVisualQaForTarget(input);
-        if (!existing) throw new TRPCError({ code: "NOT_FOUND", message: "No visual QA record found for this target." });
+        if (!existing)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "No visual QA record found for this target.",
+          });
         await updateVisualQaRecord({
           id: existing.id,
           status: existing.status,
@@ -8486,35 +9880,63 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     regenerateCampaignItem: adminUnlockedProcedure
-      .input(z.object({
-        campaignItemId: z.number().int().positive(),
-        campaignId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          campaignItemId: z.number().int().positive(),
+          campaignId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const campaign = await getMarketingCampaignRecord({
           id: input.campaignId,
           tenantId: input.tenantId,
           workspaceId: input.workspaceId,
         });
-        if (!campaign) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
-        const items = await listMarketingCampaignItemRecords({ campaignId: campaign.id, tenantId: campaign.tenantId });
-        const targetItem = items.find((item) => item.id === input.campaignItemId);
-        if (!targetItem) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign item not found" });
+        if (!campaign)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
+        const items = await listMarketingCampaignItemRecords({
+          campaignId: campaign.id,
+          tenantId: campaign.tenantId,
+        });
+        const targetItem = items.find(
+          (item) => item.id === input.campaignItemId,
+        );
+        if (!targetItem)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign item not found",
+          });
         const brandKit = await ensureMarketingBrandKit({
           tenantId: campaign.tenantId,
           workspaceId: campaign.workspaceId,
           hostAppId: campaign.hostAppId,
         });
-        const { brief, deliverables } = await createCampaignEngineOutput({ campaign, brandKit });
-        const replacement = deliverables.find((item) => item.platform === targetItem.platform) ?? deliverables[0];
-        if (!replacement) throw new TRPCError({ code: "BAD_REQUEST", message: "No deliverable available for regeneration" });
+        const { brief, deliverables } = await createCampaignEngineOutput({
+          campaign,
+          brandKit,
+        });
+        const replacement =
+          deliverables.find((item) => item.platform === targetItem.platform) ??
+          deliverables[0];
+        if (!replacement)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No deliverable available for regeneration",
+          });
         const metadata = {
           generatedBy: "campaign-engine",
           ...toCampaignItemMetadata({ brief, deliverable: replacement }),
           originalPrompt: targetItem.prompt,
-          preservedCampaignContext: { campaignId: campaign.id, goal: campaign.goal, audience: campaign.audience },
+          preservedCampaignContext: {
+            campaignId: campaign.id,
+            goal: campaign.goal,
+            audience: campaign.audience,
+          },
         };
         await updateMarketingCampaignItemRecord({
           id: targetItem.id,
@@ -8532,21 +9954,39 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     reviseCampaignItemCopy: adminUnlockedProcedure
-      .input(z.object({
-        campaignItemId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        content: z.string().min(1).max(12000),
-      }))
+      .input(
+        z.object({
+          campaignItemId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          content: z.string().min(1).max(12000),
+        }),
+      )
       .mutation(async ({ input }) => {
         const database = await getDb();
-        if (!database) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
+        if (!database)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database unavailable",
+          });
         const [item] = await database
           .select()
           .from(marketingCampaignItems)
-          .where(and(eq(marketingCampaignItems.id, input.campaignItemId), eq(marketingCampaignItems.tenantId, input.tenantId)))
+          .where(
+            and(
+              eq(marketingCampaignItems.id, input.campaignItemId),
+              eq(marketingCampaignItems.tenantId, input.tenantId),
+            ),
+          )
           .limit(1);
-        if (!item) throw new TRPCError({ code: "NOT_FOUND", message: "Campaign item not found" });
-        const metadata = parseJsonSafe<Record<string, unknown>>(item.metadataJson, {});
+        if (!item)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign item not found",
+          });
+        const metadata = parseJsonSafe<Record<string, unknown>>(
+          item.metadataJson,
+          {},
+        );
         await updateMarketingCampaignItemRecord({
           id: item.id,
           tenantId: item.tenantId,
@@ -8561,23 +10001,39 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     markSceneNeedsReview: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        sceneId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          sceneId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const job = await getMarketingRenderJobById(input.renderJobId);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const timeline = {
           ...job.timeline,
           scenes: job.timeline.scenes.map((scene) =>
             scene.id === input.sceneId
-              ? { ...scene, metadata: { ...scene.metadata, status: "needs_review" as const } }
-              : scene),
+              ? {
+                  ...scene,
+                  metadata: {
+                    ...scene.metadata,
+                    status: "needs_review" as const,
+                  },
+                }
+              : scene,
+          ),
         };
         const updated = await updateMarketingRenderJobRecord({
           id: job.id,
@@ -8588,31 +10044,45 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     replaceSceneMedia: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        sceneId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        assetId: z.number().int().positive().nullable().optional(),
-        assetUrl: z.string().max(2000).nullable().optional(),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          sceneId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          assetId: z.number().int().positive().nullable().optional(),
+          assetUrl: z.string().max(2000).nullable().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const job = await getMarketingRenderJobById(input.renderJobId);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const timeline = {
           ...job.timeline,
           scenes: job.timeline.scenes.map((scene) =>
             scene.id === input.sceneId
               ? {
-                ...scene,
-                assetId: input.assetId ?? null,
-                assetUrl: input.assetUrl ?? null,
-                previewUrl: input.assetUrl ?? null,
-                metadata: { ...scene.metadata, status: "needs_review" as const, selectedAt: new Date().toISOString() },
-              }
-              : scene),
+                  ...scene,
+                  assetId: input.assetId ?? null,
+                  assetUrl: input.assetUrl ?? null,
+                  previewUrl: input.assetUrl ?? null,
+                  metadata: {
+                    ...scene.metadata,
+                    status: "needs_review" as const,
+                    selectedAt: new Date().toISOString(),
+                  },
+                }
+              : scene,
+          ),
         };
         const updated = await updateMarketingRenderJobRecord({
           id: job.id,
@@ -8623,32 +10093,45 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     regenerateScenePlanText: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        sceneId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        narration: z.string().max(2000).optional(),
-        caption: z.string().max(2000).optional(),
-        visualPrompt: z.string().max(2000).optional(),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          sceneId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          narration: z.string().max(2000).optional(),
+          caption: z.string().max(2000).optional(),
+          visualPrompt: z.string().max(2000).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const job = await getMarketingRenderJobById(input.renderJobId);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const timeline = {
           ...job.timeline,
           scenes: job.timeline.scenes.map((scene) =>
             scene.id === input.sceneId
               ? {
-                ...scene,
-                narration: input.narration ?? scene.narration,
-                caption: input.caption ?? scene.caption,
-                visualPrompt: input.visualPrompt ?? scene.visualPrompt,
-                metadata: { ...scene.metadata, status: "needs_review" as const },
-              }
-              : scene),
+                  ...scene,
+                  narration: input.narration ?? scene.narration,
+                  caption: input.caption ?? scene.caption,
+                  visualPrompt: input.visualPrompt ?? scene.visualPrompt,
+                  metadata: {
+                    ...scene.metadata,
+                    status: "needs_review" as const,
+                  },
+                }
+              : scene,
+          ),
         };
         const updated = await updateMarketingRenderJobRecord({
           id: job.id,
@@ -8659,15 +10142,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     rerenderMarketingRenderJob: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const existing = await getMarketingRenderJobById(input.renderJobId);
-        if (!existing || existing.tenantId !== input.tenantId || existing.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !existing ||
+          existing.tenantId !== input.tenantId ||
+          existing.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const created = await createMarketingRenderJobRecord({
           tenantId: existing.tenantId,
@@ -8690,19 +10182,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           brandOverlay: existing.brandOverlay,
         });
         await enqueueMarketingRenderJob(created.id);
-        return { success: true, previousRenderJobId: existing.id, renderJobId: created.id };
+        return {
+          success: true,
+          previousRenderJobId: existing.id,
+          renderJobId: created.id,
+        };
       }),
 
     retryMarketingRenderJob: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const existing = await getMarketingRenderJobById(input.renderJobId);
-        if (!existing || existing.tenantId !== input.tenantId || existing.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !existing ||
+          existing.tenantId !== input.tenantId ||
+          existing.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const created = await createMarketingRenderJobRecord({
           tenantId: existing.tenantId,
@@ -8725,30 +10230,50 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           brandOverlay: existing.brandOverlay,
         });
         await enqueueMarketingRenderJob(created.id);
-        return { success: true, previousRenderJobId: existing.id, renderJobId: created.id };
+        return {
+          success: true,
+          previousRenderJobId: existing.id,
+          renderJobId: created.id,
+        };
       }),
 
     approveMarketingRenderOutput: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        reason: z.string().max(4000).nullable().optional(),
-        manualOverride: z.boolean().default(false),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          reason: z.string().max(4000).nullable().optional(),
+          manualOverride: z.boolean().default(false),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const job = await getMarketingRenderJobById(input.renderJobId);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         if (!job.outputMediaAssetId) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot approve render output without output media asset." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Cannot approve render output without output media asset.",
+          });
         }
         if (job.audio.backgroundMusicUrl && !input.manualOverride) {
           const rawTimeline = JSON.stringify(job.timeline).toLowerCase();
           if (rawTimeline.includes("license_missing")) {
-            throw new TRPCError({ code: "BAD_REQUEST", message: "Music license metadata missing; manual override required." });
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "Music license metadata missing; manual override required.",
+            });
           }
         }
         const latest = await getLatestMarketingReviewForTarget({
@@ -8759,7 +10284,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           targetId: input.renderJobId,
         });
         if (!latest?.checklist && !input.manualOverride) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Run deterministic QA before approval." });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Run deterministic QA before approval.",
+          });
         }
         const recordId = await createMarketingReviewRecordEntry({
           tenantId: input.tenantId,
@@ -8773,35 +10301,51 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reviewedAt: new Date().toISOString(),
           metadata: input.manualOverride
             ? {
-              manualOverride: {
-                used: true,
-                action: "approve",
-                reason: input.reason ?? "",
-                latestStatus: latest?.status ?? null,
-                latestQaPass: latest?.qaScore?.pass ?? null,
-              },
-            }
+                manualOverride: {
+                  used: true,
+                  action: "approve",
+                  reason: input.reason ?? "",
+                  latestStatus: latest?.status ?? null,
+                  latestQaPass: latest?.qaScore?.pass ?? null,
+                },
+              }
             : null,
           checklist: latest?.checklist ?? null,
           qaScore: latest?.qaScore ?? null,
         });
-        await updateMarketingRenderJobRecord({ id: job.id, reviewStatus: "approved" });
-        await setMarketingTargetReviewStatus({ targetType: "render_job", targetId: input.renderJobId, status: "approved" });
+        await updateMarketingRenderJobRecord({
+          id: job.id,
+          reviewStatus: "approved",
+        });
+        await setMarketingTargetReviewStatus({
+          targetType: "render_job",
+          targetId: input.renderJobId,
+          status: "approved",
+        });
         return { success: true, id: recordId };
       }),
 
     rejectMarketingRenderOutput: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const job = await getMarketingRenderJobById(input.renderJobId);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const recordId = await createMarketingReviewRecordEntry({
           tenantId: input.tenantId,
@@ -8814,23 +10358,39 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason,
           reviewedAt: new Date().toISOString(),
         });
-        await updateMarketingRenderJobRecord({ id: job.id, reviewStatus: "rejected" });
-        await setMarketingTargetReviewStatus({ targetType: "render_job", targetId: input.renderJobId, status: "rejected" });
+        await updateMarketingRenderJobRecord({
+          id: job.id,
+          reviewStatus: "rejected",
+        });
+        await setMarketingTargetReviewStatus({
+          targetType: "render_job",
+          targetId: input.renderJobId,
+          status: "rejected",
+        });
         return { success: true, id: recordId };
       }),
 
     requestMarketingRenderChanges: adminUnlockedProcedure
-      .input(z.object({
-        renderJobId: z.string().min(1),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        reason: z.string().min(1).max(4000),
-      }))
+      .input(
+        z.object({
+          renderJobId: z.string().min(1),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          reason: z.string().min(1).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const job = await getMarketingRenderJobById(input.renderJobId);
-        if (!job || job.tenantId !== input.tenantId || job.workspaceId !== input.workspaceId) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Render job not found" });
+        if (
+          !job ||
+          job.tenantId !== input.tenantId ||
+          job.workspaceId !== input.workspaceId
+        ) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Render job not found",
+          });
         }
         const recordId = await createMarketingReviewRecordEntry({
           tenantId: input.tenantId,
@@ -8843,19 +10403,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           reason: input.reason,
           reviewedAt: new Date().toISOString(),
         });
-        await updateMarketingRenderJobRecord({ id: job.id, reviewStatus: "changes_requested" });
-        await setMarketingTargetReviewStatus({ targetType: "render_job", targetId: input.renderJobId, status: "changes_requested" });
+        await updateMarketingRenderJobRecord({
+          id: job.id,
+          reviewStatus: "changes_requested",
+        });
+        await setMarketingTargetReviewStatus({
+          targetType: "render_job",
+          targetId: input.renderJobId,
+          status: "changes_requested",
+        });
         return { success: true, id: recordId };
       }),
 
     searchStockMedia: adminUnlockedProcedure
-      .input(z.object({
-        provider: z.enum(["pexels", "pixabay"]),
-        query: z.string().min(1).max(160),
-        perPage: z.number().int().min(1).max(30).default(12),
-        preferredMediaKind: z.enum(["video", "image"]).optional(),
-        productCategory: z.string().max(120).optional(),
-      }))
+      .input(
+        z.object({
+          provider: z.enum(["pexels", "pixabay"]),
+          query: z.string().min(1).max(160),
+          perPage: z.number().int().min(1).max(30).default(12),
+          preferredMediaKind: z.enum(["video", "image"]).optional(),
+          productCategory: z.string().max(120).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         const result = await searchMarketingStockMediaForScene({
           scene: {
@@ -8887,25 +10456,31 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     testMarketingStockMediaConnection: adminUnlockedProcedure
       .input(z.object({ provider: z.enum(["pexels", "pixabay"]) }))
-      .mutation(async ({ input }) => testMarketingStockProviderConnection(input.provider)),
+      .mutation(async ({ input }) =>
+        testMarketingStockProviderConnection(input.provider),
+      ),
 
     sourceMarketingSceneMedia: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        providerPreference: z.enum(["pexels", "pixabay", "auto"]).optional(),
-        maxPerScene: z.number().int().min(1).max(20).optional(),
-        plan: z.object({
-          id: z.string().min(1).max(120).optional(),
-          originalUserPrompt: z.string().min(3).max(6000),
-          audience: z.string().max(500).optional(),
-          productCategory: z.string().max(120).optional(),
-          scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          providerPreference: z.enum(["pexels", "pixabay", "auto"]).optional(),
+          maxPerScene: z.number().int().min(1).max(20).optional(),
+          plan: z.object({
+            id: z.string().min(1).max(120).optional(),
+            originalUserPrompt: z.string().min(3).max(6000),
+            audience: z.string().max(500).optional(),
+            productCategory: z.string().max(120).optional(),
+            scenes: z.array(MARKETING_STUDIO_SCENE_SCHEMA).min(1),
+          }),
         }),
-      }))
+      )
       .mutation(async ({ input }) => {
-        const normalizedScenes = input.plan.scenes.map((scene, index) => normalizeStudioScene(scene, index + 1));
+        const normalizedScenes = input.plan.scenes.map((scene, index) =>
+          normalizeStudioScene(scene, index + 1),
+        );
         const sourced = await sourceMarketingScenesWithStockMedia({
           providerPreference: input.providerPreference,
           maxPerScene: input.maxPerScene,
@@ -8928,21 +10503,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     importStockMediaAsset: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default").optional(),
-        sceneId: z.string().min(1).max(120).optional(),
-        provider: z.enum(["pexels", "pixabay"]),
-        providerAssetId: z.string().min(1).max(120),
-        assetUrl: z.string().url(),
-        previewUrl: z.string().url().optional(),
-        title: z.string().max(260).optional(),
-        mimeType: z.string().max(120).optional(),
-        mediaKind: z.enum(["image", "video"]).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default").optional(),
+          sceneId: z.string().min(1).max(120).optional(),
+          provider: z.enum(["pexels", "pixabay"]),
+          providerAssetId: z.string().min(1).max(120),
+          assetUrl: z.string().url(),
+          previewUrl: z.string().url().optional(),
+          title: z.string().max(260).optional(),
+          mimeType: z.string().max(120).optional(),
+          mediaKind: z.enum(["image", "video"]).optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        const resolvedType = inferSceneMediaType(input.mediaKind ?? "image", input.assetUrl);
+        const resolvedType = inferSceneMediaType(
+          input.mediaKind ?? "image",
+          input.assetUrl,
+        );
         const created = await createMediaAsset({
           tenantType: "stable",
           tenantId: input.tenantId,
@@ -8953,8 +10533,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           status: "completed",
           publicUrl: input.assetUrl,
           thumbnailUrl: input.previewUrl,
-          mimeType: input.mimeType ?? inferMimeTypeFromUrl(input.assetUrl) ?? (resolvedType === "video" ? "video/mp4" : "image/jpeg"),
-          generationPrompt: input.title ?? `Imported stock media: ${input.providerAssetId}`,
+          mimeType:
+            input.mimeType ??
+            inferMimeTypeFromUrl(input.assetUrl) ??
+            (resolvedType === "video" ? "video/mp4" : "image/jpeg"),
+          generationPrompt:
+            input.title ?? `Imported stock media: ${input.providerAssetId}`,
           outputMetadata: {
             source: "stock_media_import",
             provider: input.provider,
@@ -8967,24 +10551,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             ...input.metadata,
           },
         });
-        return { success: true, mediaAssetId: created.id, publicUrl: input.assetUrl };
+        return {
+          success: true,
+          mediaAssetId: created.id,
+          publicUrl: input.assetUrl,
+        };
       }),
 
     importStockMediaForScene: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        sceneId: z.string().min(1).max(120),
-        provider: z.enum(["pexels", "pixabay"]),
-        providerAssetId: z.string().min(1).max(120),
-        assetUrl: z.string().url(),
-        previewUrl: z.string().url().optional(),
-        mediaKind: z.enum(["image", "video"]),
-        title: z.string().max(260).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          sceneId: z.string().min(1).max(120),
+          provider: z.enum(["pexels", "pixabay"]),
+          providerAssetId: z.string().min(1).max(120),
+          assetUrl: z.string().url(),
+          previewUrl: z.string().url().optional(),
+          mediaKind: z.enum(["image", "video"]),
+          title: z.string().max(260).optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        const mimeType = inferMimeTypeFromUrl(input.assetUrl) ?? (input.mediaKind === "video" ? "video/mp4" : "image/jpeg");
+        const mimeType =
+          inferMimeTypeFromUrl(input.assetUrl) ??
+          (input.mediaKind === "video" ? "video/mp4" : "image/jpeg");
         const created = await createMediaAsset({
           tenantType: "stable",
           tenantId: input.tenantId,
@@ -8996,7 +10588,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           publicUrl: input.assetUrl,
           thumbnailUrl: input.previewUrl,
           mimeType,
-          generationPrompt: input.title ?? `Imported stock media: ${input.providerAssetId}`,
+          generationPrompt:
+            input.title ?? `Imported stock media: ${input.providerAssetId}`,
           outputMetadata: {
             source: "stock_media_import",
             provider: input.provider,
@@ -9017,14 +10610,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // listMarketingAssets above reads raw growthQueueJobs — this reads the registry.
 
     listMediaAssets: adminUnlockedProcedure
-      .input(z.object({ tenantId: z.string().min(1).max(100).default("global") }).optional())
+      .input(
+        z
+          .object({ tenantId: z.string().min(1).max(100).default("global") })
+          .optional(),
+      )
       .query(async ({ input }) => {
         await resolvePendingGenXMediaAssets(10).catch(() => undefined);
-        const assets = await listMediaAssetsForTenant(input?.tenantId ?? "global");
-        return Promise.all(assets.map(async (asset) => ({
-          ...asset,
-          lifecycle: asset.jobId ? await getGenerationLifecycleByJobId(asset.jobId).catch(() => null) : null,
-        })));
+        const assets = await listMediaAssetsForTenant(
+          input?.tenantId ?? "global",
+        );
+        return Promise.all(
+          assets.map(async (asset) => ({
+            ...asset,
+            lifecycle: asset.jobId
+              ? await getGenerationLifecycleByJobId(asset.jobId).catch(
+                  () => null,
+                )
+              : null,
+          })),
+        );
       }),
 
     getMediaAsset: adminUnlockedProcedure
@@ -9032,7 +10637,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .query(async ({ input }) => {
         const asset = await getMediaAssetById(input.id);
         if (!asset) return null;
-        const lifecycle = asset.jobId ? await getGenerationLifecycleByJobId(asset.jobId).catch(() => null) : null;
+        const lifecycle = asset.jobId
+          ? await getGenerationLifecycleByJobId(asset.jobId).catch(() => null)
+          : null;
         return { ...asset, lifecycle };
       }),
 
@@ -9048,7 +10655,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const asset = await getMediaAssetById(input.id);
         if (!asset) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Media asset not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Media asset not found",
+          });
         }
 
         const candidatePaths = new Set<string>();
@@ -9062,8 +10672,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             return;
           }
           const resolved = path.resolve(trimmed);
-          const generatedRoot = path.resolve(getLocalMediaStorageRoot(), "generated");
-          if (resolved.startsWith(generatedRoot + path.sep) || resolved === generatedRoot) {
+          const generatedRoot = path.resolve(
+            getLocalMediaStorageRoot(),
+            "generated",
+          );
+          if (
+            resolved.startsWith(generatedRoot + path.sep) ||
+            resolved === generatedRoot
+          ) {
             candidatePaths.add(resolved);
           }
         };
@@ -9073,7 +10689,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             return;
           }
           if (value && typeof value === "object") {
-            for (const entry of Object.values(value as Record<string, unknown>)) walkMetadata(entry);
+            for (const entry of Object.values(value as Record<string, unknown>))
+              walkMetadata(entry);
             return;
           }
           pushPath(value);
@@ -9083,7 +10700,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         pushPath(asset.publicUrl);
         walkMetadata(asset.outputMetadata);
 
-        const files: Array<{ path: string; deleted: boolean; reason?: string }> = [];
+        const files: Array<{
+          path: string;
+          deleted: boolean;
+          reason?: string;
+        }> = [];
         for (const filePath of candidatePaths) {
           try {
             await fs.promises.unlink(filePath);
@@ -9093,7 +10714,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             if (code === "ENOENT") {
               files.push({ path: filePath, deleted: false, reason: "missing" });
             } else {
-              files.push({ path: filePath, deleted: false, reason: code || "unlink_failed" });
+              files.push({
+                path: filePath,
+                deleted: false,
+                reason: code || "unlink_failed",
+              });
             }
           }
         }
@@ -9129,11 +10754,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             ...branded,
           };
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           return {
             status: message.includes("ffmpeg")
-              ? "setup_needed" as const
-              : "failed" as const,
+              ? ("setup_needed" as const)
+              : ("failed" as const),
             message,
           };
         }
@@ -9145,12 +10771,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           rawAssetId: z.number().int().positive(),
           voiceoverText: z.string().min(5).max(6000),
           voiceId: z.string().max(120).optional(),
-          requestedDurationSeconds: z.enum(["5", "10", "15", "30", "60", "180"]).transform((value) => Number(value)).optional(),
+          requestedDurationSeconds: z
+            .enum(["5", "10", "15", "30", "60", "180"])
+            .transform((value) => Number(value))
+            .optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
         const raw = await getMediaAssetById(input.rawAssetId);
-        if (!raw) throw new TRPCError({ code: "NOT_FOUND", message: "Raw video asset not found." });
+        if (!raw)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Raw video asset not found.",
+          });
         if (!input.voiceId) {
           const setupAsset = await createMediaAsset({
             tenantType: raw.tenantType,
@@ -9174,9 +10807,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               actualDurationSeconds: null,
               providerMaxDurationSeconds: null,
             },
-            errorMessage: "setup_needed: select a valid voice before generating voiceover.",
+            errorMessage:
+              "setup_needed: select a valid voice before generating voiceover.",
           });
-          return { status: "setup_needed" as const, assetId: setupAsset.id, message: "Select a valid voice before generating voiceover." };
+          return {
+            status: "setup_needed" as const,
+            assetId: setupAsset.id,
+            message: "Select a valid voice before generating voiceover.",
+          };
         }
 
         const tenantScope: TenantScope = {
@@ -9203,7 +10841,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               musicPrompt: null,
             },
           });
-          const voiceAsset = result.jobId ? await getMediaAssetByJobId(result.jobId).catch(() => null) : null;
+          const voiceAsset = result.jobId
+            ? await getMediaAssetByJobId(result.jobId).catch(() => null)
+            : null;
           await updateMediaAsset(raw.id, {
             outputMetadata: {
               ...(raw.outputMetadata ?? {}),
@@ -9213,9 +10853,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               isSilent: false,
             },
           });
-          return { ...result, status: "queued" as const, rawAssetId: raw.id, voiceAssetId: voiceAsset?.id };
+          return {
+            ...result,
+            status: "queued" as const,
+            rawAssetId: raw.id,
+            voiceAssetId: voiceAsset?.id,
+          };
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           const setupAsset = await createMediaAsset({
             tenantType: raw.tenantType,
             tenantId: raw.tenantId,
@@ -9240,7 +10886,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             },
             errorMessage: message,
           });
-          return { status: "setup_needed" as const, assetId: setupAsset.id, message };
+          return {
+            status: "setup_needed" as const,
+            assetId: setupAsset.id,
+            message,
+          };
         }
       }),
 
@@ -9249,12 +10899,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         z.object({
           rawAssetId: z.number().int().positive(),
           musicPrompt: z.string().min(5).max(6000),
-          requestedDurationSeconds: z.enum(["5", "10", "15", "30", "60", "180"]).transform((value) => Number(value)).optional(),
+          requestedDurationSeconds: z
+            .enum(["5", "10", "15", "30", "60", "180"])
+            .transform((value) => Number(value))
+            .optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
         const raw = await getMediaAssetById(input.rawAssetId);
-        if (!raw) throw new TRPCError({ code: "NOT_FOUND", message: "Raw video asset not found." });
+        if (!raw)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Raw video asset not found.",
+          });
         const setupAsset = await createMediaAsset({
           tenantType: raw.tenantType,
           tenantId: raw.tenantId,
@@ -9277,7 +10934,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             actualDurationSeconds: null,
             providerMaxDurationSeconds: null,
           },
-          errorMessage: "setup_needed: music generation provider is not ready yet.",
+          errorMessage:
+            "setup_needed: music generation provider is not ready yet.",
         });
         return {
           status: "setup_needed" as const,
@@ -9289,279 +10947,337 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // ── Brand Profile (Update 1) ──────────────────────────────────────────────
 
     listMarketingBrandAvatars: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingBrandAvatarsService(input);
       }),
 
     getActiveMarketingBrandAvatar: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getActiveMarketingBrandAvatarService(input);
       }),
 
     createMarketingBrandAvatar: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        brandProfileId: z.number().int().positive().optional(),
-        brandKitId: z.number().int().positive().optional(),
-        name: z.string().min(1).max(200),
-        role: z.string().max(120).optional(),
-        personality: z.string().max(2000).optional(),
-        visualDescription: z.string().max(2000).optional(),
-        wardrobeRules: z.string().max(2000).optional(),
-        backgroundRules: z.string().max(2000).optional(),
-        referenceAssetId: z.number().int().positive().optional(),
-        referenceAssetUrl: z.string().max(2000).optional(),
-        promptTemplate: z.string().max(4000).optional(),
-        negativePrompt: z.string().max(2000).optional(),
-        consistencySeed: z.string().max(80).optional(),
-        preferredVoiceProfileId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          brandProfileId: z.number().int().positive().optional(),
+          brandKitId: z.number().int().positive().optional(),
+          name: z.string().min(1).max(200),
+          role: z.string().max(120).optional(),
+          personality: z.string().max(2000).optional(),
+          visualDescription: z.string().max(2000).optional(),
+          wardrobeRules: z.string().max(2000).optional(),
+          backgroundRules: z.string().max(2000).optional(),
+          referenceAssetId: z.number().int().positive().optional(),
+          referenceAssetUrl: z.string().max(2000).optional(),
+          promptTemplate: z.string().max(4000).optional(),
+          negativePrompt: z.string().max(2000).optional(),
+          consistencySeed: z.string().max(80).optional(),
+          preferredVoiceProfileId: z.number().int().positive().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await createMarketingBrandAvatarService(input);
         return { id };
       }),
 
     updateMarketingBrandAvatar: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        patch: z.record(z.string(), z.unknown()),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          patch: z.record(z.string(), z.unknown()),
+        }),
+      )
       .mutation(async ({ input }) => {
         await updateMarketingBrandAvatarService(input);
         return { success: true };
       }),
 
     archiveMarketingBrandAvatar: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await archiveMarketingBrandAvatarService(input);
         return { success: true };
       }),
 
     createMarketingAvatarAsset: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        prompt: z.string().min(3).max(6000),
-        campaignId: z.number().int().positive().optional(),
-        campaignItemId: z.number().int().positive().optional(),
-        referenceAssetId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          prompt: z.string().min(3).max(6000),
+          campaignId: z.number().int().positive().optional(),
+          campaignItemId: z.number().int().positive().optional(),
+          referenceAssetId: z.number().int().positive().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        return createMarketingAvatarAssetService({ ...input, userId: ctx.user.id });
+        return createMarketingAvatarAssetService({
+          ...input,
+          userId: ctx.user.id,
+        });
       }),
 
     createMarketingAvatarLipsyncJob: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        avatarAssetId: z.number().int().positive(),
-        audioAssetId: z.number().int().positive(),
-        campaignId: z.number().int().positive().optional(),
-        campaignItemId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          avatarAssetId: z.number().int().positive(),
+          audioAssetId: z.number().int().positive(),
+          campaignId: z.number().int().positive().optional(),
+          campaignItemId: z.number().int().positive().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        return createMarketingAvatarLipsyncJobService({ ...input, userId: ctx.user.id });
+        return createMarketingAvatarLipsyncJobService({
+          ...input,
+          userId: ctx.user.id,
+        });
       }),
 
     getMarketingAvatarJobStatus: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingAvatarJobStatusService(input);
       }),
 
     resolveQueuedMarketingMediaJobs: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ input }) => {
         return resolveQueuedMarketingMediaJobsService(input);
       }),
 
     getMarketingMediaJobResolverStatus: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingMediaJobResolverStatusService(input);
       }),
 
     listMarketingVoiceProfiles: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingVoiceProfilesService(input);
       }),
 
     createMarketingVoiceProfile: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        name: z.string().min(1).max(160),
-        provider: z.string().min(1).max(40),
-        providerVoiceId: z.string().max(255).optional(),
-        language: z.string().max(40).optional(),
-        accent: z.string().max(80).optional(),
-        styleMetadata: z.record(z.string(), z.unknown()).optional(),
-        sampleText: z.string().max(8000).optional(),
-        licensing: z.record(z.string(), z.unknown()).optional(),
-        usagePolicy: z.record(z.string(), z.unknown()).optional(),
-        status: z.enum(["active", "archived", "setup_needed"]).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          name: z.string().min(1).max(160),
+          provider: z.string().min(1).max(40),
+          providerVoiceId: z.string().max(255).optional(),
+          language: z.string().max(40).optional(),
+          accent: z.string().max(80).optional(),
+          styleMetadata: z.record(z.string(), z.unknown()).optional(),
+          sampleText: z.string().max(8000).optional(),
+          licensing: z.record(z.string(), z.unknown()).optional(),
+          usagePolicy: z.record(z.string(), z.unknown()).optional(),
+          status: z.enum(["active", "archived", "setup_needed"]).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await createMarketingVoiceProfile(input);
         return { id };
       }),
 
     updateMarketingVoiceProfile: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        patch: z.record(z.string(), z.unknown()),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          patch: z.record(z.string(), z.unknown()),
+        }),
+      )
       .mutation(async ({ input }) => {
         await updateMarketingVoiceProfile(input);
         return { success: true };
       }),
 
     archiveMarketingVoiceProfile: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await archiveMarketingVoiceProfile(input);
         return { success: true };
       }),
 
     generateMarketingVoicePreview: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        voiceProfileId: z.number().int().positive(),
-        previewText: z.string().min(3).max(4000),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          voiceProfileId: z.number().int().positive(),
+          previewText: z.string().min(3).max(4000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        return generateMarketingVoicePreviewService({ ...input, userId: ctx.user.id });
+        return generateMarketingVoicePreviewService({
+          ...input,
+          userId: ctx.user.id,
+        });
       }),
 
     setDefaultMarketingVoiceProfile: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ input }) => {
         await setDefaultMarketingVoiceProfileService(input);
         return { success: true };
       }),
 
     listMarketingAudioBeds: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingAudioBedsService(input);
       }),
 
     createMarketingMusicGenerationJob: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        title: z.string().min(1).max(220),
-        mood: z.string().max(80).optional(),
-        tempo: z.string().max(60).optional(),
-        durationSeconds: z.number().int().min(1).max(3600).optional(),
-        prompt: z.string().min(3).max(6000),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          title: z.string().min(1).max(220),
+          mood: z.string().max(80).optional(),
+          tempo: z.string().max(60).optional(),
+          durationSeconds: z.number().int().min(1).max(3600).optional(),
+          prompt: z.string().min(3).max(6000),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
-        return createMarketingMusicGenerationJobService({ ...input, userId: ctx.user.id });
+        return createMarketingMusicGenerationJobService({
+          ...input,
+          userId: ctx.user.id,
+        });
       }),
 
     selectMarketingBackgroundAudio: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ input }) => {
         return selectMarketingBackgroundAudioService(input);
       }),
 
     getMarketingAudioLicenseMetadata: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingAudioLicenseMetadataService(input);
       }),
 
     buildMarketingAudioMixPolicy: adminUnlockedProcedure
-      .input(z.object({
-        hasVoiceover: z.boolean(),
-        hasBackgroundMusic: z.boolean(),
-        voiceoverDurationSeconds: z.number().nullable().optional(),
-        musicDurationSeconds: z.number().nullable().optional(),
-        musicLicenseOk: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          hasVoiceover: z.boolean(),
+          hasBackgroundMusic: z.boolean(),
+          voiceoverDurationSeconds: z.number().nullable().optional(),
+          musicDurationSeconds: z.number().nullable().optional(),
+          musicLicenseOk: z.boolean().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return buildMarketingAudioMixPolicy(input);
       }),
 
     getBrandProfile: adminUnlockedProcedure
-      .input(z.object({ tenantId: z.string().min(1).max(100).default("global") }).optional())
+      .input(
+        z
+          .object({ tenantId: z.string().min(1).max(100).default("global") })
+          .optional(),
+      )
       .query(async ({ input }) => {
         return getBrandProfile(input?.tenantId ?? "global");
       }),
@@ -9588,7 +11304,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // ── Brand Avatars (Update 1) ──────────────────────────────────────────────
 
     listBrandAvatars: adminUnlockedProcedure
-      .input(z.object({ tenantId: z.string().min(1).max(100).default("global") }).optional())
+      .input(
+        z
+          .object({ tenantId: z.string().min(1).max(100).default("global") })
+          .optional(),
+      )
       .query(async ({ input }) => {
         return listBrandAvatars(input?.tenantId ?? "global");
       }),
@@ -9756,12 +11476,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         } catch (error) {
           const normalized = normalizeProviderError(error);
           if (normalized.providerMissing) {
-            return { status: "provider_missing", message: "AI provider unavailable. Check provider settings." } as const;
+            return {
+              status: "provider_missing",
+              message: "AI provider unavailable. Check provider settings.",
+            } as const;
           }
-          if (normalized.message === "AI provider unavailable. Check provider settings.") {
-            return { status: "provider_unavailable", message: normalized.message } as const;
+          if (
+            normalized.message ===
+            "AI provider unavailable. Check provider settings."
+          ) {
+            return {
+              status: "provider_unavailable",
+              message: normalized.message,
+            } as const;
           }
-          throw new TRPCError({ code: "BAD_REQUEST", message: normalized.message });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: normalized.message,
+          });
         }
       }),
 
@@ -9795,9 +11527,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     repairBrokenMarketingMediaAssets: adminUnlockedProcedure
       .input(
-        z.object({
-          limit: z.number().int().min(1).max(5000).optional(),
-        }).optional(),
+        z
+          .object({
+            limit: z.number().int().min(1).max(5000).optional(),
+          })
+          .optional(),
       )
       .mutation(async ({ input }) => {
         return repairBrokenCompletedMediaAssets({ limit: input?.limit });
@@ -9807,13 +11541,37 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     createMediaJob: adminUnlockedProcedure
       .input(
         z.object({
-          task: z.enum(["text_to_image", "image_edit", "image_to_video", "text_to_video", "avatar_video", "text_to_speech"]),
+          task: z.enum([
+            "text_to_image",
+            "image_edit",
+            "image_to_video",
+            "text_to_video",
+            "avatar_video",
+            "text_to_speech",
+          ]),
           prompt: z.string().min(5).max(6000),
-          requestedDurationSeconds: z.enum(["5", "10", "15", "30", "60", "180"]).transform((value) => Number(value)).optional(),
-          promptControls: z.array(z.enum(["more_cinematic", "more_realistic", "more_premium", "no_people", "horse_showcase", "product_demo", "stable_owner_focus"])).optional(),
+          requestedDurationSeconds: z
+            .enum(["5", "10", "15", "30", "60", "180"])
+            .transform((value) => Number(value))
+            .optional(),
+          promptControls: z
+            .array(
+              z.enum([
+                "more_cinematic",
+                "more_realistic",
+                "more_premium",
+                "no_people",
+                "horse_showcase",
+                "product_demo",
+                "stable_owner_focus",
+              ]),
+            )
+            .optional(),
           voiceId: z.string().min(1).max(120).optional(),
           draftId: z.string().min(1).optional(),
-          quality: z.enum(["standard", "elite", "fast", "cinematic", "avatar"]).default("standard"),
+          quality: z
+            .enum(["standard", "elite", "fast", "cinematic", "avatar"])
+            .default("standard"),
           platform: z.string().max(80).optional(),
           presenterId: z.number().int().positive().optional(),
           uploadedAssetRef: z.string().max(500).optional(),
@@ -9827,7 +11585,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           initiatedByUserId: ctx.user.id,
         };
         const compiledPrompt = compileMarketingPrompt({
-          task: input.task as "text_to_image" | "image_edit" | "text_to_video" | "image_to_video" | "avatar_video" | "text_to_speech",
+          task: input.task as
+            | "text_to_image"
+            | "image_edit"
+            | "text_to_video"
+            | "image_to_video"
+            | "avatar_video"
+            | "text_to_speech",
           userPrompt: input.prompt,
           platform: input.platform,
           quality: input.quality,
@@ -9836,7 +11600,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           brandName: "EquiProfile",
         });
         const capability = await getMediaCapabilityTruth(input.task);
-        const candidatePool = await resolveModelCandidatesForTask(input.task, true);
+        const candidatePool = await resolveModelCandidatesForTask(
+          input.task,
+          true,
+        );
         const preferredModelOrder = getPreferredModelOrder(input.task);
         const providerOrder = orderMediaProviders(input.quality, (provider) =>
           candidatePool.some((candidate) => candidate.provider === provider),
@@ -9866,7 +11633,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!preflight.ok) {
           return {
             status: "prompt_preflight_failed" as const,
-            message: "Prompt fidelity preflight failed. Please refine your request.",
+            message:
+              "Prompt fidelity preflight failed. Please refine your request.",
             inferredSubject: compiledPrompt.subject,
             forbiddenMismatches: preflight.forbiddenMismatches,
           };
@@ -9877,7 +11645,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             tenantId: tenantScope.tenantId,
             userId: ctx.user.id,
             type: mediaTypeFromAdminTask(input.task),
-            provider: capability.selectedProvider ?? capability.candidates?.[0]?.provider ?? "genx",
+            provider:
+              capability.selectedProvider ??
+              capability.candidates?.[0]?.provider ??
+              "genx",
             task: input.task,
             status: "failed",
             generationPrompt: compiledPrompt.prompt,
@@ -9900,15 +11671,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               selectedProvider: capability.selectedProvider ?? null,
               selectedModel: capability.selectedModel ?? null,
               routeReason: capability.routeReason ?? null,
-              requestedDurationSeconds: input.requestedDurationSeconds ?? compiledPrompt.durationSeconds ?? null,
+              requestedDurationSeconds:
+                input.requestedDurationSeconds ??
+                compiledPrompt.durationSeconds ??
+                null,
               actualDurationSeconds: null,
               providerMaxDurationSeconds: null,
               source: "app_media_job_setup_needed",
-              candidates: capability.candidates?.map((candidate) => ({
-                provider: candidate.provider,
-                model: candidate.id,
-                reason: candidate.routeReason,
-              })) ?? [],
+              candidates:
+                capability.candidates?.map((candidate) => ({
+                  provider: candidate.provider,
+                  model: candidate.id,
+                  reason: candidate.routeReason,
+                })) ?? [],
             },
             errorMessage: capability.userMessage,
           });
@@ -9918,7 +11693,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             mediaCapabilityStatus: capability.status,
             message: capability.userMessage,
             assetId: setupAsset.id,
-            requestedDurationSeconds: input.requestedDurationSeconds ?? compiledPrompt.durationSeconds,
+            requestedDurationSeconds:
+              input.requestedDurationSeconds ?? compiledPrompt.durationSeconds,
             actualDurationSeconds: null,
             providerMaxDurationSeconds: null,
             candidates: candidates.map((candidate) => ({
@@ -9930,11 +11706,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
         try {
           const requestedDurationSeconds = input.requestedDurationSeconds;
-          const selectedProvider = capability.selectedProvider ?? candidates[0]?.provider ?? "genx";
-          const selectedCandidate = candidates.find((candidate) => candidate.provider === selectedProvider) ?? candidates[0];
-          const durationSupport = getProviderDurationSupport(selectedProvider as any, input.task);
+          const selectedProvider =
+            capability.selectedProvider ?? candidates[0]?.provider ?? "genx";
+          const selectedCandidate =
+            candidates.find(
+              (candidate) => candidate.provider === selectedProvider,
+            ) ?? candidates[0];
+          const durationSupport = getProviderDurationSupport(
+            selectedProvider as any,
+            input.task,
+          );
           if (
-            (input.task === "text_to_video" || input.task === "image_to_video" || input.task === "avatar_video") &&
+            (input.task === "text_to_video" ||
+              input.task === "image_to_video" ||
+              input.task === "avatar_video") &&
             requestedDurationSeconds &&
             requestedDurationSeconds > durationSupport.maxDurationSeconds
           ) {
@@ -10002,45 +11787,59 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             input:
               input.task === "avatar_video"
                 ? {
-                  script: compiledPrompt.prompt,
-                  negative_prompt: compiledPrompt.negativePrompt,
-                  originalPrompt: input.prompt,
-                  model: selectedCandidate?.id,
-                  draftId: input.draftId,
-                  quality: input.quality,
-                  platform: input.platform,
-                  presenterId: input.presenterId,
-                  uploadedAssetRef: input.uploadedAssetRef,
-                  requestedDurationSeconds,
-                  duration: compiledPrompt.durationSeconds ?? requestedDurationSeconds,
-                  voiceId: input.voiceId,
-                  actualDurationSeconds: compiledPrompt.durationSeconds ?? requestedDurationSeconds,
-                  providerMaxDurationSeconds: durationSupport.maxDurationSeconds,
-                  audioPlan: "silent_base_video",
-                  voiceoverText: null,
-                  musicPrompt: null,
-                  promptCompiler: compiledPrompt,
-                }
+                    script: compiledPrompt.prompt,
+                    negative_prompt: compiledPrompt.negativePrompt,
+                    originalPrompt: input.prompt,
+                    model: selectedCandidate?.id,
+                    draftId: input.draftId,
+                    quality: input.quality,
+                    platform: input.platform,
+                    presenterId: input.presenterId,
+                    uploadedAssetRef: input.uploadedAssetRef,
+                    requestedDurationSeconds,
+                    duration:
+                      compiledPrompt.durationSeconds ??
+                      requestedDurationSeconds,
+                    voiceId: input.voiceId,
+                    actualDurationSeconds:
+                      compiledPrompt.durationSeconds ??
+                      requestedDurationSeconds,
+                    providerMaxDurationSeconds:
+                      durationSupport.maxDurationSeconds,
+                    audioPlan: "silent_base_video",
+                    voiceoverText: null,
+                    musicPrompt: null,
+                    promptCompiler: compiledPrompt,
+                  }
                 : {
-                  prompt: compiledPrompt.prompt,
-                  negative_prompt: compiledPrompt.negativePrompt,
-                  originalPrompt: input.prompt,
-                  model: selectedCandidate?.id,
-                  draftId: input.draftId,
-                  quality: input.quality,
-                  platform: input.platform,
-                  presenterId: input.presenterId,
-                  uploadedAssetRef: input.uploadedAssetRef,
-                  requestedDurationSeconds,
-                  duration: compiledPrompt.durationSeconds ?? requestedDurationSeconds,
-                  voiceId: input.voiceId,
-                  actualDurationSeconds: compiledPrompt.durationSeconds ?? requestedDurationSeconds,
-                  providerMaxDurationSeconds: durationSupport.maxDurationSeconds,
-                  audioPlan: input.task === "text_to_video" ? "silent_base_video" : null,
-                  voiceoverText: input.task === "text_to_speech" ? input.prompt : null,
-                  musicPrompt: null,
-                  promptCompiler: compiledPrompt,
-                },
+                    prompt: compiledPrompt.prompt,
+                    negative_prompt: compiledPrompt.negativePrompt,
+                    originalPrompt: input.prompt,
+                    model: selectedCandidate?.id,
+                    draftId: input.draftId,
+                    quality: input.quality,
+                    platform: input.platform,
+                    presenterId: input.presenterId,
+                    uploadedAssetRef: input.uploadedAssetRef,
+                    requestedDurationSeconds,
+                    duration:
+                      compiledPrompt.durationSeconds ??
+                      requestedDurationSeconds,
+                    voiceId: input.voiceId,
+                    actualDurationSeconds:
+                      compiledPrompt.durationSeconds ??
+                      requestedDurationSeconds,
+                    providerMaxDurationSeconds:
+                      durationSupport.maxDurationSeconds,
+                    audioPlan:
+                      input.task === "text_to_video"
+                        ? "silent_base_video"
+                        : null,
+                    voiceoverText:
+                      input.task === "text_to_speech" ? input.prompt : null,
+                    musicPrompt: null,
+                    promptCompiler: compiledPrompt,
+                  },
           });
           // Look up the mediaAsset row created by the orchestrator so we can return assetId
           let assetId: number | undefined;
@@ -10056,15 +11855,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             ...result,
             assetId,
             selectedProvider: result.provider,
-            selectedModel: result.model ?? selectedCandidate?.id ?? capability.selectedModel,
+            selectedModel:
+              result.model ?? selectedCandidate?.id ?? capability.selectedModel,
             routeReason: result.routeReason ?? capability.routeReason,
             mediaCapabilityStatus: capability.status,
-            requestedDurationSeconds: requestedDurationSeconds ?? compiledPrompt.durationSeconds,
-            actualDurationSeconds: compiledPrompt.durationSeconds ?? requestedDurationSeconds ?? null,
+            requestedDurationSeconds:
+              requestedDurationSeconds ?? compiledPrompt.durationSeconds,
+            actualDurationSeconds:
+              compiledPrompt.durationSeconds ??
+              requestedDurationSeconds ??
+              null,
             providerMaxDurationSeconds: durationSupport.maxDurationSeconds,
           };
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           const setupNeeded = /setup_needed[:\s]/i.test(message);
           const capabilityAny = capability as any;
           const failedAsset = await createMediaAsset({
@@ -10072,7 +11877,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             tenantId: tenantScope.tenantId,
             userId: ctx.user.id,
             type: mediaTypeFromAdminTask(input.task),
-            provider: capabilityAny.selectedProvider ?? capabilityAny.candidates?.[0]?.provider ?? "genx",
+            provider:
+              capabilityAny.selectedProvider ??
+              capabilityAny.candidates?.[0]?.provider ??
+              "genx",
             task: input.task,
             status: "failed",
             generationPrompt: compiledPrompt.prompt,
@@ -10094,7 +11902,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                 routeReason: candidate.routeReason,
               })),
               selectedProvider: capabilityAny.selectedProvider ?? null,
-              requestedDurationSeconds: input.requestedDurationSeconds ?? compiledPrompt.durationSeconds ?? null,
+              requestedDurationSeconds:
+                input.requestedDurationSeconds ??
+                compiledPrompt.durationSeconds ??
+                null,
               actualDurationSeconds: null,
               providerMaxDurationSeconds: null,
               source: "app_media_job_failed",
@@ -10102,12 +11913,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             errorMessage: message,
           });
           return {
-            status: setupNeeded ? "setup_needed" as const : "provider_failed" as const,
+            status: setupNeeded
+              ? ("setup_needed" as const)
+              : ("provider_failed" as const),
             task: input.task,
-            mediaCapabilityStatus: setupNeeded ? "setup_needed" as const : "provider_failed" as const,
+            mediaCapabilityStatus: setupNeeded
+              ? ("setup_needed" as const)
+              : ("provider_failed" as const),
             assetId: failedAsset.id,
             message,
-            requestedDurationSeconds: input.requestedDurationSeconds ?? compiledPrompt.durationSeconds ?? null,
+            requestedDurationSeconds:
+              input.requestedDurationSeconds ??
+              compiledPrompt.durationSeconds ??
+              null,
             actualDurationSeconds: null,
             providerMaxDurationSeconds: null,
           };
@@ -10117,7 +11935,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     testGenXMediaGeneration: adminUnlockedProcedure
       .input(
         z.object({
-          task: z.enum(["text_to_image", "text_to_video", "avatar_video", "text_to_speech"]),
+          task: z.enum([
+            "text_to_image",
+            "text_to_video",
+            "avatar_video",
+            "text_to_speech",
+          ]),
           prompt: z.string().min(5).max(6000),
           model: z.string().min(1).max(200).optional(),
           tenantId: z.string().min(1).max(100).default("global"),
@@ -10170,11 +11993,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             task: input.task,
             jobId,
           });
-          const status = persisted.resultType === "failed"
-            ? "failed"
-            : persisted.resultType === "job_pending"
-              ? "processing"
-              : "completed";
+          const status =
+            persisted.resultType === "failed"
+              ? "failed"
+              : persisted.resultType === "job_pending"
+                ? "processing"
+                : "completed";
           await updateMediaAsset(initial.id, {
             status,
             publicUrl: persisted.publicUrl ?? undefined,
@@ -10203,12 +12027,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             publicUrl: persisted.publicUrl,
             mimeType: persisted.mimeType,
             resultType: persisted.resultType,
-            message: persisted.resultType === "job_pending"
-              ? "GenX accepted the media job. Watch Assets for completion."
-              : persisted.errorMessage ?? "GenX media generation completed.",
+            message:
+              persisted.resultType === "job_pending"
+                ? "GenX accepted the media job. Watch Assets for completion."
+                : (persisted.errorMessage ??
+                  "GenX media generation completed."),
           };
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           await updateMediaAsset(initial.id, {
             status: "failed",
             errorMessage: message,
@@ -10236,12 +12063,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(z.object({ jobId: z.string().min(1) }))
       .query(async ({ input }) => {
         const jobs = await getQueueStatus();
-        const inMemoryJob = (jobs as any)?.jobs?.find?.((job: any) => String(job.id) === input.jobId) ?? null;
+        const inMemoryJob =
+          (jobs as any)?.jobs?.find?.(
+            (job: any) => String(job.id) === input.jobId,
+          ) ?? null;
         const dbConn = await getDb();
         if (!dbConn) return inMemoryJob;
         const idNum = Number(input.jobId);
         if (!Number.isFinite(idNum)) return inMemoryJob;
-        const [row] = await dbConn.select().from(growthQueueJobs).where(eq(growthQueueJobs.id, idNum)).limit(1);
+        const [row] = await dbConn
+          .select()
+          .from(growthQueueJobs)
+          .where(eq(growthQueueJobs.id, idNum))
+          .limit(1);
         if (!row) return inMemoryJob;
         return {
           id: String(row.id),
@@ -10280,17 +12114,43 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }),
       )
       .query(async ({ input }) => {
-        return listPendingMediaAssets({ tenantId: input.tenantId, limit: input.limit });
+        return listPendingMediaAssets({
+          tenantId: input.tenantId,
+          limit: input.limit,
+        });
       }),
 
     getProviderTelemetry: adminUnlockedProcedure
       .input(
-        z.object({
-          provider: z.enum(["genx", "huggingface", "qwen"]).optional(),
-          task: z.enum(["chat", "copywriting", "strategy", "campaign_generation", "social_generation", "email_generation", "text_to_image", "image_edit", "image_to_video", "text_to_video", "avatar_video", "speech_to_text", "text_to_speech", "image_captioning", "classification", "moderation", "embeddings", "analytics"]).optional(),
-          tenantId: z.string().min(1).max(100).optional(),
-          lookbackDays: z.number().int().min(1).max(90).default(30),
-        }).optional(),
+        z
+          .object({
+            provider: z.enum(["genx", "huggingface", "qwen"]).optional(),
+            task: z
+              .enum([
+                "chat",
+                "copywriting",
+                "strategy",
+                "campaign_generation",
+                "social_generation",
+                "email_generation",
+                "text_to_image",
+                "image_edit",
+                "image_to_video",
+                "text_to_video",
+                "avatar_video",
+                "speech_to_text",
+                "text_to_speech",
+                "image_captioning",
+                "classification",
+                "moderation",
+                "embeddings",
+                "analytics",
+              ])
+              .optional(),
+            tenantId: z.string().min(1).max(100).optional(),
+            lookbackDays: z.number().int().min(1).max(90).default(30),
+          })
+          .optional(),
       )
       .query(async ({ input }) => {
         return getProviderTelemetrySummary(input ?? {});
@@ -10299,7 +12159,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getProviderRanking: adminUnlockedProcedure
       .input(
         z.object({
-          task: z.enum(["chat", "copywriting", "strategy", "campaign_generation", "social_generation", "email_generation", "text_to_image", "image_edit", "image_to_video", "text_to_video", "avatar_video", "speech_to_text", "text_to_speech", "image_captioning", "classification", "moderation", "embeddings", "analytics"]),
+          task: z.enum([
+            "chat",
+            "copywriting",
+            "strategy",
+            "campaign_generation",
+            "social_generation",
+            "email_generation",
+            "text_to_image",
+            "image_edit",
+            "image_to_video",
+            "text_to_video",
+            "avatar_video",
+            "speech_to_text",
+            "text_to_speech",
+            "image_captioning",
+            "classification",
+            "moderation",
+            "embeddings",
+            "analytics",
+          ]),
           tenantId: z.string().min(1).max(100).optional(),
         }),
       )
@@ -10368,10 +12247,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         ) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Infrastructure configuration is managed securely by the service operator.",
+            message:
+              "Infrastructure configuration is managed securely by the service operator.",
           });
         }
-        const normalizedValue = normalizeSiteSettingValue(input.key, input.value);
+        const normalizedValue = normalizeSiteSettingValue(
+          input.key,
+          input.value,
+        );
         const dbConn = await getDb();
         if (!dbConn)
           throw new TRPCError({
@@ -10388,7 +12271,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                 ON DUPLICATE KEY UPDATE \`value\` = ${normalizedValue}`,
           );
           invalidateConfigCache(input.key);
-          return { success: true, key: input.key, normalized: normalizedValue !== input.value };
+          return {
+            success: true,
+            key: input.key,
+            normalized: normalizedValue !== input.value,
+          };
         } catch (err) {
           console.error("[admin.setSiteSetting] DB error:", err);
           throw new TRPCError({
@@ -10412,23 +12299,49 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const getVal = (key: string, envKey: string): string =>
         stored[key] || process.env[envKey] || "";
 
-      const marketingGenxKey = pickSettingValue(stored, MARKETING_PROVIDER_KEY_ALIASES.genx, "GENX_API_KEY");
-      const marketingHfKey = pickSettingValue(stored, MARKETING_PROVIDER_KEY_ALIASES.huggingface, "HUGGINGFACE_API_KEY");
-      const marketingQwenKey = pickSettingValue(stored, MARKETING_PROVIDER_KEY_ALIASES.qwen, "QWEN_API_KEY");
-      const marketingPexelsKey = pickSettingValue(stored, MARKETING_PROVIDER_KEY_ALIASES.pexels);
-      const marketingPixabayKey = pickSettingValue(stored, MARKETING_PROVIDER_KEY_ALIASES.pixabay);
+      const marketingGenxKey = pickSettingValue(
+        stored,
+        MARKETING_PROVIDER_KEY_ALIASES.genx,
+        "GENX_API_KEY",
+      );
+      const marketingHfKey = pickSettingValue(
+        stored,
+        MARKETING_PROVIDER_KEY_ALIASES.huggingface,
+        "HUGGINGFACE_API_KEY",
+      );
+      const marketingQwenKey = pickSettingValue(
+        stored,
+        MARKETING_PROVIDER_KEY_ALIASES.qwen,
+        "QWEN_API_KEY",
+      );
+      const marketingPexelsKey = pickSettingValue(
+        stored,
+        MARKETING_PROVIDER_KEY_ALIASES.pexels,
+      );
+      const marketingPixabayKey = pickSettingValue(
+        stored,
+        MARKETING_PROVIDER_KEY_ALIASES.pixabay,
+      );
 
       return {
         genx: {
           provider: "genx" as const,
           configured: !!marketingGenxKey,
-          keyMasked: marketingGenxKey ? maskProviderSecret(marketingGenxKey) : null,
+          keyMasked: marketingGenxKey
+            ? maskProviderSecret(marketingGenxKey)
+            : null,
           settings: {
             genx_base_url: getVal("genx_base_url", "GENX_BASE_URL"),
-            genx_default_model: getVal("genx_default_model", "GENX_DEFAULT_MODEL"),
+            genx_default_model: getVal(
+              "genx_default_model",
+              "GENX_DEFAULT_MODEL",
+            ),
             genx_model: getVal("genx_model", "GENX_MODEL"),
             genx_text_model: getVal("genx_text_model", "GENX_TEXT_MODEL"),
-            genx_strategy_model: getVal("genx_strategy_model", "GENX_STRATEGY_MODEL"),
+            genx_strategy_model: getVal(
+              "genx_strategy_model",
+              "GENX_STRATEGY_MODEL",
+            ),
             genx_image_model: getVal("genx_image_model", "GENX_IMAGE_MODEL"),
             genx_video_model: getVal("genx_video_model", "GENX_VIDEO_MODEL"),
             genx_avatar_model: getVal("genx_avatar_model", "GENX_AVATAR_MODEL"),
@@ -10443,54 +12356,182 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           configured: !!marketingHfKey,
           keyMasked: marketingHfKey ? maskProviderSecret(marketingHfKey) : null,
           settings: {
-            hf_task_chat_model: getVal("hf_task_chat_model", "HF_TASK_CHAT_MODEL"),
-            hf_task_copywriting_model: getVal("hf_task_copywriting_model", "HF_TASK_COPYWRITING_MODEL"),
-            hf_task_text_generation_model: getVal("hf_task_text_generation_model", "HF_TASK_TEXT_GENERATION_MODEL"),
-            hf_task_text_generation_models: getVal("hf_task_text_generation_models", "HF_TASK_TEXT_GENERATION_MODELS"),
-            hf_task_text_generation_fallbacks: getVal("hf_task_text_generation_fallbacks", "HF_TASK_TEXT_GENERATION_FALLBACKS"),
-            hf_task_text_to_image_model: getVal("hf_task_text_to_image_model", "HF_TASK_TEXT_TO_IMAGE_MODEL"),
-            hf_task_text_to_image_fallbacks: getVal("hf_task_text_to_image_fallbacks", "HF_TASK_TEXT_TO_IMAGE_FALLBACKS"),
-            hf_task_text_to_video_model: getVal("hf_task_text_to_video_model", "HF_TASK_TEXT_TO_VIDEO_MODEL"),
-            hf_task_text_to_video_fallbacks: getVal("hf_task_text_to_video_fallbacks", "HF_TASK_TEXT_TO_VIDEO_FALLBACKS"),
-            hf_task_image_to_video_model: getVal("hf_task_image_to_video_model", "HF_TASK_IMAGE_TO_VIDEO_MODEL"),
-            hf_task_avatar_video_model: getVal("hf_task_avatar_video_model", "HF_TASK_AVATAR_VIDEO_MODEL"),
-            hf_task_text_to_speech_model: getVal("hf_task_text_to_speech_model", "HF_TASK_TEXT_TO_SPEECH_MODEL"),
-            hf_task_text_to_speech_fallbacks: getVal("hf_task_text_to_speech_fallbacks", "HF_TASK_TEXT_TO_SPEECH_FALLBACKS"),
-            hf_task_speech_to_text_model: getVal("hf_task_speech_to_text_model", "HF_TASK_SPEECH_TO_TEXT_MODEL"),
-            hf_task_automatic_speech_recognition_model: getVal("hf_task_automatic_speech_recognition_model", "HF_TASK_AUTOMATIC_SPEECH_RECOGNITION_MODEL"),
-            hf_task_automatic_speech_recognition_models: getVal("hf_task_automatic_speech_recognition_models", "HF_TASK_AUTOMATIC_SPEECH_RECOGNITION_MODELS"),
-            hf_task_automatic_speech_recognition_fallbacks: getVal("hf_task_automatic_speech_recognition_fallbacks", "HF_TASK_AUTOMATIC_SPEECH_RECOGNITION_FALLBACKS"),
-            hf_task_image_captioning_model: getVal("hf_task_image_captioning_model", "HF_TASK_IMAGE_CAPTIONING_MODEL"),
-            hf_task_image_to_text_model: getVal("hf_task_image_to_text_model", "HF_TASK_IMAGE_TO_TEXT_MODEL"),
-            hf_task_image_to_text_models: getVal("hf_task_image_to_text_models", "HF_TASK_IMAGE_TO_TEXT_MODELS"),
-            hf_task_image_to_text_fallbacks: getVal("hf_task_image_to_text_fallbacks", "HF_TASK_IMAGE_TO_TEXT_FALLBACKS"),
-            hf_task_feature_extraction_model: getVal("hf_task_feature_extraction_model", "HF_TASK_FEATURE_EXTRACTION_MODEL"),
-            hf_task_feature_extraction_models: getVal("hf_task_feature_extraction_models", "HF_TASK_FEATURE_EXTRACTION_MODELS"),
-            hf_task_feature_extraction_fallbacks: getVal("hf_task_feature_extraction_fallbacks", "HF_TASK_FEATURE_EXTRACTION_FALLBACKS"),
-            hf_task_embeddings_model: getVal("hf_task_embeddings_model", "HF_TASK_EMBEDDINGS_MODEL"),
-            hf_task_moderation_model: getVal("hf_task_moderation_model", "HF_TASK_MODERATION_MODEL"),
-            hf_task_classification_model: getVal("hf_task_classification_model", "HF_TASK_CLASSIFICATION_MODEL"),
-            hf_task_text_classification_model: getVal("hf_task_text_classification_model", "HF_TASK_TEXT_CLASSIFICATION_MODEL"),
-            hf_task_text_classification_models: getVal("hf_task_text_classification_models", "HF_TASK_TEXT_CLASSIFICATION_MODELS"),
-            hf_task_text_classification_fallbacks: getVal("hf_task_text_classification_fallbacks", "HF_TASK_TEXT_CLASSIFICATION_FALLBACKS"),
-            hf_task_zero_shot_classification_model: getVal("hf_task_zero_shot_classification_model", "HF_TASK_ZERO_SHOT_CLASSIFICATION_MODEL"),
-            hf_task_zero_shot_classification_models: getVal("hf_task_zero_shot_classification_models", "HF_TASK_ZERO_SHOT_CLASSIFICATION_MODELS"),
-            hf_task_zero_shot_classification_fallbacks: getVal("hf_task_zero_shot_classification_fallbacks", "HF_TASK_ZERO_SHOT_CLASSIFICATION_FALLBACKS"),
-            hf_use_default_text_generation: getVal("hf_use_default_text_generation", "HF_USE_DEFAULT_TEXT_GENERATION"),
-            hf_use_default_text_to_image: getVal("hf_use_default_text_to_image", "HF_USE_DEFAULT_TEXT_TO_IMAGE"),
-            hf_use_default_text_to_video: getVal("hf_use_default_text_to_video", "HF_USE_DEFAULT_TEXT_TO_VIDEO"),
-            hf_use_default_text_to_speech: getVal("hf_use_default_text_to_speech", "HF_USE_DEFAULT_TEXT_TO_SPEECH"),
-            hf_use_default_automatic_speech_recognition: getVal("hf_use_default_automatic_speech_recognition", "HF_USE_DEFAULT_AUTOMATIC_SPEECH_RECOGNITION"),
-            hf_use_default_image_to_text: getVal("hf_use_default_image_to_text", "HF_USE_DEFAULT_IMAGE_TO_TEXT"),
-            hf_use_default_feature_extraction: getVal("hf_use_default_feature_extraction", "HF_USE_DEFAULT_FEATURE_EXTRACTION"),
-            hf_use_default_text_classification: getVal("hf_use_default_text_classification", "HF_USE_DEFAULT_TEXT_CLASSIFICATION"),
-            hf_use_default_zero_shot_classification: getVal("hf_use_default_zero_shot_classification", "HF_USE_DEFAULT_ZERO_SHOT_CLASSIFICATION"),
+            hf_task_chat_model: getVal(
+              "hf_task_chat_model",
+              "HF_TASK_CHAT_MODEL",
+            ),
+            hf_task_copywriting_model: getVal(
+              "hf_task_copywriting_model",
+              "HF_TASK_COPYWRITING_MODEL",
+            ),
+            hf_task_text_generation_model: getVal(
+              "hf_task_text_generation_model",
+              "HF_TASK_TEXT_GENERATION_MODEL",
+            ),
+            hf_task_text_generation_models: getVal(
+              "hf_task_text_generation_models",
+              "HF_TASK_TEXT_GENERATION_MODELS",
+            ),
+            hf_task_text_generation_fallbacks: getVal(
+              "hf_task_text_generation_fallbacks",
+              "HF_TASK_TEXT_GENERATION_FALLBACKS",
+            ),
+            hf_task_text_to_image_model: getVal(
+              "hf_task_text_to_image_model",
+              "HF_TASK_TEXT_TO_IMAGE_MODEL",
+            ),
+            hf_task_text_to_image_fallbacks: getVal(
+              "hf_task_text_to_image_fallbacks",
+              "HF_TASK_TEXT_TO_IMAGE_FALLBACKS",
+            ),
+            hf_task_text_to_video_model: getVal(
+              "hf_task_text_to_video_model",
+              "HF_TASK_TEXT_TO_VIDEO_MODEL",
+            ),
+            hf_task_text_to_video_fallbacks: getVal(
+              "hf_task_text_to_video_fallbacks",
+              "HF_TASK_TEXT_TO_VIDEO_FALLBACKS",
+            ),
+            hf_task_image_to_video_model: getVal(
+              "hf_task_image_to_video_model",
+              "HF_TASK_IMAGE_TO_VIDEO_MODEL",
+            ),
+            hf_task_avatar_video_model: getVal(
+              "hf_task_avatar_video_model",
+              "HF_TASK_AVATAR_VIDEO_MODEL",
+            ),
+            hf_task_text_to_speech_model: getVal(
+              "hf_task_text_to_speech_model",
+              "HF_TASK_TEXT_TO_SPEECH_MODEL",
+            ),
+            hf_task_text_to_speech_fallbacks: getVal(
+              "hf_task_text_to_speech_fallbacks",
+              "HF_TASK_TEXT_TO_SPEECH_FALLBACKS",
+            ),
+            hf_task_speech_to_text_model: getVal(
+              "hf_task_speech_to_text_model",
+              "HF_TASK_SPEECH_TO_TEXT_MODEL",
+            ),
+            hf_task_automatic_speech_recognition_model: getVal(
+              "hf_task_automatic_speech_recognition_model",
+              "HF_TASK_AUTOMATIC_SPEECH_RECOGNITION_MODEL",
+            ),
+            hf_task_automatic_speech_recognition_models: getVal(
+              "hf_task_automatic_speech_recognition_models",
+              "HF_TASK_AUTOMATIC_SPEECH_RECOGNITION_MODELS",
+            ),
+            hf_task_automatic_speech_recognition_fallbacks: getVal(
+              "hf_task_automatic_speech_recognition_fallbacks",
+              "HF_TASK_AUTOMATIC_SPEECH_RECOGNITION_FALLBACKS",
+            ),
+            hf_task_image_captioning_model: getVal(
+              "hf_task_image_captioning_model",
+              "HF_TASK_IMAGE_CAPTIONING_MODEL",
+            ),
+            hf_task_image_to_text_model: getVal(
+              "hf_task_image_to_text_model",
+              "HF_TASK_IMAGE_TO_TEXT_MODEL",
+            ),
+            hf_task_image_to_text_models: getVal(
+              "hf_task_image_to_text_models",
+              "HF_TASK_IMAGE_TO_TEXT_MODELS",
+            ),
+            hf_task_image_to_text_fallbacks: getVal(
+              "hf_task_image_to_text_fallbacks",
+              "HF_TASK_IMAGE_TO_TEXT_FALLBACKS",
+            ),
+            hf_task_feature_extraction_model: getVal(
+              "hf_task_feature_extraction_model",
+              "HF_TASK_FEATURE_EXTRACTION_MODEL",
+            ),
+            hf_task_feature_extraction_models: getVal(
+              "hf_task_feature_extraction_models",
+              "HF_TASK_FEATURE_EXTRACTION_MODELS",
+            ),
+            hf_task_feature_extraction_fallbacks: getVal(
+              "hf_task_feature_extraction_fallbacks",
+              "HF_TASK_FEATURE_EXTRACTION_FALLBACKS",
+            ),
+            hf_task_embeddings_model: getVal(
+              "hf_task_embeddings_model",
+              "HF_TASK_EMBEDDINGS_MODEL",
+            ),
+            hf_task_moderation_model: getVal(
+              "hf_task_moderation_model",
+              "HF_TASK_MODERATION_MODEL",
+            ),
+            hf_task_classification_model: getVal(
+              "hf_task_classification_model",
+              "HF_TASK_CLASSIFICATION_MODEL",
+            ),
+            hf_task_text_classification_model: getVal(
+              "hf_task_text_classification_model",
+              "HF_TASK_TEXT_CLASSIFICATION_MODEL",
+            ),
+            hf_task_text_classification_models: getVal(
+              "hf_task_text_classification_models",
+              "HF_TASK_TEXT_CLASSIFICATION_MODELS",
+            ),
+            hf_task_text_classification_fallbacks: getVal(
+              "hf_task_text_classification_fallbacks",
+              "HF_TASK_TEXT_CLASSIFICATION_FALLBACKS",
+            ),
+            hf_task_zero_shot_classification_model: getVal(
+              "hf_task_zero_shot_classification_model",
+              "HF_TASK_ZERO_SHOT_CLASSIFICATION_MODEL",
+            ),
+            hf_task_zero_shot_classification_models: getVal(
+              "hf_task_zero_shot_classification_models",
+              "HF_TASK_ZERO_SHOT_CLASSIFICATION_MODELS",
+            ),
+            hf_task_zero_shot_classification_fallbacks: getVal(
+              "hf_task_zero_shot_classification_fallbacks",
+              "HF_TASK_ZERO_SHOT_CLASSIFICATION_FALLBACKS",
+            ),
+            hf_use_default_text_generation: getVal(
+              "hf_use_default_text_generation",
+              "HF_USE_DEFAULT_TEXT_GENERATION",
+            ),
+            hf_use_default_text_to_image: getVal(
+              "hf_use_default_text_to_image",
+              "HF_USE_DEFAULT_TEXT_TO_IMAGE",
+            ),
+            hf_use_default_text_to_video: getVal(
+              "hf_use_default_text_to_video",
+              "HF_USE_DEFAULT_TEXT_TO_VIDEO",
+            ),
+            hf_use_default_text_to_speech: getVal(
+              "hf_use_default_text_to_speech",
+              "HF_USE_DEFAULT_TEXT_TO_SPEECH",
+            ),
+            hf_use_default_automatic_speech_recognition: getVal(
+              "hf_use_default_automatic_speech_recognition",
+              "HF_USE_DEFAULT_AUTOMATIC_SPEECH_RECOGNITION",
+            ),
+            hf_use_default_image_to_text: getVal(
+              "hf_use_default_image_to_text",
+              "HF_USE_DEFAULT_IMAGE_TO_TEXT",
+            ),
+            hf_use_default_feature_extraction: getVal(
+              "hf_use_default_feature_extraction",
+              "HF_USE_DEFAULT_FEATURE_EXTRACTION",
+            ),
+            hf_use_default_text_classification: getVal(
+              "hf_use_default_text_classification",
+              "HF_USE_DEFAULT_TEXT_CLASSIFICATION",
+            ),
+            hf_use_default_zero_shot_classification: getVal(
+              "hf_use_default_zero_shot_classification",
+              "HF_USE_DEFAULT_ZERO_SHOT_CLASSIFICATION",
+            ),
           },
         },
         qwen: {
           provider: "qwen" as const,
           configured: !!marketingQwenKey,
-          keyMasked: marketingQwenKey ? maskProviderSecret(marketingQwenKey) : null,
+          keyMasked: marketingQwenKey
+            ? maskProviderSecret(marketingQwenKey)
+            : null,
           settings: {
             qwen_base_url: getVal("qwen_base_url", "QWEN_BASE_URL"),
             qwen_model: getVal("qwen_model", "QWEN_MODEL"),
@@ -10499,23 +12540,42 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             qwen_image_model: getVal("qwen_image_model", "QWEN_IMAGE_MODEL"),
             qwen_video_model: getVal("qwen_video_model", "QWEN_VIDEO_MODEL"),
             qwen_audio_model: getVal("qwen_audio_model", "QWEN_AUDIO_MODEL"),
-            qwen_embedding_model: getVal("qwen_embedding_model", "QWEN_EMBEDDING_MODEL"),
-            dashscope_wan_text_to_video_model: getVal("dashscope_wan_text_to_video_model", "DASHSCOPE_WAN_TEXT_TO_VIDEO_MODEL"),
-            dashscope_wan_image_to_video_model: getVal("dashscope_wan_image_to_video_model", "DASHSCOPE_WAN_IMAGE_TO_VIDEO_MODEL"),
-            dashscope_image_model: getVal("dashscope_image_model", "DASHSCOPE_IMAGE_MODEL"),
-            dashscope_audio_model: getVal("dashscope_audio_model", "DASHSCOPE_AUDIO_MODEL"),
+            qwen_embedding_model: getVal(
+              "qwen_embedding_model",
+              "QWEN_EMBEDDING_MODEL",
+            ),
+            dashscope_wan_text_to_video_model: getVal(
+              "dashscope_wan_text_to_video_model",
+              "DASHSCOPE_WAN_TEXT_TO_VIDEO_MODEL",
+            ),
+            dashscope_wan_image_to_video_model: getVal(
+              "dashscope_wan_image_to_video_model",
+              "DASHSCOPE_WAN_IMAGE_TO_VIDEO_MODEL",
+            ),
+            dashscope_image_model: getVal(
+              "dashscope_image_model",
+              "DASHSCOPE_IMAGE_MODEL",
+            ),
+            dashscope_audio_model: getVal(
+              "dashscope_audio_model",
+              "DASHSCOPE_AUDIO_MODEL",
+            ),
           },
         },
         pexels: {
           provider: "pexels" as const,
           configured: !!marketingPexelsKey,
-          keyMasked: marketingPexelsKey ? maskProviderSecret(marketingPexelsKey) : null,
+          keyMasked: marketingPexelsKey
+            ? maskProviderSecret(marketingPexelsKey)
+            : null,
           settings: {},
         },
         pixabay: {
           provider: "pixabay" as const,
           configured: !!marketingPixabayKey,
-          keyMasked: marketingPixabayKey ? maskProviderSecret(marketingPixabayKey) : null,
+          keyMasked: marketingPixabayKey
+            ? maskProviderSecret(marketingPixabayKey)
+            : null,
           settings: {},
         },
       };
@@ -10525,7 +12585,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(
         z.object({
           settings: z.record(
-            z.string().min(1).max(100).regex(/^[a-z_]+$/, "Key must be lowercase letters and underscores only"),
+            z
+              .string()
+              .min(1)
+              .max(100)
+              .regex(
+                /^[a-z_]+$/,
+                "Key must be lowercase letters and underscores only",
+              ),
             z.string().max(2000),
           ),
         }),
@@ -10533,7 +12600,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
         }
         const saved: string[] = [];
         const skipped: string[] = [];
@@ -10550,7 +12620,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             continue;
           }
           // Skip blank or placeholder secrets — keep existing value in DB
-          if (PROVIDER_SECRET_SETTING_KEYS.has(key) && (!value.trim() || value.includes("•"))) {
+          if (
+            PROVIDER_SECRET_SETTING_KEYS.has(key) &&
+            (!value.trim() || value.includes("•"))
+          ) {
             skipped.push(rawKey);
             continue;
           }
@@ -10569,7 +12642,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             invalidateConfigCache(key);
             saved.push(key);
           } catch (err) {
-            console.error(`[admin.saveAIProviderSettings] DB error for key "${key}":`, err);
+            console.error(
+              `[admin.saveAIProviderSettings] DB error for key "${key}":`,
+              err,
+            );
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: `Failed to save setting "${key}". Check that the siteSettings table exists and is up to date.`,
@@ -10584,15 +12660,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         if (input.provider === "genx") {
           const conn = await testRawGenXConnection(12_000);
-          const discovery = conn.status === "success"
-            ? await discoverGenXModelCatalogue(12_000).catch(() => null)
-            : null;
-          const taskRoutingCandidates = await resolveModelCandidatesForTask("text_to_video", true);
+          const discovery =
+            conn.status === "success"
+              ? await discoverGenXModelCatalogue(12_000).catch(() => null)
+              : null;
+          const taskRoutingCandidates = await resolveModelCandidatesForTask(
+            "text_to_video",
+            true,
+          );
           const effectiveVideoRoute = taskRoutingCandidates[0] ?? null;
-          const detailModelId = discovery?.categoryModels.video?.[0] ?? discovery?.models?.[0] ?? null;
-          const detailEndpoint = detailModelId && discovery?.endpoint.catalogue
-            ? `${discovery.endpoint.catalogue}/${encodeURIComponent(detailModelId)}`
-            : null;
+          const detailModelId =
+            discovery?.categoryModels.video?.[0] ??
+            discovery?.models?.[0] ??
+            null;
+          const detailEndpoint =
+            detailModelId && discovery?.endpoint.catalogue
+              ? `${discovery.endpoint.catalogue}/${encodeURIComponent(detailModelId)}`
+              : null;
           return {
             ...conn,
             catalogueCount: discovery?.models.length ?? 0,
@@ -10601,42 +12685,59 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             selectedModels: discovery?.models.slice(0, 10) ?? [],
             categoryCounts: discovery
               ? {
-                text: discovery.categoryModels.text.length,
-                image: discovery.categoryModels.image.length,
-                video: discovery.categoryModels.video.length,
-                voice: discovery.categoryModels.voice.length,
-                audio: discovery.categoryModels.audio.length,
-              }
+                  text: discovery.categoryModels.text.length,
+                  image: discovery.categoryModels.image.length,
+                  video: discovery.categoryModels.video.length,
+                  voice: discovery.categoryModels.voice.length,
+                  audio: discovery.categoryModels.audio.length,
+                }
               : null,
             categoryModels: discovery?.categoryModels ?? null,
             endpoints: discovery?.endpoint ?? null,
-            selectedModelDetail: detailModelId ? { modelId: detailModelId, endpoint: detailEndpoint } : null,
+            selectedModelDetail: detailModelId
+              ? { modelId: detailModelId, endpoint: detailEndpoint }
+              : null,
             normalizedModels: discovery?.normalizedModels ?? [],
             effectiveRoutingPreview: effectiveVideoRoute
               ? {
-                task: "text_to_video" as const,
-                provider: effectiveVideoRoute.provider,
-                model: effectiveVideoRoute.id,
-                endpoint: effectiveVideoRoute.endpointFamily === "genx_async_job"
-                  ? "/api/v1/generate"
-                  : "/v1/chat/completions",
-                output: effectiveVideoRoute.endpointFamily === "genx_async_job" ? "video/mp4" : "text/plain",
-                polling: effectiveVideoRoute.endpointFamily === "genx_async_job" ? "/api/v1/jobs/:id" : null,
-                endpointFamily: effectiveVideoRoute.endpointFamily,
-              }
+                  task: "text_to_video" as const,
+                  provider: effectiveVideoRoute.provider,
+                  model: effectiveVideoRoute.id,
+                  endpoint:
+                    effectiveVideoRoute.endpointFamily === "genx_async_job"
+                      ? "/api/v1/generate"
+                      : "/v1/chat/completions",
+                  output:
+                    effectiveVideoRoute.endpointFamily === "genx_async_job"
+                      ? "video/mp4"
+                      : "text/plain",
+                  polling:
+                    effectiveVideoRoute.endpointFamily === "genx_async_job"
+                      ? "/api/v1/jobs/:id"
+                      : null,
+                  endpointFamily: effectiveVideoRoute.endpointFamily,
+                }
               : null,
-            fallbackRoutingPreview: taskRoutingCandidates.slice(1, 4).map((candidate) => ({
-              provider: candidate.provider,
-              model: candidate.id,
-              endpointFamily: candidate.endpointFamily,
-            })),
+            fallbackRoutingPreview: taskRoutingCandidates
+              .slice(1, 4)
+              .map((candidate) => ({
+                provider: candidate.provider,
+                model: candidate.id,
+                endpointFamily: candidate.endpointFamily,
+              })),
           };
         }
 
         if (input.provider === "huggingface") {
-          const key = await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY");
+          const key = await getRuntimeConfig(
+            "huggingface_api_key",
+            "HUGGINGFACE_API_KEY",
+          );
           const diagnostics = await getHuggingFaceRoutingDiagnostics();
-          const textModel = await getRuntimeConfig("hf_task_copywriting_model", "HF_TASK_COPYWRITING_MODEL");
+          const textModel = await getRuntimeConfig(
+            "hf_task_copywriting_model",
+            "HF_TASK_COPYWRITING_MODEL",
+          );
           // resolveHuggingFaceTaskModel includes built-in defaults (e.g. FLUX.1-schnell for image)
           // so these will be non-empty even when not explicitly configured in DB/env.
           const imageModel = await resolveHuggingFaceTaskModel("text_to_image");
@@ -10644,7 +12745,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const avatarModel = await resolveHuggingFaceTaskModel("avatar_video");
           const ttsModel = await resolveHuggingFaceTaskModel("text_to_speech");
           const warnings: string[] = [];
-          if (!textModel) warnings.push("No hf_task_copywriting_model set — chat/copywriting tasks will be skipped.");
+          if (!textModel)
+            warnings.push(
+              "No hf_task_copywriting_model set — chat/copywriting tasks will be skipped.",
+            );
           return {
             provider: "huggingface" as const,
             status: key ? ("key_present" as const) : ("missing_key" as const),
@@ -10665,13 +12769,37 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         if (input.provider === "qwen") {
           const key = await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY");
-          const baseUrl = await getRuntimeConfig("qwen_base_url", "QWEN_BASE_URL");
+          const baseUrl = await getRuntimeConfig(
+            "qwen_base_url",
+            "QWEN_BASE_URL",
+          );
           const model = await getRuntimeConfig("qwen_model", "QWEN_MODEL");
-          const textModel = await getRuntimeConfig("qwen_text_model", "QWEN_TEXT_MODEL");
-          const imageModel = await getRuntimeConfig("dashscope_image_model", "DASHSCOPE_IMAGE_MODEL") || await getRuntimeConfig("qwen_image_model", "QWEN_IMAGE_MODEL");
-          const videoModel = await getRuntimeConfig("dashscope_wan_text_to_video_model", "DASHSCOPE_WAN_TEXT_TO_VIDEO_MODEL") || await getRuntimeConfig("qwen_video_model", "QWEN_VIDEO_MODEL");
-          const imageToVideoModel = await getRuntimeConfig("dashscope_wan_image_to_video_model", "DASHSCOPE_WAN_IMAGE_TO_VIDEO_MODEL");
-          const audioModel = await getRuntimeConfig("dashscope_audio_model", "DASHSCOPE_AUDIO_MODEL") || await getRuntimeConfig("qwen_audio_model", "QWEN_AUDIO_MODEL");
+          const textModel = await getRuntimeConfig(
+            "qwen_text_model",
+            "QWEN_TEXT_MODEL",
+          );
+          const imageModel =
+            (await getRuntimeConfig(
+              "dashscope_image_model",
+              "DASHSCOPE_IMAGE_MODEL",
+            )) ||
+            (await getRuntimeConfig("qwen_image_model", "QWEN_IMAGE_MODEL"));
+          const videoModel =
+            (await getRuntimeConfig(
+              "dashscope_wan_text_to_video_model",
+              "DASHSCOPE_WAN_TEXT_TO_VIDEO_MODEL",
+            )) ||
+            (await getRuntimeConfig("qwen_video_model", "QWEN_VIDEO_MODEL"));
+          const imageToVideoModel = await getRuntimeConfig(
+            "dashscope_wan_image_to_video_model",
+            "DASHSCOPE_WAN_IMAGE_TO_VIDEO_MODEL",
+          );
+          const audioModel =
+            (await getRuntimeConfig(
+              "dashscope_audio_model",
+              "DASHSCOPE_AUDIO_MODEL",
+            )) ||
+            (await getRuntimeConfig("qwen_audio_model", "QWEN_AUDIO_MODEL"));
           const warnings: string[] = [];
           if (!key) {
             return {
@@ -10679,12 +12807,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               status: "missing_key" as const,
               configured: false,
               message: "Missing qwen_api_key. Add it to enable Qwen tasks.",
-              setupWarnings: ["Add qwen_api_key and qwen_base_url to get started."],
+              setupWarnings: [
+                "Add qwen_api_key and qwen_base_url to get started.",
+              ],
             };
           }
-          if (imageModel) warnings.push("Image generation requires DashScope native endpoint — status: setup_needed.");
-          if (videoModel || imageToVideoModel) warnings.push("Wan video generation requires DashScope native endpoint — status: setup_needed.");
-          if (audioModel) warnings.push("DashScope native audio generation requires native endpoint — status: setup_needed.");
+          if (imageModel)
+            warnings.push(
+              "Image generation requires DashScope native endpoint — status: setup_needed.",
+            );
+          if (videoModel || imageToVideoModel)
+            warnings.push(
+              "Wan video generation requires DashScope native endpoint — status: setup_needed.",
+            );
+          if (audioModel)
+            warnings.push(
+              "DashScope native audio generation requires native endpoint — status: setup_needed.",
+            );
           try {
             const testResult = await testQwenTextGeneration(12_000);
             return {
@@ -10713,7 +12852,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }
         }
 
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Unknown provider" });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Unknown provider",
+        });
       }),
 
     testAIProviderTaskModel: adminUnlockedProcedure
@@ -10731,10 +12873,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const result = await execTask({
             task: taskEnum,
             input: {
-              prompt: "Return one sentence confirming this AI task model is operational.",
+              prompt:
+                "Return one sentence confirming this AI task model is operational.",
               max_tokens: 60,
             },
-            tenantScope: { tenantType: "stable", tenantId: "admin-test", initiatedByUserId: 0 },
+            tenantScope: {
+              tenantType: "stable",
+              tenantId: "admin-test",
+              initiatedByUserId: 0,
+            },
             timeoutMs: 18_000,
           });
           return {
@@ -10756,205 +12903,249 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     createMarketingAttributionLink: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-        campaignItemId: z.number().int().positive().optional(),
-        destinationUrl: z.string().url().max(2000),
-        utmSource: z.string().max(120).optional(),
-        utmMedium: z.string().max(120).optional(),
-        utmCampaign: z.string().max(120).optional(),
-        utmContent: z.string().max(120).optional(),
-        utmTerm: z.string().max(120).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+          campaignItemId: z.number().int().positive().optional(),
+          destinationUrl: z.string().url().max(2000),
+          utmSource: z.string().max(120).optional(),
+          utmMedium: z.string().max(120).optional(),
+          utmCampaign: z.string().max(120).optional(),
+          utmContent: z.string().max(120).optional(),
+          utmTerm: z.string().max(120).optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return createMarketingAttributionLinkService(input);
       }),
 
     listMarketingAttributionLinks: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingAttributionLinksService(input);
       }),
 
     recordMarketingConversionEvent: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-        campaignItemId: z.number().int().positive().optional(),
-        eventType: z.string().min(1).max(80),
-        source: z.enum(["manual", "attribution", "connector", "imported", "api"]),
-        sourceRef: z.string().max(255).optional(),
-        contactRef: z.string().max(255).optional(),
-        revenueValue: z.string().max(120).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+          campaignItemId: z.number().int().positive().optional(),
+          eventType: z.string().min(1).max(80),
+          source: z.enum([
+            "manual",
+            "attribution",
+            "connector",
+            "imported",
+            "api",
+          ]),
+          sourceRef: z.string().max(255).optional(),
+          contactRef: z.string().max(255).optional(),
+          revenueValue: z.string().max(120).optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await recordMarketingConversionEventService(input);
         return { id };
       }),
 
     listMarketingCampaignResults: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingCampaignResultsService(input);
       }),
 
     importMarketingManualMetrics: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive(),
-        campaignItemId: z.number().int().positive().optional(),
-        platform: z.string().min(1).max(80),
-        metricType: z.string().min(1).max(80),
-        metricValue: z.number(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive(),
+          campaignItemId: z.number().int().positive().optional(),
+          platform: z.string().min(1).max(80),
+          metricType: z.string().min(1).max(80),
+          metricValue: z.number(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await importMarketingManualMetricsService(input);
         return { id, source: "manual" as const };
       }),
 
     importMarketingConnectorMetrics: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive(),
-        campaignItemId: z.number().int().positive().optional(),
-        platform: z.string().min(1).max(80),
-        metricType: z.string().min(1).max(80),
-        metricValue: z.number(),
-        sourceRef: z.string().min(1).max(255),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive(),
+          campaignItemId: z.number().int().positive().optional(),
+          platform: z.string().min(1).max(80),
+          metricType: z.string().min(1).max(80),
+          metricValue: z.number(),
+          sourceRef: z.string().min(1).max(255),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await recordConnectorMetricService(input);
         return { id, source: "connector" as const };
       }),
 
     getMarketingResultsSummary: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingResultsSummaryService(input);
       }),
 
     getMarketingPerformanceScore: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return scoreMarketingCampaignPerformanceService(input);
       }),
 
     getMarketingWinningPatterns: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return detectMarketingWinningPatternsService(input);
       }),
 
     getMarketingPerformanceContext: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingPerformanceContextService(input);
       }),
 
     createMarketingAgentRun: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-        agentRole: z.enum(["StrategyAgent", "CopyAgent", "MediaAgent", "AvatarVoiceAgent", "QaAgent", "SchedulerAgent", "ResultsAgent"]),
-        inputJson: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+          agentRole: z.enum([
+            "StrategyAgent",
+            "CopyAgent",
+            "MediaAgent",
+            "AvatarVoiceAgent",
+            "QaAgent",
+            "SchedulerAgent",
+            "ResultsAgent",
+          ]),
+          inputJson: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const id = await createMarketingAgentRunService(input);
         return { id };
       }),
 
     listMarketingAgentRuns: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingAgentRunsService(input);
       }),
 
     getMarketingAgentRun: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingAgentRunService(input);
       }),
 
     runMarketingAgentTask: adminUnlockedProcedure
-      .input(z.object({
-        runId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        taskType: z.string().min(1).max(80),
-        prompt: z.string().min(3).max(12000),
-      }))
+      .input(
+        z.object({
+          runId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          taskType: z.string().min(1).max(80),
+          prompt: z.string().min(3).max(12000),
+        }),
+      )
       .mutation(async ({ input }) => {
         return runMarketingAgentTaskService(input);
       }),
 
     generateMarketingAdPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        goal: z.string().min(3).max(600),
-        audience: z.string().min(2).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
-        durationSeconds: z.number().int().min(15).max(120).default(30),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          goal: z.string().min(3).max(600),
+          audience: z.string().min(2).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
+          durationSeconds: z.number().int().min(15).max(120).default(30),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+        }),
+      )
       .mutation(async ({ input }) => {
         return composeThirtySecondAdPackageService({
           ...input,
@@ -10963,18 +13154,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateMarketingVideoPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        goal: z.string().min(3).max(600),
-        audience: z.string().min(2).max(600),
-        platform: z.string().min(1).max(120),
-        durationSeconds: z.number().int().min(60).max(600).default(180),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          goal: z.string().min(3).max(600),
+          audience: z.string().min(2).max(600),
+          platform: z.string().min(1).max(120),
+          durationSeconds: z.number().int().min(60).max(600).default(180),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+        }),
+      )
       .mutation(async ({ input }) => {
         return composeAssembledVideoPackageService({
           ...input,
@@ -10984,19 +13177,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateMarketingCampaignPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        goal: z.string().min(3).max(600),
-        audience: z.string().min(2).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
-        durationDays: z.number().int().min(7).max(365).default(30),
-        targetOutcome: z.string().max(600).optional(),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          goal: z.string().min(3).max(600),
+          audience: z.string().min(2).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
+          durationDays: z.number().int().min(7).max(365).default(30),
+          targetOutcome: z.string().max(600).optional(),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+        }),
+      )
       .mutation(async ({ input }) => {
         return composeSignupCampaignPackageService({
           ...input,
@@ -11005,19 +13200,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateMarketingSocialPostPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string(),
-        workspaceId: z.string(),
-        hostAppId: z.string(),
-        goal: z.string(),
-        audience: z.string(),
-        platforms: z.array(z.string()),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-        durationDays: z.number().default(7),
-        campaignId: z.number().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string(),
+          workspaceId: z.string(),
+          hostAppId: z.string(),
+          goal: z.string(),
+          audience: z.string(),
+          platforms: z.array(z.string()),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+          durationDays: z.number().default(7),
+          campaignId: z.number().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return generateMarketingSocialPostPackageService({
           ...input,
@@ -11026,19 +13223,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateMarketingPaidSocialAdPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string(),
-        workspaceId: z.string(),
-        hostAppId: z.string(),
-        goal: z.string(),
-        audience: z.string(),
-        platforms: z.array(z.string()),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-        durationDays: z.number().default(7),
-        campaignId: z.number().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string(),
+          workspaceId: z.string(),
+          hostAppId: z.string(),
+          goal: z.string(),
+          audience: z.string(),
+          platforms: z.array(z.string()),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+          durationDays: z.number().default(7),
+          campaignId: z.number().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return generateMarketingPaidSocialAdPackageService({
           ...input,
@@ -11047,19 +13246,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateMarketingEmailCampaignPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string(),
-        workspaceId: z.string(),
-        hostAppId: z.string(),
-        goal: z.string(),
-        audience: z.string(),
-        platforms: z.array(z.string()).default(["Email"]),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-        durationDays: z.number().default(7),
-        campaignId: z.number().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string(),
+          workspaceId: z.string(),
+          hostAppId: z.string(),
+          goal: z.string(),
+          audience: z.string(),
+          platforms: z.array(z.string()).default(["Email"]),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+          durationDays: z.number().default(7),
+          campaignId: z.number().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return generateMarketingEmailCampaignPackageService({
           ...input,
@@ -11068,19 +13269,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     generateMarketingWeeklyContentPackPackage: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string(),
-        workspaceId: z.string(),
-        hostAppId: z.string(),
-        goal: z.string(),
-        audience: z.string(),
-        platforms: z.array(z.string()),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        exportOnly: z.boolean().default(true),
-        requireApproval: z.boolean().default(true),
-        durationDays: z.number().default(7),
-        campaignId: z.number().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string(),
+          workspaceId: z.string(),
+          hostAppId: z.string(),
+          goal: z.string(),
+          audience: z.string(),
+          platforms: z.array(z.string()),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          exportOnly: z.boolean().default(true),
+          requireApproval: z.boolean().default(true),
+          durationDays: z.number().default(7),
+          campaignId: z.number().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return generateMarketingWeeklyContentPackPackageService({
           ...input,
@@ -11089,41 +13292,47 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     runAutonomousMarketingCampaign: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        goal: z.string().min(3).max(600),
-        audience: z.string().min(2).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
-        durationDays: z.number().int().min(1).max(365),
-        contentTypes: z.array(z.string().min(1).max(120)).min(1).max(20),
-        requireApproval: z.boolean().default(true),
-        exportOnly: z.boolean().default(true),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          goal: z.string().min(3).max(600),
+          audience: z.string().min(2).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1).max(12),
+          durationDays: z.number().int().min(1).max(365),
+          contentTypes: z.array(z.string().min(1).max(120)).min(1).max(20),
+          requireApproval: z.boolean().default(true),
+          exportOnly: z.boolean().default(true),
+        }),
+      )
       .mutation(async ({ input }) => {
         return runAutonomousMarketingCampaignService(input);
       }),
 
     cancelMarketingAgentRun: adminUnlockedProcedure
-      .input(z.object({
-        id: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          id: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .mutation(async ({ input }) => {
         return cancelMarketingAgentRunService(input);
       }),
 
     getMarketingBackendReadiness: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingBackendReadinessService(input);
       }),
@@ -11144,21 +13353,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getMarketingConnectorReadiness: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingConnectorReadinessService(input);
       }),
 
     getMarketingCreationCapabilities: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-      }).optional())
+      .input(
+        z
+          .object({
+            tenantId: z.string().min(1).max(100).default("global"),
+            workspaceId: z.string().min(1).max(120).default("default"),
+            hostAppId: z.string().min(1).max(120).default("equiprofile"),
+            qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         return getMarketingCreationCapabilitiesService({
           tenantId: input?.tenantId ?? "global",
@@ -11169,16 +13384,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     getMarketingCommandCentreState: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        qualityMode: z.enum(["standard", "elite"]).default("standard"),
-        campaignId: z.number().int().positive().optional(),
-        goalHint: z.string().max(600).optional(),
-        audienceHint: z.string().max(600).optional(),
-        platformsHint: z.array(z.string().min(1).max(120)).max(12).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          qualityMode: z.enum(["standard", "elite"]).default("standard"),
+          campaignId: z.number().int().positive().optional(),
+          goalHint: z.string().max(600).optional(),
+          audienceHint: z.string().max(600).optional(),
+          platformsHint: z.array(z.string().min(1).max(120)).max(12).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingCommandCentreStateService(input);
       }),
@@ -11195,158 +13412,144 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return listMarketingCtaLibraryService();
     }),
 
-    listMarketingNicheCampaignTemplates: adminUnlockedProcedure.query(async () => {
-      return listMarketingNicheCampaignTemplatesService();
-    }),
+    listMarketingNicheCampaignTemplates: adminUnlockedProcedure.query(
+      async () => {
+        return listMarketingNicheCampaignTemplatesService();
+      },
+    ),
 
     recommendMarketingPlaybook: adminUnlockedProcedure
-      .input(z.object({
-        platform: z.string().min(1).max(120),
-        goal: z.string().min(1).max(600),
-        audience: z.string().max(600).optional(),
-        campaignType: z.string().max(120).optional(),
-      }))
+      .input(
+        z.object({
+          platform: z.string().min(1).max(120),
+          goal: z.string().min(1).max(600),
+          audience: z.string().max(600).optional(),
+          campaignType: z.string().max(120).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return recommendMarketingPlaybookService(input);
       }),
 
     getMarketingBrandMemory: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingBrandMemoryService(input);
       }),
 
     scanMarketingProductSite: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        landingPageUrl: z.string().url(),
-        signupUrl: z.string().url().optional(),
-        productNotes: z.string().max(6000).optional(),
-        forceRefresh: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          landingPageUrl: z.string().url(),
+          signupUrl: z.string().url().optional(),
+          productNotes: z.string().max(6000).optional(),
+          forceRefresh: z.boolean().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return scanMarketingProductSiteService(input);
       }),
 
     getMarketingProductProfile: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingProductProfileService(input);
       }),
 
     updateMarketingProductProfile: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        appName: z.string().min(1).max(220).optional(),
-        category: z.string().min(1).max(120).optional(),
-        domain: z.string().max(300).nullable().optional(),
-        landingPageUrl: z.string().url().nullable().optional(),
-        signupUrl: z.string().url().nullable().optional(),
-        logoAssetId: z.number().int().positive().nullable().optional(),
-        brandColors: z.array(z.string().max(30)).max(12).optional(),
-        targetAudiences: z.array(z.string().max(500)).max(30).optional(),
-        primaryOffer: z.string().max(2000).nullable().optional(),
-        pricingDetails: z.string().max(4000).nullable().optional(),
-        coreFeatures: z.array(z.string().max(1000)).max(40).optional(),
-        benefits: z.array(z.string().max(1000)).max(40).optional(),
-        painPointsSolved: z.array(z.string().max(1000)).max(40).optional(),
-        objections: z.array(z.string().max(1000)).max(40).optional(),
-        proofPoints: z.array(z.string().max(1000)).max(40).optional(),
-        differentiators: z.array(z.string().max(1000)).max(40).optional(),
-        forbiddenClaims: z.array(z.string().max(1000)).max(40).optional(),
-        toneOfVoice: z.array(z.string().max(500)).max(20).optional(),
-        ctaLibrary: z.array(z.string().max(1000)).max(30).optional(),
-        platformPositioning: z.record(z.string(), z.string().max(2000)).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          appName: z.string().min(1).max(220).optional(),
+          category: z.string().min(1).max(120).optional(),
+          domain: z.string().max(300).nullable().optional(),
+          landingPageUrl: z.string().url().nullable().optional(),
+          signupUrl: z.string().url().nullable().optional(),
+          logoAssetId: z.number().int().positive().nullable().optional(),
+          brandColors: z.array(z.string().max(30)).max(12).optional(),
+          targetAudiences: z.array(z.string().max(500)).max(30).optional(),
+          primaryOffer: z.string().max(2000).nullable().optional(),
+          pricingDetails: z.string().max(4000).nullable().optional(),
+          coreFeatures: z.array(z.string().max(1000)).max(40).optional(),
+          benefits: z.array(z.string().max(1000)).max(40).optional(),
+          painPointsSolved: z.array(z.string().max(1000)).max(40).optional(),
+          objections: z.array(z.string().max(1000)).max(40).optional(),
+          proofPoints: z.array(z.string().max(1000)).max(40).optional(),
+          differentiators: z.array(z.string().max(1000)).max(40).optional(),
+          forbiddenClaims: z.array(z.string().max(1000)).max(40).optional(),
+          toneOfVoice: z.array(z.string().max(500)).max(20).optional(),
+          ctaLibrary: z.array(z.string().max(1000)).max(30).optional(),
+          platformPositioning: z
+            .record(z.string(), z.string().max(2000))
+            .optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return updateMarketingProductProfileService(input);
       }),
 
     refreshMarketingProductProfile: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        forceRefresh: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          forceRefresh: z.boolean().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return refreshMarketingProductProfileService(input);
       }),
 
     confirmMarketingProductProfile: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        logoAssetId: z.number().int().positive().nullable().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          logoAssetId: z.number().int().positive().nullable().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return confirmMarketingProductProfileService(input);
       }),
 
     getMarketingProductDiagnostics: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingProductDiagnosticsService(input);
       }),
 
     upsertMarketingBrandMemory: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        brandName: z.string().min(1).max(220),
-        positioningStatement: z.string().max(2000).optional(),
-        targetPersonas: z.array(z.unknown()).optional(),
-        objections: z.array(z.unknown()).optional(),
-        proofPoints: z.array(z.unknown()).optional(),
-        tabooClaims: z.array(z.unknown()).optional(),
-        toneRules: z.array(z.unknown()).optional(),
-        competitorNotes: z.array(z.unknown()).optional(),
-        winningHooks: z.array(z.unknown()).optional(),
-        winningCtas: z.array(z.unknown()).optional(),
-        winningPlatforms: z.array(z.unknown()).optional(),
-        contentDoDont: z.record(z.string(), z.unknown()).optional(),
-        sourceLabels: z.record(z.string(), z.unknown()).optional(),
-      }))
-      .mutation(async ({ input }) => {
-        return upsertMarketingBrandMemoryService(input);
-      }),
-
-    updateMarketingBrandMemoryFromResults: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
-      .mutation(async ({ input }) => {
-        return updateMarketingBrandMemoryFromResultsService(input);
-      }),
-
-    updateMarketingBrandMemoryFromManualNotes: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        notes: z.object({
-          brandName: z.string().max(220).optional(),
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          brandName: z.string().min(1).max(220),
           positioningStatement: z.string().max(2000).optional(),
           targetPersonas: z.array(z.unknown()).optional(),
           objections: z.array(z.unknown()).optional(),
@@ -11354,9 +13557,49 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tabooClaims: z.array(z.unknown()).optional(),
           toneRules: z.array(z.unknown()).optional(),
           competitorNotes: z.array(z.unknown()).optional(),
+          winningHooks: z.array(z.unknown()).optional(),
+          winningCtas: z.array(z.unknown()).optional(),
+          winningPlatforms: z.array(z.unknown()).optional(),
           contentDoDont: z.record(z.string(), z.unknown()).optional(),
+          sourceLabels: z.record(z.string(), z.unknown()).optional(),
         }),
-      }))
+      )
+      .mutation(async ({ input }) => {
+        return upsertMarketingBrandMemoryService(input);
+      }),
+
+    updateMarketingBrandMemoryFromResults: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        return updateMarketingBrandMemoryFromResultsService(input);
+      }),
+
+    updateMarketingBrandMemoryFromManualNotes: adminUnlockedProcedure
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          notes: z.object({
+            brandName: z.string().max(220).optional(),
+            positioningStatement: z.string().max(2000).optional(),
+            targetPersonas: z.array(z.unknown()).optional(),
+            objections: z.array(z.unknown()).optional(),
+            proofPoints: z.array(z.unknown()).optional(),
+            tabooClaims: z.array(z.unknown()).optional(),
+            toneRules: z.array(z.unknown()).optional(),
+            competitorNotes: z.array(z.unknown()).optional(),
+            contentDoDont: z.record(z.string(), z.unknown()).optional(),
+          }),
+        }),
+      )
       .mutation(async ({ input }) => {
         return updateMarketingBrandMemoryFromManualNotesService(input);
       }),
@@ -11372,43 +13615,49 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     recommendMarketingPlatformSpecialists: adminUnlockedProcedure
-      .input(z.object({
-        platforms: z.array(z.string().min(1).max(120)).min(1),
-        goal: z.string().min(1).max(600),
-        contentTypes: z.array(z.string().min(1).max(120)).optional(),
-      }))
+      .input(
+        z.object({
+          platforms: z.array(z.string().min(1).max(120)).min(1),
+          goal: z.string().min(1).max(600),
+          contentTypes: z.array(z.string().min(1).max(120)).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return recommendMarketingPlatformSpecialistsService(input);
       }),
 
     scoreMarketingPlatformFit: adminUnlockedProcedure
-      .input(z.object({
-        specialistId: z.string().min(1).max(120),
-        contentFormat: z.string().min(1).max(120),
-        contentLengthHint: z.string().max(2000).optional(),
-        hasCta: z.boolean(),
-        hasProof: z.boolean(),
-      }))
+      .input(
+        z.object({
+          specialistId: z.string().min(1).max(120),
+          contentFormat: z.string().min(1).max(120),
+          contentLengthHint: z.string().max(2000).optional(),
+          hasCta: z.boolean(),
+          hasProof: z.boolean(),
+        }),
+      )
       .query(async ({ input }) => {
         return scoreMarketingPlatformFitService(input);
       }),
 
     recordMarketingTrendSignal: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().min(1).max(80),
-        niche: z.string().max(180).optional(),
-        topic: z.string().min(1).max(220),
-        signalType: z.string().min(1).max(120),
-        signalText: z.string().min(1).max(6000),
-        sourceType: z.enum(["manual", "imported", "connector", "scraper"]),
-        sourceUrl: z.string().url().optional(),
-        confidence: z.enum(["low", "medium", "high"]).optional(),
-        expiresAt: z.string().datetime().optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().min(1).max(80),
+          niche: z.string().max(180).optional(),
+          topic: z.string().min(1).max(220),
+          signalType: z.string().min(1).max(120),
+          signalText: z.string().min(1).max(6000),
+          sourceType: z.enum(["manual", "imported", "connector", "scraper"]),
+          sourceUrl: z.string().url().optional(),
+          confidence: z.enum(["low", "medium", "high"]).optional(),
+          expiresAt: z.string().datetime().optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return recordMarketingTrendSignalService({
           ...input,
@@ -11417,231 +13666,267 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     listMarketingTrendSignals: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().max(80).optional(),
-        limit: z.number().int().positive().max(200).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().max(80).optional(),
+          limit: z.number().int().positive().max(200).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingTrendSignalsService(input);
       }),
 
     getMarketingTrendContext: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().max(80).optional(),
-        lookbackDays: z.number().int().positive().max(365).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().max(80).optional(),
+          lookbackDays: z.number().int().positive().max(365).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingTrendContextService(input);
       }),
 
     recordMarketingCompetitorSignal: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        competitorName: z.string().min(1).max(220),
-        platform: z.string().min(1).max(80),
-        signalType: z.string().min(1).max(120),
-        signalText: z.string().min(1).max(6000),
-        sourceType: z.enum(["manual", "imported", "connector", "scraper"]),
-        sourceUrl: z.string().url().optional(),
-        confidence: z.enum(["low", "medium", "high"]).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          competitorName: z.string().min(1).max(220),
+          platform: z.string().min(1).max(80),
+          signalType: z.string().min(1).max(120),
+          signalText: z.string().min(1).max(6000),
+          sourceType: z.enum(["manual", "imported", "connector", "scraper"]),
+          sourceUrl: z.string().url().optional(),
+          confidence: z.enum(["low", "medium", "high"]).optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return recordMarketingCompetitorSignalService(input);
       }),
 
     listMarketingCompetitorSignals: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().max(80).optional(),
-        competitorName: z.string().max(220).optional(),
-        limit: z.number().int().positive().max(200).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().max(80).optional(),
+          competitorName: z.string().max(220).optional(),
+          limit: z.number().int().positive().max(200).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return listMarketingCompetitorSignalsService(input);
       }),
 
     getMarketingCompetitorContext: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().max(80).optional(),
-        lookbackDays: z.number().int().positive().max(365).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().max(80).optional(),
+          lookbackDays: z.number().int().positive().max(365).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingCompetitorContextService(input);
       }),
 
     detectMarketingContentGaps: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().min(1).max(80),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().min(1).max(80),
+        }),
+      )
       .query(async ({ input }) => {
         return detectMarketingContentGapsService(input);
       }),
 
     createMarketingExperiment: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-        name: z.string().min(1).max(220),
-        hypothesis: z.string().max(4000).optional(),
-        sourceType: z.enum(["manual", "connector", "imported", "api"]).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+          name: z.string().min(1).max(220),
+          hypothesis: z.string().max(4000).optional(),
+          sourceType: z
+            .enum(["manual", "connector", "imported", "api"])
+            .optional(),
+          metadata: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return createMarketingExperimentService(input);
       }),
 
     recordMarketingExperimentVariant: adminUnlockedProcedure
-      .input(z.object({
-        experimentId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        variantKey: z.string().min(1).max(80),
-        hook: z.string().max(3000).optional(),
-        cta: z.string().max(1200).optional(),
-        platform: z.string().max(80).optional(),
-        impressions: z.number().int().min(0).optional(),
-        clicks: z.number().int().min(0).optional(),
-        conversions: z.number().int().min(0).optional(),
-        sourceType: z.enum(["manual", "connector", "imported", "api"]).optional(),
-        evidence: z.record(z.string(), z.unknown()).optional(),
-      }))
+      .input(
+        z.object({
+          experimentId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          variantKey: z.string().min(1).max(80),
+          hook: z.string().max(3000).optional(),
+          cta: z.string().max(1200).optional(),
+          platform: z.string().max(80).optional(),
+          impressions: z.number().int().min(0).optional(),
+          clicks: z.number().int().min(0).optional(),
+          conversions: z.number().int().min(0).optional(),
+          sourceType: z
+            .enum(["manual", "connector", "imported", "api"])
+            .optional(),
+          evidence: z.record(z.string(), z.unknown()).optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         return recordMarketingExperimentVariantService(input);
       }),
 
     scoreMarketingExperiment: adminUnlockedProcedure
-      .input(z.object({
-        experimentId: z.number().int().positive(),
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-      }))
+      .input(
+        z.object({
+          experimentId: z.number().int().positive(),
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+        }),
+      )
       .query(async ({ input }) => {
         return scoreMarketingExperimentService(input);
       }),
 
     getMarketingLearningInsights: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingLearningInsightsService(input);
       }),
 
     diagnoseMarketingUnderperformance: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive(),
+        }),
+      )
       .query(async ({ input }) => {
         return diagnoseMarketingUnderperformanceService(input);
       }),
 
     recommendNextMarketingActions: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive(),
-        goal: z.string().min(1).max(600),
-        audience: z.string().min(1).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive(),
+          goal: z.string().min(1).max(600),
+          audience: z.string().min(1).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1),
+        }),
+      )
       .query(async ({ input }) => {
         return recommendNextMarketingActionsService(input);
       }),
 
     explainMarketingWinLoss: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive(),
+        }),
+      )
       .query(async ({ input }) => {
         return explainMarketingWinLossService(input);
       }),
 
     scoreMarketingCreative: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().min(1).max(120),
-        contentType: z.string().min(1).max(120),
-        goal: z.string().min(1).max(600),
-        hook: z.string().max(3000).optional(),
-        body: z.string().max(12000).optional(),
-        cta: z.string().max(1200).optional(),
-        claims: z.array(z.string().max(1000)).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-        hasVisualAsset: z.boolean().optional(),
-        priorFatigueSignals: z.number().int().min(0).max(100).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().min(1).max(120),
+          contentType: z.string().min(1).max(120),
+          goal: z.string().min(1).max(600),
+          hook: z.string().max(3000).optional(),
+          body: z.string().max(12000).optional(),
+          cta: z.string().max(1200).optional(),
+          claims: z.array(z.string().max(1000)).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+          hasVisualAsset: z.boolean().optional(),
+          priorFatigueSignals: z.number().int().min(0).max(100).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return scoreMarketingCreativeService(input);
       }),
 
     improveMarketingCreative: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().min(1).max(120),
-        contentType: z.string().min(1).max(120),
-        goal: z.string().min(1).max(600),
-        hook: z.string().max(3000).optional(),
-        body: z.string().max(12000).optional(),
-        cta: z.string().max(1200).optional(),
-        claims: z.array(z.string().max(1000)).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-        hasVisualAsset: z.boolean().optional(),
-        priorFatigueSignals: z.number().int().min(0).max(100).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().min(1).max(120),
+          contentType: z.string().min(1).max(120),
+          goal: z.string().min(1).max(600),
+          hook: z.string().max(3000).optional(),
+          body: z.string().max(12000).optional(),
+          cta: z.string().max(1200).optional(),
+          claims: z.array(z.string().max(1000)).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+          hasVisualAsset: z.boolean().optional(),
+          priorFatigueSignals: z.number().int().min(0).max(100).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return improveMarketingCreativeService(input);
       }),
 
     getMarketingCreativeScorecard: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        platform: z.string().min(1).max(120),
-        contentType: z.string().min(1).max(120),
-        goal: z.string().min(1).max(600),
-        hook: z.string().max(3000).optional(),
-        body: z.string().max(12000).optional(),
-        cta: z.string().max(1200).optional(),
-        claims: z.array(z.string().max(1000)).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-        hasVisualAsset: z.boolean().optional(),
-        priorFatigueSignals: z.number().int().min(0).max(100).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          platform: z.string().min(1).max(120),
+          contentType: z.string().min(1).max(120),
+          goal: z.string().min(1).max(600),
+          hook: z.string().max(3000).optional(),
+          body: z.string().max(12000).optional(),
+          cta: z.string().max(1200).optional(),
+          claims: z.array(z.string().max(1000)).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+          hasVisualAsset: z.boolean().optional(),
+          priorFatigueSignals: z.number().int().min(0).max(100).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return getMarketingCreativeScorecardService(input);
       }),
@@ -11651,135 +13936,159 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     }),
 
     recommendMarketingMediaTemplate: adminUnlockedProcedure
-      .input(z.object({
-        platform: z.string().min(1).max(120),
-        contentType: z.string().min(1).max(120),
-        includesAvatar: z.boolean().optional(),
-        includesBeforeAfter: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          platform: z.string().min(1).max(120),
+          contentType: z.string().min(1).max(120),
+          includesAvatar: z.boolean().optional(),
+          includesBeforeAfter: z.boolean().optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return recommendMarketingMediaTemplateService(input);
       }),
 
     validateMarketingMediaExcellence: adminUnlockedProcedure
-      .input(z.object({
-        hasRenderedOutput: z.boolean(),
-        hasCaptionTrack: z.boolean(),
-        hasLogoSafeOverlay: z.boolean(),
-        musicLicenseStatus: z.enum(["approved", "missing", "unknown"]).optional(),
-        voiceQualityStatus: z.enum(["ok", "noisy", "missing"]).optional(),
-      }))
+      .input(
+        z.object({
+          hasRenderedOutput: z.boolean(),
+          hasCaptionTrack: z.boolean(),
+          hasLogoSafeOverlay: z.boolean(),
+          musicLicenseStatus: z
+            .enum(["approved", "missing", "unknown"])
+            .optional(),
+          voiceQualityStatus: z.enum(["ok", "noisy", "missing"]).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return validateMarketingMediaExcellenceService(input);
       }),
 
     buildMarketingVideoPacingPlan: adminUnlockedProcedure
-      .input(z.object({
-        durationSeconds: z.number().int().positive().max(7200),
-        platform: z.string().min(1).max(120),
-        hasVoiceover: z.boolean(),
-        hasMusic: z.boolean(),
-      }))
+      .input(
+        z.object({
+          durationSeconds: z.number().int().positive().max(7200),
+          platform: z.string().min(1).max(120),
+          hasVoiceover: z.boolean(),
+          hasMusic: z.boolean(),
+        }),
+      )
       .query(async ({ input }) => {
         return buildMarketingVideoPacingPlanService(input);
       }),
 
     buildMarketingThumbnailPlan: adminUnlockedProcedure
-      .input(z.object({
-        platform: z.string().min(1).max(120),
-        keyMessage: z.string().min(1).max(500),
-        hasLogo: z.boolean(),
-      }))
+      .input(
+        z.object({
+          platform: z.string().min(1).max(120),
+          keyMessage: z.string().min(1).max(500),
+          hasLogo: z.boolean(),
+        }),
+      )
       .query(async ({ input }) => {
         return buildMarketingThumbnailPlanService(input);
       }),
 
     buildMarketingCaptionStylePlan: adminUnlockedProcedure
-      .input(z.object({
-        platform: z.string().min(1).max(120),
-        voiceTone: z.string().max(120).optional(),
-      }))
+      .input(
+        z.object({
+          platform: z.string().min(1).max(120),
+          voiceTone: z.string().max(120).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return buildMarketingCaptionStylePlanService(input);
       }),
 
     analyzeMarketingCampaignBrief: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        goal: z.string().min(1).max(600),
-        audience: z.string().min(1).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1),
-        cta: z.string().max(1200).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          goal: z.string().min(1).max(600),
+          audience: z.string().min(1).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1),
+          cta: z.string().max(1200).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return analyzeMarketingCampaignBriefService(input);
       }),
 
     generateMarketingManagerGuidance: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        goal: z.string().min(1).max(600),
-        audience: z.string().min(1).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1),
-        cta: z.string().max(1200).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          goal: z.string().min(1).max(600),
+          audience: z.string().min(1).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1),
+          cta: z.string().max(1200).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return generateMarketingManagerGuidanceService(input);
       }),
 
     getMarketingManagerGuidance: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        goal: z.string().min(1).max(600),
-        audience: z.string().min(1).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1),
-        cta: z.string().max(1200).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          goal: z.string().min(1).max(600),
+          audience: z.string().min(1).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1),
+          cta: z.string().max(1200).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return generateMarketingManagerGuidanceService(input);
       }),
 
     detectMarketingBriefWeaknesses: adminUnlockedProcedure
-      .input(z.object({
-        goal: z.string().min(1).max(600),
-        audience: z.string().min(1).max(600),
-        platform: z.array(z.string().min(1).max(120)).min(1),
-        cta: z.string().max(1200).optional(),
-        proofPoints: z.array(z.string().max(1000)).optional(),
-      }))
+      .input(
+        z.object({
+          goal: z.string().min(1).max(600),
+          audience: z.string().min(1).max(600),
+          platform: z.array(z.string().min(1).max(120)).min(1),
+          cta: z.string().max(1200).optional(),
+          proofPoints: z.array(z.string().max(1000)).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         return detectMarketingBriefWeaknessesService(input);
       }),
 
     recommendCampaignStructure: adminUnlockedProcedure
-      .input(z.object({
-        goal: z.string().min(1).max(600),
-        platform: z.array(z.string().min(1).max(120)).min(1),
-        audience: z.string().min(1).max(600),
-      }))
+      .input(
+        z.object({
+          goal: z.string().min(1).max(600),
+          platform: z.array(z.string().min(1).max(120)).min(1),
+          audience: z.string().min(1).max(600),
+        }),
+      )
       .query(async ({ input }) => {
         return recommendCampaignStructureService(input);
       }),
 
     recommendMarketingNextSteps: adminUnlockedProcedure
-      .input(z.object({
-        tenantId: z.string().min(1).max(100).default("global"),
-        workspaceId: z.string().min(1).max(120).default("default"),
-        hostAppId: z.string().min(1).max(120).default("equiprofile"),
-        campaignId: z.number().int().positive().optional(),
-        goal: z.string().min(1).max(600),
-        audience: z.string().min(1).max(600),
-        platforms: z.array(z.string().min(1).max(120)).min(1),
-      }))
+      .input(
+        z.object({
+          tenantId: z.string().min(1).max(100).default("global"),
+          workspaceId: z.string().min(1).max(120).default("default"),
+          hostAppId: z.string().min(1).max(120).default("equiprofile"),
+          campaignId: z.number().int().positive().optional(),
+          goal: z.string().min(1).max(600),
+          audience: z.string().min(1).max(600),
+          platforms: z.array(z.string().min(1).max(120)).min(1),
+        }),
+      )
       .query(async ({ input }) => {
         return recommendMarketingNextStepsFromManagerService(input);
       }),
@@ -11820,20 +14129,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .query(({ input }) => {
         const tpl = getTemplateById(input.templateId);
-        if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        if (!tpl)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Template not found",
+          });
         const html = applyMergeFields(tpl.getHtml(), {
           firstName: input.mergeFields?.firstName || "Preview User",
           email: "preview@example.com",
           currentDate: formatDateGB(),
           subject: input.mergeFields?.subject || "Campaign Subject",
-          content: input.mergeFields?.content || "Your campaign content goes here.",
+          content:
+            input.mergeFields?.content || "Your campaign content goes here.",
         });
         return { html };
       }),
 
     getSegmentCounts: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { leads: 0, trial: 0, paid: 0, all: 0, marketing: 0, unsubscribed: 0, byCountry: [], byType: [] };
+      if (!dbConn)
+        return {
+          leads: 0,
+          trial: 0,
+          paid: 0,
+          all: 0,
+          marketing: 0,
+          unsubscribed: 0,
+          byCountry: [],
+          byType: [],
+        };
 
       const [leadsResult] = await dbConn
         .select({ count: sql<number>`COUNT(*)` })
@@ -11842,10 +14166,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         .select({ count: sql<number>`COUNT(*)` })
         .from(users)
         .where(
-          and(
-            eq(users.subscriptionStatus, "trial"),
-            eq(users.isActive, true),
-          ),
+          and(eq(users.subscriptionStatus, "trial"), eq(users.isActive, true)),
         );
       const [paidResult] = await dbConn
         .select({ count: sql<number>`COUNT(*)` })
@@ -11894,8 +14215,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         all: allResult?.count || 0,
         marketing: marketingResult?.count || 0,
         unsubscribed: unsubResult?.count || 0,
-        byCountry: byCountry.map((r) => ({ country: r.country || "Unknown", count: r.count })),
-        byType: byType.map((r) => ({ type: r.contactType || "individual", count: r.count })),
+        byCountry: byCountry.map((r) => ({
+          country: r.country || "Unknown",
+          count: r.count,
+        })),
+        byType: byType.map((r) => ({
+          type: r.contactType || "individual",
+          count: r.count,
+        })),
       };
     }),
 
@@ -11951,7 +14278,11 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
         const tpl = getTemplateById(input.templateId);
-        if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        if (!tpl)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Template not found",
+          });
 
         // Apply static merge fields (content, subject) at creation time so the
         // stored htmlBody contains the admin's actual copy. Per-recipient fields
@@ -11969,7 +14300,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           segment: input.segment,
           customFilter: null,
           targetCountry: normalizeCountry(input.targetCountry) || null,
-          targetType: input.targetType ? normalizeContactType(input.targetType) : null,
+          targetType: input.targetType
+            ? normalizeContactType(input.targetType)
+            : null,
           dailyLimit: input.dailyLimit,
           sentToday: 0,
           lastSendDate: null,
@@ -12001,10 +14334,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       )
       .mutation(async ({ ctx, input }) => {
         const tpl = getTemplateById(input.templateId);
-        if (!tpl) throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
+        if (!tpl)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Template not found",
+          });
 
         const html = applyMergeFields(tpl.getHtml(), {
-          firstName: input.mergeFields?.firstName || extractFirstName(ctx.user.name) || "Admin",
+          firstName:
+            input.mergeFields?.firstName ||
+            extractFirstName(ctx.user.name) ||
+            "Admin",
           email: ctx.user.email || "",
           currentDate: formatDateGB(),
           subject: input.mergeFields?.subject || input.subject,
@@ -12012,7 +14352,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         });
 
         if (!ctx.user.email) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Admin email not found" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Admin email not found",
+          });
         }
 
         await sendEmail(ctx.user.email, `[TEST] ${input.subject}`, html);
@@ -12032,17 +14375,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(eq(emailCampaigns.id, input.campaignId));
 
         if (!campaign)
-          throw new TRPCError({ code: "NOT_FOUND", message: "Campaign not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Campaign not found",
+          });
         if (campaign.status === "sent")
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign already sent" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Campaign already sent",
+          });
         if (campaign.status === "sending")
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is currently sending" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Campaign is currently sending",
+          });
 
         // ── WEEKDAY-ONLY CHECK ──
         if (!isWeekday()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Campaign sending is restricted to weekdays (Monday–Friday) to protect deliverability. Please try again on a weekday.",
+            message:
+              "Campaign sending is restricted to weekdays (Monday–Friday) to protect deliverability. Please try again on a weekday.",
           });
         }
 
@@ -12050,7 +14403,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!isWithinSendHours()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Campaign sending is only permitted between 08:00 and 18:00 UTC to protect deliverability. Please try again during business hours.",
+            message:
+              "Campaign sending is only permitted between 08:00 and 18:00 UTC to protect deliverability. Please try again during business hours.",
           });
         }
 
@@ -12058,7 +14412,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // Count ALL new outreach sends today across every campaign
         const today = getTodayDateString();
         const [globalLogResult] = await dbConn
-          .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+          .select({
+            total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+          })
           .from(campaignSendLog)
           .where(eq(campaignSendLog.sendDate, today));
         const globalOutreachSentToday = Number(globalLogResult?.total ?? 0);
@@ -12067,12 +14423,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const [followupResult] = await dbConn
           .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
           .from(campaignSequenceRecipients)
-          .where(and(
-            eq(campaignSequenceRecipients.status, "sent"),
-            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-          ));
+          .where(
+            and(
+              eq(campaignSequenceRecipients.status, "sent"),
+              sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+            ),
+          );
         const globalFollowupSentToday = Number(followupResult?.total ?? 0);
-        const globalTotalSentToday = globalOutreachSentToday + globalFollowupSentToday;
+        const globalTotalSentToday =
+          globalOutreachSentToday + globalFollowupSentToday;
 
         if (globalTotalSentToday >= TOTAL_MAILBOX_DAILY_CAP) {
           throw new TRPCError({
@@ -12088,15 +14447,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // ── PER-CAMPAIGN DAILY LIMIT CHECK ──
-        const dailyLimit = Math.min(campaign.dailyLimit || DEFAULT_DAILY_LIMIT, NEW_OUTREACH_DAILY_CAP);
+        const dailyLimit = Math.min(
+          campaign.dailyLimit || DEFAULT_DAILY_LIMIT,
+          NEW_OUTREACH_DAILY_CAP,
+        );
         // Check how many we've already sent today for this campaign
         const [todayLog] = await dbConn
           .select({ sendCount: campaignSendLog.sendCount })
           .from(campaignSendLog)
-          .where(and(
-            eq(campaignSendLog.campaignId, input.campaignId),
-            eq(campaignSendLog.sendDate, today),
-          ));
+          .where(
+            and(
+              eq(campaignSendLog.campaignId, input.campaignId),
+              eq(campaignSendLog.sendDate, today),
+            ),
+          );
         const alreadySentToday = todayLog?.sendCount || 0;
         const remainingToday = Math.max(0, dailyLimit - alreadySentToday);
 
@@ -12114,7 +14478,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .where(eq(emailCampaigns.id, input.campaignId));
 
         // Build recipient list based on segment
-        type Recipient = { email: string; name: string | null; trialEndsAt?: Date | null; unsubscribeToken?: string };
+        type Recipient = {
+          email: string;
+          name: string | null;
+          trialEndsAt?: Date | null;
+          unsubscribeToken?: string;
+        };
         let recipients: Recipient[] = [];
 
         if (campaign.segment === "leads") {
@@ -12122,16 +14491,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           recipients = leads.map((l) => ({ email: l.email, name: l.name }));
         } else if (campaign.segment === "marketing") {
           // Marketing contacts segment — apply country/type filters
-          const mcConditions: ReturnType<typeof eq>[] = [eq(marketingContacts.status, "active")];
+          const mcConditions: ReturnType<typeof eq>[] = [
+            eq(marketingContacts.status, "active"),
+          ];
           if (campaign.targetCountry) {
-            mcConditions.push(eq(marketingContacts.country, campaign.targetCountry));
+            mcConditions.push(
+              eq(marketingContacts.country, campaign.targetCountry),
+            );
           }
           if (campaign.targetType) {
-            mcConditions.push(eq(marketingContacts.contactType, campaign.targetType));
+            mcConditions.push(
+              eq(marketingContacts.contactType, campaign.targetType),
+            );
           }
-          const contacts = await dbConn.select().from(marketingContacts)
+          const contacts = await dbConn
+            .select()
+            .from(marketingContacts)
             .where(and(...mcConditions));
-          recipients = contacts.map((c) => ({ email: c.email, name: c.name, unsubscribeToken: c.unsubscribeToken }));
+          recipients = contacts.map((c) => ({
+            email: c.email,
+            name: c.name,
+            unsubscribeToken: c.unsubscribeToken,
+          }));
         } else {
           let condition;
           if (campaign.segment === "trial") {
@@ -12160,20 +14541,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // ── SUPPRESSION CHECK (UK GDPR + PECR compliance) ──
-        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        const suppressions = await dbConn
+          .select({ email: emailUnsubscribes.email })
+          .from(emailUnsubscribes);
+        const suppressedSet = new Set(
+          suppressions.map((s) => s.email.toLowerCase()),
+        );
         // Also exclude bounced marketing contacts
-        const bouncedContacts = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts)
-          .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
-        for (const b of bouncedContacts) suppressedSet.add(b.email.toLowerCase());
+        const bouncedContacts = await dbConn
+          .select({ email: marketingContacts.email })
+          .from(marketingContacts)
+          .where(
+            or(
+              eq(marketingContacts.status, "unsubscribed"),
+              eq(marketingContacts.status, "bounced"),
+            ),
+          );
+        for (const b of bouncedContacts)
+          suppressedSet.add(b.email.toLowerCase());
 
         // Exclude already-sent recipients for this campaign
-        const alreadySent = await dbConn.select({ email: emailCampaignRecipients.email }).from(emailCampaignRecipients)
-          .where(and(
-            eq(emailCampaignRecipients.campaignId, input.campaignId),
-            eq(emailCampaignRecipients.status, "sent"),
-          ));
-        const alreadySentSet = new Set(alreadySent.map(r => r.email.toLowerCase()));
+        const alreadySent = await dbConn
+          .select({ email: emailCampaignRecipients.email })
+          .from(emailCampaignRecipients)
+          .where(
+            and(
+              eq(emailCampaignRecipients.campaignId, input.campaignId),
+              eq(emailCampaignRecipients.status, "sent"),
+            ),
+          );
+        const alreadySentSet = new Set(
+          alreadySent.map((r) => r.email.toLowerCase()),
+        );
 
         // Deduplicate by email, remove suppressed, remove already sent
         const seen = new Set<string>();
@@ -12187,10 +14586,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // ── ENFORCE DAILY LIMIT + GLOBAL CAP + STAGGER WINDOW ──
         // Cap: min(per-campaign remaining, global mailbox remaining, per-window stagger limit)
-        const globalMailboxRemaining = Math.max(0, TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday);
-        const sendLimit = Math.min(remainingToday, globalMailboxRemaining, NEW_OUTREACH_PER_WINDOW);
+        const globalMailboxRemaining = Math.max(
+          0,
+          TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday,
+        );
+        const sendLimit = Math.min(
+          remainingToday,
+          globalMailboxRemaining,
+          NEW_OUTREACH_PER_WINDOW,
+        );
         const recipientsToSend = uniqueRecipients.slice(0, sendLimit);
-        const recipientsDeferred = uniqueRecipients.length - recipientsToSend.length;
+        const recipientsDeferred =
+          uniqueRecipients.length - recipientsToSend.length;
 
         // Update recipient count
         await dbConn
@@ -12211,8 +14618,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             let unsubToken = recipient.unsubscribeToken || "";
             if (!unsubToken) {
               // Look up marketing contact token or generate fallback
-              const [mc] = await dbConn.select().from(marketingContacts)
-                .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+              const [mc] = await dbConn
+                .select()
+                .from(marketingContacts)
+                .where(
+                  eq(marketingContacts.email, recipient.email.toLowerCase()),
+                );
               unsubToken = mc?.unsubscribeToken || "";
             }
             const unsubLink = unsubToken
@@ -12229,7 +14640,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               unsubscribeLink: unsubLink,
             });
 
-            await sendCampaignEmail(recipient.email, campaign.subject, html, unsubLink);
+            await sendCampaignEmail(
+              recipient.email,
+              campaign.subject,
+              html,
+              unsubLink,
+            );
 
             await dbConn.insert(emailCampaignRecipients).values({
               campaignId: input.campaignId,
@@ -12241,7 +14657,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             sentCount++;
 
             // Update lastContactedAt on marketing contact
-            await dbConn.update(marketingContacts)
+            await dbConn
+              .update(marketingContacts)
               .set({ lastContactedAt: new Date() })
               .where(eq(marketingContacts.email, recipient.email.toLowerCase()))
               .catch(() => {}); // non-critical
@@ -12260,12 +14677,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // ── LOG DAILY SEND COUNT ──
         if (sentCount > 0) {
           if (todayLog) {
-            await dbConn.update(campaignSendLog)
+            await dbConn
+              .update(campaignSendLog)
               .set({ sendCount: alreadySentToday + sentCount })
-              .where(and(
-                eq(campaignSendLog.campaignId, input.campaignId),
-                eq(campaignSendLog.sendDate, today),
-              ));
+              .where(
+                and(
+                  eq(campaignSendLog.campaignId, input.campaignId),
+                  eq(campaignSendLog.sendDate, today),
+                ),
+              );
           } else {
             await dbConn.insert(campaignSendLog).values({
               campaignId: input.campaignId,
@@ -12308,7 +14728,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }),
         });
 
-        return { sentCount, failedCount, total: uniqueRecipients.length, deferred: recipientsDeferred, dailyLimit };
+        return {
+          sentCount,
+          failedCount,
+          total: uniqueRecipients.length,
+          deferred: recipientsDeferred,
+          dailyLimit,
+        };
       }),
 
     deleteCampaign: adminUnlockedProcedure
@@ -12339,11 +14765,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // ── Campaign Replies Inbox ─────────────────────────────────────────────
 
     getCampaignReplies: adminUnlockedProcedure
-      .input(z.object({
-        status: z.enum(["all", "new", "read", "interested", "not_interested", "follow_up", "converted", "do_not_contact"]).optional(),
-        limit: z.number().min(1).max(100).default(50),
-        offset: z.number().min(0).default(0),
-      }))
+      .input(
+        z.object({
+          status: z
+            .enum([
+              "all",
+              "new",
+              "read",
+              "interested",
+              "not_interested",
+              "follow_up",
+              "converted",
+              "do_not_contact",
+            ])
+            .optional(),
+          limit: z.number().min(1).max(100).default(50),
+          offset: z.number().min(0).default(0),
+        }),
+      )
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return { replies: [], total: 0 };
@@ -12371,21 +14810,34 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     updateReplyStatus: adminUnlockedProcedure
-      .input(z.object({
-        replyId: z.number(),
-        status: z.enum(["new", "read", "interested", "not_interested", "follow_up", "converted", "do_not_contact"]),
-        notes: z.string().max(500).optional(),
-        stopSequence: z.boolean().optional(),
-      }))
+      .input(
+        z.object({
+          replyId: z.number(),
+          status: z.enum([
+            "new",
+            "read",
+            "interested",
+            "not_interested",
+            "follow_up",
+            "converted",
+            "do_not_contact",
+          ]),
+          notes: z.string().max(500).optional(),
+          stopSequence: z.boolean().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-        const [reply] = await dbConn.select().from(campaignReplies)
+        const [reply] = await dbConn
+          .select()
+          .from(campaignReplies)
           .where(eq(campaignReplies.id, input.replyId));
         if (!reply) throw new TRPCError({ code: "NOT_FOUND" });
 
-        await dbConn.update(campaignReplies)
+        await dbConn
+          .update(campaignReplies)
           .set({
             status: input.status,
             notes: input.notes ?? reply.notes,
@@ -12395,7 +14847,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // If do_not_contact — add to suppression list
         if (input.status === "do_not_contact" && reply.fromEmail) {
-          await dbConn.insert(emailUnsubscribes)
+          await dbConn
+            .insert(emailUnsubscribes)
             .values({
               email: reply.fromEmail.toLowerCase(),
               token: nanoid(32),
@@ -12405,7 +14858,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             })
             .onDuplicateKeyUpdate({ set: { source: "admin" } });
           // Also update marketing contact status
-          await dbConn.update(marketingContacts)
+          await dbConn
+            .update(marketingContacts)
             .set({ status: "unsubscribed" })
             .where(eq(marketingContacts.email, reply.fromEmail.toLowerCase()))
             .catch(() => {});
@@ -12413,19 +14867,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // If stopSequence — pause all pending sequence steps for this contact's campaigns
         if (input.stopSequence && reply.fromEmail) {
-          const affectedRecipients = await dbConn.selectDistinct({ campaignId: emailCampaignRecipients.campaignId })
+          const affectedRecipients = await dbConn
+            .selectDistinct({ campaignId: emailCampaignRecipients.campaignId })
             .from(emailCampaignRecipients)
-            .where(eq(emailCampaignRecipients.email, reply.fromEmail.toLowerCase()));
+            .where(
+              eq(emailCampaignRecipients.email, reply.fromEmail.toLowerCase()),
+            );
           const campaignIdSet = new Set<number>();
-          affectedRecipients.forEach(r => campaignIdSet.add(r.campaignId));
+          affectedRecipients.forEach((r) => campaignIdSet.add(r.campaignId));
           const campaignIds = Array.from(campaignIdSet);
           if (campaignIds.length > 0) {
-            await dbConn.update(campaignSequences)
+            await dbConn
+              .update(campaignSequences)
               .set({ status: "skipped" })
-              .where(and(
-                inArray(campaignSequences.campaignId, campaignIds),
-                eq(campaignSequences.status, "pending"),
-              )).catch(() => {});
+              .where(
+                and(
+                  inArray(campaignSequences.campaignId, campaignIds),
+                  eq(campaignSequences.status, "pending"),
+                ),
+              )
+              .catch(() => {});
           }
         }
 
@@ -12434,13 +14895,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
     triggerReplyFetch: adminUnlockedProcedure.mutation(async () => {
       try {
-        const { fetchCampaignReplies } = await import("./_core/campaignReplyFetcher");
+        const { fetchCampaignReplies } =
+          await import("./_core/campaignReplyFetcher");
         const count = await fetchCampaignReplies(50);
         return { fetched: count };
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: err instanceof Error ? err.message : "Failed to fetch replies",
+          message:
+            err instanceof Error ? err.message : "Failed to fetch replies",
         });
       }
     }),
@@ -12453,20 +14916,41 @@ Format your response as JSON with keys: recommendation, explanation, precautions
      */
     getCampaignAssignmentPreview: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
-      if (!dbConn) return { management: 0, academy: 0, blocked: 0, alreadySent: 0, suspectedDuplicate: 0, total: 0 };
+      if (!dbConn)
+        return {
+          management: 0,
+          academy: 0,
+          blocked: 0,
+          alreadySent: 0,
+          suspectedDuplicate: 0,
+          total: 0,
+        };
 
       const contacts = await dbConn.select().from(marketingContacts);
-      const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-      const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+      const suppressions = await dbConn
+        .select({ email: emailUnsubscribes.email })
+        .from(emailUnsubscribes);
+      const suppressedSet = new Set(
+        suppressions.map((s) => s.email.toLowerCase()),
+      );
 
       const alreadySentEmails = await dbConn
         .select({ email: emailCampaignRecipients.email })
         .from(emailCampaignRecipients)
         .where(eq(emailCampaignRecipients.status, "sent"));
-      const alreadySentSet = new Set(alreadySentEmails.map(r => r.email.toLowerCase()));
+      const alreadySentSet = new Set(
+        alreadySentEmails.map((r) => r.email.toLowerCase()),
+      );
 
       // Types that map to academy/school family
-      const academyTypes = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+      const academyTypes = new Set([
+        "school",
+        "college",
+        "academy",
+        "student",
+        "teacher",
+        "instructor",
+      ]);
 
       let management = 0;
       let academy = 0;
@@ -12476,11 +14960,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       for (const c of contacts) {
         const email = c.email?.toLowerCase() || "";
-        if (!email || !email.includes("@")) { blocked++; continue; }
-        if (c.status !== "active" || suppressedSet.has(email)) { blocked++; continue; }
-        if (alreadySentSet.has(email)) { alreadySent++; continue; }
+        if (!email || !email.includes("@")) {
+          blocked++;
+          continue;
+        }
+        if (c.status !== "active" || suppressedSet.has(email)) {
+          blocked++;
+          continue;
+        }
+        if (alreadySentSet.has(email)) {
+          alreadySent++;
+          continue;
+        }
         // Contacts flagged as suspected duplicates are soft-blocked from autopilot
-        if (c.suspectedDuplicateOf != null) { suspectedDuplicate++; continue; }
+        if (c.suspectedDuplicateOf != null) {
+          suspectedDuplicate++;
+          continue;
+        }
         if (academyTypes.has(c.contactType || "")) {
           academy++;
         } else {
@@ -12522,7 +15018,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
       // Academy family types (same set used by getCampaignAssignmentPreview)
-      const ACADEMY_TYPES = new Set(["school", "college", "academy", "student", "teacher", "instructor"]);
+      const ACADEMY_TYPES = new Set([
+        "school",
+        "college",
+        "academy",
+        "student",
+        "teacher",
+        "instructor",
+      ]);
 
       // ── Step 1: Find all active, non-suppressed contacts ─────────────────
       const allContacts = await dbConn
@@ -12533,14 +15036,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const suppressions = await dbConn
         .select({ email: emailUnsubscribes.email })
         .from(emailUnsubscribes);
-      const suppressedSet = new Set(suppressions.map((s) => s.email.toLowerCase()));
+      const suppressedSet = new Set(
+        suppressions.map((s) => s.email.toLowerCase()),
+      );
 
       // ── Step 2: Find contacts already sent any campaign email ─────────────
       const alreadySentRows = await dbConn
         .select({ email: emailCampaignRecipients.email })
         .from(emailCampaignRecipients)
         .where(eq(emailCampaignRecipients.status, "sent"));
-      const alreadySentSet = new Set(alreadySentRows.map((r) => r.email.toLowerCase()));
+      const alreadySentSet = new Set(
+        alreadySentRows.map((r) => r.email.toLowerCase()),
+      );
 
       // ── Step 3: Find contacts already enrolled in any autopilot campaign ──
       // "enrolled" = already has a record in emailCampaignRecipients for a
@@ -12561,7 +15068,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }
 
       // ── Step 4: Classify unenrolled contacts (skip suspected duplicates) ──
-      const managementEmails: Array<{ email: string; name: string | null }> = [];
+      const managementEmails: Array<{ email: string; name: string | null }> =
+        [];
       const academyEmails: Array<{ email: string; name: string | null }> = [];
 
       for (const c of allContacts) {
@@ -12586,8 +15094,14 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // ── Step 5: Create Management Autopilot campaign if needed ────────────
       if (managementEmails.length > 0) {
-        const mgmtTemplate = CAMPAIGN_TEMPLATES.find((t) => t.id === "mgmt-intro");
-        if (!mgmtTemplate) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "mgmt-intro template not found" });
+        const mgmtTemplate = CAMPAIGN_TEMPLATES.find(
+          (t) => t.id === "mgmt-intro",
+        );
+        if (!mgmtTemplate)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "mgmt-intro template not found",
+          });
 
         const mgmtResult = await dbConn.insert(emailCampaigns).values({
           name: `Autopilot — Management (${today})`,
@@ -12622,19 +15136,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }));
           // Insert in batches of 500 to avoid packet size issues
           for (let i = 0; i < skipValues.length; i += 500) {
-            await dbConn.insert(emailCampaignRecipients).values(skipValues.slice(i, i + 500));
+            await dbConn
+              .insert(emailCampaignRecipients)
+              .values(skipValues.slice(i, i + 500));
           }
         }
       }
 
       // ── Step 6: Create Academy Autopilot campaign if needed ───────────────
       if (academyEmails.length > 0) {
-        const acaTemplate = CAMPAIGN_TEMPLATES.find((t) => t.id === "academy-intro");
-        if (!acaTemplate) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "academy-intro template not found" });
+        const acaTemplate = CAMPAIGN_TEMPLATES.find(
+          (t) => t.id === "academy-intro",
+        );
+        if (!acaTemplate)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "academy-intro template not found",
+          });
 
         const acaResult = await dbConn.insert(emailCampaigns).values({
           name: `Autopilot — Academy (${today})`,
-          subject: "A structured learning platform designed for equestrian schools",
+          subject:
+            "A structured learning platform designed for equestrian schools",
           htmlBody: acaTemplate.getHtml(),
           templateId: "academy-intro",
           segment: "marketing",
@@ -12663,7 +15186,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: "skipped" as const,
           }));
           for (let i = 0; i < skipValues.length; i += 500) {
-            await dbConn.insert(emailCampaignRecipients).values(skipValues.slice(i, i + 500));
+            await dbConn
+              .insert(emailCampaignRecipients)
+              .values(skipValues.slice(i, i + 500));
           }
         }
       }
@@ -12718,9 +15243,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // Only persist newly found duplicates (don't overwrite manually cleared flags)
       const alreadyFlagged = new Set(
-        contacts
-          .filter((c) => c.suspectedDuplicateOf != null)
-          .map((c) => c.id),
+        contacts.filter((c) => c.suspectedDuplicateOf != null).map((c) => c.id),
       );
 
       let newlyFlagged = 0;
@@ -12764,7 +15287,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        await dbConn.update(emailCampaigns)
+        await dbConn
+          .update(emailCampaigns)
           .set({ status: "paused", pausedAt: new Date() })
           .where(eq(emailCampaigns.id, input.campaignId));
         return { success: true };
@@ -12775,11 +15299,18 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        const [campaign] = await dbConn.select().from(emailCampaigns)
+        const [campaign] = await dbConn
+          .select()
+          .from(emailCampaigns)
           .where(eq(emailCampaigns.id, input.campaignId));
         if (!campaign) throw new TRPCError({ code: "NOT_FOUND" });
-        if (campaign.status !== "paused") throw new TRPCError({ code: "BAD_REQUEST", message: "Campaign is not paused" });
-        await dbConn.update(emailCampaigns)
+        if (campaign.status !== "paused")
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Campaign is not paused",
+          });
+        await dbConn
+          .update(emailCampaigns)
           .set({ status: "draft", pausedAt: null })
           .where(eq(emailCampaigns.id, input.campaignId));
         return { success: true };
@@ -12789,18 +15320,33 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .input(z.object({ campaignId: z.number() }))
       .query(async ({ input }) => {
         const dbConn = await getDb();
-        if (!dbConn) return { sentToday: 0, dailyLimit: DEFAULT_DAILY_LIMIT, remaining: DEFAULT_DAILY_LIMIT };
+        if (!dbConn)
+          return {
+            sentToday: 0,
+            dailyLimit: DEFAULT_DAILY_LIMIT,
+            remaining: DEFAULT_DAILY_LIMIT,
+          };
         const today = getTodayDateString();
-        const [campaign] = await dbConn.select().from(emailCampaigns)
+        const [campaign] = await dbConn
+          .select()
+          .from(emailCampaigns)
           .where(eq(emailCampaigns.id, input.campaignId));
         const dailyLimit = campaign?.dailyLimit || DEFAULT_DAILY_LIMIT;
-        const [log] = await dbConn.select({ sendCount: campaignSendLog.sendCount }).from(campaignSendLog)
-          .where(and(
-            eq(campaignSendLog.campaignId, input.campaignId),
-            eq(campaignSendLog.sendDate, today),
-          ));
+        const [log] = await dbConn
+          .select({ sendCount: campaignSendLog.sendCount })
+          .from(campaignSendLog)
+          .where(
+            and(
+              eq(campaignSendLog.campaignId, input.campaignId),
+              eq(campaignSendLog.sendDate, today),
+            ),
+          );
         const sentToday = log?.sendCount || 0;
-        return { sentToday, dailyLimit, remaining: Math.max(0, dailyLimit - sentToday) };
+        return {
+          sentToday,
+          dailyLimit,
+          remaining: Math.max(0, dailyLimit - sentToday),
+        };
       }),
 
     /**
@@ -12825,7 +15371,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           nextSendWindow: nextWindow ?? "Next weekday 08:30 UTC",
           isWeekday: isWeekday(),
           isWithinSendHours: isWithinSendHours(),
-          sendWindows: SEND_WINDOWS.map(w => w.label),
+          sendWindows: SEND_WINDOWS.map((w) => w.label),
         };
       }
 
@@ -12833,7 +15379,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
       // New outreach sent today (sum across all campaigns)
       const [outreachResult] = await dbConn
-        .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+        .select({
+          total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+        })
         .from(campaignSendLog)
         .where(eq(campaignSendLog.sendDate, today));
       const newOutreachSentToday = Number(outreachResult?.total ?? 0);
@@ -12842,10 +15390,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       const [followupResult] = await dbConn
         .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
         .from(campaignSequenceRecipients)
-        .where(and(
-          eq(campaignSequenceRecipients.status, "sent"),
-          sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-        ));
+        .where(
+          and(
+            eq(campaignSequenceRecipients.status, "sent"),
+            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+          ),
+        );
       const followupsSentToday = Number(followupResult?.total ?? 0);
       const totalSentToday = newOutreachSentToday + followupsSentToday;
 
@@ -12860,7 +15410,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         .where(eq(emailCampaigns.status, "paused"));
 
       const queuedForNextWindow = pausedCampaigns.reduce(
-        (acc, c) => acc + Math.max(0, (c.recipientCount || 0) - (c.sentCount || 0)),
+        (acc, c) =>
+          acc + Math.max(0, (c.recipientCount || 0) - (c.sentCount || 0)),
         0,
       );
 
@@ -12873,23 +15424,28 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         newOutreachCap: NEW_OUTREACH_DAILY_CAP,
         totalCap: TOTAL_MAILBOX_DAILY_CAP,
         perWindowLimit: NEW_OUTREACH_PER_WINDOW,
-        newOutreachRemaining: Math.max(0, NEW_OUTREACH_DAILY_CAP - newOutreachSentToday),
+        newOutreachRemaining: Math.max(
+          0,
+          NEW_OUTREACH_DAILY_CAP - newOutreachSentToday,
+        ),
         totalRemaining: Math.max(0, TOTAL_MAILBOX_DAILY_CAP - totalSentToday),
         queuedForNextWindow,
         pausedCampaignsCount: pausedCampaigns.length,
         nextSendWindow: nextWindow ?? "Next weekday 08:30 UTC",
         isWeekday: isWeekday(),
         isWithinSendHours: isWithinSendHours(),
-        sendWindows: SEND_WINDOWS.map(w => w.label),
+        sendWindows: SEND_WINDOWS.map((w) => w.label),
       };
     }),
 
     parseImportFile: adminUnlockedProcedure
-      .input(z.object({
-        fileContent: z.string(), // base64 or raw CSV text
-        fileType: z.enum(["csv", "xlsx"]),
-        fileName: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          fileContent: z.string(), // base64 or raw CSV text
+          fileType: z.enum(["csv", "xlsx"]),
+          fileName: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         let rows: Array<Record<string, string>> = [];
 
@@ -12900,7 +15456,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             // Likely base64 encoded
             try {
               csvText = Buffer.from(csvText, "base64").toString("utf-8");
-            } catch { /* use as-is */ }
+            } catch {
+              /* use as-is */
+            }
           }
           rows = parseCSV(csvText);
         } else {
@@ -12916,7 +15474,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             const headers: string[] = [];
             const firstRow = worksheet.getRow(1);
             firstRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-              headers[colNumber - 1] = String(cell.value || `Column ${colNumber}`);
+              headers[colNumber - 1] = String(
+                cell.value || `Column ${colNumber}`,
+              );
             });
 
             worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
@@ -12955,12 +15515,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     addSuppression: adminUnlockedProcedure
-      .input(z.object({ email: z.string().email(), reason: z.string().optional() }))
+      .input(
+        z.object({ email: z.string().email(), reason: z.string().optional() }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         const email = input.email.toLowerCase();
-        const [existing] = await dbConn.select().from(emailUnsubscribes)
+        const [existing] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, email));
         if (existing) return { success: true, message: "Already suppressed" };
         await dbConn.insert(emailUnsubscribes).values({
@@ -12970,7 +15534,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           source: "admin",
         });
         // Also mark marketing contact as unsubscribed if exists
-        await dbConn.update(marketingContacts)
+        await dbConn
+          .update(marketingContacts)
           .set({ status: "unsubscribed" })
           .where(eq(marketingContacts.email, email))
           .catch(() => {});
@@ -12983,19 +15548,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         const email = input.email.toLowerCase();
-        await dbConn.delete(emailUnsubscribes)
+        await dbConn
+          .delete(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, email));
         // Re-activate marketing contact if it was unsubscribed
-        await dbConn.update(marketingContacts)
+        await dbConn
+          .update(marketingContacts)
           .set({ status: "active" })
-          .where(and(
-            eq(marketingContacts.email, email),
-            eq(marketingContacts.status, "unsubscribed"),
-          ))
+          .where(
+            and(
+              eq(marketingContacts.email, email),
+              eq(marketingContacts.status, "unsubscribed"),
+            ),
+          )
           .catch((err) => {
             console.error("Failed to reactivate marketing contact:", err);
           });
-        return { success: true, message: "Email removed from suppression list" };
+        return {
+          success: true,
+          message: "Email removed from suppression list",
+        };
       }),
 
     // ──────────────────────────────────────────────────────────
@@ -13003,14 +15575,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     // ──────────────────────────────────────────────────────────
 
     getMarketingContacts: adminUnlockedProcedure
-      .input(z.object({
-        status: z.enum(["active", "unsubscribed", "bounced", "all"]).default("all"),
-        contactType: z.string().optional(),
-        country: z.string().optional(),
-        search: z.string().optional(),
-        limit: z.number().min(1).max(500).default(200),
-        offset: z.number().min(0).default(0),
-      }).optional())
+      .input(
+        z
+          .object({
+            status: z
+              .enum(["active", "unsubscribed", "bounced", "all"])
+              .default("all"),
+            contactType: z.string().optional(),
+            country: z.string().optional(),
+            search: z.string().optional(),
+            limit: z.number().min(1).max(500).default(200),
+            offset: z.number().min(0).default(0),
+          })
+          .optional(),
+      )
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return [];
@@ -13029,7 +15607,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             );
           }
           const suppressionWhere =
-            suppressionConditions.length > 0 ? and(...suppressionConditions) : undefined;
+            suppressionConditions.length > 0
+              ? and(...suppressionConditions)
+              : undefined;
 
           const rows = await dbConn
             .select({
@@ -13089,7 +15669,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           );
         }
         const where = conditions.length > 0 ? and(...conditions) : undefined;
-        return dbConn.select().from(marketingContacts)
+        return dbConn
+          .select()
+          .from(marketingContacts)
           .where(where)
           .orderBy(desc(marketingContacts.createdAt))
           .limit(input?.limit ?? 200)
@@ -13097,30 +15679,45 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     createMarketingContact: adminUnlockedProcedure
-      .input(z.object({
-        email: z.string().email(),
-        name: z.string().optional(),
-        businessName: z.string().optional(),
-        organizationName: z.string().optional(),
-        contactType: z.string().default("individual"),
-        source: z.string().default("manual"),
-        tags: z.string().optional(), // JSON array string
-        region: z.string().optional(),
-        country: z.string().optional(),
-        leadFocus: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          email: z.string().email(),
+          name: z.string().optional(),
+          businessName: z.string().optional(),
+          organizationName: z.string().optional(),
+          contactType: z.string().default("individual"),
+          source: z.string().default("manual"),
+          tags: z.string().optional(), // JSON array string
+          region: z.string().optional(),
+          country: z.string().optional(),
+          leadFocus: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         const token = nanoid(32);
         // Check if already exists in suppression list
-        const [suppressed] = await dbConn.select().from(emailUnsubscribes)
+        const [suppressed] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, input.email.toLowerCase()));
-        if (suppressed) throw new TRPCError({ code: "BAD_REQUEST", message: "This email is on the suppression list (previously unsubscribed)" });
+        if (suppressed)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "This email is on the suppression list (previously unsubscribed)",
+          });
         // Check duplicate
-        const [existing] = await dbConn.select().from(marketingContacts)
+        const [existing] = await dbConn
+          .select()
+          .from(marketingContacts)
           .where(eq(marketingContacts.email, input.email.toLowerCase()));
-        if (existing) throw new TRPCError({ code: "BAD_REQUEST", message: "Contact already exists" });
+        if (existing)
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Contact already exists",
+          });
 
         await dbConn.insert(marketingContacts).values({
           email: input.email.toLowerCase(),
@@ -13139,36 +15736,50 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       }),
 
     importMarketingContacts: adminUnlockedProcedure
-      .input(z.object({
-        contacts: z.array(z.object({
-          email: z.string().optional(),
-          name: z.string().optional(),
-          businessName: z.string().optional(),
-          organizationName: z.string().optional(),
-          contactType: z.string().default("individual"),
-          tags: z.string().optional(),
-          region: z.string().optional(),
-          country: z.string().optional(),
-          leadFocus: z.string().optional(),
-        })),
-        source: z.string().default("csv_import"),
-      }))
+      .input(
+        z.object({
+          contacts: z.array(
+            z.object({
+              email: z.string().optional(),
+              name: z.string().optional(),
+              businessName: z.string().optional(),
+              organizationName: z.string().optional(),
+              contactType: z.string().default("individual"),
+              tags: z.string().optional(),
+              region: z.string().optional(),
+              country: z.string().optional(),
+              leadFocus: z.string().optional(),
+            }),
+          ),
+          source: z.string().default("csv_import"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
         // Get suppression list
-        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        const suppressions = await dbConn
+          .select({ email: emailUnsubscribes.email })
+          .from(emailUnsubscribes);
+        const suppressedSet = new Set(
+          suppressions.map((s) => s.email.toLowerCase()),
+        );
         // Get existing contacts
-        const existing = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts);
-        const existingSet = new Set(existing.map(e => e.email.toLowerCase()));
+        const existing = await dbConn
+          .select({ email: marketingContacts.email })
+          .from(marketingContacts);
+        const existingSet = new Set(existing.map((e) => e.email.toLowerCase()));
 
         let imported = 0;
         let skipped = 0;
         let invalid = 0;
         let rejected = 0;
         const rejections: Array<{ email: string; reason: string }> = [];
-        const invalidRows: Array<{ row: number; email: string; reason: string }> = [];
+        const invalidRows: Array<{
+          row: number;
+          email: string;
+          reason: string;
+        }> = [];
 
         for (let i = 0; i < input.contacts.length; i++) {
           const c = input.contacts[i];
@@ -13193,13 +15804,22 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }
 
           // 2. Skip suppressed / existing
-          if (suppressedSet.has(email) || existingSet.has(email)) { skipped++; continue; }
+          if (suppressedSet.has(email) || existingSet.has(email)) {
+            skipped++;
+            continue;
+          }
 
           // 3. Compliance validation: rejects disposable, B2B free-mail, etc.
-          const compliance = validateContactCompliance(email, c.contactType || "individual");
+          const compliance = validateContactCompliance(
+            email,
+            c.contactType || "individual",
+          );
           if (!compliance.valid) {
             rejected++;
-            rejections.push({ email, reason: compliance.reason || "compliance_rejected" });
+            rejections.push({
+              email,
+              reason: compliance.reason || "compliance_rejected",
+            });
             continue;
           }
 
@@ -13247,7 +15867,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        await dbConn.delete(marketingContacts).where(eq(marketingContacts.id, input.id));
+        await dbConn
+          .delete(marketingContacts)
+          .where(eq(marketingContacts.id, input.id));
         return { success: true };
       }),
 
@@ -13276,7 +15898,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             search: z.string().optional(),
             country: z.string().optional(),
             contactType: z.string().optional(),
-            status: z.enum(["active", "unsubscribed", "bounced", "all"]).optional(),
+            status: z
+              .enum(["active", "unsubscribed", "bounced", "all"])
+              .optional(),
           }),
         ]),
       )
@@ -13296,7 +15920,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!search && !country && !contactType && !status) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Provide at least one filter criterion for filter-based bulk delete",
+            message:
+              "Provide at least one filter criterion for filter-based bulk delete",
           });
         }
 
@@ -13329,9 +15954,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         if (toDelete === 0) return { deleted: 0 };
 
-        await dbConn
-          .delete(marketingContacts)
-          .where(and(...conditions));
+        await dbConn.delete(marketingContacts).where(and(...conditions));
 
         return { deleted: toDelete };
       }),
@@ -13343,7 +15966,10 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     getUnsubscribes: adminUnlockedProcedure.query(async () => {
       const dbConn = await getDb();
       if (!dbConn) return [];
-      return dbConn.select().from(emailUnsubscribes).orderBy(desc(emailUnsubscribes.unsubscribedAt));
+      return dbConn
+        .select()
+        .from(emailUnsubscribes)
+        .orderBy(desc(emailUnsubscribes.unsubscribedAt));
     }),
 
     // ──────────────────────────────────────────────────────────
@@ -13355,20 +15981,24 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .query(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) return [];
-        return dbConn.select().from(campaignSequences)
+        return dbConn
+          .select()
+          .from(campaignSequences)
           .where(eq(campaignSequences.campaignId, input.campaignId))
           .orderBy(campaignSequences.stepNumber);
       }),
 
     addCampaignSequenceStep: adminUnlockedProcedure
-      .input(z.object({
-        campaignId: z.number(),
-        stepNumber: z.number(),
-        delayDays: z.number(),
-        subject: z.string(),
-        htmlBody: z.string(),
-        templateId: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          campaignId: z.number(),
+          stepNumber: z.number(),
+          delayDays: z.number(),
+          subject: z.string(),
+          htmlBody: z.string(),
+          templateId: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -13388,15 +16018,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-        const [step] = await dbConn.select().from(campaignSequences).where(eq(campaignSequences.id, input.sequenceId));
+        const [step] = await dbConn
+          .select()
+          .from(campaignSequences)
+          .where(eq(campaignSequences.id, input.sequenceId));
         if (!step) throw new TRPCError({ code: "NOT_FOUND" });
-        if (step.status === "sent") throw new TRPCError({ code: "BAD_REQUEST", message: "Step already sent" });
+        if (step.status === "sent")
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Step already sent",
+          });
 
         // ── WEEKDAY-ONLY CHECK (follow-ups also weekday-only) ──
         if (!isWeekday()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Follow-up sending is restricted to weekdays (Monday–Friday). Please try again on a weekday.",
+            message:
+              "Follow-up sending is restricted to weekdays (Monday–Friday). Please try again on a weekday.",
           });
         }
 
@@ -13404,14 +16042,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!isWithinSendHours()) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Follow-up sending is only permitted between 08:00 and 18:00 UTC. Please try again during business hours.",
+            message:
+              "Follow-up sending is only permitted between 08:00 and 18:00 UTC. Please try again during business hours.",
           });
         }
 
         // ── GLOBAL MAILBOX CAP CHECK ──
         const today = getTodayDateString();
         const [globalLogResult] = await dbConn
-          .select({ total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)` })
+          .select({
+            total: sql<number>`COALESCE(SUM(${campaignSendLog.sendCount}), 0)`,
+          })
           .from(campaignSendLog)
           .where(eq(campaignSendLog.sendDate, today));
         const globalOutreachSentToday = Number(globalLogResult?.total ?? 0);
@@ -13419,14 +16060,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const [followupResult] = await dbConn
           .select({ total: sql<number>`COALESCE(COUNT(*), 0)` })
           .from(campaignSequenceRecipients)
-          .where(and(
-            eq(campaignSequenceRecipients.status, "sent"),
-            sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
-          ));
+          .where(
+            and(
+              eq(campaignSequenceRecipients.status, "sent"),
+              sql`DATE(${campaignSequenceRecipients.sentAt}) = ${today}`,
+            ),
+          );
         const globalFollowupSentToday = Number(followupResult?.total ?? 0);
-        const globalTotalSentToday = globalOutreachSentToday + globalFollowupSentToday;
+        const globalTotalSentToday =
+          globalOutreachSentToday + globalFollowupSentToday;
 
-        const followupRemaining = Math.max(0, TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday);
+        const followupRemaining = Math.max(
+          0,
+          TOTAL_MAILBOX_DAILY_CAP - globalTotalSentToday,
+        );
         if (followupRemaining === 0) {
           throw new TRPCError({
             code: "BAD_REQUEST",
@@ -13435,30 +16082,49 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Get original campaign recipients who were successfully sent
-        const allRecipients = await dbConn.select().from(emailCampaignRecipients)
-          .where(and(
-            eq(emailCampaignRecipients.campaignId, step.campaignId),
-            eq(emailCampaignRecipients.status, "sent"),
-          ));
+        const allRecipients = await dbConn
+          .select()
+          .from(emailCampaignRecipients)
+          .where(
+            and(
+              eq(emailCampaignRecipients.campaignId, step.campaignId),
+              eq(emailCampaignRecipients.status, "sent"),
+            ),
+          );
 
         // Get suppression list
-        const suppressions = await dbConn.select({ email: emailUnsubscribes.email }).from(emailUnsubscribes);
-        const suppressedSet = new Set(suppressions.map(s => s.email.toLowerCase()));
+        const suppressions = await dbConn
+          .select({ email: emailUnsubscribes.email })
+          .from(emailUnsubscribes);
+        const suppressedSet = new Set(
+          suppressions.map((s) => s.email.toLowerCase()),
+        );
 
         // Also check marketing contact status
-        const mcBounced = await dbConn.select({ email: marketingContacts.email }).from(marketingContacts)
-          .where(or(eq(marketingContacts.status, "unsubscribed"), eq(marketingContacts.status, "bounced")));
+        const mcBounced = await dbConn
+          .select({ email: marketingContacts.email })
+          .from(marketingContacts)
+          .where(
+            or(
+              eq(marketingContacts.status, "unsubscribed"),
+              eq(marketingContacts.status, "bounced"),
+            ),
+          );
         for (const b of mcBounced) suppressedSet.add(b.email.toLowerCase());
 
         // Partition recipients: skipped vs eligible
-        const eligibleRecipients = allRecipients.filter(r => !suppressedSet.has(r.email.toLowerCase()));
+        const eligibleRecipients = allRecipients.filter(
+          (r) => !suppressedSet.has(r.email.toLowerCase()),
+        );
 
         // Cap eligible recipients to remaining daily capacity
         const recipients = eligibleRecipients.slice(0, followupRemaining);
         const deferredCount = eligibleRecipients.length - recipients.length;
 
         // Insert skipped records for suppressed addresses
-        for (const r of allRecipients.filter(r => suppressedSet.has(r.email.toLowerCase()))) {
+        for (const r of allRecipients.filter((r) =>
+          suppressedSet.has(r.email.toLowerCase()),
+        )) {
           await dbConn.insert(campaignSequenceRecipients).values({
             sequenceId: input.sequenceId,
             campaignId: step.campaignId,
@@ -13475,8 +16141,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         for (const recipient of recipients) {
           try {
             // Build unsubscribe link from marketing contact token
-            const [mc] = await dbConn.select().from(marketingContacts)
-              .where(eq(marketingContacts.email, recipient.email.toLowerCase()));
+            const [mc] = await dbConn
+              .select()
+              .from(marketingContacts)
+              .where(
+                eq(marketingContacts.email, recipient.email.toLowerCase()),
+              );
             const unsubToken = mc?.unsubscribeToken || nanoid(32);
             const unsubLink = `${BASE_URL}/unsubscribe?token=${unsubToken}`;
 
@@ -13486,7 +16156,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               currentDate,
               unsubscribeLink: unsubLink,
             });
-            await sendCampaignEmail(recipient.email, step.subject, html, unsubLink);
+            await sendCampaignEmail(
+              recipient.email,
+              step.subject,
+              html,
+              unsubLink,
+            );
             await dbConn.insert(campaignSequenceRecipients).values({
               sequenceId: input.sequenceId,
               campaignId: step.campaignId,
@@ -13507,11 +16182,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           }
         }
 
-        await dbConn.update(campaignSequences)
+        await dbConn
+          .update(campaignSequences)
           .set({ status: "sent", sentAt: new Date(), sentCount, failedCount })
           .where(eq(campaignSequences.id, input.sequenceId));
 
-        return { sentCount, failedCount, total: allRecipients.length, deferred: deferredCount };
+        return {
+          sentCount,
+          failedCount,
+          total: allRecipients.length,
+          deferred: deferredCount,
+        };
       }),
 
     // ──────────────────────────────────────────────────────────
@@ -13535,22 +16216,31 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     }),
 
     launchSequenceFromTemplate: adminUnlockedProcedure
-      .input(z.object({
-        templateId: z.string(),
-        segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
-        campaignName: z.string().optional(),
-      }))
+      .input(
+        z.object({
+          templateId: z.string(),
+          segment: z.enum(["leads", "trial", "paid", "all", "marketing"]),
+          campaignName: z.string().optional(),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-        const template = getSequenceTemplates().find((t) => t.id === input.templateId);
-        if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Sequence template not found" });
+        const template = getSequenceTemplates().find(
+          (t) => t.id === input.templateId,
+        );
+        if (!template)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Sequence template not found",
+          });
 
         // Create the parent campaign using step 1 as the initial email
         const step1 = template.steps[0];
         const step1Html = buildSequenceStepHtml(step1.body);
-        const campaignName = input.campaignName || `${template.name} — Sequence`;
+        const campaignName =
+          input.campaignName || `${template.name} — Sequence`;
 
         const result = await dbConn.insert(emailCampaigns).values({
           name: campaignName.slice(0, 200),
@@ -13682,7 +16372,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         const [signupsResult] = await dbConn
           .select({ count: sql<number>`COUNT(*)` })
           .from(users)
-          .where(and(gte(users.createdAt, startDate), eq(users.isActive, true), eq(users.emailVerified, true)));
+          .where(
+            and(
+              gte(users.createdAt, startDate),
+              eq(users.isActive, true),
+              eq(users.emailVerified, true),
+            ),
+          );
 
         // Trial-to-paid conversions
         const [t2pResult] = await dbConn
@@ -13703,7 +16399,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           })
           .from(siteAnalytics)
           .where(gte(siteAnalytics.createdAt, startDate))
-          .groupBy(sql`COALESCE(NULLIF(${siteAnalytics.referrer}, ''), 'Direct')`)
+          .groupBy(
+            sql`COALESCE(NULLIF(${siteAnalytics.referrer}, ''), 'Direct')`,
+          )
           .orderBy(sql`COUNT(*) DESC`)
           .limit(10);
 
@@ -13830,9 +16528,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return db
         .select()
         .from(stables)
-        .where(
-          and(inArray(stables.id, stableIds), eq(stables.isActive, true)),
-        );
+        .where(and(inArray(stables.id, stableIds), eq(stables.isActive, true)));
     }),
 
     getById: stablePlanProcedure
@@ -14182,20 +16878,32 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .limit(1);
 
         if (invite.length === 0) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Invite not found",
+          });
         }
 
         const inv = invite[0];
         if (inv.status !== "pending") {
-          throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${inv.status}` });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Invite already ${inv.status}`,
+          });
         }
         const now = new Date();
         if (now > new Date(inv.expiresAt)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invite has expired",
+          });
         }
 
         if (!inv.stableName) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Stable not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Stable not found",
+          });
         }
 
         return {
@@ -14221,17 +16929,26 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           .limit(1);
 
         if (inviteRows.length === 0) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Invite not found",
+          });
         }
 
         const invite = inviteRows[0];
 
         if (invite.status !== "pending") {
-          throw new TRPCError({ code: "BAD_REQUEST", message: `Invite already ${invite.status}` });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Invite already ${invite.status}`,
+          });
         }
         const now = new Date();
         if (now > new Date(invite.expiresAt)) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Invite has expired" });
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invite has expired",
+          });
         }
 
         // Check already a member
@@ -14365,7 +17082,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             };
 
             await Promise.all(
-              memberRows.map(m => publishModuleEvent("messages", "created", payload, m.userId))
+              memberRows.map((m) =>
+                publishModuleEvent("messages", "created", payload, m.userId),
+              ),
             );
           }
         } catch (err) {
@@ -14517,7 +17236,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!drizzleDb) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
         const userId = ctx.user!.id;
-        const startDate = input.startDate ? new Date(input.startDate) : undefined;
+        const startDate = input.startDate
+          ? new Date(input.startDate)
+          : undefined;
         const endDate = input.endDate ? new Date(input.endDate) : undefined;
 
         // Generate report data based on type using real data from the database
@@ -14526,44 +17247,63 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         if (input.reportType === "monthly_summary") {
           const now = new Date();
-          const monthStart = startDate ?? new Date(now.getFullYear(), now.getMonth(), 1);
-          const monthEnd = endDate ?? new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          const monthStart =
+            startDate ?? new Date(now.getFullYear(), now.getMonth(), 1);
+          const monthEnd =
+            endDate ?? new Date(now.getFullYear(), now.getMonth() + 1, 0);
           reportTitle = `Monthly Summary — ${monthStart.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}`;
 
-          const [horsesData, sessions, tasksData, appointments, vaccData] = await Promise.all([
-            db.getHorsesByUserId(userId),
-            db.getTrainingSessionsByUserId(userId),
-            db.getTasksByUserId(userId),
-            db.getAppointmentsByUserId(userId),
-            db.getVaccinationsByUserId(userId),
-          ]);
+          const [horsesData, sessions, tasksData, appointments, vaccData] =
+            await Promise.all([
+              db.getHorsesByUserId(userId),
+              db.getTrainingSessionsByUserId(userId),
+              db.getTasksByUserId(userId),
+              db.getAppointmentsByUserId(userId),
+              db.getVaccinationsByUserId(userId),
+            ]);
 
           const monthSessions = sessions.filter((s) => {
             const d = new Date(s.sessionDate);
             return d >= monthStart && d <= monthEnd;
           });
-          const monthTasks = tasksData.filter((t) => t.createdAt && new Date(t.createdAt) >= monthStart && new Date(t.createdAt) <= monthEnd);
+          const monthTasks = tasksData.filter(
+            (t) =>
+              t.createdAt &&
+              new Date(t.createdAt) >= monthStart &&
+              new Date(t.createdAt) <= monthEnd,
+          );
           const monthAppointments = appointments.filter((a) => {
             const d = new Date(a.appointmentDate);
             return d >= monthStart && d <= monthEnd;
           });
 
           reportData = {
-            period: { start: monthStart.toISOString(), end: monthEnd.toISOString() },
-            horses: { total: horsesData.length, names: horsesData.map((h) => h.name) },
+            period: {
+              start: monthStart.toISOString(),
+              end: monthEnd.toISOString(),
+            },
+            horses: {
+              total: horsesData.length,
+              names: horsesData.map((h) => h.name),
+            },
             trainingSessions: {
               total: monthSessions.length,
               completed: monthSessions.filter((s) => s.isCompleted).length,
-              disciplines: Array.from(new Set(monthSessions.map((s) => s.discipline).filter(Boolean))),
+              disciplines: Array.from(
+                new Set(monthSessions.map((s) => s.discipline).filter(Boolean)),
+              ),
             },
             tasks: {
               total: monthTasks.length,
-              completed: monthTasks.filter((t) => t.status === "completed").length,
+              completed: monthTasks.filter((t) => t.status === "completed")
+                .length,
               pending: monthTasks.filter((t) => t.status === "pending").length,
             },
             appointments: {
               total: monthAppointments.length,
-              types: Array.from(new Set(monthAppointments.map((a) => a.appointmentType))),
+              types: Array.from(
+                new Set(monthAppointments.map((a) => a.appointmentType)),
+              ),
             },
             vaccinations: {
               dueSoon: vaccData.filter((v) => {
@@ -14575,15 +17315,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               }).length,
             },
           };
-
         } else if (input.reportType === "health_report") {
           reportTitle = "Health Report";
-          const [vaccData, dewormings, treatments, dentalData] = await Promise.all([
-            db.getVaccinationsByUserId(userId),
-            db.getDewormingsByUserId(userId),
-            db.getTreatmentsByUserId(userId),
-            db.getDentalCareByUserId(userId),
-          ]);
+          const [vaccData, dewormings, treatments, dentalData] =
+            await Promise.all([
+              db.getVaccinationsByUserId(userId),
+              db.getDewormingsByUserId(userId),
+              db.getTreatmentsByUserId(userId),
+              db.getDentalCareByUserId(userId),
+            ]);
 
           const now = new Date();
           const in60Days = new Date();
@@ -14594,30 +17334,60 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             vaccinations: {
               total: vaccData.length,
               upcomingDue: vaccData
-                .filter((v) => v.nextDueDate && new Date(v.nextDueDate) >= now && new Date(v.nextDueDate) <= in60Days)
-                .map((v) => ({ horse: v.horseId, vaccine: v.vaccineName, due: v.nextDueDate })),
+                .filter(
+                  (v) =>
+                    v.nextDueDate &&
+                    new Date(v.nextDueDate) >= now &&
+                    new Date(v.nextDueDate) <= in60Days,
+                )
+                .map((v) => ({
+                  horse: v.horseId,
+                  vaccine: v.vaccineName,
+                  due: v.nextDueDate,
+                })),
               overdue: vaccData
                 .filter((v) => v.nextDueDate && new Date(v.nextDueDate) < now)
-                .map((v) => ({ horse: v.horseId, vaccine: v.vaccineName, due: v.nextDueDate })),
+                .map((v) => ({
+                  horse: v.horseId,
+                  vaccine: v.vaccineName,
+                  due: v.nextDueDate,
+                })),
             },
             dewormings: {
               total: dewormings.length,
               upcomingDue: dewormings
-                .filter((d) => d.nextDueDate && new Date(d.nextDueDate) >= now && new Date(d.nextDueDate) <= in60Days)
-                .map((d) => ({ horse: d.horseId, product: d.productName, due: d.nextDueDate })),
+                .filter(
+                  (d) =>
+                    d.nextDueDate &&
+                    new Date(d.nextDueDate) >= now &&
+                    new Date(d.nextDueDate) <= in60Days,
+                )
+                .map((d) => ({
+                  horse: d.horseId,
+                  product: d.productName,
+                  due: d.nextDueDate,
+                })),
             },
             treatments: {
               total: treatments.length,
-              recent: treatments.slice(0, 5).map((t) => ({ horse: t.horseId, type: t.treatmentType, date: t.startDate })),
+              recent: treatments.slice(0, 5).map((t) => ({
+                horse: t.horseId,
+                type: t.treatmentType,
+                date: t.startDate,
+              })),
             },
             dental: {
               total: dentalData.length,
               upcomingDue: dentalData
-                .filter((d) => d.nextDueDate && new Date(d.nextDueDate) >= now && new Date(d.nextDueDate) <= in60Days)
+                .filter(
+                  (d) =>
+                    d.nextDueDate &&
+                    new Date(d.nextDueDate) >= now &&
+                    new Date(d.nextDueDate) <= in60Days,
+                )
                 .map((d) => ({ horse: d.horseId, due: d.nextDueDate })),
             },
           };
-
         } else if (input.reportType === "training_progress") {
           reportTitle = "Training Progress Report";
           const sessions = await db.getTrainingSessionsByUserId(userId);
@@ -14631,22 +17401,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
           const disciplineCounts: Record<string, number> = {};
           for (const s of filtered) {
-            if (s.discipline) disciplineCounts[s.discipline] = (disciplineCounts[s.discipline] ?? 0) + 1;
+            if (s.discipline)
+              disciplineCounts[s.discipline] =
+                (disciplineCounts[s.discipline] ?? 0) + 1;
           }
 
           reportData = {
             period: {
-              start: (startDate ?? new Date(new Date().getFullYear(), 0, 1)).toISOString(),
+              start: (
+                startDate ?? new Date(new Date().getFullYear(), 0, 1)
+              ).toISOString(),
               end: (endDate ?? new Date()).toISOString(),
             },
             totalSessions: filtered.length,
             completedSessions: filtered.filter((s) => s.isCompleted).length,
-            completionRate: filtered.length > 0
-              ? Math.round((filtered.filter((s) => s.isCompleted).length / filtered.length) * 100)
-              : 0,
+            completionRate:
+              filtered.length > 0
+                ? Math.round(
+                    (filtered.filter((s) => s.isCompleted).length /
+                      filtered.length) *
+                      100,
+                  )
+                : 0,
             disciplineBreakdown: disciplineCounts,
             recentSessions: filtered
-              .sort((a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime())
+              .sort(
+                (a, b) =>
+                  new Date(b.sessionDate).getTime() -
+                  new Date(a.sessionDate).getTime(),
+              )
               .slice(0, 10)
               .map((s) => ({
                 date: s.sessionDate,
@@ -14656,18 +17439,23 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                 performance: s.performance,
               })),
           };
-
         } else if (input.reportType === "cost_analysis") {
           reportTitle = "Cost Analysis Report";
-          const [feedData, appointmentData, vaccData, competitionData] = await Promise.all([
-            drizzleDb.select().from(feedCosts).where(eq(feedCosts.userId, userId)),
-            db.getAppointmentsByUserId(userId),
-            db.getVaccinationsByUserId(userId),
-            db.getCompetitionsByUserId(userId),
-          ]);
+          const [feedData, appointmentData, vaccData, competitionData] =
+            await Promise.all([
+              drizzleDb
+                .select()
+                .from(feedCosts)
+                .where(eq(feedCosts.userId, userId)),
+              db.getAppointmentsByUserId(userId),
+              db.getVaccinationsByUserId(userId),
+              db.getCompetitionsByUserId(userId),
+            ]);
 
-          const feedTotal = feedData
-            .reduce((sum, f) => sum + (f.costPerUnit ?? 0), 0);
+          const feedTotal = feedData.reduce(
+            (sum, f) => sum + (f.costPerUnit ?? 0),
+            0,
+          );
           const apptCostTotal = appointmentData
             .filter((a) => {
               if (!startDate && !endDate) return true;
@@ -14677,28 +17465,54 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               return true;
             })
             .reduce((sum, a) => sum + (a.cost ?? 0), 0);
-          const vaccCostTotal = vaccData.reduce((sum, v) => sum + (v.cost ?? 0), 0);
-          const compCostTotal = competitionData.reduce((sum, c) => sum + (c.cost ?? 0), 0);
-          const compWinnings = competitionData.reduce((sum, c) => sum + (c.winnings ?? 0), 0);
+          const vaccCostTotal = vaccData.reduce(
+            (sum, v) => sum + (v.cost ?? 0),
+            0,
+          );
+          const compCostTotal = competitionData.reduce(
+            (sum, c) => sum + (c.cost ?? 0),
+            0,
+          );
+          const compWinnings = competitionData.reduce(
+            (sum, c) => sum + (c.winnings ?? 0),
+            0,
+          );
 
           reportData = {
             currency: "GBP",
             period: {
-              start: (startDate ?? new Date(new Date().getFullYear(), 0, 1)).toISOString(),
+              start: (
+                startDate ?? new Date(new Date().getFullYear(), 0, 1)
+              ).toISOString(),
               end: (endDate ?? new Date()).toISOString(),
             },
             summary: {
-              totalCostPence: feedTotal + apptCostTotal + vaccCostTotal + compCostTotal,
-              netCostPence: feedTotal + apptCostTotal + vaccCostTotal + compCostTotal - compWinnings,
+              totalCostPence:
+                feedTotal + apptCostTotal + vaccCostTotal + compCostTotal,
+              netCostPence:
+                feedTotal +
+                apptCostTotal +
+                vaccCostTotal +
+                compCostTotal -
+                compWinnings,
             },
             breakdown: {
               feeding: { totalPence: feedTotal, entryCount: feedData.length },
-              appointments: { totalPence: apptCostTotal, entryCount: appointmentData.length },
-              vaccinations: { totalPence: vaccCostTotal, entryCount: vaccData.length },
-              competitions: { totalPence: compCostTotal, winningsPence: compWinnings, entryCount: competitionData.length },
+              appointments: {
+                totalPence: apptCostTotal,
+                entryCount: appointmentData.length,
+              },
+              vaccinations: {
+                totalPence: vaccCostTotal,
+                entryCount: vaccData.length,
+              },
+              competitions: {
+                totalPence: compCostTotal,
+                winningsPence: compWinnings,
+                entryCount: competitionData.length,
+              },
             },
           };
-
         } else if (input.reportType === "competition_summary") {
           reportTitle = "Competition Summary Report";
           const competitionData = await db.getCompetitionsByUserId(userId);
@@ -14714,22 +17528,37 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const disciplineCounts: Record<string, number> = {};
           const placementCounts: Record<string, number> = {};
           for (const c of filtered) {
-            if (c.discipline) disciplineCounts[c.discipline] = (disciplineCounts[c.discipline] ?? 0) + 1;
-            if (c.placement) placementCounts[c.placement] = (placementCounts[c.placement] ?? 0) + 1;
+            if (c.discipline)
+              disciplineCounts[c.discipline] =
+                (disciplineCounts[c.discipline] ?? 0) + 1;
+            if (c.placement)
+              placementCounts[c.placement] =
+                (placementCounts[c.placement] ?? 0) + 1;
           }
 
           reportData = {
             period: {
-              start: (startDate ?? new Date(new Date().getFullYear(), 0, 1)).toISOString(),
+              start: (
+                startDate ?? new Date(new Date().getFullYear(), 0, 1)
+              ).toISOString(),
               end: (endDate ?? new Date()).toISOString(),
             },
             totalCompetitions: filtered.length,
             disciplineBreakdown: disciplineCounts,
             placementBreakdown: placementCounts,
-            totalEntryCostPence: filtered.reduce((sum, c) => sum + (c.cost ?? 0), 0),
-            totalWinningsPence: filtered.reduce((sum, c) => sum + (c.winnings ?? 0), 0),
+            totalEntryCostPence: filtered.reduce(
+              (sum, c) => sum + (c.cost ?? 0),
+              0,
+            ),
+            totalWinningsPence: filtered.reduce(
+              (sum, c) => sum + (c.winnings ?? 0),
+              0,
+            ),
             recentResults: filtered
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+              .sort(
+                (a, b) =>
+                  new Date(b.date).getTime() - new Date(a.date).getTime(),
+              )
               .slice(0, 15)
               .map((c) => ({
                 name: c.competitionName,
@@ -14848,10 +17677,7 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         await db
           .delete(reports)
           .where(
-            and(
-              eq(reports.id, input.id),
-              eq(reports.userId, ctx.user!.id),
-            ),
+            and(eq(reports.id, input.id), eq(reports.userId, ctx.user!.id)),
           );
 
         return { success: true };
@@ -15281,26 +18107,33 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
             // Validate programData structure
             if (!programData.weeks || !Array.isArray(programData.weeks)) {
-              console.warn("[Templates] Invalid programData structure, skipping session creation");
+              console.warn(
+                "[Templates] Invalid programData structure, skipping session creation",
+              );
             } else {
               const baseDate = new Date(input.startDate);
               const baseDayOfWeek = baseDate.getDay();
 
               // Create sessions for first few weeks
-              for (const week of programData.weeks.slice(0, MAX_WEEKS_TO_SCHEDULE)) {
+              for (const week of programData.weeks.slice(
+                0,
+                MAX_WEEKS_TO_SCHEDULE,
+              )) {
                 if (!week.sessions || !Array.isArray(week.sessions)) continue;
-                
+
                 const weekOffset = (week.week - 1) * 7;
                 for (const session of week.sessions) {
                   if (!session.type || !session.day) continue;
                   if (session.type.toLowerCase() === "rest") continue;
-                  
+
                   // Validate day is in the mapping
                   if (!(session.day in TRAINING_DAY_OFFSET)) {
-                    console.warn(`[Templates] Unknown day: ${session.day}, skipping session`);
+                    console.warn(
+                      `[Templates] Unknown day: ${session.day}, skipping session`,
+                    );
                     continue;
                   }
-                  
+
                   const dayOffset = TRAINING_DAY_OFFSET[session.day];
                   const diff = (dayOffset - baseDayOfWeek + 7) % 7;
                   const sessionDate = new Date(baseDate);
@@ -15312,11 +18145,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
                     horseId: input.horseId,
                     sessionDate,
                     sessionType: mapTemplateSessionType(session.type),
-                    duration: session.duration || DEFAULT_SESSION_DURATION_MINUTES,
+                    duration:
+                      session.duration || DEFAULT_SESSION_DURATION_MINUTES,
                     notes: session.description || undefined,
                     isCompleted: false,
                   });
-                  
+
                   sessionsCreated++;
                 }
               }
@@ -15334,7 +18168,8 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const prefs = userRecord?.preferences
             ? JSON.parse(userRecord.preferences)
             : {};
-          const calIntegration = prefs?.notifications?.trainingCalendarIntegration === true;
+          const calIntegration =
+            prefs?.notifications?.trainingCalendarIntegration === true;
 
           if (calIntegration && template[0].programData) {
             const programData = JSON.parse(template[0].programData) as {
@@ -15354,16 +18189,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
             const calendarInserts: Array<typeof events.$inferInsert> = [];
 
-            for (const week of (programData.weeks ?? []).slice(0, MAX_WEEKS_TO_SCHEDULE)) {
+            for (const week of (programData.weeks ?? []).slice(
+              0,
+              MAX_WEEKS_TO_SCHEDULE,
+            )) {
               const weekOffset = (week.week - 1) * 7;
               for (const session of week.sessions ?? []) {
                 if (session.type === "rest") continue;
                 const dayOffset = TRAINING_DAY_OFFSET[session.day] ?? 0;
                 const diff = (dayOffset - baseDayOfWeek + 7) % 7;
                 const eventDate = new Date(baseDate);
-                eventDate.setDate(
-                  baseDate.getDate() + weekOffset + diff,
-                );
+                eventDate.setDate(baseDate.getDate() + weekOffset + diff);
                 eventDate.setHours(9, 0, 0, 0);
 
                 calendarInserts.push({
@@ -16441,10 +19277,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       // Enrich with horse names
       const horses = await db.getHorsesByUserId(ctx.user.id);
       const horsesMap: Record<number, string> = {};
-      horses.forEach((h: any) => { horsesMap[h.id] = h.name; });
+      horses.forEach((h: any) => {
+        horsesMap[h.id] = h.name;
+      });
       const enriched = appointments.map((a: any) => ({
         ...a,
-        horseName: a.horseId ? (horsesMap[a.horseId] || "") : "",
+        horseName: a.horseId ? horsesMap[a.horseId] || "" : "",
       }));
       const csv = exportAppointmentsCSV(enriched);
       return {
@@ -16829,11 +19667,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       .mutation(async ({ ctx, input }) => {
         // Verify horse ownership
         const horse = await db.getHorseById(input.horseId, ctx.user.id);
-        if (!horse) throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+        if (!horse)
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
 
         // Verify tag ownership
         const tag = await db.getTagById(input.tagId, ctx.user.id);
-        if (!tag) throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
+        if (!tag)
+          throw new TRPCError({ code: "NOT_FOUND", message: "Tag not found" });
 
         await db.attachTagToHorse(input.horseId, input.tagId, ctx.user.id);
         return { success: true };
@@ -17425,23 +20268,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
   // ────────────────────────────────────────────────────────────
   sharing: router({
     create: subscribedProcedure
-      .input(z.object({
-        linkType: z.enum(["horse", "stable", "medical_passport"]),
-        horseId: z.number().optional(),
-        expiresInDays: z.number().min(1).max(90).default(30),
-      }))
+      .input(
+        z.object({
+          linkType: z.enum(["horse", "stable", "medical_passport"]),
+          horseId: z.number().optional(),
+          expiresInDays: z.number().min(1).max(90).default(30),
+        }),
+      )
       .mutation(async ({ ctx, input }) => {
         const dbConn = await getDb();
-        if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB unavailable" });
+        if (!dbConn)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "DB unavailable",
+          });
 
         // Verify horse ownership if horse link
         if (input.horseId) {
           const horse = await db.getHorseById(input.horseId, ctx.user.id);
-          if (!horse) throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          if (!horse)
+            throw new TRPCError({
+              code: "NOT_FOUND",
+              message: "Horse not found",
+            });
         }
 
         const token = nanoid(24);
-        const expiresAt = new Date(Date.now() + input.expiresInDays * 86_400_000);
+        const expiresAt = new Date(
+          Date.now() + input.expiresInDays * 86_400_000,
+        );
 
         await dbConn.insert(shareLinks).values({
           userId: ctx.user.id,
@@ -17463,7 +20318,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
       return dbConn
         .select()
         .from(shareLinks)
-        .where(and(eq(shareLinks.userId, ctx.user.id), eq(shareLinks.isActive, true)))
+        .where(
+          and(
+            eq(shareLinks.userId, ctx.user.id),
+            eq(shareLinks.isActive, true),
+          ),
+        )
         .orderBy(desc(shareLinks.createdAt));
     }),
 
@@ -17476,7 +20336,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         await dbConn
           .update(shareLinks)
           .set({ isActive: false })
-          .where(and(eq(shareLinks.id, input.id), eq(shareLinks.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(shareLinks.id, input.id),
+              eq(shareLinks.userId, ctx.user.id),
+            ),
+          );
 
         return { success: true };
       }),
@@ -17495,14 +20360,27 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         // Verify horse ownership
         const horse = await db.getHorseById(input.horseId, ctx.user.id);
         if (!horse) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "Horse not found" });
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Horse not found",
+          });
         }
 
         type TimelineEvent = {
           id: string;
           date: string;
           type: string;
-          category: "health" | "training" | "feeding" | "document" | "event" | "vaccination" | "treatment" | "appointment" | "note" | "competition";
+          category:
+            | "health"
+            | "training"
+            | "feeding"
+            | "document"
+            | "event"
+            | "vaccination"
+            | "treatment"
+            | "appointment"
+            | "note"
+            | "competition";
           title: string;
           description?: string;
           status?: string;
@@ -17520,11 +20398,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             description: healthRecords.description,
           })
           .from(healthRecords)
-          .where(and(eq(healthRecords.horseId, input.horseId), eq(healthRecords.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(healthRecords.horseId, input.horseId),
+              eq(healthRecords.userId, ctx.user.id),
+            ),
+          );
         for (const r of healthRows) {
           items.push({
             id: `health-${r.id}`,
-            date: r.recordDate instanceof Date ? r.recordDate.toISOString() : String(r.recordDate),
+            date:
+              r.recordDate instanceof Date
+                ? r.recordDate.toISOString()
+                : String(r.recordDate),
             type: r.recordType || "health",
             category: "health",
             title: r.title || "Health Record",
@@ -17542,11 +20428,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             isCompleted: trainingSessions.isCompleted,
           })
           .from(trainingSessions)
-          .where(and(eq(trainingSessions.horseId, input.horseId), eq(trainingSessions.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(trainingSessions.horseId, input.horseId),
+              eq(trainingSessions.userId, ctx.user.id),
+            ),
+          );
         for (const s of trainingRows) {
           items.push({
             id: `training-${s.id}`,
-            date: s.sessionDate instanceof Date ? s.sessionDate.toISOString() : String(s.sessionDate),
+            date:
+              s.sessionDate instanceof Date
+                ? s.sessionDate.toISOString()
+                : String(s.sessionDate),
             type: s.sessionType || "training",
             category: "training",
             title: `${(s.sessionType || "Training").charAt(0).toUpperCase() + (s.sessionType || "training").slice(1)} Session`,
@@ -17564,11 +20458,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             vetName: vaccinations.vetName,
           })
           .from(vaccinations)
-          .where(and(eq(vaccinations.horseId, input.horseId), eq(vaccinations.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(vaccinations.horseId, input.horseId),
+              eq(vaccinations.userId, ctx.user.id),
+            ),
+          );
         for (const v of vaccRows) {
           items.push({
             id: `vacc-${v.id}`,
-            date: v.dateAdministered instanceof Date ? v.dateAdministered.toISOString() : String(v.dateAdministered),
+            date:
+              v.dateAdministered instanceof Date
+                ? v.dateAdministered.toISOString()
+                : String(v.dateAdministered),
             type: "vaccination",
             category: "vaccination",
             title: v.vaccineName || "Vaccination",
@@ -17585,11 +20487,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             description: treatments.description,
           })
           .from(treatments)
-          .where(and(eq(treatments.horseId, input.horseId), eq(treatments.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(treatments.horseId, input.horseId),
+              eq(treatments.userId, ctx.user.id),
+            ),
+          );
         for (const t of treatmentRows) {
           items.push({
             id: `treat-${t.id}`,
-            date: t.startDate instanceof Date ? t.startDate.toISOString() : String(t.startDate),
+            date:
+              t.startDate instanceof Date
+                ? t.startDate.toISOString()
+                : String(t.startDate),
             type: t.treatmentType || "treatment",
             category: "treatment",
             title: `${(t.treatmentType || "Treatment").charAt(0).toUpperCase() + (t.treatmentType || "treatment").slice(1)}`,
@@ -17607,11 +20517,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             status: appointments.status,
           })
           .from(appointments)
-          .where(and(eq(appointments.horseId, input.horseId), eq(appointments.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(appointments.horseId, input.horseId),
+              eq(appointments.userId, ctx.user.id),
+            ),
+          );
         for (const a of apptRows) {
           items.push({
             id: `appt-${a.id}`,
-            date: a.appointmentDate instanceof Date ? a.appointmentDate.toISOString() : String(a.appointmentDate),
+            date:
+              a.appointmentDate instanceof Date
+                ? a.appointmentDate.toISOString()
+                : String(a.appointmentDate),
             type: a.appointmentType || "appointment",
             category: "appointment",
             title: a.title || "Appointment",
@@ -17628,11 +20546,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             category: documents.category,
           })
           .from(documents)
-          .where(and(eq(documents.horseId, input.horseId), eq(documents.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(documents.horseId, input.horseId),
+              eq(documents.userId, ctx.user.id),
+            ),
+          );
         for (const d of docRows) {
           items.push({
             id: `doc-${d.id}`,
-            date: d.createdAt instanceof Date ? d.createdAt.toISOString() : String(d.createdAt),
+            date:
+              d.createdAt instanceof Date
+                ? d.createdAt.toISOString()
+                : String(d.createdAt),
             type: d.category || "document",
             category: "document",
             title: d.fileName || "Document uploaded",
@@ -17647,11 +20573,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             createdAt: notes.createdAt,
           })
           .from(notes)
-          .where(and(eq(notes.horseId, input.horseId), eq(notes.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(notes.horseId, input.horseId),
+              eq(notes.userId, ctx.user.id),
+            ),
+          );
         for (const n of noteRows) {
           items.push({
             id: `note-${n.id}`,
-            date: n.createdAt instanceof Date ? n.createdAt.toISOString() : String(n.createdAt),
+            date:
+              n.createdAt instanceof Date
+                ? n.createdAt.toISOString()
+                : String(n.createdAt),
             type: "note",
             category: "note",
             title: n.title || "Note",
@@ -17668,11 +20602,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
             placement: competitions.placement,
           })
           .from(competitions)
-          .where(and(eq(competitions.horseId, input.horseId), eq(competitions.userId, ctx.user.id)));
+          .where(
+            and(
+              eq(competitions.horseId, input.horseId),
+              eq(competitions.userId, ctx.user.id),
+            ),
+          );
         for (const c of compRows) {
           items.push({
             id: `comp-${c.id}`,
-            date: c.date instanceof Date ? c.date.toISOString() : String(c.date),
+            date:
+              c.date instanceof Date ? c.date.toISOString() : String(c.date),
             type: c.discipline || "competition",
             category: "competition",
             title: c.competitionName || "Competition",
@@ -17681,7 +20621,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Sort by date descending and limit
-        items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        items.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
         return items.slice(0, input.limit);
       }),
 
@@ -17696,7 +20638,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           id: string;
           horseId: number;
           horseName: string;
-          type: "vaccination_due" | "deworming_due" | "treatment_due" | "no_recent_health" | "appointment_upcoming";
+          type:
+            | "vaccination_due"
+            | "deworming_due"
+            | "treatment_due"
+            | "no_recent_health"
+            | "appointment_upcoming";
           severity: "info" | "warning" | "urgent";
           title: string;
           dueDate?: string;
@@ -17710,7 +20657,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
         // Get user's horses
         const userHorses = input.horseId
-          ? [await db.getHorseById(input.horseId, ctx.user.id)].filter(Boolean) as any[]
+          ? ([await db.getHorseById(input.horseId, ctx.user.id)].filter(
+              Boolean,
+            ) as any[])
           : await db.getHorsesByUserId(ctx.user.id);
 
         for (const horse of userHorses) {
@@ -17718,23 +20667,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
           // Check vaccination due dates
           const vaccList = await dbConn
-            .select({ id: vaccinations.id, vaccineName: vaccinations.vaccineName, nextDueDate: vaccinations.nextDueDate })
+            .select({
+              id: vaccinations.id,
+              vaccineName: vaccinations.vaccineName,
+              nextDueDate: vaccinations.nextDueDate,
+            })
             .from(vaccinations)
-            .where(and(eq(vaccinations.horseId, horse.id), eq(vaccinations.userId, ctx.user.id)));
+            .where(
+              and(
+                eq(vaccinations.horseId, horse.id),
+                eq(vaccinations.userId, ctx.user.id),
+              ),
+            );
 
           for (const v of vaccList) {
             if (v.nextDueDate) {
               const due = new Date(v.nextDueDate);
-              const daysDue = Math.ceil((due.getTime() - now.getTime()) / 86_400_000);
+              const daysDue = Math.ceil(
+                (due.getTime() - now.getTime()) / 86_400_000,
+              );
               if (daysDue <= 30) {
                 alerts.push({
                   id: `vacc-due-${v.id}`,
                   horseId: horse.id,
                   horseName: horse.name,
                   type: "vaccination_due",
-                  severity: daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
+                  severity:
+                    daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
                   title: `${v.vaccineName || "Vaccination"} ${daysDue <= 0 ? "overdue" : "due soon"} for ${horse.name}`,
-                  dueDate: v.nextDueDate instanceof Date ? v.nextDueDate.toISOString() : String(v.nextDueDate),
+                  dueDate:
+                    v.nextDueDate instanceof Date
+                      ? v.nextDueDate.toISOString()
+                      : String(v.nextDueDate),
                   daysDue,
                 });
               }
@@ -17743,23 +20707,38 @@ Format your response as JSON with keys: recommendation, explanation, precautions
 
           // Check deworming due dates
           const dewormList = await dbConn
-            .select({ id: dewormings.id, productName: dewormings.productName, nextDueDate: dewormings.nextDueDate })
+            .select({
+              id: dewormings.id,
+              productName: dewormings.productName,
+              nextDueDate: dewormings.nextDueDate,
+            })
             .from(dewormings)
-            .where(and(eq(dewormings.horseId, horse.id), eq(dewormings.userId, ctx.user.id)));
+            .where(
+              and(
+                eq(dewormings.horseId, horse.id),
+                eq(dewormings.userId, ctx.user.id),
+              ),
+            );
 
           for (const d of dewormList) {
             if (d.nextDueDate) {
               const due = new Date(d.nextDueDate);
-              const daysDue = Math.ceil((due.getTime() - now.getTime()) / 86_400_000);
+              const daysDue = Math.ceil(
+                (due.getTime() - now.getTime()) / 86_400_000,
+              );
               if (daysDue <= 30) {
                 alerts.push({
                   id: `deworm-due-${d.id}`,
                   horseId: horse.id,
                   horseName: horse.name,
                   type: "deworming_due",
-                  severity: daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
+                  severity:
+                    daysDue <= 0 ? "urgent" : daysDue <= 7 ? "warning" : "info",
                   title: `${d.productName || "Deworming"} ${daysDue <= 0 ? "overdue" : "due soon"} for ${horse.name}`,
-                  dueDate: d.nextDueDate instanceof Date ? d.nextDueDate.toISOString() : String(d.nextDueDate),
+                  dueDate:
+                    d.nextDueDate instanceof Date
+                      ? d.nextDueDate.toISOString()
+                      : String(d.nextDueDate),
                   daysDue,
                 });
               }
@@ -17770,11 +20749,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           const recentHealth = await dbConn
             .select({ count: sql<number>`COUNT(*)` })
             .from(healthRecords)
-            .where(and(
-              eq(healthRecords.horseId, horse.id),
-              eq(healthRecords.userId, ctx.user.id),
-              gte(healthRecords.recordDate, sixtyDaysAgo),
-            ));
+            .where(
+              and(
+                eq(healthRecords.horseId, horse.id),
+                eq(healthRecords.userId, ctx.user.id),
+                gte(healthRecords.recordDate, sixtyDaysAgo),
+              ),
+            );
           if ((recentHealth[0]?.count || 0) === 0) {
             alerts.push({
               id: `no-health-${horse.id}`,
@@ -17789,14 +20770,20 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           // Upcoming appointments (next 7 days)
           const sevenDaysFromNow = new Date(now.getTime() + 7 * 86_400_000);
           const upcomingAppts = await dbConn
-            .select({ id: appointments.id, title: appointments.title, appointmentDate: appointments.appointmentDate })
+            .select({
+              id: appointments.id,
+              title: appointments.title,
+              appointmentDate: appointments.appointmentDate,
+            })
             .from(appointments)
-            .where(and(
-              eq(appointments.horseId, horse.id),
-              eq(appointments.userId, ctx.user.id),
-              gte(appointments.appointmentDate, now),
-              lte(appointments.appointmentDate, sevenDaysFromNow),
-            ));
+            .where(
+              and(
+                eq(appointments.horseId, horse.id),
+                eq(appointments.userId, ctx.user.id),
+                gte(appointments.appointmentDate, now),
+                lte(appointments.appointmentDate, sevenDaysFromNow),
+              ),
+            );
           for (const a of upcomingAppts) {
             alerts.push({
               id: `appt-soon-${a.id}`,
@@ -17805,14 +20792,19 @@ Format your response as JSON with keys: recommendation, explanation, precautions
               type: "appointment_upcoming",
               severity: "info",
               title: `${a.title || "Appointment"} coming up for ${horse.name}`,
-              dueDate: a.appointmentDate instanceof Date ? a.appointmentDate.toISOString() : String(a.appointmentDate),
+              dueDate:
+                a.appointmentDate instanceof Date
+                  ? a.appointmentDate.toISOString()
+                  : String(a.appointmentDate),
             });
           }
         }
 
         // Sort alerts: urgent first, then warning, then info
         const severityOrder = { urgent: 0, warning: 1, info: 2 };
-        alerts.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+        alerts.sort(
+          (a, b) => severityOrder[a.severity] - severityOrder[b.severity],
+        );
         return alerts;
       }),
   }),
@@ -17820,13 +20812,17 @@ Format your response as JSON with keys: recommendation, explanation, precautions
   // ── Marketing (public routes for unsubscribe + lead capture) ────────────
   growthEngine: router({
     getOverview: adminUnlockedProcedure
-      .input(z.object({ tenantId: z.string().min(1).max(100).default("global") }))
+      .input(
+        z.object({ tenantId: z.string().min(1).max(100).default("global") }),
+      )
       .query(async ({ input }) => {
         return getGrowthEngineOverview(input.tenantId);
       }),
 
     getAdminData: adminUnlockedProcedure
-      .input(z.object({ tenantId: z.string().min(1).max(100).default("global") }))
+      .input(
+        z.object({ tenantId: z.string().min(1).max(100).default("global") }),
+      )
       .query(async ({ input }) => {
         return getGrowthEngineAdminData(input.tenantId);
       }),
@@ -17875,7 +20871,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           platform: input.platform,
           state: input.state,
           encryptedAccessToken: encryptGrowthSecret(input.encryptedAccessToken),
-          encryptedRefreshToken: encryptGrowthSecret(input.encryptedRefreshToken),
+          encryptedRefreshToken: encryptGrowthSecret(
+            input.encryptedRefreshToken,
+          ),
           expiresAt: input.expiresAtIso ? new Date(input.expiresAtIso) : null,
           metadata: input.metadata,
         });
@@ -17886,7 +20884,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         z.object({
           tenantId: z.string().min(1).max(100).default("global"),
           onboardingType: z.enum(ONBOARDING_TYPES),
-          status: z.enum(["not_started", "in_progress", "completed", "skipped"]),
+          status: z.enum([
+            "not_started",
+            "in_progress",
+            "completed",
+            "skipped",
+          ]),
           step: z.number().min(1).max(20).default(1),
           progressPercent: z.number().min(0).max(100).default(0),
           checklist: z.record(z.string(), z.boolean()).default({}),
@@ -17912,7 +20915,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           tenantId: z.string().min(1).max(100),
           contactId: z.number().optional(),
           workflowKey: z.string().min(1).max(120),
-          runStatus: z.enum(["queued", "processing", "completed", "failed", "needs_approval"]),
+          runStatus: z.enum([
+            "queued",
+            "processing",
+            "completed",
+            "failed",
+            "needs_approval",
+          ]),
           triggerSource: z.string().min(1).max(60),
           triggerEvent: z.string().min(1).max(80),
           payload: z.record(z.string(), z.unknown()).optional(),
@@ -17937,7 +20946,13 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         z.object({
           tenantId: z.string().min(1).max(100).default("global"),
           inviteeEmail: z.string().email().nullable().optional(),
-          referralType: z.enum(["stable", "school", "academy", "yard", "general"]),
+          referralType: z.enum([
+            "stable",
+            "school",
+            "academy",
+            "yard",
+            "general",
+          ]),
           source: z.string().min(1).max(80).default("share_with_your_yard"),
           metadata: z.record(z.string(), z.unknown()).optional(),
         }),
@@ -18009,7 +21024,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
         // Look up contact by unsubscribe token
-        const [contact] = await dbConn.select().from(marketingContacts)
+        const [contact] = await dbConn
+          .select()
+          .from(marketingContacts)
           .where(eq(marketingContacts.unsubscribeToken, input.token));
 
         if (!contact) {
@@ -18018,12 +21035,15 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Mark contact as unsubscribed
-        await dbConn.update(marketingContacts)
+        await dbConn
+          .update(marketingContacts)
           .set({ status: "unsubscribed" })
           .where(eq(marketingContacts.id, contact.id));
 
         // Add to global suppression list (prevents re-adding)
-        const [existing] = await dbConn.select().from(emailUnsubscribes)
+        const [existing] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, contact.email.toLowerCase()));
         if (!existing) {
           await dbConn.insert(emailUnsubscribes).values({
@@ -18034,15 +21054,21 @@ Format your response as JSON with keys: recommendation, explanation, precautions
           });
         }
 
-        return { success: true, message: "You have been unsubscribed. You will no longer receive marketing emails from EquiProfile." };
+        return {
+          success: true,
+          message:
+            "You have been unsubscribed. You will no longer receive marketing emails from EquiProfile.",
+        };
       }),
 
     captureLead: publicProcedure
-      .input(z.object({
-        email: z.string().email(),
-        name: z.string().optional(),
-        source: z.string().default("website"),
-      }))
+      .input(
+        z.object({
+          email: z.string().email(),
+          name: z.string().optional(),
+          source: z.string().default("website"),
+        }),
+      )
       .mutation(async ({ input }) => {
         const dbConn = await getDb();
         if (!dbConn) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
@@ -18054,12 +21080,16 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }
 
         // Check suppression
-        const [suppressed] = await dbConn.select().from(emailUnsubscribes)
+        const [suppressed] = await dbConn
+          .select()
+          .from(emailUnsubscribes)
           .where(eq(emailUnsubscribes.email, email));
         if (suppressed) return { success: true }; // silently accept, don't add
 
         // Check existing
-        const [existing] = await dbConn.select().from(marketingContacts)
+        const [existing] = await dbConn
+          .select()
+          .from(marketingContacts)
           .where(eq(marketingContacts.email, email));
         if (existing) return { success: true }; // already in system
 
