@@ -21,6 +21,14 @@ export type ComplimentaryPreferences = Record<string, unknown> & {
   complimentaryAccess?: ComplimentaryAccessGrant | null;
 };
 
+export type ManagementAccessSubject = {
+  role?: string | null;
+  subscriptionStatus: string;
+  subscriptionPlan?: string | null;
+  trialEndsAt?: Date | string | null;
+  preferences?: string | Record<string, unknown> | null;
+};
+
 export type EffectiveManagementEntitlement = BaseSubscriptionState & {
   effectivePlanTier: ManagementPlanTier;
   effectiveBothDashboardsUnlocked: boolean;
@@ -38,14 +46,66 @@ function validDate(value: unknown): value is string {
   );
 }
 
+export function parseManagementPreferences(
+  raw: string | Record<string, unknown> | null | undefined,
+): ComplimentaryPreferences {
+  if (!raw) return {};
+  if (typeof raw === "object" && !Array.isArray(raw)) {
+    return raw as ComplimentaryPreferences;
+  }
+  if (typeof raw !== "string") return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as ComplimentaryPreferences)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function readLegacyComplimentaryAccess(
+  preferences: Record<string, unknown>,
+): ComplimentaryAccessGrant | null {
+  if (preferences.freeAccess !== true) return null;
+  const rawTier = preferences.freeAccessTier ?? preferences.planTier;
+  const tier: ComplimentaryTier =
+    rawTier === "stable" || rawTier === "pro" ? rawTier : "management_full";
+  const rawEnd = preferences.freeAccessUntil;
+  let endsAt: string | null = null;
+  if (rawEnd !== null && rawEnd !== undefined && rawEnd !== "") {
+    const parsed = new Date(String(rawEnd));
+    if (!Number.isFinite(parsed.getTime())) return null;
+    endsAt = parsed.toISOString();
+  }
+  const rawStart =
+    preferences.freeAccessGrantedAt ?? preferences.freeAccessStartedAt;
+  const parsedStart = rawStart ? new Date(String(rawStart)) : new Date(0);
+  return {
+    version: 1,
+    tier,
+    startsAt: Number.isFinite(parsedStart.getTime())
+      ? parsedStart.toISOString()
+      : new Date(0).toISOString(),
+    endsAt,
+  };
+}
+
 export function readComplimentaryAccess(
   preferences: Record<string, unknown> | null | undefined,
 ): ComplimentaryAccessGrant | null {
-  const raw = preferences?.complimentaryAccess;
+  if (!preferences) return null;
+  if (!Object.prototype.hasOwnProperty.call(preferences, "complimentaryAccess")) {
+    return readLegacyComplimentaryAccess(preferences);
+  }
+  const raw = preferences.complimentaryAccess;
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const candidate = raw as Partial<ComplimentaryAccessGrant>;
   if (candidate.version !== 1) return null;
-  if (!candidate.tier || !["pro", "stable", "management_full"].includes(candidate.tier)) {
+  if (
+    !candidate.tier ||
+    !["pro", "stable", "management_full"].includes(candidate.tier)
+  ) {
     return null;
   }
   if (!validDate(candidate.startsAt)) return null;
@@ -63,10 +123,6 @@ export function isComplimentaryAccessActive(
   return grant.endsAt === null || new Date(grant.endsAt).getTime() > now.getTime();
 }
 
-/**
- * Create a complimentary-access overlay without mutating the user's underlying
- * subscription status, paid plan tier, Stripe state or dashboard entitlement.
- */
 export function grantComplimentaryAccess(
   preferences: Record<string, unknown> | null | undefined,
   input: {
@@ -105,24 +161,18 @@ export function grantComplimentaryAccess(
   };
 }
 
-/**
- * Revoke only the overlay. Underlying paid/trial subscription fields are owned
- * by billing and are deliberately not accepted by this function.
- */
 export function revokeComplimentaryAccess(
   preferences: Record<string, unknown> | null | undefined,
 ): ComplimentaryPreferences {
   return {
     ...(preferences ?? {}),
     complimentaryAccess: null,
+    freeAccess: false,
+    freeAccessUntil: null,
+    freeAccessDays: null,
   };
 }
 
-/**
- * Resolve the effective Management capability. An expired complimentary grant
- * falls back to the base subscription; it never blocks an otherwise-valid paid
- * subscription and never rewrites plan/billing state.
- */
 export function resolveEffectiveManagementEntitlement(
   base: BaseSubscriptionState,
   preferences: Record<string, unknown> | null | undefined,
@@ -161,4 +211,29 @@ export function resolveEffectiveManagementEntitlement(
     complimentaryAccessState: "active",
     complimentaryAccessUntil: grant.endsAt,
   };
+}
+
+export function hasEffectiveManagementAccess(
+  subject: ManagementAccessSubject | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  if (!subject) return false;
+  if (subject.role === "admin") return true;
+  const preferences = parseManagementPreferences(subject.preferences);
+  const planTier: ManagementPlanTier =
+    preferences.planTier === "stable" ? "stable" : "pro";
+  const entitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: subject.subscriptionStatus,
+      planTier,
+      bothDashboardsUnlocked: Boolean(preferences.bothDashboardsUnlocked),
+    },
+    preferences,
+    now,
+  );
+  if (entitlement.complimentaryAccessState === "active") return true;
+  if (subject.subscriptionStatus === "active") return true;
+  if (subject.subscriptionStatus !== "trial" || !subject.trialEndsAt) return false;
+  const trialEndsAt = new Date(subject.trialEndsAt);
+  return Number.isFinite(trialEndsAt.getTime()) && trialEndsAt > now;
 }

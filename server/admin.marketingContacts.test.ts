@@ -51,12 +51,15 @@ describe("admin marketing contacts", () => {
     expect(error).toBeInstanceOf(TRPCError);
     expect((error as TRPCError).code).toBe("FORBIDDEN");
     expect((error as TRPCError).message).toContain(
-      "Legacy embedded Marketing is read-only during migration",
+      "Legacy embedded Marketing is read-only",
+    );
+    expect((error as TRPCError).message).toContain(
+      "standalone Marketing application",
     );
     expect(mocks.getDb).not.toHaveBeenCalled();
   });
 
-  it("returns suppression list rows for migration and reconciliation", async () => {
+  it("returns suppression list rows for reconciliation without re-enabling embedded writes", async () => {
     const suppressedRows = [{
       id: 10,
       email: "blocked@example.com",

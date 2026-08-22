@@ -11,10 +11,11 @@ const routers = readFileSync(
   "utf8",
 );
 
-describe("EquiProfile embedded Marketing migration boundary", () => {
-  it("blocks legacy Marketing writes centrally while migration records remain readable", () => {
+describe("EquiProfile embedded Marketing boundary", () => {
+  it("blocks legacy Marketing writes centrally and directs owners to standalone Marketing", () => {
     expect(trpcCore).toContain("isEmbeddedMarketingWrite(path)");
-    expect(trpcCore).toContain("Legacy embedded Marketing is read-only during migration");
+    expect(trpcCore).toContain("Legacy embedded Marketing is read-only");
+    expect(trpcCore).toContain("standalone Marketing application");
     expect(trpcCore).toContain('"sendCampaign"');
     expect(trpcCore).toContain('"sendTestEmail"');
     expect(trpcCore).toContain('"publishApprovedScheduleDraft"');
@@ -22,7 +23,7 @@ describe("EquiProfile embedded Marketing migration boundary", () => {
     expect(trpcCore).toContain('"connectMarketingPlatform"');
   });
 
-  it("keeps legacy read procedures temporarily available for inventory and reconciliation", () => {
+  it("keeps legacy read procedures temporarily available only for inventory and reconciliation", () => {
     expect(routers).toContain("listMarketingCampaignItems: adminUnlockedProcedure");
     expect(routers).toContain("listMarketingSocialConnections: adminUnlockedProcedure");
     expect(routers).toContain("listMarketingScheduleDrafts: adminUnlockedProcedure");

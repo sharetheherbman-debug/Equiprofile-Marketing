@@ -1,6 +1,12 @@
 import { NOT_ADMIN_ERR_MSG, UNAUTHED_ERR_MSG } from "@shared/const";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import {
+  hasEffectiveManagementAccess,
+  parseManagementPreferences,
+  resolveEffectiveManagementEntitlement,
+  type ManagementPlanTier,
+} from "../complimentaryAccess";
 import type { TrpcContext } from "./context";
 import { isTrustedCookieWrite } from "./requestSecurity";
 
@@ -11,12 +17,6 @@ const t = initTRPC.context<TrpcContext>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-/**
- * Legacy routers that are presented exclusively as Stable-plan features but
- * historically used protectedProcedure rather than stablePlanProcedure.
- * Enforce these namespaces centrally so direct tRPC calls cannot bypass the
- * dashboard entitlement boundary while the oversized routers file is split.
- */
 const STABLE_ONLY_PROCEDURE_PREFIXES = [
   "lessonBookings.",
   "trainerAvailability.",
@@ -26,18 +26,6 @@ function requiresStableEntitlement(path: string): boolean {
   return STABLE_ONLY_PROCEDURE_PREFIXES.some((prefix) => path.startsWith(prefix));
 }
 
-/**
- * Phase 1 EquiProfile / Marketing separation boundary.
- *
- * The embedded Marketing database records remain readable while we inventory,
- * reconcile and migrate them into the standalone white-label EquiProfile
- * Marketing application. EquiProfile must no longer create, mutate, generate,
- * send, publish or configure work in that legacy Marketing runtime.
- *
- * This boundary is intentionally central so an old hidden UI, direct tRPC call
- * or forgotten admin component cannot reactivate legacy execution while source
- * code is being removed in controlled batches.
- */
 const EMBEDDED_MARKETING_WRITE_VERBS = [
   "create",
   "update",
@@ -89,15 +77,41 @@ function isEmbeddedMarketingWrite(path: string): boolean {
   );
 }
 
-function parsePreferences(raw: unknown): Record<string, unknown> {
-  if (!raw) return {};
-  if (typeof raw === "object") return raw as Record<string, unknown>;
-  if (typeof raw !== "string") return {};
-  try {
-    return JSON.parse(raw) as Record<string, unknown>;
-  } catch {
-    return {};
+function fallbackTrialEnd(createdAt: Date | string): Date {
+  const end = new Date(createdAt);
+  end.setDate(end.getDate() + 7);
+  return end;
+}
+
+async function loadManagementAccess(userId: number) {
+  const db = await import("../db");
+  const user = await db.getUserById(userId);
+  if (!user) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
+
+  const preferences = parseManagementPreferences(user.preferences);
+  const planTier: ManagementPlanTier =
+    preferences.planTier === "stable" ? "stable" : "pro";
+  const trialEndsAt = user.trialEndsAt
+    ? new Date(user.trialEndsAt)
+    : fallbackTrialEnd(user.createdAt);
+  const hasAccess = hasEffectiveManagementAccess({
+    role: user.role,
+    subscriptionStatus: user.subscriptionStatus,
+    trialEndsAt,
+    preferences,
+  });
+  const entitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: user.subscriptionStatus,
+      planTier,
+      bothDashboardsUnlocked: Boolean(preferences.bothDashboardsUnlocked),
+    },
+    preferences,
+  );
+
+  return { user, preferences, entitlement, hasAccess, trialEndsAt };
 }
 
 const requireUser = t.middleware(async (opts) => {
@@ -115,15 +129,23 @@ const requireUser = t.middleware(async (opts) => {
   }
 
   if (requiresStableEntitlement(path)) {
-    const db = await import("../db");
-    const user = await db.getUserById(ctx.user.id);
-    if (!user) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    const state = await loadManagementAccess(ctx.user.id);
+    if (state.user.isSuspended) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `Account suspended: ${state.user.suspendedReason || "Please contact support"}`,
+      });
     }
-    const prefs = parsePreferences(user.preferences);
+    if (!state.hasAccess) {
+      throw new TRPCError({
+        code: "PAYMENT_REQUIRED",
+        message: "An active subscription, trial, or complimentary grant is required.",
+      });
+    }
     const hasStableAccess =
-      prefs.planTier === "stable" || prefs.bothDashboardsUnlocked === true;
-    if (!hasStableAccess) {
+      state.entitlement.effectivePlanTier === "stable" ||
+      state.entitlement.effectiveBothDashboardsUnlocked;
+    if (!hasStableAccess && state.user.role !== "admin") {
       throw new TRPCError({
         code: "FORBIDDEN",
         message:
@@ -149,35 +171,23 @@ const checkTrialStatus = t.middleware(async (opts) => {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
 
-  if (ctx.user.subscriptionStatus === "trial") {
-    const now = new Date();
-    const trialEndDate = new Date(ctx.user.createdAt);
-    trialEndDate.setDate(trialEndDate.getDate() + 7);
+  const state = await loadManagementAccess(ctx.user.id);
 
-    if (now > trialEndDate) {
-      throw new TRPCError({
-        code: "PAYMENT_REQUIRED",
-        message:
-          "Your 7-day trial has ended. Please upgrade to continue using EquiProfile.",
-      });
-    }
-  }
-
-  if (
-    ctx.user.subscriptionStatus === "expired" ||
-    ctx.user.subscriptionStatus === "overdue"
-  ) {
+  if (state.user.isSuspended) {
     throw new TRPCError({
-      code: "PAYMENT_REQUIRED",
-      message:
-        "Your subscription has expired. Please renew to continue using EquiProfile.",
+      code: "FORBIDDEN",
+      message: `Account suspended: ${state.user.suspendedReason || "Please contact support"}`,
     });
   }
 
-  if (ctx.user.isSuspended) {
+  if (!state.hasAccess) {
+    const isExpiredTrial =
+      state.user.subscriptionStatus === "trial" && state.trialEndsAt <= new Date();
     throw new TRPCError({
-      code: "FORBIDDEN",
-      message: `Account suspended: ${ctx.user.suspendedReason || "Please contact support"}`,
+      code: "PAYMENT_REQUIRED",
+      message: isExpiredTrial
+        ? "Your trial has ended. Please upgrade to continue using EquiProfile."
+        : "Your subscription is not active. Please renew or upgrade to continue using EquiProfile.",
     });
   }
 
@@ -203,7 +213,7 @@ export const adminUnlockedProcedure = protectedProcedure.use(
       throw new TRPCError({
         code: "FORBIDDEN",
         message:
-          "Legacy embedded Marketing is read-only during migration. Open the owner-only EquiProfile Marketing application instead.",
+          "Legacy embedded Marketing is read-only. Open the standalone Marketing application instead.",
       });
     }
 

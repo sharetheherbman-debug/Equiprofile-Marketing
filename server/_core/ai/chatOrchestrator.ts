@@ -5,15 +5,14 @@
  * video model discovery, or provider telemetry DB writes.
  *
  * This is intentionally kept separate from the main AI orchestrator
- * (orchestrator.ts) so that dashboard chat never fails because
- * HF/Qwen media providers are setup_needed or unreachable.
- *
- * Priority: GenX (text model) → Qwen (text model) → HuggingFace (text model)
+ * (orchestrator.ts) so that dashboard chat remains isolated from queued media
+ * work. Production Management uses GenX only; a missing GenX configuration
+ * produces a truthful setup-needed state rather than a vendor fallback.
  */
 import { getRuntimeConfig, getRuntimeConfigMode } from "../../dynamicConfig";
 import type { Message } from "../llm";
 
-export type ChatTextProvider = "genx" | "qwen" | "huggingface";
+export type ChatTextProvider = "genx";
 
 export type ChatProviderConfig = {
   provider: ChatTextProvider;
@@ -42,7 +41,9 @@ export function isChatSetupNeeded(result: ChatResult): result is ChatSetupNeeded
 async function resolveGenXChatConfig(): Promise<ChatProviderConfig | null> {
   const apiKey = await getRuntimeConfig("genx_api_key", "GENX_API_KEY");
   if (!apiKey) return null;
-  const baseRaw = (await getRuntimeConfig("genx_base_url", "GENX_BASE_URL")) || "https://query.genx.sh/v1";
+  const baseRaw =
+    (await getRuntimeConfig("genx_base_url", "GENX_BASE_URL")) ||
+    "https://query.genx.sh/v1";
   const base = baseRaw.replace(/\/+$/, "").replace(/\/v1$/i, "");
   const endpoint = base + "/v1/chat/completions";
   const model =
@@ -53,62 +54,22 @@ async function resolveGenXChatConfig(): Promise<ChatProviderConfig | null> {
   return { provider: "genx", apiKey, endpoint, model };
 }
 
-async function resolveQwenChatConfig(): Promise<ChatProviderConfig | null> {
-  const apiKey = await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY");
-  if (!apiKey) return null;
-  const baseRaw = (await getRuntimeConfig("qwen_base_url", "QWEN_BASE_URL")) || "https://dashscope-intl.aliyuncs.com/compatible-mode";
-  const base = baseRaw.replace(/\/+$/, "").replace(/\/v1$/i, "");
-  const endpoint = base + "/v1/chat/completions";
-  const model =
-    (await getRuntimeConfig("qwen_text_model", "QWEN_TEXT_MODEL")) ||
-    (await getRuntimeConfig("qwen_model", "QWEN_MODEL")) ||
-    "qwen-plus";
-  return { provider: "qwen", apiKey, endpoint, model };
-}
-
-async function resolveHuggingFaceChatConfig(): Promise<ChatProviderConfig | null> {
-  const apiKey = await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY");
-  if (!apiKey) return null;
-  const model =
-    (await getRuntimeConfig("hf_task_copywriting_model", "HF_TASK_COPYWRITING_MODEL")) ||
-    (await getRuntimeConfig("hf_task_chat_model", "HF_TASK_CHAT_MODEL")) ||
-    (await getRuntimeConfig("hf_task_text_generation_model", "HF_TASK_TEXT_GENERATION_MODEL"));
-  if (!model) return null;
-  const endpoint = "https://api-inference.huggingface.co/models/" + model + "/v1/chat/completions";
-  return { provider: "huggingface", apiKey, endpoint, model };
-}
-
 async function resolvePreferredChatConfig(): Promise<ChatProviderConfig | null> {
-  const preferred = (await getRuntimeConfig("copywriting_provider", "COPYWRITING_PROVIDER")).toLowerCase().trim();
-
-  if (preferred === "qwen") {
-    const cfg = await resolveQwenChatConfig();
-    if (cfg) return cfg;
-  }
-  if (preferred === "huggingface") {
-    const cfg = await resolveHuggingFaceChatConfig();
-    if (cfg) return cfg;
-  }
-
-  // Default order: GenX → Qwen → HuggingFace
-  const genx = await resolveGenXChatConfig();
-  if (genx) return genx;
-  const qwen = await resolveQwenChatConfig();
-  if (qwen) return qwen;
-  const hf = await resolveHuggingFaceChatConfig();
-  if (hf) return hf;
-
-  return null;
+  return resolveGenXChatConfig();
 }
 
-function normalizeChatMessages(messages: Message[]): Array<{ role: string; content: string }> {
+function normalizeChatMessages(
+  messages: Message[],
+): Array<{ role: string; content: string }> {
   return messages.map((m) => {
     const content = Array.isArray(m.content)
       ? m.content
           .map((part) => {
             if (typeof part === "string") return part;
             if (part.type === "text") return part.text;
-            if (part.type === "image_url") return "[image:" + part.image_url.url + "]";
+            if (part.type === "image_url") {
+              return "[image:" + part.image_url.url + "]";
+            }
             return "";
           })
           .join("\n")
@@ -147,33 +108,22 @@ async function callChatEndpoint(
     });
     if (!resp.ok) {
       const body = await resp.text().catch(() => "");
-      throw new Error(config.provider + " chat HTTP " + resp.status + ": " + body.slice(0, 200));
+      throw new Error(
+        config.provider + " chat HTTP " + resp.status + ": " + body.slice(0, 200),
+      );
     }
     const json = (await resp.json()) as Record<string, unknown>;
-    const choices = json.choices as Array<{ message?: { content?: unknown } }> | undefined;
+    const choices = json.choices as
+      | Array<{ message?: { content?: unknown } }>
+      | undefined;
     const text = choices?.[0]?.message?.content;
     if (typeof text === "string" && text.trim()) return text.trim();
-
-    // HuggingFace text-generation fallback shape
-    if (Array.isArray(json) && json.length > 0) {
-      const first = json[0] as Record<string, unknown>;
-      const generated = first.generated_text ?? first.summary_text;
-      if (typeof generated === "string" && generated.trim()) return generated.trim();
-    }
-
     throw new Error(config.provider + " returned an empty chat response");
   } finally {
     clearTimeout(timer);
   }
 }
 
-/**
- * Execute a text-only chat task. Never calls media routing, model discovery,
- * or video provider checks.
- *
- * Returns a ChatSetupNeededError if no text provider is configured, so callers
- * can surface a clear "add API key" message rather than a generic 500.
- */
 export async function executeChatTask(
   messages: Message[],
   opts: { maxTokens?: number; timeoutMs?: number } = {},
@@ -183,30 +133,25 @@ export async function executeChatTask(
     return {
       status: "setup_needed",
       message:
-        "No text provider is configured. Add GENX_API_KEY, QWEN_API_KEY, or HUGGINGFACE_API_KEY (with HF_TASK_COPYWRITING_MODEL) in settings.",
+        "GenX is not configured. Add GENX_API_KEY, GENX_BASE_URL, and GENX_MODEL in deployment settings.",
     };
   }
 
   const normalizedMessages = normalizeChatMessages(messages);
   const maxTokens = opts.maxTokens ?? 2048;
   const timeoutMs = opts.timeoutMs ?? 25_000;
-
-  const content = await callChatEndpoint(config, normalizedMessages, maxTokens, timeoutMs);
+  const content = await callChatEndpoint(
+    config,
+    normalizedMessages,
+    maxTokens,
+    timeoutMs,
+  );
   return { provider: config.provider, model: config.model, content };
 }
 
-/**
- * Returns true if at least one text provider is configured.
- * Never touches DB when in unit_test_mock mode.
- */
 export async function isChatProviderConfigured(): Promise<boolean> {
   if (getRuntimeConfigMode() === "unit_test_mock") {
-    return !!(
-      process.env.GENX_API_KEY ||
-      process.env.QWEN_API_KEY ||
-      (process.env.HUGGINGFACE_API_KEY &&
-        (process.env.HF_TASK_COPYWRITING_MODEL || process.env.HF_TASK_CHAT_MODEL))
-    );
+    return !!process.env.GENX_API_KEY;
   }
   const cfg = await resolvePreferredChatConfig();
   return cfg !== null;

@@ -2,9 +2,15 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+      - "release-candidate/**"
   pull_request:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+      - phase-1/small-medium-completion
 
 jobs:
   test:
@@ -41,6 +47,18 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+
+      - name: Verify focused Management release boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/index.js
+          test -f dist/public/management/index.html
+          test ! -e dist/public/academy
+          test ! -e dist/public/shop
+          test ! -e dist/public/school
+          grep -q '"db:readiness"' package.json
+          grep -q '"db:migrate": "npm run db:readiness"' package.json
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -89,6 +107,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - name: Reject high or critical production dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
         continue-on-error: true
@@ -108,7 +135,7 @@ jobs:
 
   deploy:
     name: Deploy to Production
-    needs: [test, lint, ui-smoke-test]
+    needs: [test, lint, ui-smoke-test, security]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
