@@ -6804,24 +6804,24 @@ Keep people safe and follow the veterinary professional’s instructions about c
     category: "Horse Health & First Response",
     sortOrder: 4,
     objectives: [
-      "Understand why vaccination and worming are essential for horse health",
-      "Understand why vaccination timing must follow a current veterinary plan and relevant governing-body rules",
-      "Understand targeted worming programmes based on faecal egg counts",
-      "Keep accurate health records including vaccination and worming dates",
+      "Understand why individual vaccination and parasite-control plans belong in preventive health care",
+      "Understand why vaccination timing and eligibility require a current veterinary plan and applicable organiser or governing-body checks",
+      "Understand why test-led parasite control requires a current veterinary or qualified prescriber plan",
+      "Keep authorised health records and escalate an unclear record or health concern promptly",
     ],
     content: `Vaccination and parasite control are parts of preventive health care. A programme must protect the individual horse while also accounting for its age, health, history, location, travel and contact with other horses. The correct plan is set and reviewed with the veterinary team and, where relevant, against the current rules of the event organiser or governing body.
 
 ## Vaccination plans
 
-Equine influenza and tetanus are commonly included in a horse’s preventive-health plan. The Royal Veterinary College notes that vaccine protocols differ by vaccine and that competition requirements can differ from a general health plan. Do not use an old calendar, a lesson handout or another horse’s record to decide whether an injection is due. Instead, take the passport and the complete vaccination history to the veterinary team, confirm the current product instructions and check the rules that apply to any planned competition or travel.
+World Horse Welfare includes vaccination within an annual health plan and notes that competition requirements may differ. Do not use an old calendar, a lesson handout or another horse’s record to decide whether an injection is due or whether a horse is eligible to travel or compete. Instead, provide the passport and complete available vaccination history to the veterinary team, and check the current requirements directly with the relevant organiser or governing body.
 
-If a record is missing, late or unclear, do not guess at the next dose. Tell the vet exactly what is known, including the date, product and batch number of the last recorded injection, then follow the plan they set. This protects the horse and avoids presenting a competition-specific requirement as a universal rule.
+If a record is missing, late or unclear, do not guess at the next action. Give the veterinary team the factual record available, including any recorded date, product and batch information, then follow the current authorised plan. This protects the horse and avoids presenting a competition-specific requirement as a universal rule.
 
 ## Evidence-led parasite control
 
 World Horse Welfare advises that worm-control decisions should be based on appropriate testing and a bespoke plan developed with a vet or SQP/RAMA. A faecal egg count, saliva test or blood test may be relevant depending on the parasite question and time of year, but no single test answers every question. Collect and label samples as instructed by the laboratory, record results, and ask the professional adviser to explain what the result does and does not show before using any medicine.
 
-Practical pasture measures matter as well: remove droppings, avoid unnecessary sharing of contaminated equipment, review grazing pressure and keep a clear record of new arrivals, test results and treatments. Do not select, dose or repeat a wormer solely from a fixed calendar or a generic internet threshold.
+Pasture management and clear records matter as well. Follow the responsible person’s current plan for droppings, grazing, new arrivals, test records and any authorised treatment record. Do not select, dose, administer or repeat a wormer from a fixed calendar, a generic internet threshold or an isolated result.
 
 ## Record keeping and escalation
 
@@ -6834,9 +6834,9 @@ Keep a health record for each horse with passport/ID details, vaccination dates,
       "Accurate health records should include vaccination, product, batch, test-result and professional-advice details",
     ],
     safetyNote:
-      "Only administer wormers that are appropriate for your horse's weight — overdosing and underdosing both cause problems. If in doubt, weigh the horse with a weigh tape and consult your vet. Never give medication to a horse you are not authorised to treat.",
+      "Do not decide that a vaccination is due, select or administer a wormer, calculate a dose, or change a parasite-control plan unless the current veterinary or qualified prescriber plan, responsible-person authorisation and your competence clearly permit it. Escalate uncertainty, illness or a record concern promptly.",
     practicalApplication:
-      "Review your horse's vaccination record and check whether boosters are due. If your yard uses a targeted worming programme, find out when the next faecal egg count is scheduled and ensure your horse is included.",
+      "With the responsible person, locate the current veterinary contact, passport or health record and the yard’s parasite-control record. Identify the factual information that should be given to the veterinary team or qualified prescriber if a record is unclear; do not determine a booster due date, treatment, sample schedule or medicine action independently.",
     commonMistakes: [
       "Using a generic timetable instead of confirming the individual horse’s current veterinary and competition plan",
       "Treating or repeating medicine without appropriate testing and professional advice",
@@ -6847,16 +6847,16 @@ Keep a health record for each horse with passport/ID details, vaccination dates,
     knowledgeCheck: [
       {
         question:
-          "Why are faecal egg counts (FEC) now preferred over routine worming schedules?",
+          "Why should a parasite-test result be discussed within the horse’s current veterinary or qualified prescriber plan?",
         options: [
-          "They are cheaper",
-          "They reduce chemical resistance by only treating horses that need it",
-          "They are more convenient",
-          "They eliminate the need for any worming",
+          "One result always answers every parasite question",
+          "Different tests provide different information, and the professional adviser decides whether action is needed for the individual horse",
+          "A result lets any learner choose a medicine and dose",
+          "Testing removes the need for pasture management and records",
         ],
         correctIndex: 1,
         explanation:
-          "Targeted worming based on FEC reduces unnecessary chemical use, slowing the development of wormer resistance — a serious problem in equine parasitology.",
+          "British Horse Society and World Horse Welfare support risk-based, test-led control with a veterinary professional or qualified prescriber. A result is part of the individual plan, not a diagnosis or a self-directed treatment instruction.",
       },
       {
         question:

@@ -2782,60 +2782,38 @@
           "organisation": "World Horse Welfare",
           "title": "Horse health essentials",
           "url": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-          "checkedAt": "2026-08-21"
+          "checkedAt": "2026-08-22"
         },
         {
           "organisation": "World Horse Welfare",
-          "title": "Preparing for an emergency – equine first aid",
-          "url": "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/preparing-for-an-emergency-equine-first-aid",
-          "checkedAt": "2026-08-21"
+          "title": "Worms: how to control them in horses",
+          "url": "https://www.worldhorsewelfare.org/advice/worms-how-to-control-them-in-horses",
+          "checkedAt": "2026-08-22"
         },
         {
-          "organisation": "World Horse Welfare",
-          "title": "Disease prevention in horses",
-          "url": "https://www.worldhorsewelfare.org/advice/disease-prevention-in-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "Animal and Plant Health Agency / GOV.UK",
-          "title": "Export horses and ponies: special rules",
-          "url": "https://www.gov.uk/guidance/export-horses-and-ponies-special-rules",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "World Horse Welfare",
-          "title": "Protection of equines during transport",
-          "url": "https://www.worldhorsewelfare.org/what-we-do/our-positions/protection-of-equines-during-transport",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
+          "organisation": "British Horse Society",
+          "title": "Risk-based worm control in horses",
+          "url": "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/disease-prevention/risk-based-worm-control-in-horses/",
+          "checkedAt": "2026-08-22"
         },
         {
           "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
+          "title": "Worming",
+          "url": "https://www.britishequestrian.org.uk/equine/health-biosecurity/worming",
+          "checkedAt": "2026-08-22"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "must",
-        "rule",
-        "legal"
-      ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: Generic vaccination and worming schedules, drug thresholds and universal treatment directions were removed; the lesson retains professional-plan, record-keeping and current governing-body guidance.",
-      "lessonChangeMade": "Removed generic vaccination/worming schedules, drug thresholds and universal treatment directions; retained professional-plan, record-keeping and current-governing-body guidance.",
+      "sourceCheckDate": "2026-08-22",
+      "materialNumberOrRuleMentions": [],
+      "whatWasVerified": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REWRITE: World Horse Welfare places vaccination in an individual annual health plan and requires current competition checks rather than a generic schedule. World Horse Welfare, British Horse Society and British Equestrian support test-led, risk-based parasite control with a current veterinary professional or qualified prescriber plan, appropriate test interpretation, resistance avoidance, pasture management and records. The complete lesson makes no fixed timetable, threshold, dose, product, treatment, eligibility, diagnosis or self-triage claim.",
+      "lessonChangeMade": "Replaced the remaining learner-directed weight/dosing implication, independently framed booster check and over-broad FEC explanation with professional-plan, factual-record, authorised sample-handling, current rules, safety and escalation boundaries. Complete objectives, content, key points, safety note, practical activity, common-mistake warnings, knowledge-check explanations and Tutor prompts were reviewed.",
       "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
       "reviewDecision": {
-        "reviewedAt": "2026-08-21",
+        "reviewedAt": "2026-08-22",
         "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-        "claimReviewed": "Generic vaccination and worming schedules, drug thresholds and universal treatment directions were removed; the lesson retains professional-plan, record-keeping and current governing-body guidance.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
+        "sourceUrl": "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/disease-prevention/risk-based-worm-control-in-horses/",
+        "claimReviewed": "Complete post-rewrite lesson scope: individual vaccination-plan and current organiser/governing-body checks; test-led parasite-control context; veterinary professional or qualified prescriber direction; authorised factual records and sample handling; general pasture-plan context; no independent medicine, schedule, dose, treatment, eligibility, diagnosis or self-triage action; and escalation.",
+        "outcome": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REWRITE"
       }
     },
     {
