@@ -9696,76 +9696,80 @@ Young, older, working, retired and competition horses can have different require
     category: "Nutrition & Feeding",
     sortOrder: 6,
     objectives: [
-      "Understand when supplements are appropriate",
-      "Manage diets for metabolic conditions",
-      "Apply electrolyte and hydration knowledge",
-      "Critically evaluate feed marketing claims",
+      "Understand that supplement, balancer, hydration, and special-diet decisions require an individual current plan and appropriate veterinary or qualified nutrition review",
+      "Recognise that EMS, PPID, laminitis, metabolic, health, hydration, and dietary concerns require authorised veterinary assessment and management",
+      "Use factual observations and current procedures without diagnosing a condition or selecting, dosing, mixing, administering, or changing a product",
+      "Know how to refer feed-label, product-identity, supplement, water, welfare, and safety questions through the authorised support route",
     ],
-    content: `At advanced levels, nutrition management includes supplements, metabolic conditions, and critical evaluation of feeding advice.
+    content: `Supplements, balancers, special diets, metabolic conditions, hydration, and feed-product decisions are individual health, welfare, nutrition, management, and safety matters. This lesson does not diagnose a horse, interpret laboratory results, prescribe a diet, identify a deficiency, recommend an ingredient, assess a product’s efficacy, select a supplement, calculate a dose, choose an administration route, mix a product, alter water, feed, forage, grazing, turnout, exercise, medication, or treatment, or replace veterinary, qualified nutrition, responsible-person, or emergency procedures.
 
-## Supplements
+## Supplements and Product Decisions
 
-Common categories: joint support (glucosamine, MSM), hoof supplements (biotin), calmers, and vitamin/mineral balancers. Always check for nutrient overlap with existing feed.
+British Horse Society feeding guidance explains that supplements may support nutritional deficiencies but advises veterinary or nutritionist guidance before a horse is given them. It also distinguishes supplements from balancers and the wider feeding plan. A product category, marketing statement, ingredient list, brand, review, feed label, yard routine, sport, workload, horse type, coat, hoof, age, behaviour, condition, or another horse’s plan does not establish that a product is needed, effective, safe, permitted, compatible, correctly stored, correctly prepared, or suitable for an individual horse.
 
-## Metabolic Conditions
+Do not use a generic lesson to identify a joint, hoof, calming, vitamin, mineral, metabolic, electrolyte, hydration, recovery, performance, or health need. Do not diagnose nutrient overlap, toxicity, an allergy, dehydration, a condition, a product interaction, a feeding error, or the reason a horse looks, feels, performs, drinks, eats, sweats, behaves, or moves differently. The responsible person and appropriate qualified nutrition or veterinary professional must review the current written plan, product information, health information, diet, forage, water, workload, condition, environment, welfare, medication, competition rules where applicable, and current risks.
 
-EMS and PPID (Cushing's) require strict low-sugar, low-starch diets. Soak hay to reduce sugar. Manage grazing carefully.
+## Metabolic and Health Boundaries
 
-## Electrolytes
+The reviewed welfare and professional guidance describes equine metabolic syndrome (EMS) as a condition that requires veterinary assessment and a veterinary-agreed management plan. Diagnosis uses veterinary testing, and EMS can be confused with Cushing’s disease/PPID. A learner must not diagnose EMS, PPID, insulin dysregulation, laminitis, obesity, pain, a metabolic disorder, a dietary condition, or an associated risk from weight, fat deposits, body condition, thirst, urination, coat, hoof, gait, appetite, behaviour, a feed label, or an online rule.
 
-Horses lose electrolytes through sweat. Competition horses need supplementation. Dissolve in water or add to damp feed — never give dry.
+Do not create or modify a special diet, restrict or change forage, soak or substitute feed, alter grazing, use a muzzle, start or change exercise, give a supplement, use an electrolyte, or delay professional support for a suspected metabolic, laminitis, hydration, health, welfare, or dietary concern. Follow the individual veterinary and current site plan. If a horse has a suspected or known condition, only authorised professionals can decide the assessment, diagnosis, treatment, product, diet, monitoring, workload, progression, or stop criteria.
 
-## Critical Evaluation
+## Hydration and Electrolyte Boundary
 
-Learn to read feed labels, understand guaranteed analysis, and consult independent nutritionists.`,
+Water is essential, and changes in water access or intake can be important observations. However, a generic lesson cannot decide whether a horse needs an electrolyte, diagnose dehydration, select a formulation, amount, timing, route, preparation, or mixing method, or assume that competition, heat, sweating, travel, or workload alone determines use. Record factual observations using the current procedure and obtain the responsible person, veterinary, or qualified nutrition guidance before any change.
+
+## Label and Escalation Practice
+
+An authorised person may use product identity, instructions, storage requirements, label information, current plan, and professional advice to manage a feed or supplement. A learner may observe and report factual information but must not infer efficacy, safety, necessity, a health claim, a legal status, or a treatment result. Stop and use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route if product identity, storage, water, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety is concerning, outside the current plan, or unclear.`,
     keyPoints: [
-      "Supplements should address genuine gaps",
-      "EMS and PPID need strict low-sugar diets",
-      "Electrolytes are essential for hard work in heat",
-      "Read feed labels critically",
-      "Consult independent equine nutritionists",
+      "Supplements, balancers, special diets, hydration, and product decisions require the individual horse’s current plan and appropriate veterinary or qualified nutrition review",
+      "A generic lesson cannot diagnose EMS, PPID, insulin dysregulation, laminitis, dehydration, nutritional deficiency, a product interaction, or a health condition",
+      "Do not select, dose, mix, administer, change, or recommend a supplement, balancer, electrolyte, forage, feed, grazing, turnout, exercise, medication, or treatment from general information",
+      "Product identity, marketing, ingredient lists, labels, brands, reviews, workload, coat, hoof, age, behaviour, condition, and another horse’s plan do not establish suitability for an individual horse",
+      "Record factual concerns and use the authorised responsible-person, veterinary, qualified nutrition, welfare, or emergency route when product, water, feeding, condition, health, or welfare is uncertain",
     ],
     safetyNote:
-      "Feeding inappropriate supplements can cause toxicity or imbalance.",
+      "Do not diagnose toxicity, overlap, deficiency, allergy, dehydration, a product interaction, a feeding error, EMS, PPID, laminitis, pain, or another condition from a generic observation. Do not alter a product, diet, water, feed, forage, grazing, turnout, exercise, medication, or treatment independently; follow the current procedure and obtain appropriate support.",
     practicalApplication:
-      "Read the labels of three different horse feeds. Compare protein, fibre, and energy content.",
+      "With the responsible person’s permission, observe how authorised people confirm product identity, storage, current written plan, label instructions, water access, records, professional support, and escalation routes. Do not compare products to select a diet, infer a health benefit, prepare, dose, mix, administer, or change a product from this lesson alone.",
     commonMistakes: [
-      "Adding multiple supplements without checking overlap",
-      "Feeding high-sugar feeds to metabolic horses",
-      "Giving dry electrolytes",
-      "Believing all marketing claims",
-      "Over-supplementing young healthy horses",
+      "Selecting, adding, removing, withholding, substituting, dosing, mixing, administering, or changing a supplement, balancer, electrolyte, feed, forage, water, grazing, turnout, exercise, medication, or treatment outside the individual current plan and authorised procedure",
+      "Diagnosing EMS, PPID, insulin dysregulation, laminitis, obesity, dehydration, deficiency, pain, health, welfare, or a product interaction from condition, weight, fat deposits, thirst, urination, coat, hoof, gait, appetite, behaviour, a label, or a generic rule",
+      "Using a category, marketing statement, ingredient list, brand, review, label, yard routine, sport, workload, horse type, coat, hoof, age, behaviour, condition, or another horse’s plan as proof that a product is needed, effective, safe, permitted, compatible, or suitable",
+      "Creating or modifying a special diet, forage, feed, grazing, muzzle, turnout, exercise, supplement, electrolyte, medication, treatment, or monitoring plan without the authorised veterinary and qualified-professional direction",
+      "Continuing when product identity, storage, water, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety is concerning, outside the current plan, or unclear",
     ],
     knowledgeCheck: [
       {
-        question: "What dietary management for a horse with EMS?",
+        question: "Who determines the diagnosis, management plan, diet, product, monitoring, workload, progression, and stop criteria for a horse with suspected or known EMS, PPID, laminitis, metabolic, hydration, or other health concern?",
         options: [
-          "High-protein diet",
-          "Low-sugar, low-starch diet with managed grazing",
-          "Unlimited rich pasture",
-          "Double the hard feed",
+          "Any learner using a generic lesson or online rule",
+          "The responsible person and appropriate veterinary or qualified professional through the individual current plan",
+          "A feed label alone",
+          "Another horse’s plan",
         ],
         correctIndex: 1,
         explanation:
-          "EMS horses are insulin resistant and need strict sugar/starch control.",
+          "The reviewed welfare and professional guidance describes EMS as requiring veterinary assessment and a veterinary-agreed plan. A generic lesson cannot diagnose or prescribe management.",
       },
       {
-        question: "When are electrolyte supplements most needed?",
+        question: "What should happen if a product, water access, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety concern is outside the current plan or unclear?",
         options: [
-          "In winter",
-          "During rest days",
-          "During hard work or hot weather",
-          "When the horse won't eat",
+          "Choose, dose, mix, or administer a product based on workload or weather",
+          "Diagnose dehydration, a deficiency, EMS, PPID, or laminitis from the observation",
+          "Record factual observations and use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route",
+          "Delay action until a product review is available online",
         ],
         correctIndex: 2,
         explanation:
-          "Electrolytes lost through sweat must be replaced during heavy sweating.",
+          "Do not infer a diagnosis or product decision from general information. Follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How to manage diet for a horse with Cushing's?",
-      "Are joint supplements actually effective?",
-      "How to read and understand a feed label?",
+      "What current veterinary, qualified-nutrition, responsible-person, welfare, and emergency procedure applies if a metabolic, hydration, supplement, or dietary concern arises?",
+      "How should I report factual product, water, feeding, condition, appetite, droppings, sweating, comfort, health, welfare, or safety observations without selecting a product or diagnosing a cause?",
+      "What authority, current written plan, product-identity check, storage procedure, professional support, and emergency route apply before any supplement or dietary change?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "health_awareness"],
   },
