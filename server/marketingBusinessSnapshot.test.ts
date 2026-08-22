@@ -68,12 +68,12 @@ const confirmed: ProductSnapshotSource = {
   updatedAt: new Date("2026-06-04T09:23:40.000Z"),
 };
 
-describe("EquiProfile business snapshot export", () => {
+describe("EquiProfile Management business snapshot export", () => {
   test("prefers the confirmed manual product over the higher-score scrape", () => {
     expect(selectAuthoritativeProduct([scraped, confirmed]).id).toBe(2);
   });
 
-  test("forces canonical identity, fills only missing classification, and excludes stale scraped fields", () => {
+  test("forces canonical Management identity and product-line attribution", () => {
     const snapshot = buildBusinessSnapshotFromRows("equiprofile", brand, [scraped, confirmed]);
     const product = snapshot.products[0] as Record<string, unknown>;
 
@@ -81,7 +81,12 @@ describe("EquiProfile business snapshot export", () => {
       id: "equiprofile",
       name: "EquiProfile",
       domain: "equiprofile.online",
+      product_lines: ["management"],
     });
+    expect(product.name).toBe("EquiProfile Management");
+    expect(product.product_line).toBe("management");
+    expect(snapshot.features.every((item) => item.product_line === "management")).toBe(true);
+    expect(snapshot.offers.every((item) => item.product_line === "management")).toBe(true);
     expect(product.category).toBe("equine_stable_management");
     expect(product.domain).toBe("equiprofile.online");
     expect(product.landing_page_url).toBe("https://equiprofile.online/");
@@ -103,12 +108,12 @@ describe("EquiProfile business snapshot export", () => {
     expect(snapshot.authoritative_fields).toEqual(["app", "products", "features", "offers"]);
   });
 
-  test("is deterministic for unchanged canonical facts", () => {
+  test("is deterministic for unchanged canonical Management facts", () => {
     const first = buildBusinessSnapshotFromRows("equiprofile", brand, [scraped, confirmed]);
     const second = buildBusinessSnapshotFromRows("equiprofile", brand, [confirmed, scraped]);
 
     expect(second).toEqual(first);
-    expect(first.snapshot_id).toMatch(/^equiprofile-business-[a-f0-9]{64}$/);
+    expect(first.snapshot_id).toMatch(/^equiprofile-management-[a-f0-9]{64}$/);
     expect(first.occurred_at).toBe("2026-06-04T09:23:40.000Z");
   });
 });
