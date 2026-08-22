@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 61,
-    "claimReviewedAndAccepted": 41
+    "sourceMappedRequiresSpecificClaimReview": 60,
+    "claimReviewedAndAccepted": 42
   },
   "lessons": [
     {
@@ -80,36 +80,30 @@
       "riskClass": "HIGH_RISK",
       "sources": [
         {
-          "organisation": "World Horse Welfare",
-          "title": "Horse health essentials",
-          "url": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-          "checkedAt": "2026-08-21"
+          "organisation": "Cooperative Extension",
+          "title": "How to Groom a Horse",
+          "url": "https://horses.extension.org/how-to-groom-a-horse/",
+          "checkedAt": "2026-08-22"
         },
         {
-          "organisation": "World Horse Welfare",
-          "title": "Preparing for an emergency – equine first aid",
-          "url": "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/preparing-for-an-emergency-equine-first-aid",
-          "checkedAt": "2026-08-21"
+          "organisation": "University of Missouri Extension",
+          "title": "Safe Ground Handling of Horses",
+          "url": "https://extension.missouri.edu/publications/g2878",
+          "checkedAt": "2026-08-22"
         },
         {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
+          "organisation": "Mississippi State University Extension",
+          "title": "Working Safely Around Horses",
+          "url": "https://extension.msstate.edu/publications/working-safely-around-horses",
+          "checkedAt": "2026-08-22"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [],
-      "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
-      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
-      "reviewDecision": null
+      "whatWasVerified": "Cooperative Extension supports grooming as daily skin-care and bonding work plus the stated basic tool purposes. Missouri Extension supports solid-fixture, supervised quick-release tying; gentle rubber-curry/brush use; hoof-pick movement toward the toe; and professional veterinary/farrier escalation. Mississippi State Extension supports alert close positioning for feet and an experienced-helper boundary.",
+      "lessonChangeMade": "Removed unsupported treatment-outcome, circulation, universal outdoor-coat and diagnostic claims; replaced them with safe observation, individual care-plan, supervision and professional-escalation language. Removed the unsupported grass-kept knowledge check.",
+      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
+      "reviewDecision": "ACCEPTED_AFTER_SOURCE_BACKED_REWRITE"
     },
     {
       "lessonSlug": "feeding-basics",

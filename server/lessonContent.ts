@@ -302,16 +302,16 @@ Knowing these terms allows you to communicate clearly with instructors, vets, an
       "Demonstrate the correct order of a grooming routine",
       "Recognise signs of skin problems or injury during grooming",
     ],
-    content: `Grooming is one of the most important daily tasks in horse care. It is not just about making the horse look tidy — grooming serves essential health, welfare and bonding purposes. A thorough grooming session allows you to check the horse's entire body for cuts, lumps, swelling, heat, skin conditions and parasites. It also stimulates blood circulation, distributes natural oils through the coat, and provides an opportunity to build trust and a working relationship with the horse.
+    content: `Grooming is a routine part of horse care, not only a way to make a horse look tidy. Cooperative Extension guidance describes grooming as supporting skin care and horse–handler bonding. Work calmly, use suitable tools gently, and use the routine to notice changes that should be reported through the yard's current care process.
 
 ## Why We Groom
 
 There are four main reasons for grooming:
 
-1. **Health monitoring** — Running your hands and brushes over every part of the horse means you will notice injuries, swellings, ticks, rain scald, mud fever or other issues early. Early detection leads to faster treatment.
-2. **Comfort** — Removing dried mud, sweat and loose hair prevents rubbing and skin irritation, particularly under the saddle and girth area.
-3. **Circulation** — Vigorous brushing with a body brush or curry comb stimulates blood flow to the skin and helps distribute the natural oils (sebum) that keep the coat healthy and waterproof.
-4. **Bonding** — Horses groom each other (mutual grooming) as a social behaviour. Grooming your horse calmly and consistently helps build trust and establishes you as a safe, reliable handler.
+1. **Safe observation** — Working over the horse can help a handler notice visible changes, lodged debris, or signs of discomfort. Do not diagnose or treat; pause and tell the responsible yard person, veterinarian, or farrier when something is concerning.
+2. **Comfort and cleanliness** — Suitable grooming tools remove loose dirt, old hair, and debris. Take particular care around sensitive or bony areas.
+3. **Coat care** — A body brush removes fine dust and can bring out natural oils in the hair coat.
+4. **Calm handling** — Grooming should be slow, predictable, and appropriate to the horse and the handler's experience. Ask an experienced person for help with an anxious, unfamiliar, or unsafe horse.
 
 ## The Grooming Kit
 
@@ -331,8 +331,8 @@ A standard grooming kit should contain the following items:
 
 A systematic approach ensures nothing is missed:
 
-1. **Tie up safely** — Use a quick-release knot to a secure tie ring, or have someone hold the horse.
-2. **Pick out feet** — Start with the near (left) fore, then near hind, off (right) fore, off hind. Check each hoof for stones, cracks, thrush (a foul-smelling black discharge) and shoe condition.
+1. **Tie up safely** — With a solid fixture and active supervision, use a quick-release knot; alternatively, have an experienced handler hold the horse. Do not leave a tied horse unattended.
+2. **Pick out feet** — Follow the safe method you have been taught, using the hoof pick downward toward the toe. Remove visible dirt, rocks and debris; if something is concerning, stop and consult the responsible yard person, veterinarian, or farrier.
 3. **Curry comb** — Use the rubber curry comb in circular motions over the muscular areas of the body: neck, shoulder, barrel and hindquarters. Avoid bony prominences.
 4. **Dandy brush** — Flick away loosened dirt with short strokes, working from the neck backwards. Skip sensitive or clipped areas.
 5. **Body brush** — Use long, smooth strokes over the whole body, cleaning the brush on the metal curry comb regularly.
@@ -342,27 +342,27 @@ A systematic approach ensures nothing is missed:
 9. **Stable rubber** — Give the coat a final wipe-down to polish.
 10. **Final check** — Stand back and look over the horse for anything you may have missed.
 
-## Grooming a Grass-Kept Horse
+## Adjusting the Routine
 
-Horses living out at grass should not be groomed as thoroughly as stabled horses. The natural grease in their coat provides waterproofing and insulation. For grass-kept horses, pick out feet, remove heavy mud, check for injuries and sponge the eyes and dock. Avoid excessive body brushing that strips the coat oils.`,
+The appropriate grooming routine depends on the individual horse, weather, turnout, coat condition, work, current care plan, and the handler's competence. Do not copy another horse's routine or use grooming as a substitute for veterinary, farriery, or qualified yard guidance. When a horse is anxious, unfamiliar, or difficult to handle safely, stop and ask an experienced person for help.`,
     keyPoints: [
-      "Grooming is a health check — always look for cuts, swelling, heat, skin conditions and parasites",
+      "Grooming supports safe observation; report concerning changes rather than diagnosing or treating them",
       "Use the rubber curry comb in circles on muscular areas only; never on bony legs, spine or face",
       "Always pick out hooves from heel to toe to protect the frog",
-      "Use separate sponges for the face and dock — never mix them",
-      "Grass-kept horses should not be over-groomed, as natural coat oils provide vital weatherproofing",
+      "Use clean, separate equipment as required by the current yard hygiene process",
+      "Use the current individual care plan and ask for experienced help when a horse is anxious or unsafe to handle",
       "Clean the body brush regularly on the metal curry comb during use",
     ],
     safetyNote:
-      "Always tie the horse with a quick-release knot before grooming. Stand to the side of the horse, not directly behind. When picking out hind feet, stay close to the horse's body so that if it kicks, you are pushed away rather than struck at full force. If the horse is fidgety or anxious, ask an experienced person for help rather than continuing alone.",
+      "With a solid fixture and active supervision, use a quick-release knot or an experienced handler. Work calmly, stay aware of the horse's position, and do not stand directly behind it. When picking up feet, use the safe close-working position you have been taught. If the horse is fidgety, anxious, unfamiliar, or unsafe, stop and ask an experienced person for help rather than continuing alone.",
     practicalApplication:
-      "Before every ride, at minimum pick out the hooves and brush the saddle and girth areas to remove mud and debris that could cause rubs or sores. After riding, groom to remove sweat marks, check for any new injuries and ensure the horse is comfortable before returning it to the stable or field. Establish a consistent routine so the horse learns what to expect and stands quietly.",
+      "Under appropriate supervision, use the routine your yard or care plan requires. Remove visible debris with suitable tools, use the safe hoof-cleaning method you have been taught, and report concerning changes rather than attempting to diagnose or treat them. Keep the routine calm and predictable, but do not continue when the horse or situation is unsafe.",
     commonMistakes: [
       "Using the dandy brush on a clipped or thin-skinned horse, causing discomfort",
       "Picking out feet from toe to heel, which can push stones into the frog",
       "Using the same sponge for the face and dock, spreading bacteria",
       "Forgetting to check the legs and hooves because you focused only on the body",
-      "Over-grooming a grass-kept horse, removing essential waterproofing oils",
+      "Continuing alone when a horse is anxious, unfamiliar, or unsafe to handle",
     ],
     knowledgeCheck: [
       {
@@ -390,19 +390,7 @@ Horses living out at grass should not be groomed as thoroughly as stabled horses
         explanation:
           "Always pick out from heel to toe to avoid pushing stones or debris into the sensitive frog and sulci of the hoof.",
       },
-      {
-        question:
-          "Why should a grass-kept horse not be groomed as thoroughly as a stabled horse?",
-        options: [
-          "They do not get as dirty",
-          "Their natural coat oils provide waterproofing and insulation",
-          "They are harder to catch",
-          "Grooming tools do not work on long coats",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Grass-kept horses rely on natural grease in their coat for waterproofing and insulation against cold and rain. Excessive brushing strips these oils away.",
-      },
+
       {
         question: "What is the metal curry comb used for?",
         options: [
