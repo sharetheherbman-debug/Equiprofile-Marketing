@@ -62,6 +62,7 @@ Corrective rewrites already made are documented in `docs/academy/factual-source-
 | Scheduling/calendar | **Not yet fully evidenced** | Requires teacher/owner/student visibility and authorization journey. |
 | Owner curriculum administration | **Not yet fully evidenced** | Membership/invitation is proven; the complete owner curriculum/admin surface is not yet accepted. |
 | Owner activity/reporting | **Not yet fully evidenced** | Must use persisted data; no fake analytics may be accepted. |
+| Local authenticated browser rerun | **Not accepted** | On 22 August 2026, the Core server started only with sandbox-local placeholder configuration and an intentionally unreachable local database; the sandbox browser runtime was unavailable. No public, authenticated, or visual browser journey is recorded as passed from that attempt. |
 
 ## 4. Invitation delivery
 
