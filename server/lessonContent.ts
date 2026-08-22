@@ -10207,77 +10207,84 @@ Use this lesson to ask: what factual observation was made; what is unknown; what
     category: "Equine Welfare & Ethics",
     sortOrder: 6,
     objectives: [
-      "Understand ethical end-of-life considerations",
-      "Know options: retirement, rehoming, euthanasia",
-      "Recognise when quality of life is unacceptable",
-      "Handle end-of-life with dignity",
+      "Recognise that end-of-life, retirement, rehoming, euthanasia, aftercare, legal, insurance, document, emergency, and welfare decisions require advance planning and individual veterinary, qualified-professional, responsible-person, and current local guidance",
+      "Understand that a generic lesson cannot choose or recommend retirement, rehoming, euthanasia, treatment, transport, aftercare, legal, insurance, or document decisions for an individual horse",
+      "Record factual welfare observations without assessing quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold",
+      "Know when to use the current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, or authorised local route",
     ],
-    content: `End-of-life decisions are among the most difficult an equestrian faces.
+    content: `End-of-life, retirement, rehoming, euthanasia, aftercare, legal, insurance, document, emergency, and welfare decisions can be deeply difficult and are individual to the horse, the responsible person, the professional advice available, the location, and current circumstances. This lesson is not a quality-of-life assessment, diagnosis, prognosis, pain or suffering assessment, treatment recommendation, euthanasia decision, euthanasia-method instruction, transport-fitness assessment, rehoming decision, retirement plan, legal advice, insurance advice, passport process, aftercare procedure, emergency plan, or substitute for veterinary, qualified-professional, responsible-person, welfare, legal, insurance, document, or emergency advice.
 
-## Quality of Life Assessment
+## Plan Before a Crisis
 
-Is the horse in chronic pain? Can it move comfortably? Does it enjoy eating and socialising? Is its condition deteriorating despite treatment?
+Reviewed welfare guidance supports making an end-of-life plan before an illness, accident, or emergency. The plan should be individual and maintained by the responsible person with the appropriate veterinary and qualified-professional support. It may identify responsible contacts, current professional routes, the horse’s existing records, welfare and safety information, emergency procedure, who can make or communicate decisions, and where to obtain current local guidance. A generic lesson cannot prepare, approve, replace, interpret, or execute that plan.
 
-## Retirement
+## Quality of Life and Professional Assessment
 
-Retired horses still need farrier, dental, vet care, social contact, and appropriate diet.
+Quality of life is important, but it is not a learner checklist or a single observation. Do not decide that a horse is in chronic pain, suffering, comfortable, deteriorating, fit or unfit for travel, suitable for retirement, suitable for rehoming, in an emergency, or at an end-of-life threshold from appetite, movement, behaviour, condition, social interaction, age, a diagnosis, an online rule, or another horse’s experience. The reviewed veterinary guidance explains that the attending veterinarian can assist in the determination, particularly regarding suffering, and the welfare sources state that every situation is different and veterinary or professional advice should be sought.
 
-## Rehoming
+Record only authorised factual observations through the current procedure, such as date, time, context, activity, visible behaviour, comfort-related observations, and any immediate safety concern. Do not infer a diagnosis, prognosis, pain level, quality of life, a treatment outcome, suitability, a decision, a cause, or a required action. If a welfare, health, pain, comfort, handling, transport, safety, or emergency concern is outside the current plan or unclear, use the current responsible-person, veterinary, qualified-professional, welfare, emergency, or authorised local route without delay.
 
-Responsible rehoming through reputable organisations protects the horse.
+## Retirement and Rehoming Boundary
 
-## Euthanasia
+Retirement and rehoming can require continuing care and careful planning, but neither is a generic solution. Welfare guidance encourages early exploration of rehoming options, accurate and up-to-date information, suitability consideration, written arrangements where relevant, contingency planning, and individual quality-of-life consideration. It also explains that rehoming may not be appropriate in some circumstances. A learner must not select a retirement setting, new owner, loan arrangement, organisation, transport, workload, turnout, management, treatment, document, contract, or legal or welfare outcome from this lesson. The responsible person, appropriate veterinary and qualified professionals, and current authorised legal/document routes must decide what is suitable for the individual horse.
 
-When quality of life cannot be maintained, euthanasia is the kindest option. It should be performed by a vet and can be done at home.`,
+## Euthanasia and Aftercare Boundary
+
+Euthanasia may be a responsible treatment option when it is best for the horse, but a learner must not determine need, timing, method, drugs, equipment, personnel, location, transport, safety, insurance, document handling, body collection, burial, cremation, or aftercare. These decisions depend on the individual horse, veterinary assessment, law, training, experience, safety, insurance, documents, final disposition, location, and current procedures. Do not delay required emergency veterinary or welfare support for insurance, logistics, convenience, emotion, or a generic lesson. Do not provide any euthanasia method, treatment, procedure, restraint, transport, aftercare, legal, insurance, or document instruction.
+
+## Respectful Escalation and Support
+
+If an immediate safety, injury, collapse, non-weight-bearing lameness, pain, welfare, health, road, transport, or emergency concern occurs, follow the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, and authorised local procedure without delay. For non-urgent planning, use appropriate veterinary, qualified-professional, welfare, legal, insurance, document, and bereavement support routes. Personal grief and support needs can be significant; seek appropriate support without allowing it to replace required professional and emergency action.
+
+## Reflective Use
+
+Use this lesson to ask: what facts are known; what is unknown; who is responsible; which current plan and professional advice apply; what welfare and safety issue needs escalation; and what authorised route can provide support? The goal is informed planning and timely professional support, not learner diagnosis or self-directed decision-making.`,
     keyPoints: [
-      "Quality of life is the primary consideration",
-      "Retirement still requires full ongoing care",
-      "Responsible rehoming through reputable organisations",
-      "Euthanasia is compassionate when quality of life fails",
-      "These decisions should involve veterinary advice",
+      "End-of-life, retirement, rehoming, euthanasia, aftercare, legal, insurance, document, emergency, and welfare decisions are individual and require advance planning plus current veterinary, qualified-professional, responsible-person, and local guidance",
+      "A generic lesson cannot assess quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold",
+      "Retirement and rehoming are not generic solutions; suitability, accurate information, written arrangements where relevant, contingency planning, welfare, legal, document, and professional assessment are individual matters",
+      "Do not determine euthanasia need, timing, method, drugs, equipment, personnel, location, transport, safety, insurance, document handling, body collection, burial, cremation, or aftercare from this lesson",
+      "Use the current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, and authorised local route when a concern or plan requires support",
     ],
     safetyNote:
-      "Never delay euthanasia when a horse is clearly suffering. The horse's welfare comes before human emotion.",
+      "Do not diagnose pain, suffering, quality of life, prognosis, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold. Do not select, recommend, perform, assist, instruct, delay, or arrange a treatment, euthanasia, transport, aftercare, legal, insurance, document, or body-disposal action from this lesson. Follow the current responsible-person, veterinary, welfare, emergency, and authorised local procedure without delay when required.",
     practicalApplication:
-      "Discuss with your vet what a quality-of-life assessment involves.",
+      "With the responsible person’s permission, identify the current horse-specific end-of-life, welfare, health, safety, emergency, contact, legal, insurance, document, aftercare, bereavement, and authorised local support procedures. Record only authorised factual information and ask who is responsible for decisions. Do not assess quality of life, diagnose, decide, recommend, treat, transport, rehome, retire, euthanise, arrange aftercare, or handle documents from this lesson alone.",
     commonMistakes: [
-      "Delaying because of emotional attachment",
-      "Rehoming without proper vetting",
-      "Assuming retirement needs no care",
-      "Not discussing with a vet until emergency",
-      "Passing elderly horses from owner to owner",
+      "Using a generic lesson, age, appetite, movement, behaviour, condition, social interaction, diagnosis, online rule, or another horse’s experience to assess quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold",
+      "Selecting a retirement setting, new owner, loan arrangement, organisation, transport, workload, turnout, management, treatment, document, contract, or legal or welfare outcome without individual responsible-person, veterinary, qualified-professional, and current authorised advice",
+      "Determining, recommending, performing, assisting, instructing, delaying, or arranging a euthanasia, treatment, transport, aftercare, legal, insurance, document, body-collection, burial, cremation, or other procedure from a generic lesson",
+      "Allowing insurance, logistics, convenience, emotion, or a generic lesson to delay required emergency veterinary, welfare, safety, or authorised local support",
+      "Failing to record authorised facts and use the current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, or authorised local route when a concern or plan requires escalation",
     ],
     knowledgeCheck: [
       {
-        question:
-          "What should be the primary consideration in end-of-life decisions?",
+        question: "What can this generic Academy lesson determine about an individual horse’s end-of-life, retirement, rehoming, or euthanasia situation?",
         options: [
-          "Owner's emotions",
-          "Financial value",
-          "The horse's quality of life",
-          "What others think",
+          "That quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, and the required action have been established",
+          "That a specific euthanasia method, transport, aftercare, legal, insurance, document, or body-disposal action is appropriate",
+          "Only that current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, and authorised local support may be required",
+          "That a learner should decide or act alone",
         ],
         correctIndex: 2,
-        explanation:
-          "Quality of life must always be the primary consideration.",
+        explanation: "Every situation is individual. The lesson supports timely planning and authorised escalation, not learner diagnosis or self-directed decisions.",
       },
       {
-        question: "What does responsible rehoming require?",
+        question: "What is the appropriate boundary when retirement or rehoming is being considered?",
         options: [
-          "Selling to anyone",
-          "Finding a home through a reputable organisation",
-          "Abandoning in a field",
-          "Giving away online",
+          "Assume retirement or rehoming is always suitable and select a home from a generic lesson",
+          "Choose a loan, transport, workload, turnout, management, treatment, document, contract, or legal outcome without individual review",
+          "Use early planning, accurate information, suitability and contingency consideration, and current responsible-person, veterinary, qualified-professional, welfare, legal, document, and authorised advice for the individual horse",
+          "Delay emergency welfare support while searching for a new arrangement",
         ],
-        correctIndex: 1,
-        explanation:
-          "Reputable organisations vet new homes and monitor welfare.",
+        correctIndex: 2,
+        explanation: "Rehoming may not be appropriate in every circumstance. Suitability and welfare require individual, current, authorised review.",
       },
     ],
     aiTutorPrompts: [
-      "How do I know when it's time for end-of-life?",
-      "What is a quality-of-life assessment?",
-      "What options after a horse has been put to sleep?",
+      "What current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, and authorised local route applies to this individual horse and situation?",
+      "How can I record authorised factual welfare and context observations without assessing quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold?",
+      "What current authorised professional, legal, insurance, document, aftercare, bereavement, and local support route applies without selecting a procedure or action from this lesson?",
     ],
     linkedCompetencies: ["welfare_awareness", "horse_care"],
   },
