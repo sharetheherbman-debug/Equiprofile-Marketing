@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { getTableName } from "drizzle-orm";
 import { getTableConfig } from "drizzle-orm/mysql-core";
 import * as schema from "../drizzle/schema";
+import { finalCoreCommerceContractMetadata, getFinalCoreCommerceManifestTables } from "./commerceSchemaManifest";
 
 type ManifestColumn = {
   name: string;
@@ -30,10 +31,18 @@ type ManifestTable = {
 type SchemaManifest = {
   format: "equiprofile-final-core-schema-manifest/v1";
   generatedAt: string;
-  source: "typed-drizzle-schema";
+  source: string;
   limitations: string[];
   tableCount: number;
   tables: ManifestTable[];
+  fingerprint: string;
+};
+
+type StructuralContract = {
+  format: "equiprofile-final-core-structural-contract/v1";
+  source: string;
+  tableCount: number;
+  tables: Array<Pick<ManifestTable, "name" | "indexes" | "foreignKeys">>;
   fingerprint: string;
 };
 
@@ -111,16 +120,46 @@ const outputPath = resolve(
   outputArgument?.slice("--out=".length) ??
     "docs/final-core-schema-manifest.json",
 );
-const tables = Object.values(schema)
+const typedTables = Object.values(schema)
   .map(tableManifest)
-  .filter((table): table is ManifestTable => table !== null)
+  .filter((table): table is ManifestTable => table !== null);
+const commerceTables = getFinalCoreCommerceManifestTables() as ManifestTable[];
+const sourceTables = [...typedTables, ...commerceTables]
+  .sort((left, right) => left.name.localeCompare(right.name));
+const duplicateTableNames = sourceTables
+  .map((table) => table.name)
+  .filter((name, index, names) => names.indexOf(name) !== index);
+if (duplicateTableNames.length) {
+  throw new Error(`Final-Core manifest has duplicate table definitions: ${[...new Set(duplicateTableNames)].join(", ")}`);
+}
+
+const structuralContractPath = resolve("schema/final-core-structural-contract.json");
+const structuralContract = JSON.parse(readFileSync(structuralContractPath, "utf8")) as StructuralContract;
+const { fingerprint: structuralFingerprint, ...structuralCanonical } = structuralContract;
+const calculatedStructuralFingerprint = createHash("sha256")
+  .update(stable(structuralCanonical))
+  .digest("hex");
+if (structuralContract.format !== "equiprofile-final-core-structural-contract/v1" || structuralFingerprint !== calculatedStructuralFingerprint) {
+  throw new Error("Final-Core structural contract is missing, malformed, or has an unexpected fingerprint.");
+}
+const structuralByTable = new Map(structuralContract.tables.map((table) => [table.name, table]));
+if (structuralByTable.size !== sourceTables.length || sourceTables.some((table) => !structuralByTable.has(table.name))) {
+  throw new Error("Final-Core structural contract does not cover exactly the typed and Commerce schema tables.");
+}
+const tables = sourceTables
+  .map((table) => ({
+    ...table,
+    indexes: structuralByTable.get(table.name)!.indexes,
+    foreignKeys: structuralByTable.get(table.name)!.foreignKeys,
+  }))
   .sort((left, right) => left.name.localeCompare(right.name));
 const canonical = {
   format: "equiprofile-final-core-schema-manifest/v1" as const,
-  source: "typed-drizzle-schema" as const,
+  source: "typed-drizzle-schema+final-commerce-contract" as const,
   limitations: [
-    "This manifest is deterministic for typed Drizzle tables only.",
-    "Commerce tables currently referenced through raw SQL remain an explicit forward-reconciliation requirement until represented by the canonical schema migration and manifest.",
+    "The typed Drizzle schema and reviewed final-Core Commerce contract are deterministic source inputs.",
+    `Commerce contract SHA-256: ${finalCoreCommerceContractMetadata.sha256}.`,
+    `Structural contract SHA-256: ${structuralFingerprint}.`,
     "The manifest generator never connects to or modifies a database.",
   ],
   tableCount: tables.length,

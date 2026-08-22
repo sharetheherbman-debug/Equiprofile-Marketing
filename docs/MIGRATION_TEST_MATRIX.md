@@ -1,35 +1,63 @@
-# Disposable Migration Test Matrix
+# Final-Core Migration Acceptance Matrix
 
-**Status:** **INCOMPLETE — RELEASE-BLOCKING**
+**Status:** **Internally accepted on disposable local MariaDB only.** This is **not** deployment authorization. No production database, VPS, DNS configuration, production backup, live payment system, or secret store was accessed.
 
-All observations below were made only against locally created disposable databases. No production database, production backup, VPS, DNS configuration or live service was accessed.
+The supported migration dispatcher is intentionally classification-first. The read-only inspector compares the complete final-Core contract across **162 Management, Academy, and Shop tables**, including table names, columns, nullability, primary keys, types, indexes, unique constraints, and foreign keys. It does not modify a database.
 
-| Test                                | Intended state                                                                                      | Current result                             | Evidence and boundary                                                                                                                                                                                                                                                                                                      |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Replay diagnostic — canonical files | Identify whether tracked canonical history can be replayed byte-for-byte by the installed runner    | **Fails as expected**                      | On a new local disposable database, canonical replay stopped at `0005_fix_site_settings` after five tracked rows because Drizzle supplied the three un-delimited statements as one query. No canonical file, journal record or orphan was changed.                                                                         |
-| Replay diagnostic — repaired copy   | Test parser-boundary-only copies without changing historical SQL                                    | **Pass (diagnostic only)**                 | A generated ignored `.tmp/migrations-replay-fixed` copy inserted only non-terminal marker comments in `0005`, `0008` and `0012`; it replayed all 14 journal entries. `0002` and `0013`, which already had routine-safe inline markers, were copied byte-identically. This is not a canonical or deployable migration path. |
-| A — Fresh zero database             | Empty database reaches the exact final Core schema through the approved canonical migration chain   | **Fails closed — not accepted**            | The real `npm run db:migrate` fresh-only dispatcher regenerated the semantic-equivalence-checked fixture and reached 128 typed tables, then refused to stamp final schema state because seven manifest tables were absent. A separate disposable `drizzle-kit push --force` reached all typed table names but failed with `ER_MULTIPLE_PRI_KEY` and the inspector still found 21 missing columns and 62 incompatible columns. |
-| B — Tracked Management baseline     | Supported tracked Management baseline upgrades forward with representative data preserved           | **Blocked**                                | A supported baseline manifest and a new forward reconciliation migration have not yet been defined. No existing database was reset or altered.                                                                                                                                                                             |
-| C — Untracked exact legacy baseline | Read-only inspector recognises a named exact baseline; later explicit adoption is separately tested | **Not implemented**                        | The inspector exists and is read-only, but no legacy baseline fingerprint has been approved. It therefore must not identify any untracked legacy schema as eligible for adoption.                                                                                                                                          |
-| D — Partial historical schema       | Inspector fails closed without mutation                                                             | **Pass**                                   | The disposable partial rehearsal returned `PARTIAL_OR_DRIFTED`, `safeToUpgrade: false`, `humanReviewRequired: true`.                                                                                                                                                                                                       |
-| E — Unknown or drifted schema       | Inspector fails closed without mutation                                                             | **Pass by policy; matrix fixture pending** | Any non-exact untracked schema is classified `UNKNOWN` or `AMBIGUOUS` and is not safe to upgrade. A dedicated drift fixture remains to be added.                                                                                                                                                                           |
-| F — Current final Core schema       | Inspector reports `CURRENT_NO_ACTION_REQUIRED`                                                      | **Blocked**                                | The typed manifest exists, but the complete canonical forward schema and migration path have not yet been accepted.                                                                                                                                                                                                        |
+| Path | Required starting state | Result | Acceptance evidence and safety boundary |
+| --- | --- | --- | --- |
+| Historical replay diagnostic | Canonical Drizzle files, byte-for-byte | **Expected failure retained** | A local canonical replay stops at `0005_fix_site_settings` after the genuine five tracked rows because the installed runner receives three undelimited statements as one query. Canonical SQL and journal metadata remain unchanged. |
+| Marker-only replay diagnostic | Ignored generated fixture | **Pass — diagnostic only** | The generated `.tmp/migrations-replay-fixed` fixture adds only statement-boundary comments and replayed 14 entries. Its fixture hashes must never be treated as production journal history. |
+| A — Fresh zero database | No application tables | **PASS** | `provision-final-core-schema.ts --mode=fresh` regenerated the semantic-equivalence fixture, applied the verified final-Core Commerce contract, reconciled the typed Core schema, and then passed the strict inspector: 162 tables and zero table/column/index/foreign-key differences. |
+| B — Supported tracked Management baseline | Exact five-entry canonical tracked fingerprint `a933cc79…ca847` and exact canonical hashes | **PASS** | The named dispatcher path ran from the known pre-`0005` baseline through `CURRENT_NO_ACTION_REQUIRED`, with Management user and settings rows preserved. It neither changed historical SQL nor forged `__drizzle_migrations` history. |
+| C — Exact legacy Management baseline | Same exact baseline fingerprint with no migration tracking table | **PASS — explicit adoption only** | Inspector returns `EXACT_LEGACY_MANAGEMENT_BASELINE`, `safeToUpgrade: false`. The automatic dispatcher refuses it. The named command requires `--mode=exact-legacy-adoption` and a non-empty `--owner-backup-reference`; a local rehearsal then reached the final schema with representative data preserved. |
+| D — Partial historical schema | Any tracked state other than the approved five-entry fingerprint/history | **PASS — fail closed** | Inspector reports `PARTIAL_OR_DRIFTED` and the dispatcher does not mutate it. |
+| E — Unknown or drifted schema | An unrecognised application table or schema fingerprint | **PASS — fail closed** | A local `unknown_schema_probe` database reported `UNKNOWN`; dispatcher exited `2` and table count remained one, proving no automatic reconciliation occurred. |
+| F — Current final Core schema | Exact final-Core structure | **PASS** | Inspector reports `CURRENT_NO_ACTION_REQUIRED` with zero table, column, index, or foreign-key differences; dispatcher is a no-op. |
+
+## Supported commands
+
+> **The normal command is intentionally conservative.** It only provisions a verified zero database, upgrades the exact tracked Management baseline, or returns a no-op for an already current schema.
+
+```bash
+# Read-only classification, never mutates
+npm run db:inspect
+
+# Normal classification-first dispatcher
+npm run db:migrate
+
+# Verify routing without mutation
+DRY_RUN=1 npm run db:migrate
+
+# Fresh zero database only; the dispatcher invokes this only after inspection
+npm run db:provision-fresh
+```
+
+An exact untracked legacy baseline is **not** an automatic path. After an owner-controlled backup exists and its identifier has been recorded outside the repository, use the separately named command under controlled deployment supervision:
+
+```bash
+npx tsx scripts/upgrade-supported-management-baseline.ts \
+  --mode=exact-legacy-adoption \
+  --owner-backup-reference=<owner-controlled-backup-identifier>
+```
+
+The backup reference is a human-control gate, not a backup implementation. The repository does not create, upload, or expose production backups.
+
+## Final-Core source contract
+
+| Contract | Purpose | Integrity boundary |
+| --- | --- | --- |
+| `docs/final-core-schema-manifest.json` | Complete final-Core table, column, index, and foreign-key contract | Deterministically generated; current expected fingerprint `87d5a30e0b27fe38ec786954b704032fc6127a715419423e837564ecbb9dc922`. |
+| `schema/final-core-commerce.sql` | Recovered authorized Shop foundation/lifecycle contract used only in explicit migration commands | SHA-256 `674f2226bf9006ed9bede4cd3a4338cb605045c9e797a7364c72890ce63e78c2`; never invoked on ordinary server startup. |
+| `schema/final-core-structural-contract.json` | Reviewed strict index and foreign-key contract derived from a successful disposable fresh install | SHA-256 `ab5e71712e3f838e7fd6c627666bed58fd247b48aafb9357e644c04025d3718d`. |
+| `schema/supported-management-baseline.json` | Exact genuine five-entry canonical Management baseline accepted for named upgrade | Fingerprint `a933cc79c0c9624505e287cefcda973e464c62419216daad51140707411ca847`; no marker-only fixture history is accepted. |
 
 ## Non-negotiable safety conditions
 
-- Historical migrations `0014`–`0024` were **not** executed automatically.
-- Historical migrations `0014`–`0024` were **not** retroactively marked as applied.
-- No automatic baseline adoption exists.
-- The inspector issues read-only `information_schema` queries only.
-- The replay fixture is generated under ignored `.tmp/`; the fresh-only command may use it only after regenerating its SHA/semantic-equivalence proof, never by modifying canonical migration files or journal metadata.
-- Partial, unknown and ambiguous states fail closed.
-
-## Fresh-command rehearsal update — 22 August 2026
-
-The supported `npm run db:migrate` wrapper now inspects before acting, provisions only a verified zero database, reports current final schemas as no-op, and fails closed for every unsupported classification. Application startup no longer runs the broad reconciler automatically. The fresh-only provisioner regenerated the immutable marker-only fixture and verified semantic equivalence before invoking the supported Drizzle migrator API; it did not alter historical SQL, journal metadata, a production database, or tracking rows by hand.
-
-> **Result:** the fresh command presently fails closed rather than claiming success. No supported fresh or upgrade path is accepted until a reviewed canonical reconciliation source can produce the complete manifest—including raw Commerce tables, columns, indexes, and foreign keys—without Drizzle snapshot collision or primary-key conflicts.
-
-## Required next implementation increment
-
-A new explicit canonical reconciliation source and named supported Management baseline remain required. They must be verified against fresh and tracked disposable database fixtures with representative Management data before this matrix can be marked complete. Historical `0002`, `0005`, `0008`, `0012`, `0013`, and orphaned `0014`–`0024` remain immutable and must not be rewritten or retroactively tracked.
+- Historical journalled migrations remain immutable, including `0002`, `0005`, `0008`, `0012`, and `0013`.
+- Orphaned `0014`–`0024` files are neither executed automatically nor retroactively marked as applied.
+- The ignored marker-only fixture remains diagnostic evidence only and cannot establish production migration history.
+- `coreSchemaState` is final-Core state bookkeeping only; it does not modify or forge `__drizzle_migrations`.
+- The explicit Commerce and Management forward contracts run only through named migration commands. Ordinary application startup does not invoke broad reconciliation.
+- SMTP, GenX, Stripe, supplier, connector, and other deployment credentials remain deferred to the approved secret store. They are not embedded in this repository or needed for these schema rehearsals.
+- This matrix does not authorize merge, deployment, production migration, live Stripe, supplier activation, paid advertising, or any production-side action.

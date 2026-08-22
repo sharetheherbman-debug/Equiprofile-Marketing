@@ -1,6 +1,7 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { eq, and, desc, sql, gte, lte, isNull, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { finalCoreAdditiveSchemaStatements } from "./finalCoreAdditiveSchema";
 import type { ResultSetHeader } from "mysql2";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
@@ -2118,6 +2119,10 @@ export async function reconcileCoreSchema(db: ReturnType<typeof drizzle>): Promi
     )`,
   ];
 
+  // The historical reconciliation list predates these canonical typed tables.
+  // Add them only for the explicit controlled reconciliation command.
+  statements.push(...finalCoreAdditiveSchemaStatements);
+
   try {
     for (const stmt of statements) {
       // Extract table name for error reporting
@@ -2141,6 +2146,30 @@ export async function reconcileCoreSchema(db: ReturnType<typeof drizzle>): Promi
     // On MySQL 8.0 these are caught and ignored; the Drizzle migration file handles MySQL 8.0.
     const columnMigrations: string[] = [
       `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`passwordChangedAt\` timestamp NULL`,
+      // Canonical Academy curriculum metadata.
+      `ALTER TABLE \`lessonPathways\` ADD COLUMN IF NOT EXISTS \`curriculumVersion\` varchar(40) NOT NULL DEFAULT '2026.1'`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`linkedCompetencies\` text NOT NULL`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`nextLessonSlug\` varchar(150) NULL`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`estimatedMinutes\` int NOT NULL DEFAULT 15`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`curriculumVersion\` varchar(40) NOT NULL DEFAULT '2026.1'`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`completionKey\` varchar(220) NULL`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`curriculumVersion\` varchar(40) NULL`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`quizCorrect\` int NULL`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`quizTotal\` int NULL`,
+      // Academy invitation delivery is persisted per recipient and never inferred from UI completion.
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`deliveryStatus\` varchar(32) NOT NULL DEFAULT 'PENDING'`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`deliveryAttemptCount\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`lastDeliveryAttemptAt\` timestamp NULL`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`deliveredAt\` timestamp NULL`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`lastDeliveryError\` varchar(500) NULL`,
+      // Academy billing is product-scoped and remains independent of Management and Store Stripe state.
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingStatus\` varchar(32) NOT NULL DEFAULT 'not_configured'`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingInterval\` varchar(16) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingPriceId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyStripeCustomerId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyStripeSubscriptionId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyStripeCheckoutSessionId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingCurrentPeriodEndsAt\` timestamp NULL`,
       // Email-verification columns (migration 0013) — added here as a runtime safety-net
       // so that production databases that have not had the formal Drizzle migration applied
       // do not throw "Unknown column 'verificationToken'" on every users SELECT query and
@@ -2166,7 +2195,7 @@ export async function reconcileCoreSchema(db: ReturnType<typeof drizzle>): Promi
       `ALTER TABLE \`campaignSequences\` ADD COLUMN IF NOT EXISTS \`scheduledDate\` varchar(10) DEFAULT NULL`,
       // Duplicate-person detection (migration 0020) — add fuzzy-dup columns to marketingContacts
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`suspectedDuplicateOf\` int DEFAULT NULL`,
-      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`dupRiskScore\` tinyint unsigned DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`dupRiskScore\` int DEFAULT NULL`,
       // Growth Engine CRM extension (phase 4)
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`tenantType\` varchar(50) NOT NULL DEFAULT 'individual'`,

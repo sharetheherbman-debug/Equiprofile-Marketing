@@ -1,0 +1,3896 @@
+{
+  "format": "equiprofile-final-core-structural-contract/v1",
+  "source": "successful-disposable-fresh-provision-inspection",
+  "tableCount": 162,
+  "tables": [
+    {
+      "name": "academyCurriculumSyncRuns",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "accountFeatures",
+      "indexes": [
+        {
+          "name": "accountFeatures_userId_unique",
+          "unique": true,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "activityLogs",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "adminSessions",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "adminUnlockAttempts",
+      "indexes": [
+        {
+          "name": "adminUnlockAttempts_userId_unique",
+          "unique": true,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "aiTutorSessions",
+      "indexes": [
+        {
+          "name": "idx_ats_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "apiKeys",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "appointments",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "backupLogs",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "brandAvatars",
+      "indexes": [
+        {
+          "name": "idx_brandAvatars_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "brandProfiles",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "breeding",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "campaignReplies",
+      "indexes": [
+        {
+          "name": "idx_campaignReplies_fromEmail",
+          "unique": false,
+          "columns": [
+            "fromEmail"
+          ]
+        },
+        {
+          "name": "idx_campaignReplies_matchedCampaignId",
+          "unique": false,
+          "columns": [
+            "matchedCampaignId"
+          ]
+        },
+        {
+          "name": "idx_campaignReplies_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "campaignSendLog",
+      "indexes": [
+        {
+          "name": "idx_csl_campaign_date",
+          "unique": false,
+          "columns": [
+            "campaignId",
+            "sendDate"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "campaignSequenceRecipients",
+      "indexes": [
+        {
+          "name": "idx_seqr_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_seqr_email",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_seqr_sequence",
+          "unique": false,
+          "columns": [
+            "sequenceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "campaignSequences",
+      "indexes": [
+        {
+          "name": "idx_seq_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "chatLeads",
+      "indexes": [
+        {
+          "name": "chatLeads_leadId_unique",
+          "unique": true,
+          "columns": [
+            "leadId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "commerceAddresses",
+      "indexes": [
+        {
+          "name": "idx_commerceAddresses_user",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceAddresses_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ]
+    },
+    {
+      "name": "commerceAuditLog",
+      "indexes": [
+        {
+          "name": "idx_commerceAuditLog_entity",
+          "unique": false,
+          "columns": [
+            "entityType",
+            "entityId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "commerceCartItems",
+      "indexes": [
+        {
+          "name": "commerceCartItems_cart_variant",
+          "unique": true,
+          "columns": [
+            "cartId",
+            "variantId"
+          ]
+        },
+        {
+          "name": "fk_commerceCartItems_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceCartItems_cart",
+          "columns": [
+            "cartId"
+          ],
+          "foreignTable": "commerceCarts"
+        },
+        {
+          "name": "fk_commerceCartItems_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ]
+    },
+    {
+      "name": "commerceCarts",
+      "indexes": [
+        {
+          "name": "commerceCarts_user_active",
+          "unique": true,
+          "columns": [
+            "userId",
+            "activeCartKey"
+          ]
+        },
+        {
+          "name": "idx_commerceCarts_user",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceCarts_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ]
+    },
+    {
+      "name": "commerceCategories",
+      "indexes": [
+        {
+          "name": "idx_commerceCategories_parent",
+          "unique": false,
+          "columns": [
+            "parentId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "commerceOrderItems",
+      "indexes": [
+        {
+          "name": "fk_commerceOrderItems_supplier",
+          "unique": false,
+          "columns": [
+            "supplierId"
+          ]
+        },
+        {
+          "name": "fk_commerceOrderItems_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commerceOrderItems_order",
+          "unique": false,
+          "columns": [
+            "orderId"
+          ]
+        },
+        {
+          "name": "idx_commerceOrderItems_returnWindow",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "returnEligibility",
+            "returnWindowEndsAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceOrderItems_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceOrderItems_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        },
+        {
+          "name": "fk_commerceOrderItems_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ]
+    },
+    {
+      "name": "commerceOrders",
+      "indexes": [
+        {
+          "name": "commerceOrders_storePaymentReference_unique",
+          "unique": true,
+          "columns": [
+            "storePaymentReference"
+          ]
+        },
+        {
+          "name": "fk_commerceOrders_billingAddress",
+          "unique": false,
+          "columns": [
+            "billingAddressId"
+          ]
+        },
+        {
+          "name": "fk_commerceOrders_shippingAddress",
+          "unique": false,
+          "columns": [
+            "shippingAddressId"
+          ]
+        },
+        {
+          "name": "idempotencyKey",
+          "unique": true,
+          "columns": [
+            "idempotencyKey"
+          ]
+        },
+        {
+          "name": "idx_commerceOrders_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_commerceOrders_user",
+          "unique": false,
+          "columns": [
+            "userId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "orderNumber",
+          "unique": true,
+          "columns": [
+            "orderNumber"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stripeCheckoutSessionId",
+          "unique": true,
+          "columns": [
+            "stripeCheckoutSessionId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceOrders_billingAddress",
+          "columns": [
+            "billingAddressId"
+          ],
+          "foreignTable": "commerceAddresses"
+        },
+        {
+          "name": "fk_commerceOrders_shippingAddress",
+          "columns": [
+            "shippingAddressId"
+          ],
+          "foreignTable": "commerceAddresses"
+        },
+        {
+          "name": "fk_commerceOrders_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ]
+    },
+    {
+      "name": "commercePaymentEvents",
+      "indexes": [
+        {
+          "name": "commercePaymentEvents_provider_event_unique",
+          "unique": true,
+          "columns": [
+            "provider",
+            "providerEventId"
+          ]
+        },
+        {
+          "name": "idx_commercePaymentEvents_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commercePaymentEvents_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        }
+      ]
+    },
+    {
+      "name": "commercePriceHistory",
+      "indexes": [
+        {
+          "name": "fk_commercePriceHistory_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commercePriceHistory_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commercePriceHistory_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commercePriceHistory_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ]
+    },
+    {
+      "name": "commerceProductApprovals",
+      "indexes": [
+        {
+          "name": "idx_commerceProductApprovals_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductApprovals_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        }
+      ]
+    },
+    {
+      "name": "commerceProductAttributes",
+      "indexes": [
+        {
+          "name": "commerceProductAttributes_unique",
+          "unique": true,
+          "columns": [
+            "productId",
+            "variantId",
+            "attributeName"
+          ]
+        },
+        {
+          "name": "fk_commerceProductAttributes_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductAttributes_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceProductAttributes_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ]
+    },
+    {
+      "name": "commerceProductCategories",
+      "indexes": [
+        {
+          "name": "idx_commerceProductCategories_category",
+          "unique": false,
+          "columns": [
+            "categoryId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "productId",
+            "categoryId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductCategories_category",
+          "columns": [
+            "categoryId"
+          ],
+          "foreignTable": "commerceCategories"
+        },
+        {
+          "name": "fk_commerceProductCategories_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        }
+      ]
+    },
+    {
+      "name": "commerceProductImages",
+      "indexes": [
+        {
+          "name": "fk_commerceProductImages_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commerceProductImages_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "sortOrder"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductImages_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceProductImages_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ]
+    },
+    {
+      "name": "commerceProductManagerActions",
+      "indexes": [
+        {
+          "name": "fk_commerceProductManagerActions_source",
+          "unique": false,
+          "columns": [
+            "supplierSourceId"
+          ]
+        },
+        {
+          "name": "idx_commerceProductManagerActions_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductManagerActions_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceProductManagerActions_source",
+          "columns": [
+            "supplierSourceId"
+          ],
+          "foreignTable": "commerceSupplierSources"
+        }
+      ]
+    },
+    {
+      "name": "commerceProducts",
+      "indexes": [
+        {
+          "name": "idx_commerceProducts_availability",
+          "unique": false,
+          "columns": [
+            "availabilityStatus"
+          ]
+        },
+        {
+          "name": "idx_commerceProducts_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "developmentOnly"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "commerceProductVariants",
+      "indexes": [
+        {
+          "name": "idx_commerceProductVariants_product",
+          "unique": false,
+          "columns": [
+            "productId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "sku",
+          "unique": true,
+          "columns": [
+            "sku"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductVariants_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        }
+      ]
+    },
+    {
+      "name": "commerceRefunds",
+      "indexes": [
+        {
+          "name": "fk_commerceRefunds_return",
+          "unique": false,
+          "columns": [
+            "returnId"
+          ]
+        },
+        {
+          "name": "idempotencyKey",
+          "unique": true,
+          "columns": [
+            "idempotencyKey"
+          ]
+        },
+        {
+          "name": "idx_commerceRefunds_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stripeRefundId",
+          "unique": true,
+          "columns": [
+            "stripeRefundId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceRefunds_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceRefunds_return",
+          "columns": [
+            "returnId"
+          ],
+          "foreignTable": "commerceReturns"
+        }
+      ]
+    },
+    {
+      "name": "commerceReturnItems",
+      "indexes": [
+        {
+          "name": "fk_commerceReturnItems_orderItem",
+          "unique": false,
+          "columns": [
+            "orderItemId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "returnId",
+            "orderItemId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceReturnItems_orderItem",
+          "columns": [
+            "orderItemId"
+          ],
+          "foreignTable": "commerceOrderItems"
+        },
+        {
+          "name": "fk_commerceReturnItems_return",
+          "columns": [
+            "returnId"
+          ],
+          "foreignTable": "commerceReturns"
+        }
+      ]
+    },
+    {
+      "name": "commerceReturns",
+      "indexes": [
+        {
+          "name": "fk_commerceReturns_user",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "idx_commerceReturns_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceReturns_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceReturns_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ]
+    },
+    {
+      "name": "commerceShipmentItems",
+      "indexes": [
+        {
+          "name": "fk_commerceShipmentItems_orderItem",
+          "unique": false,
+          "columns": [
+            "orderItemId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "shipmentId",
+            "orderItemId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceShipmentItems_orderItem",
+          "columns": [
+            "orderItemId"
+          ],
+          "foreignTable": "commerceOrderItems"
+        },
+        {
+          "name": "fk_commerceShipmentItems_shipment",
+          "columns": [
+            "shipmentId"
+          ],
+          "foreignTable": "commerceShipments"
+        }
+      ]
+    },
+    {
+      "name": "commerceShipments",
+      "indexes": [
+        {
+          "name": "fk_commerceShipments_supplier",
+          "unique": false,
+          "columns": [
+            "supplierId"
+          ]
+        },
+        {
+          "name": "idx_commerceShipments_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceShipments_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceShipments_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        }
+      ]
+    },
+    {
+      "name": "commerceSupplierInventory",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "supplierProductId",
+          "unique": true,
+          "columns": [
+            "supplierProductId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierInventory_supplierProduct",
+          "columns": [
+            "supplierProductId"
+          ],
+          "foreignTable": "commerceSupplierProducts"
+        }
+      ]
+    },
+    {
+      "name": "commerceSupplierProducts",
+      "indexes": [
+        {
+          "name": "commerceSupplierProducts_supplier_sku",
+          "unique": true,
+          "columns": [
+            "supplierId",
+            "supplierSku"
+          ]
+        },
+        {
+          "name": "fk_commerceSupplierProducts_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commerceSupplierProducts_ean",
+          "unique": false,
+          "columns": [
+            "ean"
+          ]
+        },
+        {
+          "name": "idx_commerceSupplierProducts_product",
+          "unique": false,
+          "columns": [
+            "productId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierProducts_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceSupplierProducts_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        },
+        {
+          "name": "fk_commerceSupplierProducts_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ]
+    },
+    {
+      "name": "commerceSuppliers",
+      "indexes": [
+        {
+          "name": "idx_commerceSuppliers_onboardingStatus",
+          "unique": false,
+          "columns": [
+            "onboardingStatus"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "commerceSupplierSources",
+      "indexes": [
+        {
+          "name": "idx_commerceSupplierSources_supplierId",
+          "unique": false,
+          "columns": [
+            "supplierId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierSources_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        }
+      ]
+    },
+    {
+      "name": "commerceSupplierSyncRuns",
+      "indexes": [
+        {
+          "name": "idx_commerceSupplierSyncRuns_source",
+          "unique": false,
+          "columns": [
+            "supplierSourceId",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierSyncRuns_source",
+          "columns": [
+            "supplierSourceId"
+          ],
+          "foreignTable": "commerceSupplierSources"
+        }
+      ]
+    },
+    {
+      "name": "commerceTrackingEvents",
+      "indexes": [
+        {
+          "name": "idx_commerceTrackingEvents_shipment",
+          "unique": false,
+          "columns": [
+            "shipmentId",
+            "eventAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceTrackingEvents_shipment",
+          "columns": [
+            "shipmentId"
+          ],
+          "foreignTable": "commerceShipments"
+        }
+      ]
+    },
+    {
+      "name": "competitionResults",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "competitions",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "contacts",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "contactSubmissions",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "contentScores",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "dentalCare",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "dewormings",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "documents",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "documentTags",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "emailCampaignRecipients",
+      "indexes": [
+        {
+          "name": "ecr_campaign_email_idx",
+          "unique": true,
+          "columns": [
+            "campaignId",
+            "email"
+          ]
+        },
+        {
+          "name": "ecr_campaign_idx",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "ecr_email_idx",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "emailCampaigns",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "emailUnsubscribes",
+      "indexes": [
+        {
+          "name": "idx_unsub_email",
+          "unique": true,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_unsub_token",
+          "unique": false,
+          "columns": [
+            "token"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "eventReminders",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "events",
+      "indexes": [
+        {
+          "name": "events_userId_startDate_idx",
+          "unique": false,
+          "columns": [
+            "userId",
+            "startDate"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "feedCosts",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "feedingPlans",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "foals",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthAnalyticsEvents",
+      "indexes": [
+        {
+          "name": "idx_ge_analytics_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "stage"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthAutomationRuns",
+      "indexes": [
+        {
+          "name": "idx_ge_lifecycle_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "runAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthFeedback",
+      "indexes": [
+        {
+          "name": "idx_ge_feedback_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthOnboardingFlows",
+      "indexes": [
+        {
+          "name": "idx_ge_onboarding_user",
+          "unique": false,
+          "columns": [
+            "userId",
+            "tenantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthProfiles",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthQueueJobs",
+      "indexes": [
+        {
+          "name": "idx_ge_queue_status",
+          "unique": false,
+          "columns": [
+            "queueType",
+            "status"
+          ]
+        },
+        {
+          "name": "idx_ge_queue_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "queueType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthReferrals",
+      "indexes": [
+        {
+          "name": "idx_ge_referral_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "growthSocialConnections",
+      "indexes": [
+        {
+          "name": "idx_ge_social_platform",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "platform"
+          ]
+        },
+        {
+          "name": "idx_ge_social_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "healthRecords",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "hoofcare",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "horses",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "horseTags",
+      "indexes": [
+        {
+          "name": "horseTags_horse_tag_unique",
+          "unique": true,
+          "columns": [
+            "horseId",
+            "tagId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "learningPathwayProgress",
+      "indexes": [
+        {
+          "name": "idx_lpp_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "lessonBookings",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "lessonCompletion",
+      "indexes": [
+        {
+          "name": "idx_lessonCompletion_lessonSlug",
+          "unique": false,
+          "columns": [
+            "lessonSlug"
+          ]
+        },
+        {
+          "name": "idx_lessonCompletion_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "lessonPathways",
+      "indexes": [
+        {
+          "name": "lessonPathways_slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "lessonReviews",
+      "indexes": [
+        {
+          "name": "idx_lessonReviews_lessonSlug",
+          "unique": false,
+          "columns": [
+            "lessonSlug"
+          ]
+        },
+        {
+          "name": "idx_lessonReviews_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_lessonReviews_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "lessonUnits",
+      "indexes": [
+        {
+          "name": "idx_lessonUnits_level",
+          "unique": false,
+          "columns": [
+            "level"
+          ]
+        },
+        {
+          "name": "idx_lessonUnits_pathwaySlug",
+          "unique": false,
+          "columns": [
+            "pathwaySlug"
+          ]
+        },
+        {
+          "name": "lessonUnits_slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingAgentRuns",
+      "indexes": [
+        {
+          "name": "idx_magent_runs_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingAgentTasks",
+      "indexes": [
+        {
+          "name": "idx_magent_tasks_scope",
+          "unique": false,
+          "columns": [
+            "runId",
+            "tenantId",
+            "workspaceId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingAttributionLinks",
+      "indexes": [
+        {
+          "name": "idx_mattribution_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "code"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingAudioBeds",
+      "indexes": [
+        {
+          "name": "idx_maudiobeds_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingAvatarJobs",
+      "indexes": [
+        {
+          "name": "idx_mavatarjobs_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "task",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingBeastModeRuns",
+      "indexes": [
+        {
+          "name": "idx_mbm_runs_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_mbm_runs_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingBeastModeVariants",
+      "indexes": [
+        {
+          "name": "idx_mbm_variants_run",
+          "unique": false,
+          "columns": [
+            "runId",
+            "platform",
+            "language"
+          ]
+        },
+        {
+          "name": "idx_mbm_variants_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingBestPerformers",
+      "indexes": [
+        {
+          "name": "idx_mbest_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "performerType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingBrandKits",
+      "indexes": [
+        {
+          "name": "idx_marketingBrandKits_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "idx_mbk_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingBrandMemory",
+      "indexes": [
+        {
+          "name": "idx_mbrand_memory_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingCampaignAssets",
+      "indexes": [
+        {
+          "name": "idx_marketingCampaignAssets_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignAssets_item",
+          "unique": false,
+          "columns": [
+            "campaignItemId"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignAssets_media",
+          "unique": false,
+          "columns": [
+            "mediaAssetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingCampaignItems",
+      "indexes": [
+        {
+          "name": "idx_marketingCampaignItems_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignItems_platform_status",
+          "unique": false,
+          "columns": [
+            "platform",
+            "status"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignItems_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingCampaignResults",
+      "indexes": [
+        {
+          "name": "idx_mresults_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "platform"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingCampaigns",
+      "indexes": [
+        {
+          "name": "idx_marketingCampaigns_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaigns_tenant_workspace",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingCompetitorSignals",
+      "indexes": [
+        {
+          "name": "idx_mcompetitor_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform",
+            "capturedAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingContacts",
+      "indexes": [
+        {
+          "name": "idx_mc_contact_type",
+          "unique": false,
+          "columns": [
+            "contactType"
+          ]
+        },
+        {
+          "name": "idx_mc_country",
+          "unique": false,
+          "columns": [
+            "country"
+          ]
+        },
+        {
+          "name": "idx_mc_dup_of",
+          "unique": false,
+          "columns": [
+            "suspectedDuplicateOf"
+          ]
+        },
+        {
+          "name": "idx_mc_email",
+          "unique": true,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_mc_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_mc_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId"
+          ]
+        },
+        {
+          "name": "idx_mc_unsub_token",
+          "unique": false,
+          "columns": [
+            "unsubscribeToken"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingContentGapSignals",
+      "indexes": [
+        {
+          "name": "idx_mcontent_gaps_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform",
+            "gapType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingConversionEvents",
+      "indexes": [
+        {
+          "name": "idx_mconversions_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "eventType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingExperimentRuns",
+      "indexes": [
+        {
+          "name": "idx_mexperiments_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingExperimentVariants",
+      "indexes": [
+        {
+          "name": "idx_mexperiment_variants_scope",
+          "unique": false,
+          "columns": [
+            "experimentId",
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingLearningInsights",
+      "indexes": [
+        {
+          "name": "idx_mlearning_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "insightType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingMediaAssetVersions",
+      "indexes": [
+        {
+          "name": "idx_marketingMediaAssetVersions_derived",
+          "unique": false,
+          "columns": [
+            "derivedMediaAssetId"
+          ]
+        },
+        {
+          "name": "idx_marketingMediaAssetVersions_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "idx_marketingMediaAssetVersions_source",
+          "unique": false,
+          "columns": [
+            "sourceMediaAssetId"
+          ]
+        },
+        {
+          "name": "idx_mav_derived",
+          "unique": false,
+          "columns": [
+            "derivedMediaAssetId"
+          ]
+        },
+        {
+          "name": "idx_mav_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "idx_mav_source",
+          "unique": false,
+          "columns": [
+            "sourceMediaAssetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingProductProfiles",
+      "indexes": [
+        {
+          "name": "idx_mproduct_profiles_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingProviderHealthChecks",
+      "indexes": [
+        {
+          "name": "idx_marketingProviderHealthChecks_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "provider"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingProviderModels",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uniq_marketingProviderModels_scope",
+          "unique": true,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "provider",
+            "modelId"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingRenderJobs",
+      "indexes": [
+        {
+          "name": "idx_mrj_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "idx_mrj_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingReviewRecords",
+      "indexes": [
+        {
+          "name": "idx_mrr_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "idx_mrr_target",
+          "unique": false,
+          "columns": [
+            "targetType",
+            "targetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingScheduleDrafts",
+      "indexes": [
+        {
+          "name": "idx_marketingScheduleDrafts_scheduled",
+          "unique": false,
+          "columns": [
+            "scheduledFor"
+          ]
+        },
+        {
+          "name": "idx_marketingScheduleDrafts_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingSocialConnections",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uniq_marketingSocialConnections_scope",
+          "unique": true,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingTrendSignals",
+      "indexes": [
+        {
+          "name": "idx_mtrend_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform",
+            "capturedAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingVisualQaRecords",
+      "indexes": [
+        {
+          "name": "idx_mvqa_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "idx_mvqa_target",
+          "unique": false,
+          "columns": [
+            "targetType",
+            "targetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "marketingVoiceProfiles",
+      "indexes": [
+        {
+          "name": "idx_mvoiceprofiles_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "mediaAssets",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "messages",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "messageThreads",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "notes",
+      "indexes": [
+        {
+          "name": "notes_horseId_idx",
+          "unique": false,
+          "columns": [
+            "horseId"
+          ]
+        },
+        {
+          "name": "notes_userId_idx",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "nutritionLogs",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "nutritionPlans",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "organizationInvites",
+      "indexes": [
+        {
+          "name": "organizationInvites_token",
+          "unique": true,
+          "columns": [
+            "token"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "organizationMembers",
+      "indexes": [
+        {
+          "name": "idx_orgMembers_orgId",
+          "unique": false,
+          "columns": [
+            "organizationId"
+          ]
+        },
+        {
+          "name": "idx_orgMembers_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "organizations",
+      "indexes": [
+        {
+          "name": "idx_organizations_ownerId",
+          "unique": false,
+          "columns": [
+            "ownerId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "pedigree",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "platformStrategyRules",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "reports",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "reportSchedules",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "reportTemplates",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "rides",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "shareLinks",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "shareLinks_token_unique",
+          "unique": true,
+          "columns": [
+            "token"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "siteAnalytics",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "sa_created_idx",
+          "unique": false,
+          "columns": [
+            "createdAt"
+          ]
+        },
+        {
+          "name": "sa_path_idx",
+          "unique": false,
+          "columns": [
+            "path"
+          ]
+        },
+        {
+          "name": "sa_session_idx",
+          "unique": false,
+          "columns": [
+            "sessionId"
+          ]
+        },
+        {
+          "name": "sa_visitor_idx",
+          "unique": false,
+          "columns": [
+            "visitorId"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "siteSettings",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "siteSettings_key_unique",
+          "unique": true,
+          "columns": [
+            "key"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "stableInvites",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stableInvites_token_unique",
+          "unique": true,
+          "columns": [
+            "token"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "stableMembers",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "stables",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "stripeEvents",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stripeEvents_eventId_unique",
+          "unique": true,
+          "columns": [
+            "eventId"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentAssignments",
+      "indexes": [
+        {
+          "name": "idx_studentAssignments_studentId",
+          "unique": false,
+          "columns": [
+            "studentId"
+          ]
+        },
+        {
+          "name": "idx_studentAssignments_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentCompetencies",
+      "indexes": [
+        {
+          "name": "idx_studentCompetencies_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_studentCompetencies_unique",
+          "unique": true,
+          "columns": [
+            "userId",
+            "competencyKey"
+          ]
+        },
+        {
+          "name": "idx_studentCompetencies_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentGroupMembers",
+      "indexes": [
+        {
+          "name": "idx_sgm_groupId",
+          "unique": false,
+          "columns": [
+            "groupId"
+          ]
+        },
+        {
+          "name": "idx_sgm_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentGroups",
+      "indexes": [
+        {
+          "name": "idx_sg_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentHorseAssignments",
+      "indexes": [
+        {
+          "name": "idx_sha_horseId",
+          "unique": false,
+          "columns": [
+            "horseId"
+          ]
+        },
+        {
+          "name": "idx_sha_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentProgress",
+      "indexes": [
+        {
+          "name": "idx_sp_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentReports",
+      "indexes": [
+        {
+          "name": "idx_studentReports_studentId",
+          "unique": false,
+          "columns": [
+            "studentId"
+          ]
+        },
+        {
+          "name": "idx_studentReports_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentTasks",
+      "indexes": [
+        {
+          "name": "idx_studentTasks_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studentTrainingEntries",
+      "indexes": [
+        {
+          "name": "idx_ste_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "studyTopics",
+      "indexes": [
+        {
+          "name": "idx_studyTopics_category",
+          "unique": false,
+          "columns": [
+            "category"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "systemSettings",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "systemSettings_settingKey_unique",
+          "unique": true,
+          "columns": [
+            "settingKey"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "tags",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "tasks",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "teacherAssignedTasks",
+      "indexes": [
+        {
+          "name": "idx_tat_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_tat_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "teacherFeedback",
+      "indexes": [
+        {
+          "name": "idx_tf_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_tf_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "teacherLessonAssignments",
+      "indexes": [
+        {
+          "name": "idx_teacherLessonAssignments_groupId",
+          "unique": false,
+          "columns": [
+            "groupId"
+          ]
+        },
+        {
+          "name": "idx_teacherLessonAssignments_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_teacherLessonAssignments_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "teacherResources",
+      "indexes": [
+        {
+          "name": "idx_teacherResources_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "teacherStudentMessages",
+      "indexes": [
+        {
+          "name": "idx_tsm_studentId",
+          "unique": false,
+          "columns": [
+            "studentId"
+          ]
+        },
+        {
+          "name": "idx_tsm_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "trainerAvailability",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "trainingPrograms",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "trainingProgramTemplates",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "trainingSessions",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "treatments",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "users",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "users_openId_unique",
+          "unique": true,
+          "columns": [
+            "openId"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "vaccinations",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "virtualHorses",
+      "indexes": [
+        {
+          "name": "idx_virtualHorses_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "weatherLogs",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "webhooks",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    },
+    {
+      "name": "xrays",
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": []
+    }
+  ],
+  "fingerprint": "ab5e71712e3f838e7fd6c627666bed58fd247b48aafb9357e644c04025d3718d"
+}

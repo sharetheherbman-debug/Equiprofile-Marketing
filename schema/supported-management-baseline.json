@@ -1,0 +1,37 @@
+{
+  "format": "equiprofile-supported-management-baseline/v1",
+  "schemaFingerprint": "a933cc79c0c9624505e287cefcda973e464c62419216daad51140707411ca847",
+  "expectedMigrations": [
+    {
+      "tag": "0002_add_missing_user_columns",
+      "hash": "14ead9550e1f8108f81d83950b24461f72c93af8257e5d197e3e37e761ed5c89",
+      "when": 1740931200000
+    },
+    {
+      "tag": "0003_chat_contact_tables",
+      "hash": "322f5783335adc09b2d1e06be7a72e5a67b4f028ddaa4e41e9c6557da9309765",
+      "when": 1741046400000
+    },
+    {
+      "tag": "0004_notes_table",
+      "hash": "a475a710979540c4d22055518d3b975e0ba5b77aa820820639abb40465041ef8",
+      "when": 1741132800000
+    },
+    {
+      "tag": "0000_motionless_rocket_raccoon",
+      "hash": "814a08e40d7fc2bcfd458759d18319198ca8ae394f2fa15617a78678e9c9c93b",
+      "when": 1765359936186
+    },
+    {
+      "tag": "0001_cold_shen",
+      "hash": "62b0a0bf24af9053e3cb61997bb78288b2bb8a5f806f317aae285f17cc020e85",
+      "when": 1765360048340
+    }
+  ],
+  "sourceEvidence": {
+    "replayKind": "canonical-history-pre-0005-statement-boundary-failure",
+    "canonicalHistoryHashesVerified": true,
+    "baselineContainsNoFinalCoreReconciliation": true
+  },
+  "fingerprint": "a6ace3deacbae0079ec972cfa7724f686c0c5bf06381871f34cfbcbbd09a0da1"
+}

@@ -27,6 +27,13 @@ type Manifest = {
   tableCount: number;
   tables: ManifestTable[];
 };
+type SupportedManagementBaseline = {
+  format: "equiprofile-supported-management-baseline/v1";
+  schemaFingerprint: string;
+  expectedMigrations: Array<{ tag: string; hash: string; when: number }>;
+  fingerprint: string;
+};
+
 type ActualTable = {
   name: string;
   columns: Array<{
@@ -51,6 +58,9 @@ const argument = (name: string): string | undefined =>
 const manifestPath = resolve(
   argument("--manifest") ?? "docs/final-core-schema-manifest.json",
 );
+const supportedManagementBaselinePath = resolve(
+  argument("--supported-management-baseline") ?? "schema/supported-management-baseline.json",
+);
 const databaseUrl = argument("--database-url") ?? process.env.DATABASE_URL;
 if (!databaseUrl) {
   throw new Error(
@@ -61,6 +71,18 @@ if (!databaseUrl) {
 function fingerprint(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
+
+const inspectorSystemTables = new Set(["__drizzle_migrations", "coreSchemaState"]);
+
+function columnSqlTypesAreCompatible(expectedType: string, actualType: string): boolean {
+  const expected = expectedType.trim().toLowerCase().replace(/\(\d+\)/g, "").replace(/\s+/g, "");
+  const actual = actualType.trim().toLowerCase().replace(/\(\d+\)/g, "").replace(/\s+/g, "");
+  // MariaDB reports Drizzle's `boolean` as TINYINT(1). They are semantically
+  // equivalent in this MySQL-compatible Core schema and must not create a
+  // false drift classification after a clean provision.
+  if (expected === "boolean") return actual === "boolean" || actual === "tinyint";
+  return actual.startsWith(expected);
+}
 function sorted<T>(items: T[], compare: (left: T, right: T) => number): T[] {
   return [...items].sort(compare);
 }
@@ -68,6 +90,15 @@ function sorted<T>(items: T[], compare: (left: T, right: T) => number): T[] {
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
 if (manifest.format !== "equiprofile-final-core-schema-manifest/v1") {
   throw new Error(`Unsupported manifest format: ${manifest.format}`);
+}
+const supportedManagementBaseline = JSON.parse(
+  readFileSync(supportedManagementBaselinePath, "utf8"),
+) as SupportedManagementBaseline;
+if (
+  supportedManagementBaseline.format !== "equiprofile-supported-management-baseline/v1" ||
+  supportedManagementBaseline.expectedMigrations.length !== 5
+) {
+  throw new Error("Unsupported or incomplete supported Management baseline manifest.");
 }
 
 const connection = await mysql.createConnection(databaseUrl);
@@ -84,7 +115,7 @@ try {
   );
   const actualTables: ActualTable[] = [];
   for (const { tableName } of tableRows) {
-    if (tableName === "__drizzle_migrations") continue;
+    if (inspectorSystemTables.has(tableName)) continue;
     const [columnRows] = await connection.query<
       Array<{
         name: string;
@@ -174,6 +205,12 @@ try {
   const missingColumns: string[] = [];
   const unexpectedColumns: string[] = [];
   const incompatibleColumns: string[] = [];
+  const missingIndexes: string[] = [];
+  const unexpectedIndexes: string[] = [];
+  const incompatibleIndexes: string[] = [];
+  const missingForeignKeys: string[] = [];
+  const unexpectedForeignKeys: string[] = [];
+  const incompatibleForeignKeys: string[] = [];
   for (const [tableName, expectedTable] of expected) {
     const actualTable = actual.get(tableName);
     if (!actualTable) continue;
@@ -190,7 +227,7 @@ try {
       } else if (
         actualColumn.notNull !== expectedColumn.notNull ||
         actualColumn.primaryKey !== expectedColumn.primaryKey ||
-        !actualColumn.sqlType.startsWith(expectedColumn.sqlType.toLowerCase())
+        !columnSqlTypesAreCompatible(expectedColumn.sqlType, actualColumn.sqlType)
       ) {
         incompatibleColumns.push(`${tableName}.${columnName}`);
       }
@@ -199,26 +236,96 @@ try {
       if (!expectedColumns.has(columnName))
         unexpectedColumns.push(`${tableName}.${columnName}`);
     }
+
+    const expectedIndexes = new Map(
+      [
+        ...expectedTable.indexes,
+        ...expectedTable.uniqueConstraints.map((constraint) => ({
+          name: constraint.name,
+          unique: true,
+          columns: constraint.columns,
+        })),
+      ]
+        .filter((index) => index.name !== "PRIMARY")
+        .map((index) => [index.name, index]),
+    );
+    const actualIndexes = new Map(
+      actualTable.indexes
+        .filter((index) => index.name !== "PRIMARY")
+        .map((index) => [index.name, index]),
+    );
+    for (const [indexName, expectedIndex] of expectedIndexes) {
+      const actualIndex = actualIndexes.get(indexName);
+      if (!actualIndex) {
+        missingIndexes.push(`${tableName}.${indexName}`);
+      } else if (
+        actualIndex.unique !== expectedIndex.unique ||
+        actualIndex.columns.join(",") !== expectedIndex.columns.join(",")
+      ) {
+        incompatibleIndexes.push(`${tableName}.${indexName}`);
+      }
+    }
+    for (const indexName of actualIndexes.keys()) {
+      if (!expectedIndexes.has(indexName)) unexpectedIndexes.push(`${tableName}.${indexName}`);
+    }
+
+    const expectedForeignKeys = new Map(
+      expectedTable.foreignKeys.map((foreignKey) => [foreignKey.name, foreignKey]),
+    );
+    const actualForeignKeys = new Map(
+      actualTable.foreignKeys.map((foreignKey) => [foreignKey.name, foreignKey]),
+    );
+    for (const [foreignKeyName, expectedForeignKey] of expectedForeignKeys) {
+      const actualForeignKey = actualForeignKeys.get(foreignKeyName);
+      if (!actualForeignKey) {
+        missingForeignKeys.push(`${tableName}.${foreignKeyName}`);
+      } else if (
+        actualForeignKey.foreignTable !== expectedForeignKey.foreignTable ||
+        actualForeignKey.columns.join(",") !== expectedForeignKey.columns.join(",")
+      ) {
+        incompatibleForeignKeys.push(`${tableName}.${foreignKeyName}`);
+      }
+    }
+    for (const foreignKeyName of actualForeignKeys.keys()) {
+      if (!expectedForeignKeys.has(foreignKeyName)) unexpectedForeignKeys.push(`${tableName}.${foreignKeyName}`);
+    }
   }
-  const [trackingRows] = await connection
-    .query<
-      Array<{ createdAt: string }>
-    >("SELECT created_at AS createdAt FROM information_schema.TABLES t LEFT JOIN __drizzle_migrations m ON 1 = 1 WHERE t.TABLE_SCHEMA = ? AND t.TABLE_NAME = '__drizzle_migrations' LIMIT 1", [schemaName])
-    .catch(() => [[] as Array<{ createdAt: string }>]);
   const tracked = tableRows.some(
     (row) => row.tableName === "__drizzle_migrations",
   );
+  const [trackingRows] = await connection
+    .query<Array<{ hash: string; createdAt: number }>>(
+      "SELECT hash, created_at AS createdAt FROM __drizzle_migrations ORDER BY created_at ASC",
+    )
+    .catch(() => [[] as Array<{ hash: string; createdAt: number }>]);
   const schemaSnapshot = sorted(actualTables, (left, right) =>
     left.name.localeCompare(right.name),
   );
   const actualFingerprint = fingerprint(schemaSnapshot);
+  const trackedHistoryMatchesSupportedManagementBaseline =
+    trackingRows.length === supportedManagementBaseline.expectedMigrations.length &&
+    trackingRows.every((row, index) =>
+      row.hash === supportedManagementBaseline.expectedMigrations[index]?.hash,
+    );
+  const isSupportedTrackedManagementBaseline =
+    tracked &&
+    actualFingerprint === supportedManagementBaseline.schemaFingerprint &&
+    trackedHistoryMatchesSupportedManagementBaseline;
+  const isExactLegacyManagementBaseline =
+    !tracked && actualFingerprint === supportedManagementBaseline.schemaFingerprint;
   const noApplicationTables = actualTables.length === 0;
   const exact =
     !missingTables.length &&
     !extraTables.length &&
     !missingColumns.length &&
     !unexpectedColumns.length &&
-    !incompatibleColumns.length;
+    !incompatibleColumns.length &&
+    !missingIndexes.length &&
+    !unexpectedIndexes.length &&
+    !incompatibleIndexes.length &&
+    !missingForeignKeys.length &&
+    !unexpectedForeignKeys.length &&
+    !incompatibleForeignKeys.length;
   const hasExpectedSurface = actualTables.some((table) =>
     expected.has(table.name),
   );
@@ -226,11 +333,15 @@ try {
     ? "FRESH_ZERO_DATABASE"
     : exact
       ? "CURRENT_NO_ACTION_REQUIRED"
-      : tracked
-        ? "PARTIAL_OR_DRIFTED"
-        : hasExpectedSurface
-          ? "AMBIGUOUS"
-          : "UNKNOWN";
+      : isSupportedTrackedManagementBaseline
+        ? "SUPPORTED_TRACKED_MANAGEMENT_BASELINE"
+        : isExactLegacyManagementBaseline
+          ? "EXACT_LEGACY_MANAGEMENT_BASELINE"
+          : tracked
+          ? "PARTIAL_OR_DRIFTED"
+          : hasExpectedSurface
+            ? "AMBIGUOUS"
+            : "UNKNOWN";
   const result = {
     mode: "READ_ONLY",
     database: schemaName,
@@ -239,10 +350,20 @@ try {
     actualFingerprint,
     migrationTracking: {
       present: tracked,
-      latestObserved: trackingRows[0]?.createdAt ?? null,
+      appliedCount: trackingRows.length,
+      latestObserved: trackingRows.at(-1) ?? null,
+    },
+    expectedBaseline: {
+      supportedManagementBaselinePath,
+      schemaFingerprint: supportedManagementBaseline.schemaFingerprint,
+      expectedMigrationCount: supportedManagementBaseline.expectedMigrations.length,
+      latestExpectedMigration: supportedManagementBaseline.expectedMigrations.at(-1) ?? null,
+      trackedHistoryMatches: trackedHistoryMatchesSupportedManagementBaseline,
     },
     classification,
-    safeToUpgrade: classification === "CURRENT_NO_ACTION_REQUIRED",
+    safeToUpgrade:
+      classification === "CURRENT_NO_ACTION_REQUIRED" ||
+      classification === "SUPPORTED_TRACKED_MANAGEMENT_BASELINE",
     humanReviewRequired: classification !== "CURRENT_NO_ACTION_REQUIRED",
     differences: {
       missingTables,
@@ -250,13 +371,20 @@ try {
       missingColumns,
       unexpectedColumns,
       incompatibleColumns,
+      missingIndexes,
+      unexpectedIndexes,
+      incompatibleIndexes,
+      missingForeignKeys,
+      unexpectedForeignKeys,
+      incompatibleForeignKeys,
     },
     observed: { tableCount: actualTables.length, tables: schemaSnapshot },
   };
   console.log(JSON.stringify(result, null, 2));
   process.exitCode =
     classification === "CURRENT_NO_ACTION_REQUIRED" ||
-    classification === "FRESH_ZERO_DATABASE"
+    classification === "FRESH_ZERO_DATABASE" ||
+    classification === "SUPPORTED_TRACKED_MANAGEMENT_BASELINE"
       ? 0
       : 2;
 } finally {

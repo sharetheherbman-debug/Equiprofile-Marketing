@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import mysql from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
 import { migrate } from "drizzle-orm/mysql2/migrator";
+import { applyFinalCoreCommerceContract } from "./final-core-commerce-contract";
 
 const argument = (name: string): string | undefined =>
   process.argv.find((value) => value.startsWith(`${name}=`))?.slice(name.length + 1);
@@ -63,6 +64,7 @@ try {
   // Reuse the single connection so the controlled command closes every handle.
   const coreDb = drizzle(connection);
   await migrate(coreDb, { migrationsFolder: resolve(".tmp/migrations-replay-fixed") });
+  const commerceContract = await applyFinalCoreCommerceContract(connection);
   await reconcileCoreSchema(coreDb);
 
   const [provisionedTables] = await connection.query<Array<{ tableName: string }>>(
@@ -101,6 +103,7 @@ try {
     schemaState: { schemaKey: "final-core", schemaVersion: "v1", manifestFingerprint: manifest.fingerprint },
     historicalMigrationsModified: false,
     drizzleHistoryForged: false,
+    commerceContract,
   }, null, 2));
 } finally {
   await connection.end();

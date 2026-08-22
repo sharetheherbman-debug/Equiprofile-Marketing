@@ -1,12 +1,13 @@
 {
   "format": "equiprofile-final-core-schema-manifest/v1",
-  "source": "typed-drizzle-schema",
+  "source": "typed-drizzle-schema+final-commerce-contract",
   "limitations": [
-    "This manifest is deterministic for typed Drizzle tables only.",
-    "Commerce tables currently referenced through raw SQL remain an explicit forward-reconciliation requirement until represented by the canonical schema migration and manifest.",
+    "The typed Drizzle schema and reviewed final-Core Commerce contract are deterministic source inputs.",
+    "Commerce contract SHA-256: 674f2226bf9006ed9bede4cd3a4338cb605045c9e797a7364c72890ce63e78c2.",
+    "Structural contract SHA-256: ab5e71712e3f838e7fd6c627666bed58fd247b48aafb9357e644c04025d3718d.",
     "The manifest generator never connects to or modifies a database."
   ],
-  "tableCount": 135,
+  "tableCount": 162,
   "tables": [
     {
       "name": "academyCurriculumSyncRuns",
@@ -76,7 +77,15 @@
           "default": "0"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -196,7 +205,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "accountFeatures_userId_unique",
+          "unique": true,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -276,7 +300,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -316,7 +348,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -372,7 +412,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "adminUnlockAttempts_userId_unique",
+          "unique": true,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -452,7 +507,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ats_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -556,7 +626,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -722,7 +800,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -814,7 +900,15 @@
           ]
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1014,7 +1108,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_brandAvatars_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1174,7 +1286,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1299,7 +1419,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1419,7 +1547,36 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_campaignReplies_fromEmail",
+          "unique": false,
+          "columns": [
+            "fromEmail"
+          ]
+        },
+        {
+          "name": "idx_campaignReplies_matchedCampaignId",
+          "unique": false,
+          "columns": [
+            "matchedCampaignId"
+          ]
+        },
+        {
+          "name": "idx_campaignReplies_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1467,7 +1624,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_csl_campaign_date",
+          "unique": false,
+          "columns": [
+            "campaignId",
+            "sendDate"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1531,7 +1704,36 @@
           "default": "pending"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_seqr_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_seqr_email",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_seqr_sequence",
+          "unique": false,
+          "columns": [
+            "sequenceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1643,7 +1845,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_seq_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1723,8 +1940,3391 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "chatLeads_leadId_unique",
+          "unique": true,
+          "columns": [
+            "leadId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceAddresses",
+      "columns": [
+        {
+          "name": "city",
+          "sqlType": "varchar(120)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "countryCode",
+          "sqlType": "char(2)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "fullName",
+          "sqlType": "varchar(200)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "line1",
+          "sqlType": "varchar(250)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "line2",
+          "sqlType": "varchar(250)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "phone",
+          "sqlType": "varchar(64)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "postcode",
+          "sqlType": "varchar(32)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "userId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceAddresses_user",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceAddresses_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceAuditLog",
+      "columns": [
+        {
+          "name": "action",
+          "sqlType": "varchar(120)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "actorType",
+          "sqlType": "enum('system','user','ai')",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null,
+          "enumValues": [
+            "system",
+            "user",
+            "ai"
+          ]
+        },
+        {
+          "name": "actorUserId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "detailsJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "entityId",
+          "sqlType": "varchar(80)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "entityType",
+          "sqlType": "varchar(80)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceAuditLog_entity",
+          "unique": false,
+          "columns": [
+            "entityType",
+            "entityId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceCartItems",
+      "columns": [
+        {
+          "name": "cartId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "variantId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "commerceCartItems_cart_variant",
+          "unique": true,
+          "columns": [
+            "cartId",
+            "variantId"
+          ]
+        },
+        {
+          "name": "fk_commerceCartItems_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceCartItems_cart",
+          "columns": [
+            "cartId"
+          ],
+          "foreignTable": "commerceCarts"
+        },
+        {
+          "name": "fk_commerceCartItems_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "commerceCartItems_cart_variant",
+          "columns": [
+            "cartId",
+            "variantId"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commerceCarts",
+      "columns": [
+        {
+          "name": "activeCartKey",
+          "sqlType": "varchar(16)",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'active'"
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "currency",
+          "sqlType": "char(3)",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'GBP'"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('active','converted','abandoned')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'active'",
+          "enumValues": [
+            "active",
+            "converted",
+            "abandoned"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "userId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "commerceCarts_user_active",
+          "unique": true,
+          "columns": [
+            "userId",
+            "activeCartKey"
+          ]
+        },
+        {
+          "name": "idx_commerceCarts_user",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceCarts_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "commerceCarts_user_active",
+          "columns": [
+            "userId",
+            "activeCartKey"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commerceCategories",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "description",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "isActive",
+          "sqlType": "boolean",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "TRUE"
+        },
+        {
+          "name": "name",
+          "sqlType": "varchar(150)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "parentId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "slug",
+          "sqlType": "varchar(150)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sortOrder",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceCategories_parent",
+          "unique": false,
+          "columns": [
+            "parentId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "foreignKeys": [],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceOrderItems",
+      "columns": [
+        {
+          "name": "fulfilmentStatus",
+          "sqlType": "enum('pending','acknowledged','processing','dispatched','delivered','cancelled')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'pending'",
+          "enumValues": [
+            "pending",
+            "acknowledged",
+            "processing",
+            "dispatched",
+            "delivered",
+            "cancelled"
+          ]
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "orderId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "returnEligibility",
+          "sqlType": "enum('standard','not_returnable','review_required')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'review_required'",
+          "enumValues": [
+            "standard",
+            "not_returnable",
+            "review_required"
+          ]
+        },
+        {
+          "name": "returnWindowDays",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        },
+        {
+          "name": "returnWindowEndsAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "skuSnapshot",
+          "sqlType": "varchar(150)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "titleSnapshot",
+          "sqlType": "varchar(250)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "unitPricePence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "variantId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "vatPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceOrderItems_supplier",
+          "unique": false,
+          "columns": [
+            "supplierId"
+          ]
+        },
+        {
+          "name": "fk_commerceOrderItems_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commerceOrderItems_order",
+          "unique": false,
+          "columns": [
+            "orderId"
+          ]
+        },
+        {
+          "name": "idx_commerceOrderItems_returnWindow",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "returnEligibility",
+            "returnWindowEndsAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceOrderItems_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceOrderItems_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        },
+        {
+          "name": "fk_commerceOrderItems_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceOrders",
+      "columns": [
+        {
+          "name": "billingAddressId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "currency",
+          "sqlType": "char(3)",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'GBP'"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "idempotencyKey",
+          "sqlType": "varchar(160)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "orderNumber",
+          "sqlType": "varchar(40)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "shippingAddressId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "shippingPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('checkout_pending','payment_pending','paid','acknowledged','processing','partially_fulfilled','fulfilled','dispatched','delivered','payment_failed','cancelled','return_requested','returned','partially_refunded','refunded')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'checkout_pending'",
+          "enumValues": [
+            "checkout_pending",
+            "payment_pending",
+            "paid",
+            "acknowledged",
+            "processing",
+            "partially_fulfilled",
+            "fulfilled",
+            "dispatched",
+            "delivered",
+            "payment_failed",
+            "cancelled",
+            "return_requested",
+            "returned",
+            "partially_refunded",
+            "refunded"
+          ]
+        },
+        {
+          "name": "storePaymentReference",
+          "sqlType": "varchar(255)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "storePaymentStatus",
+          "sqlType": "enum('not_configured','pending','paid','failed','refunded','partially_refunded')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'not_configured'",
+          "enumValues": [
+            "not_configured",
+            "pending",
+            "paid",
+            "failed",
+            "refunded",
+            "partially_refunded"
+          ]
+        },
+        {
+          "name": "stripeCheckoutSessionId",
+          "sqlType": "varchar(255)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "subtotalPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "totalPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "userId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "vatPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "commerceOrders_storePaymentReference_unique",
+          "unique": true,
+          "columns": [
+            "storePaymentReference"
+          ]
+        },
+        {
+          "name": "fk_commerceOrders_billingAddress",
+          "unique": false,
+          "columns": [
+            "billingAddressId"
+          ]
+        },
+        {
+          "name": "fk_commerceOrders_shippingAddress",
+          "unique": false,
+          "columns": [
+            "shippingAddressId"
+          ]
+        },
+        {
+          "name": "idempotencyKey",
+          "unique": true,
+          "columns": [
+            "idempotencyKey"
+          ]
+        },
+        {
+          "name": "idx_commerceOrders_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_commerceOrders_user",
+          "unique": false,
+          "columns": [
+            "userId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "orderNumber",
+          "unique": true,
+          "columns": [
+            "orderNumber"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stripeCheckoutSessionId",
+          "unique": true,
+          "columns": [
+            "stripeCheckoutSessionId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceOrders_billingAddress",
+          "columns": [
+            "billingAddressId"
+          ],
+          "foreignTable": "commerceAddresses"
+        },
+        {
+          "name": "fk_commerceOrders_shippingAddress",
+          "columns": [
+            "shippingAddressId"
+          ],
+          "foreignTable": "commerceAddresses"
+        },
+        {
+          "name": "fk_commerceOrders_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "commerceOrders_storePaymentReference_unique",
+          "columns": [
+            "storePaymentReference"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commercePaymentEvents",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "eventType",
+          "sqlType": "varchar(160)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "orderId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "payloadJson",
+          "sqlType": "mediumtext",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "paymentIntentId",
+          "sqlType": "varchar(255)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "processedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "provider",
+          "sqlType": "varchar(40)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "providerEventId",
+          "sqlType": "varchar(255)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('received','processed','ignored','failed')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'received'",
+          "enumValues": [
+            "received",
+            "processed",
+            "ignored",
+            "failed"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "commercePaymentEvents_provider_event_unique",
+          "unique": true,
+          "columns": [
+            "provider",
+            "providerEventId"
+          ]
+        },
+        {
+          "name": "idx_commercePaymentEvents_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commercePaymentEvents_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "commercePaymentEvents_provider_event_unique",
+          "columns": [
+            "provider",
+            "providerEventId"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commercePriceHistory",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "createdByUserId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "sqlType": "varchar(250)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "retailPricePence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "salePricePence",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierCostPence",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "variantId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commercePriceHistory_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commercePriceHistory_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commercePriceHistory_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commercePriceHistory_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceProductApprovals",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "proposedBy",
+          "sqlType": "varchar(40)",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'system'"
+        },
+        {
+          "name": "reason",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "reviewedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "reviewedByUserId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('pending','approved','rejected')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'pending'",
+          "enumValues": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceProductApprovals_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductApprovals_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceProductAttributes",
+      "columns": [
+        {
+          "name": "attributeName",
+          "sqlType": "varchar(120)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "attributeValue",
+          "sqlType": "varchar(500)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "provenanceJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sourceType",
+          "sqlType": "enum('supplier','merchant','generated')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'supplier'",
+          "enumValues": [
+            "supplier",
+            "merchant",
+            "generated"
+          ]
+        },
+        {
+          "name": "variantId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "commerceProductAttributes_unique",
+          "unique": true,
+          "columns": [
+            "productId",
+            "variantId",
+            "attributeName"
+          ]
+        },
+        {
+          "name": "fk_commerceProductAttributes_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductAttributes_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceProductAttributes_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "commerceProductAttributes_unique",
+          "columns": [
+            "productId",
+            "variantId",
+            "attributeName"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commerceProductCategories",
+      "columns": [
+        {
+          "name": "categoryId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": true,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceProductCategories_category",
+          "unique": false,
+          "columns": [
+            "categoryId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "productId",
+            "categoryId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductCategories_category",
+          "columns": [
+            "categoryId"
+          ],
+          "foreignTable": "commerceCategories"
+        },
+        {
+          "name": "fk_commerceProductCategories_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceProductImages",
+      "columns": [
+        {
+          "name": "altText",
+          "sqlType": "varchar(500)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "provenanceJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "rightsStatus",
+          "sqlType": "enum('review_required','licensed','not_permitted')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'review_required'",
+          "enumValues": [
+            "review_required",
+            "licensed",
+            "not_permitted"
+          ]
+        },
+        {
+          "name": "sortOrder",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        },
+        {
+          "name": "sourceUpdatedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "storageUrl",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "variantId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceProductImages_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commerceProductImages_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "sortOrder"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductImages_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceProductImages_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceProductManagerActions",
+      "columns": [
+        {
+          "name": "actionType",
+          "sqlType": "enum('ingest','normalise','deduplicate','score','propose','enrich','price','publish','unpublish','monitor')",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null,
+          "enumValues": [
+            "ingest",
+            "normalise",
+            "deduplicate",
+            "score",
+            "propose",
+            "enrich",
+            "price",
+            "publish",
+            "unpublish",
+            "monitor"
+          ]
+        },
+        {
+          "name": "actorType",
+          "sqlType": "enum('system','ai','user')",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null,
+          "enumValues": [
+            "system",
+            "ai",
+            "user"
+          ]
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "inputJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "outputJson",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('started','completed','rejected','failed')",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null,
+          "enumValues": [
+            "started",
+            "completed",
+            "rejected",
+            "failed"
+          ]
+        },
+        {
+          "name": "supplierSourceId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceProductManagerActions_source",
+          "unique": false,
+          "columns": [
+            "supplierSourceId"
+          ]
+        },
+        {
+          "name": "idx_commerceProductManagerActions_product",
+          "unique": false,
+          "columns": [
+            "productId",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductManagerActions_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceProductManagerActions_source",
+          "columns": [
+            "supplierSourceId"
+          ],
+          "foreignTable": "commerceSupplierSources"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceProducts",
+      "columns": [
+        {
+          "name": "availabilityStatus",
+          "sqlType": "enum('in_stock','low_stock','on_order','stale','unavailable')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'unavailable'",
+          "enumValues": [
+            "in_stock",
+            "low_stock",
+            "on_order",
+            "stale",
+            "unavailable"
+          ]
+        },
+        {
+          "name": "brand",
+          "sqlType": "varchar(150)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "description",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "developmentOnly",
+          "sqlType": "boolean",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "FALSE"
+        },
+        {
+          "name": "factualProvenanceJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "generatedCopyJson",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "imageRightsStatus",
+          "sqlType": "enum('review_required','licensed','not_permitted')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'review_required'",
+          "enumValues": [
+            "review_required",
+            "licensed",
+            "not_permitted"
+          ]
+        },
+        {
+          "name": "isArchived",
+          "sqlType": "boolean",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "FALSE"
+        },
+        {
+          "name": "retailPricePence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "returnEligibility",
+          "sqlType": "enum('standard','not_returnable','review_required')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'review_required'",
+          "enumValues": [
+            "standard",
+            "not_returnable",
+            "review_required"
+          ]
+        },
+        {
+          "name": "salePricePence",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "slug",
+          "sqlType": "varchar(180)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('draft','review_required','published','unavailable','archived')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'draft'",
+          "enumValues": [
+            "draft",
+            "review_required",
+            "published",
+            "unavailable",
+            "archived"
+          ]
+        },
+        {
+          "name": "title",
+          "sqlType": "varchar(250)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "vatRateBasisPoints",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "2000"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceProducts_availability",
+          "unique": false,
+          "columns": [
+            "availabilityStatus"
+          ]
+        },
+        {
+          "name": "idx_commerceProducts_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "developmentOnly"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "foreignKeys": [],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceProductVariants",
+      "columns": [
+        {
+          "name": "attributesJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "ean",
+          "sqlType": "varchar(32)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "isActive",
+          "sqlType": "boolean",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "TRUE"
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "retailPricePence",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "salePricePence",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sku",
+          "sqlType": "varchar(150)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "title",
+          "sqlType": "varchar(250)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceProductVariants_product",
+          "unique": false,
+          "columns": [
+            "productId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "sku",
+          "unique": true,
+          "columns": [
+            "sku"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceProductVariants_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceRefunds",
+      "columns": [
+        {
+          "name": "amountPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "idempotencyKey",
+          "sqlType": "varchar(160)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "orderId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "returnId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('requested','pending','succeeded','failed')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'requested'",
+          "enumValues": [
+            "requested",
+            "pending",
+            "succeeded",
+            "failed"
+          ]
+        },
+        {
+          "name": "stripeRefundId",
+          "sqlType": "varchar(255)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceRefunds_return",
+          "unique": false,
+          "columns": [
+            "returnId"
+          ]
+        },
+        {
+          "name": "idempotencyKey",
+          "unique": true,
+          "columns": [
+            "idempotencyKey"
+          ]
+        },
+        {
+          "name": "idx_commerceRefunds_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stripeRefundId",
+          "unique": true,
+          "columns": [
+            "stripeRefundId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceRefunds_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceRefunds_return",
+          "columns": [
+            "returnId"
+          ],
+          "foreignTable": "commerceReturns"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceReturnItems",
+      "columns": [
+        {
+          "name": "orderItemId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "returnId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": true,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceReturnItems_orderItem",
+          "unique": false,
+          "columns": [
+            "orderItemId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "returnId",
+            "orderItemId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceReturnItems_orderItem",
+          "columns": [
+            "orderItemId"
+          ],
+          "foreignTable": "commerceOrderItems"
+        },
+        {
+          "name": "fk_commerceReturnItems_return",
+          "columns": [
+            "returnId"
+          ],
+          "foreignTable": "commerceReturns"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceReturns",
+      "columns": [
+        {
+          "name": "decidedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "orderId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "reason",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "receivedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "requestedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('requested','approved','rejected','received','refunded','cancelled')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'requested'",
+          "enumValues": [
+            "requested",
+            "approved",
+            "rejected",
+            "received",
+            "refunded",
+            "cancelled"
+          ]
+        },
+        {
+          "name": "userId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceReturns_user",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "idx_commerceReturns_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceReturns_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceReturns_user",
+          "columns": [
+            "userId"
+          ],
+          "foreignTable": "users"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceShipmentItems",
+      "columns": [
+        {
+          "name": "orderItemId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "shipmentId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": true,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceShipmentItems_orderItem",
+          "unique": false,
+          "columns": [
+            "orderItemId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "shipmentId",
+            "orderItemId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceShipmentItems_orderItem",
+          "columns": [
+            "orderItemId"
+          ],
+          "foreignTable": "commerceOrderItems"
+        },
+        {
+          "name": "fk_commerceShipmentItems_shipment",
+          "columns": [
+            "shipmentId"
+          ],
+          "foreignTable": "commerceShipments"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceShipments",
+      "columns": [
+        {
+          "name": "carrier",
+          "sqlType": "varchar(120)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "deliveredAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "dispatchedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "estimatedDeliveryAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "leadTimeDays",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "orderId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('pending','processing','dispatched','delivered','delivery_failed','cancelled')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'pending'",
+          "enumValues": [
+            "pending",
+            "processing",
+            "dispatched",
+            "delivered",
+            "delivery_failed",
+            "cancelled"
+          ]
+        },
+        {
+          "name": "supplierId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "trackingReference",
+          "sqlType": "varchar(250)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fk_commerceShipments_supplier",
+          "unique": false,
+          "columns": [
+            "supplierId"
+          ]
+        },
+        {
+          "name": "idx_commerceShipments_order",
+          "unique": false,
+          "columns": [
+            "orderId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceShipments_order",
+          "columns": [
+            "orderId"
+          ],
+          "foreignTable": "commerceOrders"
+        },
+        {
+          "name": "fk_commerceShipments_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceSupplierInventory",
+      "columns": [
+        {
+          "name": "availabilityStatus",
+          "sqlType": "enum('in_stock','low_stock','on_order','stale','unavailable')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'unavailable'",
+          "enumValues": [
+            "in_stock",
+            "low_stock",
+            "on_order",
+            "stale",
+            "unavailable"
+          ]
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "freshUntil",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "quantity",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "stockUpdatedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierProductId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "supplierProductId",
+          "unique": true,
+          "columns": [
+            "supplierProductId"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierInventory_supplierProduct",
+          "columns": [
+            "supplierProductId"
+          ],
+          "foreignTable": "commerceSupplierProducts"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceSupplierProducts",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "ean",
+          "sqlType": "varchar(32)",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "leadTimeDays",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "productId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "rrpPence",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sourcePayloadJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sourceUpdatedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierCostPence",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierSku",
+          "sqlType": "varchar(150)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "variantId",
+          "sqlType": "int",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "commerceSupplierProducts_supplier_sku",
+          "unique": true,
+          "columns": [
+            "supplierId",
+            "supplierSku"
+          ]
+        },
+        {
+          "name": "fk_commerceSupplierProducts_variant",
+          "unique": false,
+          "columns": [
+            "variantId"
+          ]
+        },
+        {
+          "name": "idx_commerceSupplierProducts_ean",
+          "unique": false,
+          "columns": [
+            "ean"
+          ]
+        },
+        {
+          "name": "idx_commerceSupplierProducts_product",
+          "unique": false,
+          "columns": [
+            "productId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierProducts_product",
+          "columns": [
+            "productId"
+          ],
+          "foreignTable": "commerceProducts"
+        },
+        {
+          "name": "fk_commerceSupplierProducts_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        },
+        {
+          "name": "fk_commerceSupplierProducts_variant",
+          "columns": [
+            "variantId"
+          ],
+          "foreignTable": "commerceProductVariants"
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "commerceSupplierProducts_supplier_sku",
+          "columns": [
+            "supplierId",
+            "supplierSku"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "commerceSuppliers",
+      "columns": [
+        {
+          "name": "configurationJson",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "fulfilmentModel",
+          "sqlType": "enum('supplier_direct','own_stock','hybrid')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'supplier_direct'",
+          "enumValues": [
+            "supplier_direct",
+            "own_stock",
+            "hybrid"
+          ]
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "imageRightsStatus",
+          "sqlType": "enum('review_required','licensed','not_permitted')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'review_required'",
+          "enumValues": [
+            "review_required",
+            "licensed",
+            "not_permitted"
+          ]
+        },
+        {
+          "name": "lastSyncedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "name",
+          "sqlType": "varchar(200)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "onboardingNotes",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "onboardingStatus",
+          "sqlType": "enum(\n    'not_started',\n    'pending_avasam_account_credentials',\n    'pending_trade_approval',\n    'pending_trade_and_image_rights_approval',\n    'pending_technical_validation',\n    'ready_for_human_approval',\n    'approved'\n  )",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'not_started'",
+          "enumValues": [
+            "not_started",
+            "pending_avasam_account_credentials",
+            "pending_trade_approval",
+            "pending_trade_and_image_rights_approval",
+            "pending_technical_validation",
+            "ready_for_human_approval",
+            "approved"
+          ]
+        },
+        {
+          "name": "slug",
+          "sqlType": "varchar(100)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('not_configured','review','active','suspended')",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "'not_configured'",
+          "enumValues": [
+            "not_configured",
+            "review",
+            "active",
+            "suspended"
+          ]
+        },
+        {
+          "name": "updatedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceSuppliers_onboardingStatus",
+          "unique": false,
+          "columns": [
+            "onboardingStatus"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "foreignKeys": [],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceSupplierSources",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "isEnabled",
+          "sqlType": "boolean",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "FALSE"
+        },
+        {
+          "name": "lastFetchedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sourceName",
+          "sqlType": "varchar(200)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "sourceType",
+          "sqlType": "enum('rest','graphql','csv','xml','sftp','manual','synthetic')",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null,
+          "enumValues": [
+            "rest",
+            "graphql",
+            "csv",
+            "xml",
+            "sftp",
+            "manual",
+            "synthetic"
+          ]
+        },
+        {
+          "name": "sourceUrl",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "supplierId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceSupplierSources_supplierId",
+          "unique": false,
+          "columns": [
+            "supplierId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierSources_supplier",
+          "columns": [
+            "supplierId"
+          ],
+          "foreignTable": "commerceSuppliers"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceSupplierSyncRuns",
+      "columns": [
+        {
+          "name": "acceptedCount",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        },
+        {
+          "name": "completedAt",
+          "sqlType": "timestamp",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "receivedCount",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        },
+        {
+          "name": "rejectedCount",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "0"
+        },
+        {
+          "name": "reportJson",
+          "sqlType": "text",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "startedAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "status",
+          "sqlType": "enum('started','completed','failed','rejected')",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null,
+          "enumValues": [
+            "started",
+            "completed",
+            "failed",
+            "rejected"
+          ]
+        },
+        {
+          "name": "supplierSourceId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceSupplierSyncRuns_source",
+          "unique": false,
+          "columns": [
+            "supplierSourceId",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceSupplierSyncRuns_source",
+          "columns": [
+            "supplierSourceId"
+          ],
+          "foreignTable": "commerceSupplierSources"
+        }
+      ],
+      "uniqueConstraints": []
+    },
+    {
+      "name": "commerceTrackingEvents",
+      "columns": [
+        {
+          "name": "createdAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "eventAt",
+          "sqlType": "timestamp",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "eventCode",
+          "sqlType": "varchar(120)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "eventDescription",
+          "sqlType": "text",
+          "notNull": false,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "id",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": true,
+          "primaryKey": true,
+          "default": null
+        },
+        {
+          "name": "shipmentId",
+          "sqlType": "int",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        },
+        {
+          "name": "source",
+          "sqlType": "varchar(120)",
+          "notNull": true,
+          "hasDefault": false,
+          "primaryKey": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "idx_commerceTrackingEvents_shipment",
+          "unique": false,
+          "columns": [
+            "shipmentId",
+            "eventAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "foreignKeys": [
+        {
+          "name": "fk_commerceTrackingEvents_shipment",
+          "columns": [
+            "shipmentId"
+          ],
+          "foreignTable": "commerceShipments"
+        }
+      ],
       "uniqueConstraints": []
     },
     {
@@ -1835,7 +5435,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -1979,7 +5587,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2142,7 +5758,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2206,7 +5830,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2318,7 +5950,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2460,7 +6100,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2572,7 +6220,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2688,7 +6344,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2728,7 +6392,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2792,7 +6464,37 @@
           "default": "pending"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "ecr_campaign_email_idx",
+          "unique": true,
+          "columns": [
+            "campaignId",
+            "email"
+          ]
+        },
+        {
+          "name": "ecr_campaign_idx",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "ecr_email_idx",
+          "unique": false,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -2968,7 +6670,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3024,7 +6734,29 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_unsub_email",
+          "unique": true,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_unsub_token",
+          "unique": false,
+          "columns": [
+            "token"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3101,7 +6833,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3254,7 +6994,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "events_userId_startDate_idx",
+          "unique": false,
+          "columns": [
+            "userId",
+            "startDate"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3358,7 +7114,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3476,7 +7240,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3608,7 +7380,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3680,7 +7460,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_analytics_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "stage"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3784,7 +7580,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_lifecycle_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "runAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3880,7 +7692,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_feedback_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -3984,7 +7812,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_onboarding_user",
+          "unique": false,
+          "columns": [
+            "userId",
+            "tenantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4112,7 +7956,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4288,7 +8140,31 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_queue_status",
+          "unique": false,
+          "columns": [
+            "queueType",
+            "status"
+          ]
+        },
+        {
+          "name": "idx_ge_queue_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "queueType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4392,7 +8268,23 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_referral_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4480,7 +8372,30 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ge_social_platform",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "platform"
+          ]
+        },
+        {
+          "name": "idx_ge_social_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4626,7 +8541,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4775,7 +8698,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -4964,7 +8895,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5012,7 +8951,23 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "horseTags_horse_tag_unique",
+          "unique": true,
+          "columns": [
+            "horseId",
+            "tagId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5068,7 +9023,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_lpp_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5194,7 +9164,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5290,7 +9268,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_lessonCompletion_lessonSlug",
+          "unique": false,
+          "columns": [
+            "lessonSlug"
+          ]
+        },
+        {
+          "name": "idx_lessonCompletion_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5370,7 +9370,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "lessonPathways_slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5478,7 +9493,36 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_lessonReviews_lessonSlug",
+          "unique": false,
+          "columns": [
+            "lessonSlug"
+          ]
+        },
+        {
+          "name": "idx_lessonReviews_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_lessonReviews_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5662,7 +9706,36 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_lessonUnits_level",
+          "unique": false,
+          "columns": [
+            "level"
+          ]
+        },
+        {
+          "name": "idx_lessonUnits_pathwaySlug",
+          "unique": false,
+          "columns": [
+            "pathwaySlug"
+          ]
+        },
+        {
+          "name": "lessonUnits_slug",
+          "unique": true,
+          "columns": [
+            "slug"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5782,7 +9855,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_magent_runs_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -5942,7 +10033,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_magent_tasks_scope",
+          "unique": false,
+          "columns": [
+            "runId",
+            "tenantId",
+            "workspaceId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -6102,7 +10211,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mattribution_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "code"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -6278,7 +10405,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_maudiobeds_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -6462,7 +10607,26 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mavatarjobs_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "task",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -6630,7 +10794,32 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mbm_runs_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_mbm_runs_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -6822,7 +11011,33 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mbm_variants_run",
+          "unique": false,
+          "columns": [
+            "runId",
+            "platform",
+            "language"
+          ]
+        },
+        {
+          "name": "idx_mbm_variants_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -6942,7 +11157,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mbest_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "performerType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7141,7 +11374,33 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingBrandKits_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "idx_mbk_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7301,7 +11560,24 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mbrand_memory_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7349,7 +11625,36 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingCampaignAssets_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignAssets_item",
+          "unique": false,
+          "columns": [
+            "campaignItemId"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignAssets_media",
+          "unique": false,
+          "columns": [
+            "mediaAssetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7469,7 +11774,37 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingCampaignItems_campaign",
+          "unique": false,
+          "columns": [
+            "campaignId"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignItems_platform_status",
+          "unique": false,
+          "columns": [
+            "platform",
+            "status"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaignItems_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7597,7 +11932,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mresults_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "platform"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7709,7 +12062,30 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingCampaigns_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_marketingCampaigns_tenant_workspace",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -7837,7 +12213,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mcompetitor_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform",
+            "capturedAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8037,7 +12431,64 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mc_contact_type",
+          "unique": false,
+          "columns": [
+            "contactType"
+          ]
+        },
+        {
+          "name": "idx_mc_country",
+          "unique": false,
+          "columns": [
+            "country"
+          ]
+        },
+        {
+          "name": "idx_mc_dup_of",
+          "unique": false,
+          "columns": [
+            "suspectedDuplicateOf"
+          ]
+        },
+        {
+          "name": "idx_mc_email",
+          "unique": true,
+          "columns": [
+            "email"
+          ]
+        },
+        {
+          "name": "idx_mc_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_mc_tenant",
+          "unique": false,
+          "columns": [
+            "tenantId"
+          ]
+        },
+        {
+          "name": "idx_mc_unsub_token",
+          "unique": false,
+          "columns": [
+            "unsubscribeToken"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8141,7 +12592,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mcontent_gaps_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform",
+            "gapType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8261,7 +12730,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mconversions_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "eventType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8365,7 +12852,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mexperiments_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8501,7 +13006,24 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mexperiment_variants_scope",
+          "unique": false,
+          "columns": [
+            "experimentId",
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8621,7 +13143,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mlearning_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "campaignId",
+            "insightType"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -8717,7 +13257,59 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingMediaAssetVersions_derived",
+          "unique": false,
+          "columns": [
+            "derivedMediaAssetId"
+          ]
+        },
+        {
+          "name": "idx_marketingMediaAssetVersions_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "idx_marketingMediaAssetVersions_source",
+          "unique": false,
+          "columns": [
+            "sourceMediaAssetId"
+          ]
+        },
+        {
+          "name": "idx_mav_derived",
+          "unique": false,
+          "columns": [
+            "derivedMediaAssetId"
+          ]
+        },
+        {
+          "name": "idx_mav_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "idx_mav_source",
+          "unique": false,
+          "columns": [
+            "sourceMediaAssetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9005,7 +13597,24 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mproduct_profiles_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9093,7 +13702,24 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingProviderHealthChecks_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "provider"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9293,7 +13919,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uniq_marketingProviderModels_scope",
+          "unique": true,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "provider",
+            "modelId"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9517,7 +14161,31 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mrj_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "idx_mrj_status",
+          "unique": false,
+          "columns": [
+            "status",
+            "createdAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9645,7 +14313,32 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mrr_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "idx_mrr_target",
+          "unique": false,
+          "columns": [
+            "targetType",
+            "targetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9765,7 +14458,30 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_marketingScheduleDrafts_scheduled",
+          "unique": false,
+          "columns": [
+            "scheduledFor"
+          ]
+        },
+        {
+          "name": "idx_marketingScheduleDrafts_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -9917,7 +14633,24 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "uniq_marketingSocialConnections_scope",
+          "unique": true,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10061,7 +14794,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mtrend_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "platform",
+            "capturedAt"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10229,7 +14980,32 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mvqa_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId"
+          ]
+        },
+        {
+          "name": "idx_mvqa_target",
+          "unique": false,
+          "columns": [
+            "targetType",
+            "targetId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10389,7 +15165,25 @@
           "default": "default"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_mvoiceprofiles_scope",
+          "unique": false,
+          "columns": [
+            "tenantId",
+            "workspaceId",
+            "hostAppId",
+            "status"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10597,7 +15391,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10661,7 +15463,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10717,7 +15527,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10797,7 +15615,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "notes_horseId_idx",
+          "unique": false,
+          "columns": [
+            "horseId"
+          ]
+        },
+        {
+          "name": "notes_userId_idx",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -10933,7 +15773,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11093,7 +15941,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11205,7 +16061,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "organizationInvites_token",
+          "unique": true,
+          "columns": [
+            "token"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11253,7 +16124,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_orgMembers_orgId",
+          "unique": false,
+          "columns": [
+            "organizationId"
+          ]
+        },
+        {
+          "name": "idx_orgMembers_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11405,7 +16298,22 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_organizations_ownerId",
+          "unique": false,
+          "columns": [
+            "ownerId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11549,7 +16457,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11637,7 +16553,15 @@
           "default": "1.0"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11724,7 +16648,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11825,7 +16757,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -11889,7 +16829,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12001,7 +16949,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12118,7 +17074,22 @@
           "default": "0"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "shareLinks_token_unique",
+          "unique": true,
+          "columns": [
+            "token"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12230,7 +17201,43 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "sa_created_idx",
+          "unique": false,
+          "columns": [
+            "createdAt"
+          ]
+        },
+        {
+          "name": "sa_path_idx",
+          "unique": false,
+          "columns": [
+            "path"
+          ]
+        },
+        {
+          "name": "sa_session_idx",
+          "unique": false,
+          "columns": [
+            "sessionId"
+          ]
+        },
+        {
+          "name": "sa_visitor_idx",
+          "unique": false,
+          "columns": [
+            "visitorId"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12270,7 +17277,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "siteSettings_key_unique",
+          "unique": true,
+          "columns": [
+            "key"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12370,7 +17392,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stableInvites_token_unique",
+          "unique": true,
+          "columns": [
+            "token"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12449,7 +17486,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12561,7 +17606,15 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12633,7 +17686,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "stripeEvents_eventId_unique",
+          "unique": true,
+          "columns": [
+            "eventId"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12753,7 +17821,29 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_studentAssignments_studentId",
+          "unique": false,
+          "columns": [
+            "studentId"
+          ]
+        },
+        {
+          "name": "idx_studentAssignments_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12855,7 +17945,37 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_studentCompetencies_status",
+          "unique": false,
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "idx_studentCompetencies_unique",
+          "unique": true,
+          "columns": [
+            "userId",
+            "competencyKey"
+          ]
+        },
+        {
+          "name": "idx_studentCompetencies_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12895,7 +18015,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_sgm_groupId",
+          "unique": false,
+          "columns": [
+            "groupId"
+          ]
+        },
+        {
+          "name": "idx_sgm_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -12975,7 +18117,22 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_sg_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13047,7 +18204,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_sha_horseId",
+          "unique": false,
+          "columns": [
+            "horseId"
+          ]
+        },
+        {
+          "name": "idx_sha_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13119,7 +18298,22 @@
           "default": "0"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_sp_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13191,7 +18385,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_studentReports_studentId",
+          "unique": false,
+          "columns": [
+            "studentId"
+          ]
+        },
+        {
+          "name": "idx_studentReports_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13287,7 +18503,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_studentTasks_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13391,7 +18622,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_ste_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13487,7 +18733,22 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_studyTopics_category",
+          "unique": false,
+          "columns": [
+            "category"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13573,7 +18834,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "systemSettings_settingKey_unique",
+          "unique": true,
+          "columns": [
+            "settingKey"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13645,7 +18921,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13821,7 +19105,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -13941,7 +19233,29 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_tat_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_tat_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14029,7 +19343,29 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_tf_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_tf_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14137,7 +19473,36 @@
           "default": "[object Object]"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_teacherLessonAssignments_groupId",
+          "unique": false,
+          "columns": [
+            "groupId"
+          ]
+        },
+        {
+          "name": "idx_teacherLessonAssignments_studentUserId",
+          "unique": false,
+          "columns": [
+            "studentUserId"
+          ]
+        },
+        {
+          "name": "idx_teacherLessonAssignments_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14233,7 +19598,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_teacherResources_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14297,7 +19677,29 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_tsm_studentId",
+          "unique": false,
+          "columns": [
+            "studentId"
+          ]
+        },
+        {
+          "name": "idx_tsm_teacherId",
+          "unique": false,
+          "columns": [
+            "teacherId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14361,7 +19763,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14479,7 +19889,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14599,7 +20017,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14783,7 +20209,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -14940,7 +20374,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -15256,7 +20698,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "users_openId_unique",
+          "unique": true,
+          "columns": [
+            "openId"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -15384,7 +20841,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -15520,7 +20985,22 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "idx_virtualHorses_userId",
+          "unique": false,
+          "columns": [
+            "userId"
+          ]
+        },
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -15639,7 +21119,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -15727,7 +21215,15 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     },
@@ -15879,11 +21375,19 @@
           "default": null
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "unique": true,
+          "columns": [
+            "id"
+          ]
+        }
+      ],
       "foreignKeys": [],
       "uniqueConstraints": []
     }
   ],
-  "generatedAt": "2026-08-22T06:08:27.752Z",
-  "fingerprint": "c9b8f6c6a632b3a5f9fa1c748bdd142a14e0496f8c65005931f2963bd900855d"
+  "generatedAt": "2026-08-22T09:37:59.549Z",
+  "fingerprint": "87d5a30e0b27fe38ec786954b704032fc6127a715419423e837564ecbb9dc922"
 }
