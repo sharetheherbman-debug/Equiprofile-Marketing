@@ -9782,71 +9782,79 @@ An authorised person may use product identity, instructions, storage requirement
     category: "Equine Welfare & Ethics",
     sortOrder: 1,
     objectives: [
-      "List and explain the Five Freedoms",
-      "Apply them to everyday horse management",
-      "Identify situations where freedoms are compromised",
-      "Understand the moral responsibility of ownership",
+      "Describe the Five Freedoms as a historical welfare prompt and distinguish them from current individual welfare assessment",
+      "Use an individual welfare lens that considers nutrition, environment, health, behaviour, mental state, current procedures, and the horse’s circumstances",
+      "Record factual observations without diagnosing welfare, pain, health, legal responsibility, or reportability",
+      "Know when to use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route",
     ],
-    content: `The Five Freedoms form the foundation of animal welfare assessment worldwide.
+    content: `The Five Freedoms are a historic way to prompt discussion about animal welfare. They are not a diagnostic checklist, a legal decision tool, a welfare investigation, a complete measure of a horse’s experience, or a substitute for the responsible person, veterinarian, qualified professional, current site procedure, emergency service, or relevant local authority. A learner must not diagnose pain, illness, distress, neglect, a welfare breach, a legal offence, an unsuitable environment, a social problem, or a reportable situation from one observation or this lesson alone.
 
-## The Five Freedoms
+## A Historical Prompt and a Current Assessment Lens
 
-1. Freedom from Hunger and Thirst  2. Freedom from Discomfort  3. Freedom from Pain, Injury, or Disease  4. Freedom to Express Normal Behaviour  5. Freedom from Fear and Distress
+The Five Freedoms are commonly summarised as freedom from hunger and thirst; discomfort; pain, injury, or disease; inability to express normal behaviour; and fear or distress. UK horse-welfare guidance describes related responsibilities: suitable environment, healthy diet, normal behaviour, appropriate company, and protection from pain, suffering, injury, and disease. Contemporary welfare guidance also uses a Five Domains approach: nutrition, environment, health, behaviour, and mental state. These frameworks encourage consideration of the whole horse and its individual circumstances, rather than a single visual check or a universal rule.
 
-## Applying to Horse Care
+The frameworks do not establish that every horse must have the same diet, water arrangement, turnout, company, shelter, rug, environment, space, management, exercise, training, restraint, treatment, or reporting route. An apparent concern may have context that a learner cannot see. For example, a horse may be temporarily alone, natural shelter may be available, a water source may be out of view, or a current veterinary and responsible-person plan may apply. Equally, an apparently calm horse may need an appropriate welfare review. Do not assume a cause or outcome.
 
-Every decision should consider these freedoms. Is the horse warm enough? Does it have friends? Is it in pain? Does it have enough to eat and drink?
+## Factual Observation, Not Diagnosis
 
-## Recognising Compromise
+A learner may record factual observations through the current approved procedure: location, date and time, the individual horse’s visible condition, access that can actually be seen, behaviour, environment, weather, hazards, interaction, and any immediate safety concern. Do not infer pain, hunger, thirst, fear, social deprivation, discomfort, disease, neglect, legal responsibility, a welfare breach, or reportability. Do not enter private land, confront a person, move a horse, offer feed or water, provide treatment, take action beyond your competence, or share identifying information outside the authorised procedure.
 
-Welfare compromise can be subtle. A horse standing alone without shelter may appear fine but is actually denied comfort and social behaviour.`,
+If you are responsible for a horse, use the current horse-specific care, welfare, health, feeding, management, training, safeguarding, incident, and emergency procedures. The responsible person and appropriate qualified professionals must decide what action, assessment, care, treatment, management, monitoring, welfare plan, or escalation is suitable. A court may consider the statutory code in a welfare case, but breach of the code is not by itself an offence; do not give legal advice or make legal conclusions from this lesson.
+
+## When to Escalate
+
+Use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route if factual observations suggest an immediate danger, injury, collapse, non-weight-bearing lameness, road risk, inability to safely manage the situation, or another condition covered by the current emergency procedure. For non-urgent welfare concerns, follow the authorised local process and provide first-hand factual information if requested. Routes vary by location and scenario. If you are unsure, do not delay required emergency support; use the current procedure and seek authorised advice.
+
+## Reflective Use
+
+Use the Five Freedoms and Five Domains as prompts to ask: what information is known, what is unknown, what current procedure applies, who is responsible, what individual needs have been assessed, and what support or escalation route is appropriate? The aim is respectful, evidence-based attention to welfare, not a learner diagnosis or a generic instruction.`,
     keyPoints: [
-      "The Five Freedoms are the foundation of welfare assessment",
-      "Every management decision should be evaluated against them",
-      "Welfare compromise can be subtle",
-      "Horses need social contact, space, shelter, and appropriate diet",
-      "Ownership carries moral obligation",
+      "The Five Freedoms are a historical welfare prompt; current individual welfare assessment also considers nutrition, environment, health, behaviour, and mental state",
+      "Welfare assessment requires individual context, factual observation, current procedures, responsible-person oversight, and appropriate qualified support",
+      "A single observation does not diagnose pain, illness, distress, neglect, a welfare breach, legal responsibility, or reportability",
+      "Diet, water, turnout, company, shelter, rugging, environment, space, management, exercise, training, restraint, treatment, and reporting routes are not universal learner instructions",
+      "Use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route when factual observations require escalation",
     ],
     safetyNote:
-      "If you see a horse in clear distress, contact the RSPCA or World Horse Welfare.",
+      "Do not diagnose, confront, enter private land, move a horse, offer feed or water, provide treatment, or share identifying information outside the authorised procedure. If factual observations suggest immediate danger or a condition covered by the current emergency procedure, use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route without delay; routes vary by location and scenario.",
     practicalApplication:
-      "Assess a horse at your yard against all Five Freedoms. Identify improvement areas.",
+      "With the responsible person’s permission, observe how the current horse-specific welfare, health, feeding, management, safeguarding, incident, and emergency procedures are applied. Record only authorised factual observations and ask who is responsible for assessment and which escalation route applies. Do not assess, diagnose, investigate, report, move, feed, water, treat, or change management from this lesson alone.",
     commonMistakes: [
-      "Assuming welfare only concerns food and water",
-      "Keeping horses isolated",
-      "Ignoring low-grade pain",
-      "Not providing adequate shelter",
-      "Focusing only on physical needs",
+      "Using a single observation or a generic framework to diagnose pain, illness, distress, neglect, a welfare breach, legal responsibility, or reportability",
+      "Assuming that a horse alone, without a visible rug, without visible shelter, or without a visible water container establishes a welfare failure without the individual context and current procedure",
+      "Entering private land, confronting a person, moving a horse, offering feed or water, providing treatment, or taking action beyond competence instead of following the authorised route",
+      "Giving legal advice or treating the statutory welfare code as a standalone offence rather than following current authorised procedures and appropriate professional guidance",
+      "Continuing without escalation when factual observations suggest immediate danger, injury, collapse, non-weight-bearing lameness, road risk, inability to safely manage the situation, or another condition covered by the current emergency procedure",
     ],
     knowledgeCheck: [
       {
-        question: "Which is NOT one of the Five Freedoms?",
+        question: "What is the appropriate use of the Five Freedoms in this lesson?",
         options: [
-          "Freedom from hunger",
-          "Freedom to express normal behaviour",
-          "Freedom to compete in shows",
-          "Freedom from pain",
+          "A complete diagnostic checklist that proves welfare or legal status from one observation",
+          "A historical prompt that supports a wider individual welfare assessment alongside current responsible-person and professional procedures",
+          "A universal diet, turnout, company, shelter, treatment, and reporting rule",
+          "A substitute for veterinary, welfare, emergency, or local-authority advice",
         ],
-        correctIndex: 2,
-        explanation: "Competition is not a welfare right.",
+        correctIndex: 1,
+        explanation: "The Five Freedoms can prompt reflection, but individual welfare assessment also considers nutrition, environment, health, behaviour, mental state, context, and current procedures.",
       },
       {
-        question: "A horse is kept alone. Which freedom is compromised?",
+        question: "What should a learner do if factual observations create a welfare concern?",
         options: [
-          "Freedom from hunger",
-          "Freedom from fear",
-          "Freedom to express normal behaviour",
-          "Freedom from disease",
+          "Diagnose the welfare breach and confront the person responsible",
+          "Enter private land and alter the horse’s food, water, shelter, turnout, treatment, or management",
+          "Record authorised factual observations and use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route appropriate to the location and scenario",
+          "Assume that a horse alone, without a visible rug, without visible shelter, or without a visible water container proves a reportable breach",
         ],
         correctIndex: 2,
         explanation:
-          "Horses are herd animals. Isolation prevents normal social behaviour.",
+          "Context matters. Do not diagnose, confront, trespass, or take unauthorised action; follow the current authorised procedure and emergency route where required.",
       },
     ],
     aiTutorPrompts: [
-      "How do the Five Freedoms apply to stabled horses?",
-      "What does good welfare look like?",
-      "What should I do if I see a neglected horse?",
+      "How can I use the Five Freedoms and Five Domains as prompts without diagnosing the individual horse or applying a universal rule?",
+      "What current responsible-person, welfare, veterinary, safeguarding, incident, emergency, and relevant local authority procedure applies if a factual concern arises?",
+      "How should I record first-hand factual welfare observations without entering private land, confronting a person, moving a horse, treating a horse, or making a legal conclusion?",
     ],
     linkedCompetencies: ["welfare_awareness", "horse_care"],
   },
