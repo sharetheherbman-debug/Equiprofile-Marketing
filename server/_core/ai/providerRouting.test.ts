@@ -1,14 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { orderCopywritingProviders } from "./providerRouting";
+import { orderCopywritingProviders, orderMediaProviders } from "./providerRouting";
 
-describe("orderCopywritingProviders", () => {
-  it("prioritizes COPYWRITING_PROVIDER when valid and available", () => {
-    const order = orderCopywritingProviders("qwen", (p) => p !== "huggingface");
-    expect(order).toEqual(["qwen", "genx"]);
+describe("Core GenX-only provider routing", () => {
+  it("uses GenX even when a legacy copywriting preference is configured", () => {
+    const order = orderCopywritingProviders("qwen", (provider) => provider !== "huggingface");
+    expect(order).toEqual(["genx"]);
   });
 
-  it("falls back to GenX first when preferred provider is unavailable", () => {
-    const order = orderCopywritingProviders("huggingface", (p) => p === "genx" || p === "qwen");
-    expect(order).toEqual(["genx", "qwen"]);
+  it("returns no provider when GenX is unavailable instead of falling back", () => {
+    const order = orderCopywritingProviders("huggingface", (provider) => provider === "qwen");
+    expect(order).toEqual([]);
+  });
+
+  it("keeps media generation on GenX for every quality mode", () => {
+    expect(orderMediaProviders("standard", (provider) => provider !== "huggingface")).toEqual(["genx"]);
+    expect(orderMediaProviders("elite", (provider) => provider === "qwen")).toEqual([]);
   });
 });

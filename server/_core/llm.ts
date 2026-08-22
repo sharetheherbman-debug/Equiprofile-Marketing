@@ -159,13 +159,13 @@ const extractTextContent = (output: unknown): string => {
 
 export async function isAIConfigured(): Promise<boolean> {
   const health = await getProviderHealth();
-  return health.some((item) => item.configured);
+  return health.some((item) => item.provider === "genx" && item.configured);
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   const configured = await isAIConfigured();
   if (!configured) {
-    throw new Error("AI service is not configured (GENX_API_KEY/genx_api_key or HUGGINGFACE_API_KEY/huggingface_api_key missing)");
+    throw new Error("GenX AI service is not configured (GENX_API_KEY/genx_api_key missing)");
   }
 
   const result = await executeChatTask(params.messages, {

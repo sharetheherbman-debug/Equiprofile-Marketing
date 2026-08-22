@@ -17,6 +17,7 @@ import {
 } from "../drizzle/schema";
 import { nanoid } from "nanoid";
 import { FREE_TRIAL_DAYS, INVITE_EXPIRY_DAYS } from "@shared/pricing";
+import { sendAcademyInviteEmail } from "./_core/email";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -194,17 +195,58 @@ export const schoolRouter = router({
         });
       }
 
-      const token = nanoid(32);
-      await dbConn.insert(organizationInvites).values({
-        organizationId: org.id,
-        invitedEmail: input.email,
+      const invitedEmail = input.email.trim().toLowerCase();
+      const [existingInvite] = await dbConn.select()
+        .from(organizationInvites)
+        .where(and(
+          eq(organizationInvites.organizationId, org.id),
+          eq(organizationInvites.invitedEmail, invitedEmail),
+          eq(organizationInvites.role, input.role),
+          sql`${organizationInvites.acceptedAt} IS NULL`,
+          sql`${organizationInvites.expiresAt} > NOW()`,
+        ))
+        .orderBy(desc(organizationInvites.createdAt))
+        .limit(1);
+
+      const expiresAt = existingInvite?.expiresAt ?? new Date(Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+      const token = existingInvite?.token ?? nanoid(32);
+      const inviteId = existingInvite?.id ?? (
+        await dbConn.insert(organizationInvites).values({
+          organizationId: org.id,
+          invitedEmail,
+          role: input.role,
+          token,
+          expiresAt,
+        })
+      )[0].insertId;
+
+      const delivery = await sendAcademyInviteEmail({
+        recipientEmail: invitedEmail,
+        inviterName: ctx.user.name ?? "An Academy owner",
+        organizationName: org.name,
         role: input.role,
         token,
-        expiresAt: new Date(Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000),
+        expiresAt,
       });
+      await dbConn.update(organizationInvites).set({
+        deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+        deliveryAttemptCount: (existingInvite?.deliveryAttemptCount ?? 0) + 1,
+        lastDeliveryAttemptAt: new Date(),
+        deliveredAt: delivery.delivered ? new Date() : (existingInvite?.deliveredAt ?? null),
+        lastDeliveryError: delivery.delivered ? null : delivery.error,
+      }).where(eq(organizationInvites.id, Number(inviteId)));
 
-      // TODO: Send invite email via SMTP
-      return { token, email: input.email, role: input.role };
+      return {
+        inviteId: Number(inviteId),
+        email: invitedEmail,
+        role: input.role,
+        deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+        deliveryReason: delivery.delivered ? null : delivery.reason,
+        deliveryMessage: delivery.delivered
+          ? "Invitation email sent."
+          : "Invitation was saved, but email delivery failed. Review SMTP settings and retry when mail delivery is available.",
+        reusedActiveInvite: Boolean(existingInvite),
+      };
     }),
 
   /** List pending invites for the organization. */

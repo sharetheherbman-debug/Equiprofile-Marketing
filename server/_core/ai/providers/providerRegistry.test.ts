@@ -194,26 +194,21 @@ describe("providerRegistry fallback routing", () => {
     expect(mocks.executeHuggingFaceTask).not.toHaveBeenCalled();
   });
 
-  it("falls back to Qwen when GenX is missing and Qwen is configured", async () => {
+  it("does not use legacy provider credentials when GenX is absent", async () => {
     mocks.runtimeValues.qwen_api_key = "qwen-key";
-    mocks.executeQwenTask.mockResolvedValueOnce(mkResult("qwen"));
-
-    const result = await executeWithFallback(["genx", "qwen", "huggingface"], "copywriting", { prompt: "x" }, 1000);
-
-    expect(result.provider).toBe("qwen");
-    expect(mocks.executeGenXTask).not.toHaveBeenCalled();
-    expect(mocks.executeQwenTask).toHaveBeenCalledTimes(1);
-  });
-
-  it("falls back to Hugging Face when GenX/Qwen are missing and HF copywriting model is configured", async () => {
     mocks.runtimeValues.huggingface_api_key = "hf-key";
     mocks.runtimeValues.hf_task_copywriting_model = "hf/copy";
+    mocks.executeQwenTask.mockResolvedValueOnce(mkResult("qwen"));
     mocks.executeHuggingFaceTask.mockResolvedValueOnce(mkResult("huggingface"));
 
-    const result = await executeWithFallback(["genx", "qwen", "huggingface"], "copywriting", { prompt: "x" }, 1000);
-
-    expect(result.provider).toBe("huggingface");
-    expect(mocks.executeHuggingFaceTask).toHaveBeenCalledTimes(1);
+    await expect(
+      executeWithFallback(["genx", "qwen", "huggingface"], "copywriting", { prompt: "x" }, 1000),
+    ).rejects.toMatchObject({ name: "ProviderSelectionError", code: "provider_missing" });
+    await expect(isProviderAvailableForTask("qwen", "copywriting")).resolves.toBe(false);
+    await expect(isProviderAvailableForTask("huggingface", "copywriting")).resolves.toBe(false);
+    expect(mocks.executeGenXTask).not.toHaveBeenCalled();
+    expect(mocks.executeQwenTask).not.toHaveBeenCalled();
+    expect(mocks.executeHuggingFaceTask).not.toHaveBeenCalled();
   });
 
   it("returns provider_missing when no provider is configured", async () => {
@@ -236,8 +231,9 @@ describe("providerRegistry fallback routing", () => {
     expect(mocks.executeHuggingFaceTask).not.toHaveBeenCalled();
   });
 
-  it("marks HF copywriting unavailable when explicit model is missing", async () => {
+  it("keeps Hugging Face unavailable even when a legacy model is configured", async () => {
     mocks.runtimeValues.huggingface_api_key = "hf-key";
+    mocks.runtimeValues.hf_task_copywriting_model = "hf/copy";
 
     await expect(isProviderAvailableForTask("huggingface", "copywriting")).resolves.toBe(false);
   });

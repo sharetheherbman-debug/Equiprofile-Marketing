@@ -44,6 +44,27 @@ function Card({
 
 // ── Onboarding Wizard ────────────────────────────────────────────────────────
 type WizardStep = "welcome" | "details" | "invite" | "done";
+type InviteDeliveryStatus = "PENDING" | "DELIVERED" | "ACCEPTED_FOR_DELIVERY" | "FAILED" | "NOT_CONFIGURED" | "RETRYABLE";
+type PendingInvite = {
+  email: string;
+  role: "teacher" | "student";
+  deliveryStatus: InviteDeliveryStatus;
+  deliveryMessage?: string;
+  inviteId?: number;
+};
+
+function inviteReachedDelivery(status: InviteDeliveryStatus): boolean {
+  return status === "DELIVERED" || status === "ACCEPTED_FOR_DELIVERY";
+}
+
+function inviteStatusFromResult(result: {
+  deliveryStatus?: string;
+  deliveryReason?: string | null;
+}): InviteDeliveryStatus {
+  if (result.deliveryStatus === "DELIVERED") return "DELIVERED";
+  if (result.deliveryStatus === "ACCEPTED_FOR_DELIVERY") return "ACCEPTED_FOR_DELIVERY";
+  return result.deliveryReason === "SMTP_NOT_CONFIGURED" ? "NOT_CONFIGURED" : "FAILED";
+}
 
 function OnboardingWizard({
   onComplete,
@@ -54,10 +75,11 @@ function OnboardingWizard({
   const [orgName, setOrgName] = useState("");
   const [orgDesc, setOrgDesc] = useState("");
   const [orgType, setOrgType] = useState<"riding_school" | "college" | "training_centre" | "other">("riding_school");
-  const [invites, setInvites] = useState<Array<{ email: string; role: "teacher" | "student" }>>([]);
+  const [invites, setInvites] = useState<PendingInvite[]>([]);
   const [currentEmail, setCurrentEmail] = useState("");
   const [currentRole, setCurrentRole] = useState<"teacher" | "student">("teacher");
   const [orgCreated, setOrgCreated] = useState(false);
+  const [isSendingInvites, setIsSendingInvites] = useState(false);
 
   const createOrgMutation = trpc.school.createOrganization.useMutation({
     onSuccess: () => {
@@ -71,7 +93,7 @@ function OnboardingWizard({
   const addInvite = () => {
     const email = currentEmail.trim();
     if (!email || invites.find((i) => i.email === email)) return;
-    setInvites([...invites, { email, role: currentRole }]);
+    setInvites([...invites, { email, role: currentRole, deliveryStatus: "PENDING" }]);
     setCurrentEmail("");
   };
 
@@ -79,15 +101,45 @@ function OnboardingWizard({
     setInvites(invites.filter((i) => i.email !== email));
   };
 
-  const sendAllInvites = async () => {
-    for (const invite of invites) {
+  const sendAllInvites = async (retryOnly = false) => {
+    const retryableStatuses: InviteDeliveryStatus[] = ["FAILED", "NOT_CONFIGURED", "RETRYABLE"];
+    const targets = invites.filter((invite) => retryOnly
+      ? retryableStatuses.includes(invite.deliveryStatus)
+      : !inviteReachedDelivery(invite.deliveryStatus));
+    if (targets.length === 0) return;
+
+    setIsSendingInvites(true);
+    let nextInvites = invites;
+    for (const invite of targets) {
       try {
-        await inviteMutation.mutateAsync({ email: invite.email, role: invite.role });
-      } catch {
-        // Continue with remaining invites
+        const result = await inviteMutation.mutateAsync({ email: invite.email, role: invite.role });
+        const deliveryStatus = inviteStatusFromResult(result);
+        nextInvites = nextInvites.map((current) => current.email === invite.email && current.role === invite.role
+          ? {
+            ...current,
+            inviteId: result.inviteId,
+            deliveryStatus,
+            deliveryMessage: result.deliveryMessage,
+          }
+          : current);
+      } catch (error) {
+        nextInvites = nextInvites.map((current) => current.email === invite.email && current.role === invite.role
+          ? {
+            ...current,
+            deliveryStatus: "RETRYABLE",
+            deliveryMessage: error instanceof Error ? error.message : "Invitation could not be submitted. Retry this recipient.",
+          }
+          : current);
       }
     }
-    setStep("done");
+    setInvites(nextInvites);
+    setIsSendingInvites(false);
+
+    // Only a fully accepted batch may advance automatically. Explicit Skip for
+    // Now remains available to the owner on the results step.
+    if (nextInvites.length > 0 && nextInvites.every((invite) => inviteReachedDelivery(invite.deliveryStatus))) {
+      setStep("done");
+    }
   };
 
   const stepIndex = { welcome: 0, details: 1, invite: 2, done: 3 }[step];
@@ -278,12 +330,29 @@ function OnboardingWizard({
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.06] text-gray-400 capitalize">
                         {invite.role}
                       </span>
-                      <button
-                        onClick={() => removeInvite(invite.email)}
-                        className="text-gray-500 hover:text-red-400 transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                        inviteReachedDelivery(invite.deliveryStatus)
+                          ? "bg-emerald-500/15 text-emerald-300"
+                          : invite.deliveryStatus === "NOT_CONFIGURED"
+                            ? "bg-amber-500/15 text-amber-300"
+                            : invite.deliveryStatus === "PENDING"
+                              ? "bg-white/[0.06] text-gray-400"
+                              : "bg-red-500/15 text-red-300"
+                      }`}>
+                        {invite.deliveryStatus}
+                      </span>
+                      {!inviteReachedDelivery(invite.deliveryStatus) && (
+                        <button
+                          onClick={() => removeInvite(invite.email)}
+                          className="text-gray-500 hover:text-red-400 transition-colors"
+                          aria-label={`Remove ${invite.email}`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      {invite.deliveryMessage && (
+                        <p className="basis-full pl-7 text-xs text-amber-300">{invite.deliveryMessage}</p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -298,15 +367,24 @@ function OnboardingWizard({
                 >
                   Skip for Now
                 </button>
+                {invites.some((invite) => ["FAILED", "NOT_CONFIGURED", "RETRYABLE"].includes(invite.deliveryStatus)) && (
+                  <button
+                    onClick={() => sendAllInvites(true)}
+                    disabled={isSendingInvites}
+                    className="px-4 py-2.5 rounded-lg bg-amber-500/15 text-amber-200 text-sm font-medium hover:bg-amber-500/25 disabled:opacity-50 transition-colors"
+                  >
+                    Retry unsuccessful
+                  </button>
+                )}
                 <button
-                  onClick={sendAllInvites}
-                  disabled={invites.length === 0 || inviteMutation.isPending}
+                  onClick={() => sendAllInvites(false)}
+                  disabled={invites.length === 0 || isSendingInvites}
                   className="flex-1 px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  {inviteMutation.isPending ? (
+                  {isSendingInvites ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
                   ) : (
-                    <>Send {invites.length} Invite{invites.length !== 1 ? "s" : ""} <ArrowRight className="w-4 h-4" /></>
+                    <>Send pending invites <ArrowRight className="w-4 h-4" /></>
                   )}
                 </button>
               </div>

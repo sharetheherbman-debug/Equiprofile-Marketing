@@ -489,6 +489,7 @@ export const academyRouter = router({
         email: invitedEmail,
         role: input.role,
         deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+        deliveryReason: delivery.delivered ? null : delivery.reason,
         deliveryMessage: delivery.delivered
           ? "Invitation email sent."
           : "Invitation was saved, but email delivery failed. Review SMTP settings and resend from the pending-invites list.",
@@ -589,6 +590,7 @@ export const academyRouter = router({
       return {
         inviteId: invite.id,
         deliveryStatus: delivery.delivered ? "DELIVERED" : "FAILED",
+        deliveryReason: delivery.delivered ? null : delivery.reason,
         deliveryMessage: delivery.delivered
           ? "Invitation email sent."
           : "Email delivery failed. Check SMTP settings and retry when the mail service is available.",
