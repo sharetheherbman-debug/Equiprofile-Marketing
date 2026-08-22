@@ -8778,78 +8778,84 @@ A rider is ready for the next level when they can perform current-level skills c
     category: "Handling & Groundwork",
     sortOrder: 1,
     objectives: [
-      "Approach a horse safely in the stable and field",
-      "Understand the horse's flight zone and how to work with it",
-      "Catch a horse using a headcollar and lead rope correctly",
-      "Recognise signs that a horse is reluctant to be caught",
+      "Recognise that approach and catching require individual-horse assessment, qualified instruction, and current site procedures",
+      "Use factual observation and appropriate escalation rather than diagnosing horse behaviour or applying a fixed handling method",
+      "Understand that a qualified handler must select, check, fit, and use the appropriate headcollar and lead rope for the individual horse",
+      "Know when to stop and seek responsible-person or experienced-handler support rather than pursuing, restraining, or treating a horse independently",
     ],
-    content: `Approaching and catching a horse correctly is the very first practical skill every equestrian must master. Horses are prey animals whose survival instincts are triggered by sudden movements or unfamiliar approaches.
+    content: `Approaching and catching a horse are handling activities that require individual-horse assessment, qualified instruction, appropriate equipment, supervision, and current site procedures. Horses may respond quickly to changes in their surroundings; a generic lesson cannot predict a particular horse’s behaviour, diagnose fear or aggression, establish a blind-spot distance, decide that a horse is safe to approach, or replace the responsible person, experienced handler, veterinarian, or emergency procedure.
 
-## Approaching in the Stable
+## Before Entering the Horse’s Space
 
-Always speak to the horse before entering the stable. Approach at the shoulder — never from directly behind. Keep your body language calm and your voice steady. Allow the horse to see and smell you before touching.
+The responsible person or qualified handler must decide whether the horse, location, group of horses, task, equipment, handler experience, support, footing, weather, gates, and current conditions are suitable. Do not enter a stable, field, pen, or other enclosure, approach a horse, or attempt catching if you do not have permission, instruction, a safe route, or the required support.
 
-## Approaching in the Field
+Penn State Extension advises a slow, confident approach from the front toward the shoulder, speaking to the horse and avoiding approach from the rear. The exact route and position must be demonstrated by a qualified handler for that horse and setting. Make sure the horse knows where you are; do not run, surprise the horse, stand directly in front of it, put yourself behind it, block its escape route, or rely on a generic body-language rule.
 
-Walk towards the horse at an angle, not head-on. Avoid making prolonged direct eye contact as horses can interpret this as predatory behaviour. If the horse moves away, stop, turn slightly sideways, and wait.
+## Equipment and Headcollar Safety
 
-## Using a Headcollar
+Before handling, a qualified person should check that the headcollar and lead rope are in suitable condition and fit appropriately for the individual horse. Follow the equipment instructions, site procedure, and qualified handler’s demonstrated method; do not use a fixed finger measurement, copied fitting rule, or one side of the horse as a universal instruction. Penn State describes approaching calmly, placing the halter over the muzzle, and fastening it carefully; a learner should practise this only under appropriate qualified supervision.
 
-Hold the headcollar open with the noseband ready. Approach from the left (near) side. Slide the noseband over the muzzle, then bring the headpiece behind the ears and fasten the buckle. You should be able to fit two fingers under the noseband.
+Use a lead rope attached to the appropriate halter or bridle connection as directed. Never wrap a lead rope around your hand or body, and do not allow excess rope to create an entanglement hazard. The qualified handler should teach the individual method for holding, leading, turning, releasing, and responding to a horse movement. Do not hold the horse by the headcollar alone or try to overpower a horse.
 
-## Dealing with a Difficult-to-Catch Horse
+## Field and Group Contexts
 
-Never chase a horse — this confirms their fear response. Use a calm, patient approach. Carry a small treat as a positive association. In extreme cases, bring the horse into a smaller area first.`,
+Horses in a field or group can respond to each other and the environment. If a horse moves away, is alert, appears uncomfortable, pins its ears, changes body position, becomes difficult to control, or if you are unsure, stop at a safe position and obtain experienced-handler support. Do not chase, corner, use food, separate horses, enter a smaller area, restrain, or attempt a “difficult horse” method from this lesson. These actions can create additional risks for people and horses.
+
+The University of Kentucky and Mississippi State materials support controlled handling and responsible release practices, but release or turnout must follow the local procedure and an experienced person’s instruction. It is outside this lesson’s scope to teach an individual release process.
+
+## Stop and Escalate
+
+Pause, move to safety as directed, and seek the responsible person or qualified handler if the horse, handler, equipment, gate, surface, environment, supervision, consent, welfare, or emergency arrangements are unsuitable. Do not diagnose the cause, punish a horse, continue alone, or use advice from a generic lesson as a substitute for in-person instruction.`,
     keyPoints: [
-      "Always speak to the horse before approaching or entering its space",
-      "Approach at the shoulder, never directly from behind",
-      "Walk at an angle in the field — avoid head-on body language",
-      "Fit the headcollar correctly with the noseband over the muzzle first",
-      "Never chase a horse that is difficult to catch",
+      "Approach and catching require individual-horse assessment, qualified instruction, appropriate equipment, supervision, and current site procedures",
+      "Penn State Extension advises a slow approach from the front toward the shoulder while making sure the horse knows where the handler is; the exact route is context-specific",
+      "Do not rely on generic body-language, eye-contact, blind-spot, distance, or horse-behaviour rules to decide that an approach is safe",
+      "A qualified person must select, inspect, fit, and use the appropriate headcollar and lead rope for the individual horse and setting",
+      "Stop and seek responsible-person or experienced-handler support if a horse moves away, appears unsettled, or cannot be approached or caught safely",
     ],
     safetyNote:
-      "Never wrap a lead rope around your hand or fingers. If a horse pulls away unexpectedly, you could be dragged.",
+      "Never wrap a lead rope around your hand or body, allow excess rope to create an entanglement hazard, hold a horse by the headcollar alone, or try to overpower a horse. Pause, move to safety as directed, and obtain qualified help if handling conditions are unsuitable.",
     practicalApplication:
-      "Practise approaching and catching three different horses in the field. Note the differences in their responses.",
+      "Only under qualified supervision and the responsible person’s current procedure, observe an experienced handler’s approach and equipment check for a suitable horse. Ask how the current horse, setting, equipment, group context, safety route, and escalation process were assessed. Do not approach, catch, release, pursue, separate, or restrain a horse from this lesson alone.",
     commonMistakes: [
-      "Approaching from directly behind — this is a blind spot",
-      "Making sudden movements or loud noises when approaching",
-      "Wrapping the lead rope around your hand",
-      "Chasing a horse that moves away",
-      "Putting the headcollar on incorrectly",
+      "Approaching, catching, releasing, or entering a stable, field, pen, or other enclosure without permission, instruction, a safe route, or required support",
+      "Using a generic body-language, eye-contact, distance, equipment-fitting, or horse-behaviour rule as proof that an approach is safe",
+      "Wrapping a lead rope around the hand or body, allowing an entanglement hazard, holding a horse by the headcollar alone, or trying to overpower a horse",
+      "Chasing, cornering, using food, separating horses, entering a smaller area, restraining, punishing, or using a ‘difficult horse’ method without qualified direction",
+      "Selecting, fitting, checking, leading, turning, releasing, or responding to a horse movement without the individual qualified method and current procedure",
     ],
     knowledgeCheck: [
       {
         question:
-          "From which direction should you approach a horse in the stable?",
+          "What should be established before someone approaches or catches a horse?",
         options: [
-          "Directly from behind",
-          "From the front",
-          "At the shoulder",
-          "From the right side only",
+          "That the person has watched a generic lesson",
+          "Individual-horse assessment, qualified instruction, appropriate equipment, supervision, a safe route, and current site procedures",
+          "That the horse was easy to handle yesterday",
+          "That the handler can use a treat if needed",
         ],
-        correctIndex: 2,
+        correctIndex: 1,
         explanation:
-          "Approaching at the shoulder allows the horse to see you clearly and is the safest position.",
+          "Approach and catching are context-specific. The responsible person or qualified handler must assess the individual horse, location, support, equipment, and conditions before the activity begins.",
       },
       {
         question:
-          "What should you do if a horse moves away from you in the field?",
+          "What should happen if a horse moves away, appears unsettled, or cannot be approached or caught safely?",
         options: [
-          "Run after it",
-          "Shout its name loudly",
-          "Stop, turn slightly sideways, and wait",
-          "Give up",
+          "Chase, corner, or restrain the horse using a generic method",
+          "Use food or move the horse into a smaller area without instruction",
+          "Stop at a safe position and obtain responsible-person or experienced-handler support",
+          "Assume the horse is testing the handler and continue alone",
         ],
         correctIndex: 2,
         explanation:
-          "Stopping and turning sideways reduces pressure and shows non-threatening body language.",
+          "A generic lesson cannot identify the cause of a horse’s behaviour or authorise a catching method. Stop and obtain qualified support rather than escalating the situation.",
       },
     ],
     aiTutorPrompts: [
-      "How do I catch a horse that always runs away?",
-      "Why does my horse pin its ears when I approach?",
-      "What is the correct way to fit a headcollar?",
+      "What current responsible-person and qualified-handler procedure applies if a horse cannot be approached or caught safely?",
+      "How should I report a factual horse, equipment, field, gate, footing, welfare, or safety concern to the qualified handler?",
+      "What authority, instruction, equipment check, supervision, and current site procedure are required before I approach, catch, lead, or release a horse?",
     ],
     linkedCompetencies: ["safety_awareness", "groundwork_skills"],
   },
