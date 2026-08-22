@@ -4942,20 +4942,20 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "must",
         "legal"
       ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: Learner-led bleeding, colic and eye-management procedures were replaced with safe preparation, prompt veterinary escalation and current yard emergency instructions.",
-      "lessonChangeMade": "Replaced learner-led bleeding, colic and eye-management procedures with safe preparation, veterinary escalation and current yard emergency-procedure guidance.",
+      "whatWasVerified": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REVIEW: The full current lesson only teaches prompt veterinary contact, people’s safety, factual observation, approved emergency-supply/contact awareness, and current veterinary/yard procedures. World Horse Welfare supports calling a vet in an emergency and emergency response while keeping people safe; British Equestrian supports the welfare context. The lesson makes no clinical treatment, diagnosis, medicine, time, numeric, prognosis, universal-kit, legal, transport, nutrition or self-triage claim.",
+      "lessonChangeMade": "The existing removal of learner-led bleeding, colic and eye-management procedures is retained. The complete current lesson, assessments, and Tutor prompts were reviewed as a preparation-and-escalation boundary; no additional learner-facing change was required.",
       "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
       "reviewDecision": {
-        "reviewedAt": "2026-08-21",
+        "reviewedAt": "2026-08-22",
         "reviewedBy": "academy-source-comparison",
         "sourceUrl": "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/preparing-for-an-emergency-equine-first-aid",
-        "claimReviewed": "Learner-led bleeding, colic and eye-management procedures were replaced with safe preparation, prompt veterinary escalation and current yard emergency instructions.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
+        "claimReviewed": "Complete current lesson scope: objectives, learner text, key points, safety note, practical activity, common-mistake warnings, knowledge-check explanations and Tutor prompts, limited to prompt professional escalation, safe preparation, authorised factual observations and current yard/veterinary procedures.",
+        "outcome": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REVIEW"
       }
     },
     {
