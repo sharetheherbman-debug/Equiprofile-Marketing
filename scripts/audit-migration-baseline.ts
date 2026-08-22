@@ -219,11 +219,18 @@ try {
     !missingColumns.length &&
     !unexpectedColumns.length &&
     !incompatibleColumns.length;
+  const hasExpectedSurface = actualTables.some((table) =>
+    expected.has(table.name),
+  );
   const classification = noApplicationTables
     ? "FRESH_ZERO_DATABASE"
     : exact
       ? "CURRENT_NO_ACTION_REQUIRED"
-      : "UNKNOWN";
+      : tracked
+        ? "PARTIAL_OR_DRIFTED"
+        : hasExpectedSurface
+          ? "AMBIGUOUS"
+          : "UNKNOWN";
   const result = {
     mode: "READ_ONLY",
     database: schemaName,
