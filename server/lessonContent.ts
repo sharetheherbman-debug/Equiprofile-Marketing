@@ -1414,24 +1414,20 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
       "Demonstrate a safe dismounting technique",
       "Understand when a mounting block should be used and why",
     ],
-    content: `Mounting and dismounting are the first practical skills any rider learns. Done correctly, they are safe and comfortable for both rider and horse. Done incorrectly, they risk injury to the rider and discomfort — even back damage — to the horse. This lesson covers the complete mounting and dismounting procedure, including essential pre-mount checks.
+    content: `Mounting and dismounting are practical skills that must be learned with a qualified instructor on a suitable, quiet horse in a safe setting. Before riding, check the horse, tack, girth, stirrups, and surroundings using the current yard procedure. Stop and seek instruction if the horse is not standing quietly or the equipment is not ready.
 
 ## Pre-Mount Checks
 
 Before you mount, carry out these checks every single time:
 
-1. **Girth check** — The girth (the broad strap that holds the saddle in place under the horse's belly) must be sufficiently tight. You should be able to slide two fingers flat between the girth and the horse's body, but no more. A loose girth allows the saddle to slip when you mount, which is dangerous. Tighten the girth from the ground, lifting the saddle flap and pulling the girth straps up one hole at a time on both sides. Always recheck the girth after walking for a few minutes, as the horse may have been holding its breath.
-2. **Stirrup length** — Before mounting, estimate your stirrup length. Stand beside the saddle, place your fingertips on the stirrup bar and stretch the stirrup leather along your arm. The stirrup iron should reach approximately to your armpit. This gives a reasonable starting length that can be adjusted once you are mounted.
+1. **Girth check** — Check that the girth is snug but not overtight and that the saddle is secure. Follow your instructor's and saddle manufacturer's fitting guidance. Walk the horse briefly and recheck before mounting if your current procedure requires it.
+2. **Stirrup length** — Adjust stirrups roughly before mounting and refine them only when mounted safely. Correct length depends on the rider, saddle, discipline, and physical needs; ask an instructor for help rather than relying on a universal body measurement.
 3. **Tack check** — Ensure the bridle is correctly fitted, the noseband and throatlash are fastened properly, and the reins are not twisted. Check that the saddle is sitting correctly on the horse's back with the numnah smooth underneath.
 4. **Surroundings** — Make sure you have enough space to mount safely, away from walls, other horses and obstacles.
 
 ## Mounting from a Mounting Block
 
-Using a mounting block is the preferred method because it:
-- Reduces strain on the horse's back and saddle
-- Reduces the pull on the saddle tree, preventing it from twisting over time
-- Is safer for the rider, especially for shorter riders or those with limited flexibility
-- Keeps the rider close to the horse rather than having to spring up from a distance
+A mounting block or an instructor-approved leg-up can assist a rider where appropriate. The horse must be prepared to stand quietly, the area must be clear, and the mounting aid must be stable and suitable for the rider and horse.
 
 **Procedure from a mounting block:**
 1. Position the horse parallel to the mounting block on the horse's **near (left) side**.
@@ -1452,7 +1448,7 @@ If no mounting block is available:
 5. Spring up from your right foot, straighten your left leg and swing your right leg smoothly over the hindquarters.
 6. Lower yourself gently into the saddle.
 
-This method puts more strain on the horse's back and saddle and should be avoided regularly, especially with horses that have back issues.
+Use this method only as taught and approved by a qualified instructor. If a mounting block, leg-up, or other assistance is appropriate for the rider or horse, use the approved option rather than improvising.
 
 ## Dismounting
 
@@ -1469,25 +1465,19 @@ The standard dismounting procedure is:
 
 ## Emergency Dismount
 
-An emergency dismount is used when you need to get off quickly (for example, if the horse is about to bolt or buck and you are losing control):
-1. Kick both feet free of the stirrups.
-2. Drop the reins.
-3. Push yourself away from the horse, trying to land to one side, not in front of or behind the horse.
-4. Bend your knees on landing and try to roll to absorb the impact.
-
-This should only be taught under direct supervision.`,
+Emergency dismounting carries significant risk and must not be attempted from written instructions alone. Missouri Extension describes progressive practice only with a quiet, well-trained horse and qualified supervision. Follow the instructor's, facility's, and emergency-service directions; prioritise getting both feet free of the stirrups when safe to do so.`,
     keyPoints: [
       "Always check the girth before mounting — a loose girth can cause the saddle to slip dangerously",
-      "Use a mounting block whenever possible to reduce strain on the horse's back",
+      "Use an instructor-approved mounting aid when it is appropriate for the rider, horse, and setting",
       "When mounting from the ground, face the tail and spring up from the right foot",
       "When dismounting, always remove both feet from the stirrups before sliding down",
       "Never dismount by swinging your leg over the front of the saddle",
-      "Recheck the girth after a few minutes of walking, as horses often relax and the girth loosens",
+      "Follow the current yard and instructor procedure for girth rechecking before riding",
     ],
     safetyNote:
-      "The greatest risk during mounting and dismounting is the saddle slipping due to a loose girth. Always check the girth is snug before you mount. Have someone hold the horse if it is known to fidget during mounting. Never put only one foot in a stirrup and hop alongside the horse — if it walks off, you can be dragged. If you are learning, always mount and dismount under the supervision of a qualified instructor.",
+      "Before mounting or dismounting, work in a clear safe area with a horse that is standing quietly, check tack under the current procedure, and keep control through the reins. Beginning riders should use qualified instruction and appropriate assistance. Never improvise a mounting or emergency-dismount technique from written guidance alone.",
     practicalApplication:
-      "Before every lesson or ride, make girth checking and stirrup adjustment your automatic first actions. Practise estimating your stirrup length by the arm-length method so you can do it quickly. If you ride different horses, be aware that each may behave differently during mounting — some may walk off, others may swing their hindquarters away. Always use a mounting block when one is available, and encourage your yard to provide them in both the stable area and the arena.",
+      "Before every lesson or ride, use the yard's documented tack, girth, stirrup, horse-readiness, and area checks. Practise mounting and dismounting only with qualified instruction and a suitable quiet horse. Ask for appropriate assistance or an approved mounting aid rather than improvising when a rider, horse, or setting needs it.",
     commonMistakes: [
       "Forgetting to check the girth before mounting, risking the saddle slipping",
       "Digging the left toe into the horse's side when mounting, causing discomfort or the horse to walk off",
@@ -1510,16 +1500,16 @@ This should only be taught under direct supervision.`,
           "Mounting from the ground puts significant sideways and downward force on the saddle and horse's back. A mounting block reduces this strain, protecting the horse's spine and the saddle tree from twisting.",
       },
       {
-        question: "How tight should the girth be before you mount?",
+        question: "What should you do if you are unsure whether the girth and saddle are ready for mounting?",
         options: [
-          "As tight as it will go",
-          "Loose enough to slide your whole hand underneath",
-          "Snug enough that you can slide two flat fingers between the girth and the horse",
-          "It does not matter as long as the saddle looks level",
+          "Mount quickly before the horse moves",
+          "Use a fixed hand-span rule regardless of horse or tack",
+          "Stop and ask a qualified instructor to check the fit and current procedure",
+          "Ignore it if the saddle appears level",
         ],
         correctIndex: 2,
         explanation:
-          "The girth should be snug but not overtight. Two flat fingers should fit between the girth and the horse's body. Too loose risks the saddle slipping; too tight causes discomfort.",
+          "The girth should be snug but not overtight, and tack checks must follow the current instruction and equipment guidance. Do not use a universal measurement in place of a qualified fit check.",
       },
       {
         question: "When dismounting, what should you do with your feet?",
