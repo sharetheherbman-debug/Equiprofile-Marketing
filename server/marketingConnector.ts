@@ -1,10 +1,7 @@
 import crypto from "crypto";
-import type { Router, Request, Response } from "express";
-import { gte, or } from "drizzle-orm";
-import { users } from "../drizzle/schema";
+import type { Request, Response, Router } from "express";
 import { createContext } from "./_core/context";
 import { isTrustedCookieWrite } from "./_core/requestSecurity";
-import { getDb } from "./db";
 
 interface ConnectorResponse<T> {
   success: boolean;
@@ -12,32 +9,13 @@ interface ConnectorResponse<T> {
   error?: { message?: string; code?: string };
 }
 
-export interface MarketingConversionEvent {
-  event_id: string;
-  event_type: string;
-  occurred_at: string;
-  external_user_id?: string;
-  external_organization_id?: string;
-  value_pence?: number;
-  currency?: "GBP";
-  consent_basis: "contract" | "consent" | "legitimate_interest" | "anonymous_aggregate";
-  properties?: Record<string, unknown>;
-}
-
-const connectorRuntime = globalThis as typeof globalThis & {
-  __equiprofileMarketingSyncTimer?: ReturnType<typeof setInterval>;
-  __equiprofileMarketingSyncRunning?: boolean;
-  __equiprofileMarketingLastScanAt?: Date;
-};
-
 function envFlagEnabled(value: string | undefined): boolean {
   return /^(1|true|yes|on)$/i.test(String(value || "").trim());
 }
 
 function config() {
   const appUrl = (
-    process.env.MARKETING_APP_URL ||
-    "https://marketing.equiprofile.online"
+    process.env.MARKETING_APP_URL || "https://marketing.equiprofile.online"
   ).replace(/\/$/, "");
   return {
     enabled: envFlagEnabled(process.env.MARKETING_CONNECTOR_ENABLED),
@@ -113,144 +91,11 @@ export function isMarketingConnectorConfigured(): boolean {
   );
 }
 
-export async function sendMarketingConversionEvent(
-  event: MarketingConversionEvent,
-): Promise<boolean> {
-  if (!isMarketingConnectorConfigured()) return false;
-  try {
-    await signedPost<{ accepted: boolean; duplicate: boolean }>(
-      "/application-connectors/events/conversion",
-      {
-        ...event,
-        currency: "GBP",
-      },
-    );
-    return true;
-  } catch (error) {
-    console.error(
-      "[Marketing Connector] Conversion event delivery failed:",
-      error,
-    );
-    return false;
-  }
-}
-
-function anonymousSubjectId(userId: number): string {
-  return crypto
-    .createHmac("sha256", config().connectorKey)
-    .update(`equiprofile-user:${userId}`, "utf8")
-    .digest("hex")
-    .slice(0, 32);
-}
-
-async function syncRecentConversionSignals(): Promise<void> {
-  if (
-    !isMarketingConnectorConfigured() ||
-    process.env.NODE_ENV === "test" ||
-    connectorRuntime.__equiprofileMarketingSyncRunning
-  ) {
-    return;
-  }
-
-  connectorRuntime.__equiprofileMarketingSyncRunning = true;
-  const scanStartedAt = new Date();
-  try {
-    const db = await getDb();
-    if (!db) return;
-
-    const previousScan = connectorRuntime.__equiprofileMarketingLastScanAt;
-    const lookbackMs = previousScan ? 10 * 60 * 1000 : 48 * 60 * 60 * 1000;
-    const since = new Date(
-      (previousScan?.getTime() ?? scanStartedAt.getTime()) - lookbackMs,
-    );
-
-    const recentUsers = await db
-      .select({
-        id: users.id,
-        createdAt: users.createdAt,
-        lastPaymentAt: users.lastPaymentAt,
-        subscriptionPlan: users.subscriptionPlan,
-        subscriptionStatus: users.subscriptionStatus,
-      })
-      .from(users)
-      .where(
-        or(
-          gte(users.createdAt, since),
-          gte(users.lastPaymentAt, since),
-        ),
-      )
-      .limit(500);
-
-    let allDelivered = true;
-    for (const user of recentUsers) {
-      const anonymousId = anonymousSubjectId(user.id);
-      const createdAt = user.createdAt ? new Date(user.createdAt) : null;
-      const lastPaymentAt = user.lastPaymentAt
-        ? new Date(user.lastPaymentAt)
-        : null;
-
-      if (createdAt && createdAt >= since) {
-        const delivered = await sendMarketingConversionEvent({
-          event_id: `account-registered:${anonymousId}:${createdAt.toISOString()}`,
-          event_type: "account_registered",
-          occurred_at: createdAt.toISOString(),
-          consent_basis: "anonymous_aggregate",
-          properties: {
-            application: "equiprofile",
-            subscription_plan: user.subscriptionPlan || "monthly",
-          },
-        });
-        allDelivered = allDelivered && delivered;
-      }
-
-      if (lastPaymentAt && lastPaymentAt >= since) {
-        const delivered = await sendMarketingConversionEvent({
-          event_id: `subscription-payment:${anonymousId}:${lastPaymentAt.toISOString()}`,
-          event_type: "subscription_payment_recorded",
-          occurred_at: lastPaymentAt.toISOString(),
-          consent_basis: "anonymous_aggregate",
-          properties: {
-            application: "equiprofile",
-            subscription_plan: user.subscriptionPlan || "monthly",
-            subscription_status: user.subscriptionStatus,
-            revenue_value_exported: false,
-          },
-        });
-        allDelivered = allDelivered && delivered;
-      }
-    }
-
-    if (allDelivered) {
-      connectorRuntime.__equiprofileMarketingLastScanAt = scanStartedAt;
-    }
-  } catch (error) {
-    console.error("[Marketing Connector] Conversion sync failed:", error);
-  } finally {
-    connectorRuntime.__equiprofileMarketingSyncRunning = false;
-  }
-}
-
-function startMarketingConversionSync(): void {
-  if (
-    !isMarketingConnectorConfigured() ||
-    process.env.NODE_ENV === "test" ||
-    connectorRuntime.__equiprofileMarketingSyncTimer
-  ) {
-    return;
-  }
-
-  void syncRecentConversionSignals();
-  const timer = setInterval(
-    () => void syncRecentConversionSignals(),
-    5 * 60 * 1000,
-  );
-  timer.unref?.();
-  connectorRuntime.__equiprofileMarketingSyncTimer = timer;
-}
-
 async function requireOwner(req: Request, res: Response) {
   if (!isTrustedCookieWrite(req)) {
-    res.status(403).json({ error: "Cross-site authenticated request rejected" });
+    res
+      .status(403)
+      .json({ error: "Cross-site authenticated request rejected" });
     return null;
   }
 
@@ -263,12 +108,15 @@ async function requireOwner(req: Request, res: Response) {
   const ownerEmail = config().ownerEmail;
   if (!ownerEmail) {
     res.status(503).json({
-      error: "PRIMARY_ADMIN_EMAIL must be configured before EquiProfile Marketing can be opened",
+      error:
+        "PRIMARY_ADMIN_EMAIL must be configured before the Marketing service can be opened",
     });
     return null;
   }
 
-  const signedInEmail = String(context.user.email || "").trim().toLowerCase();
+  const signedInEmail = String(context.user.email || "")
+    .trim()
+    .toLowerCase();
   if (!signedInEmail || signedInEmail !== ownerEmail) {
     res.status(403).json({ error: "EquiProfile owner access required" });
     return null;
@@ -277,17 +125,17 @@ async function requireOwner(req: Request, res: Response) {
   return context.user;
 }
 
+/**
+ * Owner-controlled connector status and SSO entry only. Conversion events are
+ * deliberately not polled or inferred here: they use the canonical publisher,
+ * explicit consent and durable post-commit product-line event wiring.
+ */
 export function registerMarketingConnectorRoutes(router: Router): void {
-  startMarketingConversionSync();
-
   router.get("/admin/marketing/status", async (req, res) => {
     try {
       const user = await requireOwner(req, res);
       if (!user) return;
-      const current = config();
-      res.json({
-        available: current.enabled && isMarketingConnectorConfigured(),
-      });
+      res.json({ available: isMarketingConnectorConfigured() });
     } catch (error) {
       console.error("[Marketing Connector] Status failed:", error);
       res
@@ -302,7 +150,7 @@ export function registerMarketingConnectorRoutes(router: Router): void {
       if (!user) return;
       if (!isMarketingConnectorConfigured()) {
         return res.status(503).json({
-          error: "EquiProfile Marketing connector is disabled or not configured",
+          error: "Marketing connector is disabled or not configured",
         });
       }
       if (!user.email) {
@@ -332,7 +180,7 @@ export function registerMarketingConnectorRoutes(router: Router): void {
         error:
           error instanceof Error
             ? error.message
-            : "Could not open EquiProfile Marketing",
+            : "Could not open the Marketing service",
       });
     }
   });

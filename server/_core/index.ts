@@ -20,6 +20,8 @@ import { nanoid } from "nanoid";
 import Stripe from "stripe";
 import * as db from "../db";
 import { getDb } from "../db";
+import { resolveMarketingConsent } from "./marketingConsent";
+import { publishMarketingEvent } from "./marketingPublisher";
 import { contactSubmissions, organizations, users } from "../../drizzle/schema";
 import { sql, eq } from "drizzle-orm";
 import {
@@ -241,14 +243,16 @@ async function startServer() {
       const orderId = Number(metadata.orderId);
       const order = (
         (await dbConn.execute(
-          sql`SELECT id, totalPence, currency, status, storePaymentStatus FROM commerceOrders WHERE id = ${orderId} LIMIT 1`,
+          sql`SELECT commerceOrders.id, commerceOrders.orderNumber, commerceOrders.totalPence, commerceOrders.currency, commerceOrders.status, commerceOrders.storePaymentStatus, users.preferences AS userPreferences FROM commerceOrders JOIN users ON users.id = commerceOrders.userId WHERE commerceOrders.id = ${orderId} LIMIT 1`,
         )) as any
       )[0] as Array<{
         id: number;
+        orderNumber: string;
         totalPence: number;
         currency: string;
         status: string;
         storePaymentStatus: string;
+        userPreferences: string | null;
       }>;
       if (!order[0]) {
         await dbConn.execute(
@@ -280,6 +284,42 @@ async function startServer() {
           await dbConn.execute(
             sql`UPDATE commerceOrders SET status = 'paid', storePaymentStatus = 'paid', storePaymentReference = ${paymentReference || null} WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
           );
+
+          // The payment transition is durable. Detached connector delivery uses
+          // only explicit consent and aggregate order facts, and cannot affect
+          // the webhook acknowledgement or Store payment state.
+          if (resolveMarketingConsent(order[0].userPreferences) === "marketing_opt_in") {
+            void (async () => {
+              try {
+                const itemRows = (
+                  (await dbConn.execute(
+                    sql`SELECT COALESCE(SUM(quantity), 0) AS itemCount FROM commerceOrderItems WHERE orderId = ${orderId}`,
+                  )) as any
+                )[0] as Array<{ itemCount: number | string }>;
+                await publishMarketingEvent({
+                  sourceApp: "equiprofile.online",
+                  productLine: "shop",
+                  eventType: "shop_order_paid",
+                  entityType: "order",
+                  entityId: order[0].orderNumber,
+                  publicUrl: (process.env.STORE_PUBLIC_URL ?? "https://shop.equiprofile.online").replace(/\/$/, ""),
+                  timestamp: new Date().toISOString(),
+                  consentState: "marketing_opt_in",
+                  idempotencyKey: `shop-order-paid:${order[0].orderNumber}`,
+                  payloadVersion: "1.0",
+                  payload: {
+                    orderNumber: order[0].orderNumber,
+                    currency: "GBP",
+                    totalPence: order[0].totalPence,
+                    itemCount: Number(itemRows[0]?.itemCount ?? 0),
+                    purchaseState: "paid",
+                  },
+                });
+              } catch {
+                // Marketing delivery is strictly best-effort after payment.
+              }
+            })();
+          }
         }
       } else if (event.type === "payment_intent.payment_failed") {
         await dbConn.execute(

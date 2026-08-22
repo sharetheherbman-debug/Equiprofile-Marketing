@@ -9,6 +9,8 @@ import {
   router,
 } from "./_core/trpc";
 import { getDb } from "./db";
+import { resolveMarketingConsent } from "./_core/marketingConsent";
+import { publishMarketingEvent } from "./_core/marketingPublisher";
 import { getStoreStripe } from "./stripe";
 import {
   calculateCartTotals,
@@ -339,6 +341,34 @@ export const commerceRouter = router({
         "store_checkout_session_created",
         { stripeSessionId: session.id },
       );
+
+      // The checkout is already durable above. Marketing delivery is explicitly
+      // opt-in and detached so it cannot alter checkout or Stripe behavior.
+      const consentState = resolveMarketingConsent(
+        (ctx.user as { preferences?: unknown }).preferences,
+      );
+      if (consentState === "marketing_opt_in") {
+        void publishMarketingEvent({
+          sourceApp: "equiprofile.online",
+          productLine: "shop",
+          eventType: "shop_checkout_started",
+          entityType: "checkout",
+          entityId: orderNumber,
+          publicUrl: publicBaseUrl,
+          timestamp: new Date().toISOString(),
+          consentState,
+          idempotencyKey: `shop-checkout-started:${orderNumber}`,
+          payloadVersion: "1.0",
+          payload: {
+            currency: "GBP",
+            itemCount: rows.reduce(
+              (count: number, row: any) => count + row.quantity,
+              0,
+            ),
+            subtotalPence: totals.subtotalPence,
+          },
+        }).catch(() => undefined);
+      }
       return {
         orderNumber,
         totals,

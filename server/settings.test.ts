@@ -220,6 +220,17 @@ describe("user.updateNotificationPreferences", () => {
     expect(saved.notifications.trainingReminders).toBe(false);
   });
 
+  it("persists only an explicit marketing-analytics opt-in", async () => {
+    const caller = appRouter.createCaller(makeContext());
+    await caller.user.updateNotificationPreferences({
+      marketingAnalyticsConsent: true,
+    });
+
+    const [, callData] = vi.mocked(db.updateUser).mock.calls[0];
+    const saved = JSON.parse((callData as any).preferences);
+    expect(saved.notifications.marketingAnalyticsConsent).toBe(true);
+  });
+
   it("merges with existing preferences", async () => {
     vi.mocked(db.getUserById).mockResolvedValue({
       id: 1,
@@ -256,6 +267,7 @@ describe("user.getNotificationPreferences", () => {
     expect(prefs.emailNotifications).toBe(true);
     expect(prefs.healthReminders).toBe(true);
     expect(prefs.weeklyDigest).toBe(true);
+    expect(prefs.marketingAnalyticsConsent).toBe(false);
   });
 
   it("returns stored preferences when they exist", async () => {
@@ -273,5 +285,6 @@ describe("user.getNotificationPreferences", () => {
     expect(prefs.emailNotifications).toBe(false);
     expect(prefs.weeklyDigest).toBe(false);
     expect(prefs.healthReminders).toBe(true);
+    expect(prefs.marketingAnalyticsConsent).toBe(false);
   });
 });

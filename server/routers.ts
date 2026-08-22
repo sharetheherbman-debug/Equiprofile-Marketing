@@ -2394,6 +2394,9 @@ export const appRouter = router({
           weatherAlerts: z.boolean().optional(),
           weeklyDigest: z.boolean().optional(),
           trainingCalendarIntegration: z.boolean().optional(),
+          // Separate from service notifications. This must be an explicit opt-in
+          // before any Core-to-Marketing conversion event can be considered.
+          marketingAnalyticsConsent: z.boolean().optional(),
           // WhatsApp notification number (user's own mobile number in E.164 format)
           whatsappPhone: z.string().max(20).optional().nullable(),
         }),
@@ -2428,6 +2431,7 @@ export const appRouter = router({
         weatherAlerts: true,
         weeklyDigest: true,
         trainingCalendarIntegration: false,
+        marketingAnalyticsConsent: false,
         whatsappPhone: null as string | null,
       };
       return {
