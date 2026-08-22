@@ -8076,112 +8076,94 @@ Understanding these fundamentals will give you the strongest possible foundation
     category: "Coaching & Teaching Skills",
     sortOrder: 2,
     objectives: [
-      "Recognise how different ages and abilities affect learning in the saddle",
-      "Identify the main learning styles and how to accommodate them",
-      "Understand how to build confidence and rapport with riders",
-      "Appreciate the importance of adapting your approach to individual needs",
+      "Recognise that qualified coaching must adapt safely to individual rider needs, age, experience, and current conditions",
+      "Use factual observation and qualified-coach escalation rather than assigning a learner type or diagnosing a cause",
+      "Understand that participant-centred communication, safety, welfare, safeguarding, and adaptation require qualified-coach responsibility",
+      "Prepare appropriate questions for a qualified coach about inclusion, support, consent, privacy, safeguarding, and progression",
     ],
-    content: `Every rider who comes to you for coaching is unique. They bring different physical abilities, emotional states, previous experiences, and ways of learning. Understanding your learners is fundamental to being an effective coach — it allows you to pitch sessions at the right level, communicate in a way that resonates, and build the trust needed for genuine progress.
+    content: `Rider needs are individual. Qualified coaching must consider age, experience, ability, disability or long-term health conditions where relevant and appropriately disclosed, communication needs, current consent, safety, horse welfare, safeguarding, equipment, environment, and the current responsible-person procedure. This lesson is a reflection aid for an authorised context; it does not authorise a learner to coach, supervise, select a horse or exercise, assess health or ability, obtain personal information, make a safeguarding decision, or determine a rider’s support or progression alone.
 
-## Different Ages and Abilities
+## Participant-Centred Qualified Coaching
 
-The age of your rider significantly affects how you should coach them. **Young children** (under 8) have short attention spans and learn best through games and fun activities. Keep instructions simple, sessions short, and praise frequent. They may not yet have the physical strength or coordination to perform advanced movements, so focus on balance, confidence, and enjoyment.
+Professional coach standards require participant-centred coaching, suitable adaptation, consideration of age and experience, safety, welfare, safeguarding, communication, and feedback. The qualified coach and responsible person decide how rider needs are identified, which information is necessary, how consent and privacy are handled, what support is suitable, and when specialist guidance is required.
 
-**Older children and teenagers** can handle more structured sessions and begin to understand theory. However, they may also be self-conscious, especially in group lessons. Be sensitive to peer dynamics and avoid singling out individuals for criticism. Positive reinforcement works well with this age group.
+Do not apply a generic rule to children, teenagers, adults, disabled riders, riders with special educational needs, returning riders, or anyone else. A learner’s age, appearance, disclosure, behaviour, or one session does not establish attention, strength, coordination, confidence, anxiety, learning capacity, risk, or a coaching intervention. Observe factual information within the authorised role and report or ask the qualified coach which current procedure applies.
 
-**Adult learners** often bring anxiety or self-consciousness, particularly if they are returning to riding after a long break or starting as complete beginners. They may overthink instructions and tense up physically. Adults appreciate understanding the reasoning behind exercises, so include brief explanations of why you are asking them to do something. Respect their life experience and treat them as partners in the learning process.
+## Communication and Adaptation
 
-**Riders with additional needs** — whether physical disabilities, learning difficulties, or sensory impairments — require you to adapt your communication and exercises. Work with the rider (and their carers if appropriate) to understand their specific requirements. Organisations such as the Riding for the Disabled Association (RDA) offer excellent training in adaptive coaching.
+Do not label a rider as a visual, auditory, kinaesthetic, anxious, difficult, or “type” learner and then select a generic exercise, demonstration, explanation, no-stirrup activity, lunge work, game, pace, or progression. The qualified coach decides whether a communication method, support, adaptation, or activity is appropriate for the individual rider, horse, task, setting, equipment, and conditions.
 
-## Learning Styles
+If a rider does not understand, appears uncomfortable, feels unsafe, declines an activity, discloses a need, or if the horse, tack, footing, weather, supervision, consent, or safeguarding circumstances become unsuitable, the activity must be paused, adapted, stopped, or escalated under the current qualified procedure. Do not diagnose the cause, promise confidentiality where reporting may be required, collect unnecessary personal information, contact a carer independently, or investigate a safeguarding concern.
 
-People absorb information in different ways. While modern research suggests learning is more complex than simple categories, it is useful as a coach to be aware of three broad approaches:
+## Respectful Rapport and Boundaries
 
-- **Visual learners** benefit from demonstrations, watching other riders, and using markers or visual aids in the arena. Show them what you want rather than just describing it.
-- **Auditory learners** respond well to clear verbal instructions, analogies, and discussion. They may benefit from talking through what they are going to do before they do it.
-- **Kinaesthetic learners** learn by doing. They need to feel the movement in their body. Exercises that exaggerate a position or movement — such as riding without stirrups to develop feel — are particularly effective for these riders.
+An authorised coach may use respectful communication and encourage riders to ask questions or report discomfort and concern. The exact approach must be individual, professional, and consistent with safeguarding and current site policy. Do not assume that a particular phrase, praise, discussion, or progression creates confidence, trust, or learning for every person.
 
-In practice, most people use a blend of styles, and a good coach will naturally incorporate visual, auditory, and kinaesthetic elements into every session. If a rider is not responding to one approach, try another.
+A learner can prepare for qualified coaching by asking the responsible coach how the current plan addresses rider and horse suitability, support, privacy, consent, safeguarding, safety, welfare, communication, adaptation, incident response, and review. The qualified coach remains responsible for selecting and adapting instruction, feedback, support, and progression.
 
-## Building Confidence and Rapport
+## Records and Escalation
 
-Confidence is the foundation of all riding progress. A nervous rider will grip, tense up, and be unable to learn effectively. Building confidence starts from the very first interaction.
-
-**Rapport** is the connection between coach and rider. To build it:
-
-- Learn your rider's name and use it regularly.
-- Ask about their goals, fears, and previous experience before the first lesson.
-- Be consistent in your manner — calm, positive, and professional.
-- Celebrate small achievements genuinely. Progress in riding is often incremental, and acknowledging each step matters.
-- Never dismiss a rider's fear. If someone is anxious about cantering, acknowledge that feeling and work at their pace.
-
-**Trust** is built over time. Follow through on what you say, be reliable, and always prioritise the rider's safety and comfort. If you promise to keep a session at walk and trot, do not suddenly ask for canter without discussion.
-
-## Adapting Your Approach
-
-No single coaching method works for everyone. You must be prepared to change your plan mid-session based on what you observe. If a rider is becoming frustrated, simplify the exercise and rebuild. If they are finding something easy, progress them gently. Reading your rider's body language and energy level is a skill you will develop with experience.
-
-Keep notes on each rider between sessions — what went well, what they struggled with, and what to focus on next time. This shows professionalism and helps you plan effective, personalised lessons.`,
+Only authorised people should create, access, use, store, or share rider records, and only through current privacy, safeguarding, organisational, and legal procedures. A learner should report factual observations promptly through the designated route and follow the stop/escalation instruction rather than creating a profile or action plan independently. Where needs exceed the current qualified coach’s remit, the responsible person should use the approved route to obtain appropriate specialist or organisational support.`,
     keyPoints: [
-      "Children, teenagers, adults, and riders with additional needs all require different coaching approaches",
-      "Visual, auditory, and kinaesthetic learning styles should all be incorporated into sessions",
-      "Building confidence through rapport and trust is essential before riders can progress",
-      "Never dismiss a rider's fear — acknowledge it and work at their pace",
-      "Keep notes on each rider to plan personalised, progressive sessions",
+      "Qualified coaching must adapt to individual rider needs, age, experience, safety, welfare, safeguarding, consent, privacy, and current conditions",
+      "Do not assign a learner type or select a generic intervention; the qualified coach adapts communication and support to the individual context",
+      "Do not assume a phrase, praise, discussion, or progression will create confidence, trust, or learning for every rider",
+      "Pause, stop, adapt, or escalate through the qualified procedure when understanding, consent, safety, welfare, or safeguarding conditions are unsuitable",
+      "Only authorised people may create, access, use, store, or share rider records through current privacy, safeguarding, organisational, and legal procedures",
     ],
     safetyNote:
-      "When working with nervous riders, always ensure the horse is calm and well-suited to the rider's level. A frightened rider on an excitable horse is a dangerous combination. If a rider becomes genuinely distressed, halt the session calmly, bring the horse to a stop, and allow the rider to dismount if they wish. Never force a rider to continue an exercise they are clearly not ready for.",
+      "Do not coach, supervise, select a horse or activity, obtain learner information, or continue an activity outside your authority and the current qualified coaching procedure. Pause, stop, adapt, or escalate if rider understanding, consent, security, horse welfare or behaviour, tack, footing, weather, supervision, privacy, safeguarding, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "Before your next session, spend five minutes talking to the rider about their experience, goals, and any concerns. During the session, try giving the same instruction three different ways — as a verbal direction, as a demonstration, and as a physical exercise. Afterwards, note which approach seemed to work best. Over time, build a simple profile for each regular rider to guide your lesson planning.",
+      "Ask a qualified coach how their current procedure identifies and supports rider needs while addressing consent, privacy, safeguarding, safety, welfare, and adaptation. Within an authorised setting, practise reporting factual observations and asking clarifying questions; do not create a rider profile, determine an intervention, or select an activity from this lesson alone.",
     commonMistakes: [
-      "Assuming all riders learn the same way and only using verbal instructions",
-      "Pushing a nervous rider too fast to 'get them past their fear' rather than building confidence progressively",
-      "Failing to adapt the lesson when a rider is clearly struggling or losing engagement",
+      "Assigning a learner type, cause, health status, confidence level, or support need from a generic observation",
+      "Giving instruction, selecting a horse or activity, or changing a progression outside an authorised qualified-coaching role",
+      "Creating, accessing, using, storing, or sharing rider information outside the current privacy, safeguarding, organisational, and legal procedure",
     ],
     knowledgeCheck: [
       {
         question:
-          "Which approach is most effective for coaching young children?",
+          "Who determines how coaching is adapted for an individual rider, including a child or a rider with a disclosed additional need?",
         options: [
-          "Long theoretical explanations before mounting",
-          "Short, fun sessions with games and frequent praise",
-          "Strict discipline and repetitive drills",
-          "Allowing them to ride unsupervised to build independence",
+          "Any learner using an age-based generic rule",
+          "The qualified coach within current responsible-person, privacy, safeguarding, safety, and welfare arrangements",
+          "A fixed online profile",
+          "The rider’s appearance alone",
         ],
         correctIndex: 1,
         explanation:
-          "Young children have short attention spans and respond best to fun, game-based sessions with plenty of positive reinforcement. This builds confidence and a love of riding.",
+          "Professional coaching standards require participant-centred adaptation that considers individual needs, age and experience while maintaining safety, welfare, safeguarding, consent, and current procedures.",
       },
       {
         question:
-          "What should you do if a rider is not responding to verbal instructions?",
+          "What should happen if a rider does not understand, declines an activity, feels unsafe, or if conditions become unsuitable?",
         options: [
-          "Repeat the same instruction more loudly",
-          "Tell them they are not trying hard enough",
-          "Try a different approach, such as a demonstration or a physical exercise",
-          "Move on to a harder exercise to challenge them",
+          "Continue using a generic alternative exercise",
+          "Label the rider’s learning style and decide a correction",
+          "Pause, stop, adapt, or escalate through the current qualified coaching procedure",
+          "Collect personal information and create an independent profile",
         ],
         correctIndex: 2,
         explanation:
-          "Different riders learn in different ways. If verbal instructions are not working, switching to a visual demonstration or a kinaesthetic exercise may help the rider understand what is being asked.",
+          "A generic lesson cannot determine the cause of a concern or the correct support. The current qualified coach and responsible-person procedure determine whether the activity is paused, adapted, stopped, or escalated.",
       },
       {
-        question: "How can a coach best build rapport with a new rider?",
+        question: "How should a learner handle rider information and observations?",
         options: [
-          "Immediately start the lesson to make the most of the time",
-          "Learn their name, ask about their goals and experience, and be consistent and positive",
-          "Focus only on correcting their faults so they improve quickly",
-          "Avoid personal conversation and keep the session strictly professional",
+          "Create and share a personal profile with anyone who helps on the yard",
+          "Use only the current authorised privacy, safeguarding, organisational, and legal procedure, and report factual observations through the designated route",
+          "Promise absolute confidentiality in all circumstances",
+          "Infer a support plan from one conversation",
         ],
         correctIndex: 1,
         explanation:
-          "Building rapport starts with showing genuine interest in the rider as a person. Learning their name, understanding their goals, and being consistently positive creates a foundation of trust.",
+          "Only authorised people may create, access, use, store, or share rider records. Safeguarding and privacy requirements may require a designated reporting route rather than confidentiality or independent action.",
       },
     ],
     aiTutorPrompts: [
-      "How can I adapt a group lesson when riders have very different confidence levels?",
-      "What are some fun mounted games I can use with young children to develop their balance?",
-      "How should I approach coaching an adult beginner who is very nervous about riding?",
+      "Which current qualified procedure governs adaptation, privacy, consent, safeguarding, safety, welfare, and escalation for individual rider needs?",
+      "How should I report a factual rider, horse, tack, footing, consent, privacy, or safety concern to the qualified coach?",
+      "What authority, safeguarding, privacy, and current site procedure are required before I coach or supervise a rider?",
     ],
     linkedCompetencies: ["coaching_fundamentals", "welfare_awareness"],
   },
