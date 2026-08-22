@@ -8176,139 +8176,95 @@ Only authorised people should create, access, use, store, or share rider records
     category: "Coaching & Teaching Skills",
     sortOrder: 3,
     objectives: [
-      "Plan a safe, progressive lesson structure for novice riders",
-      "Understand the purpose of warm-up, main work, and cool-down phases",
-      "Manage lesson time effectively to cover all planned content",
-      "Identify how to set achievable objectives for each beginner lesson",
+      "Recognise that beginner lesson planning requires appropriate qualification, authority, risk assessment, safeguarding, and current site procedures",
+      "Understand that a qualified coach adapts preparation, activity, recovery, support, and review to the individual context",
+      "Recognise that assessment-specific timings do not create a universal lesson duration or phase allocation",
+      "Prepare appropriate questions for a qualified coach about objectives, suitability, risk, welfare, safeguarding, progression, and evaluation",
     ],
-    content: `A well-structured lesson is the backbone of effective coaching. For beginner riders, clear structure is especially important — it keeps the session safe, progressive, and focused. Without a plan, lessons can drift, become repetitive, or overwhelm the learner. In this lesson, you will learn how to build a beginner lesson from scratch, manage your time, and ensure every session has a clear purpose.
+    content: `Riding ability does not by itself authorise someone to plan or teach a beginner lesson. Professional coaching requires appropriate qualification, authority, safeguarding, current legal and site procedures, responsible-person arrangements, horse-and-rider suitability, risk assessment, welfare, suitable equipment, and an environment appropriate to the activity. This lesson is a reflection aid for an authorised context; it does not qualify the learner to select a horse, plan or deliver an activity, set a duration, assess health or readiness, supervise a rider, manage an incident, or make a welfare, safeguarding, medical, legal, or emergency decision.
 
-## Why Structure Matters
+## Qualified Lesson Planning in Context
 
-Beginner riders are often anxious and unsure of what to expect. A structured lesson provides a reassuring framework: the rider knows there is a beginning, a middle, and an end. Structure also helps you, as the coach, to track progress. If every session follows a logical format, you can see what the rider has mastered and what needs more work.
+Professional coaching standards require plans to address risk assessment, aims and objectives, equipment, preparation, activity, cool-down, conclusion, feedback, progression, adaptation, evaluation, and horse/rider suitability. The qualified coach and responsible person decide whether those elements are appropriate for the individual rider, horse, discipline, task, setting, weather, footing, equipment, supervision, safeguarding, and current conditions.
 
-A sound progressive lesson structure uses three phases: **warm-up, main work, and cool-down**. Each phase serves a specific purpose and should be planned in advance.
+A qualified plan may include preparation, a main activity, recovery or cool-down, and a conclusion, but it is not a universal three-phase template. The content, sequence, duration, exercise, pace, support, review, and stopping point are individual decisions. Assessment-specific durations or timings from a coaching qualification must not be turned into a public universal lesson duration or percentage allocation.
 
-## The Warm-Up Phase (10–15 minutes)
+## Risk, Welfare, and Suitability
 
-The warm-up prepares both horse and rider for the work ahead. For beginner riders, it also serves as a confidence-building phase.
+The qualified coach must assess and respond to the current horse, rider, equipment, environment, risk, welfare, safety, safeguarding, and support needs. A learner must not use a generic lesson to decide that a horse is suitable, that a rider is ready, that a warm-up, exercise, transition, no-stirrup activity, pace, circle, game, or cool-down is appropriate, or that an observed concern has a particular cause.
 
-**For the rider**, the warm-up should include:
-- A brief chat to check how they are feeling and remind them of the previous session's achievements.
-- Gentle mounted exercises at halt and walk, such as arm circles, toe touches, and looking left and right. These loosen the rider's muscles and improve body awareness.
-- Walking on both reins to establish rhythm and relaxation. Encourage the rider to breathe deeply and soften their seat.
+If the rider does not understand, feels unsafe, declines an activity, appears uncomfortable or distressed, or if the horse, tack, footing, weather, supervision, consent, safeguarding, or emergency arrangements become unsuitable, the activity must be paused, adapted, stopped, or escalated through the current qualified procedure. Do not continue to a planned next phase because a predetermined time, objective, or plan says so.
 
-**For the horse**, the warm-up allows muscles to loosen and joints to mobilise. Walk work on large circles and changes of rein ensures the horse is moving freely before you ask for more demanding work.
+## Aims, Progression, and Adaptation
 
-Avoid rushing the warm-up. For beginners, feeling settled and secure at walk is more important than getting quickly into trot.
+A qualified coach may select aims, progressive activities, communication, support, feedback, and adaptations that meet the rider’s needs while maintaining horse welfare and safety. Do not assume one objective, exercise sequence, or progression is appropriate for every beginner. Do not label a rider’s response as anxiety, fatigue, lack of confidence, poor coordination, or a behavioural cause from a generic observation.
 
-## The Main Work Phase (20–25 minutes)
+An authorised learner can prepare by asking the qualified coach how the current plan addresses suitability, risk, welfare, safeguarding, equipment, communication, support, adaptation, incident response, progression, review, and evaluation. Report factual observations through the designated route and follow the current stop/escalation instruction rather than selecting a substitute activity or progression independently.
 
-This is where the lesson's primary objective is addressed. For a beginner, this might be:
-- Establishing a rising trot on both reins.
-- Practising smooth transitions between walk and trot.
-- Riding accurate shapes — circles, changes of rein through the diagonal or across the centre line.
-- Beginning to understand basic aids for steering and pace control.
+## Records and Review
 
-**Set one clear objective** for each session. Trying to cover too much confuses the beginner rider. For example, if the objective is "Rider will maintain a steady rising trot on both reins," all exercises in the main work phase should support this goal.
-
-**Progressive difficulty** is important. Start with the easiest version of the exercise and gradually increase the challenge. For example:
-1. Rising trot on a large circle with the coach leading.
-2. Rising trot on a large circle independently.
-3. Rising trot on the outside track with a change of rein.
-
-Use frequent halts to check in with the rider, offer praise, and make adjustments. Beginners tire quickly — both physically and mentally — so intersperse active riding with brief rest periods.
-
-## The Cool-Down Phase (5–10 minutes)
-
-The cool-down is essential but often overlooked. It allows:
-- The horse to stretch and relax after work, usually on a long rein at walk.
-- The rider to reflect on what they have learnt and ask questions.
-- You, as the coach, to summarise the session and set expectations for next time.
-
-Encourage the rider to pat the horse and walk on a loose rein. This promotes a positive end to the session and reinforces the partnership between horse and rider.
-
-## Time Management
-
-A typical beginner lesson lasts 30–45 minutes. Managing your time well ensures all three phases are covered without rushing. A useful rule of thumb:
-- **Warm-up**: 25–30% of the session.
-- **Main work**: 50–55% of the session.
-- **Cool-down**: 15–20% of the session.
-
-Keep a watch or arena clock visible. It is easy to spend too long on the warm-up or overrun on the main work, leaving no time for a proper cool-down.
-
-## Writing a Lesson Plan
-
-Before every session, write a brief lesson plan. Include:
-- The rider's name and current level.
-- The session objective (one clear goal).
-- Warm-up exercises.
-- Main work exercises with progressions.
-- Cool-down plan.
-- Equipment or arena setup needed.
-
-This need not be elaborate — a few bullet points on a notepad are sufficient. The act of planning ensures you arrive prepared and confident. After the session, make a brief note of what went well and what to work on next time.`,
+Only authorised people may create, access, use, store, or share lesson or rider records through current privacy, safeguarding, organisational, and legal procedures. The qualified coach remains responsible for reviewing the session and determining any next step. Where the current coach’s remit or information is insufficient, the responsible organisation should use the approved route to obtain appropriate support before an activity resumes.`,
     keyPoints: [
-      "Every lesson should follow a three-phase structure: warm-up, main work, and cool-down",
-      "The warm-up builds confidence and prepares horse and rider physically and mentally",
-      "Set one clear, achievable objective per beginner lesson to avoid information overload",
-      "Use progressive difficulty within the main work phase to build skills gradually",
-      "Always write a brief lesson plan and review it after the session for continuous improvement",
+      "Professional lesson planning requires qualified consideration of risk, aims, suitability, equipment, preparation, activity, recovery, conclusion, adaptation, and evaluation",
+      "Preparation, main activity, recovery, and conclusion are context-specific; no universal phase structure, exercise, duration, or percentage applies to every lesson",
+      "A qualified coach selects aims, support, progression, communication, and adaptation for the individual while maintaining safety and welfare",
+      "Do not use a generic plan to decide horse/rider suitability, readiness, medical or behavioural cause, or a safe next exercise",
+      "Only authorised people may create, access, use, store, or share lesson or rider records under current privacy, safeguarding, organisational, and legal procedures",
     ],
     safetyNote:
-      "Before every beginner lesson, check that the horse is suitable for the rider's level, the arena surface is safe, and all equipment fits correctly. During the warm-up, assess the rider's confidence and the horse's behaviour — if either seems unsettled, adapt your plan accordingly. Never skip the warm-up phase, as cold muscles in both horse and rider increase the risk of injury.",
+      "Do not plan, coach, supervise, select a horse or activity, set a duration, assess suitability, or continue an activity outside your authority and the current qualified procedure. Pause, stop, adapt, or escalate if rider understanding, consent, security, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, privacy, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "Write a lesson plan for a 30-minute beginner lesson with the objective of 'Rider will perform smooth walk-to-trot transitions on both reins.' Include specific warm-up exercises, two or three main work progressions, and a cool-down plan. Time each section and use the plan in your next session. Afterwards, note what you would change for next time.",
+      "Ask a qualified coach how their current plan addresses horse/rider suitability, risk, welfare, safeguarding, equipment, preparation, activity, recovery, communication, support, adaptation, progression, review, and evaluation. Within an authorised setting, practise reporting factual observations and asking clarifying questions; do not write, deliver, or alter a beginner lesson from this lesson alone.",
     commonMistakes: [
-      "Trying to cover too many skills in one session, leaving the rider overwhelmed and confused",
-      "Skipping the warm-up to save time, increasing the risk of injury and rider anxiety",
-      "Failing to plan the lesson in advance, resulting in a disorganised and unfocused session",
+      "Assuming that a fixed phase sequence, duration, percentage, objective, or exercise is safe or appropriate for every beginner lesson",
+      "Selecting a horse, activity, progression, timing, support, or adaptation outside an authorised qualified-coaching role",
+      "Creating, accessing, using, storing, or sharing lesson or rider records outside current privacy, safeguarding, organisational, and legal procedures",
     ],
     knowledgeCheck: [
       {
         question:
-          "What is the recommended three-phase structure for a riding lesson?",
+          "Who determines the appropriate lesson structure, activity sequence, support, duration, and progression for a beginner rider?",
         options: [
-          "Theory, practical, exam",
-          "Warm-up, main work, cool-down",
-          "Trot, canter, gallop",
-          "Mounting, riding, dismounting",
+          "Any experienced rider using a fixed online template",
+          "The qualified coach within the current responsible-person, safety, welfare, safeguarding, and site procedures",
+          "The planned duration alone",
+          "The rider’s wish to progress to a faster pace",
         ],
         correctIndex: 1,
         explanation:
-          "A warm-up, main work, and cool-down structure helps prepare horse and rider, address the learning objective, and end the session calmly.",
+          "Professional planning requires qualified consideration of risk, suitability, welfare, equipment, activity, adaptation, progression, and evaluation. Assessment-specific timings are not universal public coaching rules.",
       },
       {
         question:
-          "How many main objectives should a beginner lesson typically have?",
+          "What should occur if rider understanding, consent, security, horse welfare, tack, footing, weather, supervision, safeguarding, or emergency arrangements become unsuitable?",
         options: [
-          "As many as possible to maximise learning",
-          "Three or four to cover a range of skills",
-          "One clear, achievable objective",
-          "None — beginner lessons should be unstructured",
+          "Continue because the planned objective is not complete",
+          "Use a generic substitute exercise without consulting the coach",
+          "Pause, stop, adapt, or escalate through the current qualified procedure",
+          "Diagnose the cause from a generic lesson plan",
         ],
         correctIndex: 2,
         explanation:
-          "Setting one clear objective per session keeps the lesson focused and prevents information overload. All exercises in the main work phase should support this single goal.",
+          "A generic lesson cannot determine the cause of a concern or the correct activity. The current qualified coach and responsible-person procedure determine whether the plan is paused, adapted, stopped, or escalated.",
       },
       {
         question:
-          "What percentage of the lesson should the warm-up typically occupy?",
+          "How should a learner handle lesson or rider records?",
         options: [
-          "5% — just a quick walk around",
-          "25–30% of the total session time",
-          "50% — half the lesson should be warm-up",
-          "There is no need for a warm-up in beginner lessons",
+          "Create a personal record and share it with any yard helper",
+          "Use only the current authorised privacy, safeguarding, organisational, and legal procedure",
+          "Store notes on a personal device without permission",
+          "Write a profile based on one lesson observation",
         ],
         correctIndex: 1,
         explanation:
-          "The warm-up should take approximately 25–30% of the session. For a 30-minute lesson, that is roughly 8–10 minutes — enough to prepare horse and rider physically and mentally.",
+          "Only authorised people may create, access, use, store, or share lesson or rider records. The qualified coach remains responsible for review and next-step decisions.",
       },
     ],
     aiTutorPrompts: [
-      "Can you help me write a lesson plan for a 45-minute beginner group lesson focused on steering?",
-      "What mounted warm-up exercises are best for beginner riders to improve balance?",
-      "How do I manage time effectively when a beginner takes longer than expected to master an exercise?",
+      "Which current qualified procedure governs planning, risk, welfare, safeguarding, support, adaptation, timing, progression, and review for a beginner lesson?",
+      "How should I report a factual rider, horse, tack, footing, consent, privacy, or safety concern to the qualified coach?",
+      "What qualification, authority, safeguarding, privacy, and current site procedure are required before I plan, coach, or supervise a beginner rider?",
     ],
     linkedCompetencies: ["coaching_fundamentals", "lesson_planning"],
   },
