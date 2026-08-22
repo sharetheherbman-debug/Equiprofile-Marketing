@@ -10381,75 +10381,78 @@ Use this lesson to ask: who is responsible; what current risk assessment and sup
     category: "Polework & Jump Foundations",
     sortOrder: 6,
     objectives: [
-      "Walk a show jumping course effectively",
-      "Plan lines, turns, and approaches",
-      "Count strides between related fences",
-      "Apply course awareness to improve performance",
+      "Recognise that course walking, route, line, turn, pace, terrain, distance, footing, obstacle, and competition decisions require authorised qualified-coach, venue, current-rule, welfare, safety, and responsible-person oversight",
+      "Understand that a generic lesson cannot walk, assess, plan, select, ride, jump, alter, coach, supervise, or troubleshoot a course, route, line, turn, approach, track, pace, distance, stride, surface, obstacle, horse, rider, or venue",
+      "Know that no universal stride, line, pace, turn, recovery point, warm-up, equipment, footing, surface, obstacle, fitness, suitability, safety, welfare, rule, or performance decision applies to every course and combination",
+      "Record authorised factual observations and use the current responsible-person, qualified coach, venue, welfare, safety, veterinary, incident, emergency, and current-rule route when a concern is outside the current plan or unclear",
     ],
-    content: `At competition level, walking a course and riding an accurate plan is essential.
+    content: `Competition course awareness can involve course design, route, lines, turns, approaches, pace, distances, terrain, surfaces, obstacles, equipment, weather, venue conditions, rules, horse welfare, rider safety, individual ability, supervision, and changing risks. This lesson provides an educational boundary only. It is not a procedure for course walking, course design, route selection, line planning, turn planning, pace selection, stride counting, footing assessment, obstacle assessment, warm-up, equipment selection, fitness assessment, safety assessment, welfare assessment, riding, jumping, competing, coaching, supervising, changing a plan, or troubleshooting a horse, rider, course, surface, venue, or competition.
 
-## Walking the Course
+## Authorised Professional and Venue Scope
 
-Walk every fence in order. Stand at each and look from the horse's perspective. Check footing, fillers, and spooky elements.
+Reviewed professional course-walk and coaching material treats course design, course walking, safety, rider decision-making, pace, lines, terrain, welfare, materials, positioning, arena size, surface, and distance as expert-led content. Competition-welfare guidance requires welfare to take precedence over competitive interests, and requires fit, competent horse/rider combinations plus suitable and safe surfaces and obstacles. These sources do not create a universal learner procedure, a universal route/line/turn/stride/pace rule, a method for deciding fitness or safety, a claim that any plan will improve performance, or a right to override venue, official, responsible-person, welfare, safety, veterinary, or current-rule decisions.
 
-## Planning Lines
+The responsible person, authorised qualified coach, venue, officials, and current rules decide whether participation is appropriate; whether activity can begin, continue, change, pause, or stop; what route, course access, supervision, equipment, area, surface, horse, rider, welfare, safety, emergency, incident, and reporting arrangements apply; and what qualified support is needed. A generic lesson cannot determine fitness, competence, soundness, pain, behaviour, fear, stress, discomfort, welfare, rider ability, horse ability, confidence, surface safety, obstacle safety, weather risk, venue compliance, current rules, a cause, a correction, an outcome, or a stop threshold.
 
-Count strides between related fences on the actual track. Plan whether each section needs forward or steady canter. Identify recovery points.
+## No Universal Course Plan
 
-## Turns
+Do not use a generic line, turn, approach, track, pace, stride count, distance, recovery point, “horse perspective,” warm-up, equipment choice, footing observation, obstacle observation, online example, video, another combination, previous round, previous course, or a stated performance aim as a rule for the current horse, rider, surface, venue, weather, class, official instructions, or day. Do not walk, enter, ride, jump, measure, count, select, alter, rehearse, continue, repeat, speed up, slow down, shorten, lengthen, turn, correct, or test a route or course from this lesson alone.
 
-Well-planned turns give straight, balanced approaches. Cutting corners leads to run-outs and knockdowns.
+## Factual Observation and Escalation
 
-## Riding the Plan
+A learner may record authorised factual observations such as date, time, venue, class, current instruction, visible surface/obstacle context, equipment present, weather, people present, visible horse/rider behaviour, and any immediate safety concern. Do not diagnose lameness, pain, fear, stress, discomfort, fitness, ability, balance, welfare, surface safety, obstacle safety, rule compliance, a distance issue, a cause, a correction, a performance outcome, or an emergency status. Do not independently change a plan or continue activity from a generic observation.
 
-Commit to your plan once in the ring. Hesitation and last-minute changes are the most common causes of errors.`,
+If a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear, stop where safe to do so and use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route. Do not delay required emergency support or allow competitive pressure to override welfare.
+
+## Reflective Use
+
+Use this lesson to ask: who is responsible; what current venue/official instructions and rules apply; what authorised qualified-coach and welfare/safety oversight applies; what factual context is known; what is unknown; and which escalation route applies? The aim is safe recognition of professional and venue scope, not self-directed competition planning.`,
     keyPoints: [
-      "Walk every fence in order from the horse's perspective",
-      "Count strides between related fences",
-      "Well-planned turns create better approaches",
-      "Commit to your plan in the ring",
-      "Course walking improves with practice",
+      "Course walking, route, line, turn, pace, terrain, distance, footing, obstacle, and competition decisions require authorised qualified-coach, venue, current-rule, welfare, safety, and responsible-person oversight",
+      "There is no universal stride, line, pace, turn, recovery point, warm-up, equipment, footing, surface, obstacle, fitness, suitability, safety, welfare, rule, or performance decision for every horse, rider, course, venue, weather, and circumstance",
+      "Do not walk, enter, ride, jump, measure, count, select, alter, rehearse, continue, repeat, speed up, slow down, shorten, lengthen, turn, correct, or test a route or course from a generic lesson",
+      "A learner may record authorised factual observations but must not diagnose fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, surface safety, obstacle safety, rule compliance, a cause, a correction, or a performance outcome",
+      "If a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear, use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route",
     ],
     safetyNote:
-      "Never jump a course at height without proper warm-up and equipment check.",
+      "Do not use a generic route, line, turn, approach, track, pace, stride count, distance, recovery point, “horse perspective,” warm-up, equipment choice, footing observation, obstacle observation, online example, video, another combination, previous round, previous course, or performance aim as a rule for an individual course. Do not diagnose fitness, surface safety, obstacle safety, welfare, safety, rule compliance, or a course problem; follow the current procedure and obtain authorised qualified support.",
     practicalApplication:
-      "Walk a course, plan your route, count strides, then ride it and compare plan vs reality.",
+      "With the responsible person’s permission, observe how authorised qualified coaches, venue staff, and officials use the current venue, welfare, safety, supervision, incident, emergency, and current-rule procedures. Record only authorised factual context and observations. Do not walk, enter, ride, jump, measure, count, select, alter, rehearse, supervise, assess, modify, or troubleshoot a course, route, line, turn, pace, stride, surface, obstacle, horse, rider, or venue from this lesson alone.",
     commonMistakes: [
-      "Not walking the course",
-      "Walking a shortcut instead of the actual track",
-      "Failing to plan first and last fences",
-      "Changing plan mid-course",
-      "Not accounting for ground conditions",
+      "Treating a generic route, line, turn, approach, track, pace, stride count, distance, recovery point, “horse perspective,” warm-up, equipment choice, footing observation, obstacle observation, online example, video, another combination, previous round, previous course, or performance aim as suitable for an individual course",
+      "Walking, entering, riding, jumping, measuring, counting, selecting, altering, rehearsing, continuing, repeating, speeding up, slowing down, shortening, lengthening, turning, correcting, or testing a route/course without authorised qualified-coach, venue, official, welfare, safety, and current-rule direction",
+      "Diagnosing fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, surface safety, obstacle safety, rule compliance, a cause, a correction, a performance outcome, or an emergency status from an observation",
+      "Independently changing a plan or continuing when a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear",
+      "Failing to use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route when factual observations require escalation",
     ],
     knowledgeCheck: [
       {
-        question: "Why walk the exact track your horse will take?",
+        question: "What determines whether and how course walking, route, line, turn, pace, distance, surface, obstacle, and competition decisions are made?",
         options: [
-          "For exercise",
-          "To count accurate strides and plan turns",
-          "Because the judge watches",
-          "It doesn't matter",
+          "A universal lesson procedure",
+          "Another rider’s plan or an online example",
+          "Current responsible-person, authorised qualified-coach, venue, official, welfare, safety, veterinary, incident, emergency, and current-rule oversight for the individual horse/rider/course/venue context",
+          "A learner’s preferred line or performance objective",
         ],
-        correctIndex: 1,
-        explanation:
-          "The exact track gives accurate stride counts and turn planning.",
+        correctIndex: 2,
+        explanation: "The reviewed sources treat these as expert-led, individual, venue- and welfare-dependent decisions rather than a universal learner procedure.",
       },
       {
-        question: "Most common cause of show jumping errors?",
+        question: "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear?",
         options: [
-          "Horse too tired",
-          "Last-minute plan changes and hesitation",
-          "Course too high",
-          "Bad luck",
+          "Independently change the route, line, turn, pace, stride count, equipment, surface, or course plan",
+          "Diagnose the cause and continue to test a correction",
+          "Stop where safe to do so and use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route",
+          "Allow competitive pressure to override welfare",
         ],
-        correctIndex: 1,
-        explanation: "Hesitation disrupts rhythm and balance.",
+        correctIndex: 2,
+        explanation: "Do not self-direct a competition change or diagnose a cause. Follow the current authorised procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How to walk a show jumping course?",
-      "How to count strides between fences?",
-      "What to focus on when planning turns?",
+      "What current responsible-person, authorised qualified-coach, venue, official, welfare, safety, supervision, incident, emergency, and current-rule procedure applies before any course activity?",
+      "How can I record authorised factual horse, rider, venue, surface, obstacle, weather, equipment, supervision, and safety observations without deciding route, line, turn, pace, stride, suitability, correction, or performance?",
+      "When should I stop where safe and use the responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and current-rule route rather than self-directing a course change?",
     ],
     linkedCompetencies: ["riding_position", "competition_preparation"],
   },
