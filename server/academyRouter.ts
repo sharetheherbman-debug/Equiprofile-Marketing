@@ -15,6 +15,8 @@ import {
 import { nanoid } from "nanoid";
 import { FREE_TRIAL_DAYS, INVITE_EXPIRY_DAYS } from "@shared/pricing";
 import { sendAcademyInviteEmail } from "./_core/email";
+import { resolveMarketingConsent } from "./_core/marketingConsent";
+import { publishMarketingEvent } from "./_core/marketingPublisher";
 import {
   academyBillingConfig,
   getAcademyStripe,
@@ -673,6 +675,27 @@ export const academyRouter = router({
       prefs.onboardingCompleted = true;
       if (!prefs.planTier) prefs.planTier = invite.role;
       await db.updateUser(ctx.user.id, { preferences: JSON.stringify(prefs) });
+
+      // Academy access is already durable. A separate Marketing event is
+      // eligible only after an explicit opt-in and can never block acceptance.
+      if (resolveMarketingConsent(prefs) === "marketing_opt_in") {
+        void publishMarketingEvent({
+          sourceApp: "equiprofile.online",
+          productLine: "academy",
+          eventType: "academy_registration_completed",
+          entityType: "account_registration",
+          entityId: `academy-invite:${invite.id}`,
+          publicUrl: "https://academy.equiprofile.online/dashboard",
+          timestamp: new Date().toISOString(),
+          consentState: "marketing_opt_in",
+          idempotencyKey: `academy-registration:${invite.id}`,
+          payloadVersion: "1.0",
+          payload: {
+            registrationSurface: "invitation_acceptance",
+            planInterest: invite.role,
+          },
+        }).catch(() => undefined);
+      }
 
       return { organizationId: invite.organizationId, role: invite.role };
     }),
