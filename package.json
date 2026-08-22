@@ -27,7 +27,9 @@
     "build:school": "node scripts/build-target.mjs school",
     "build:server": "node scripts/build-target.mjs server",
     "build:fingerprint": "node scripts/build-fingerprint.mjs",
-    "acceptance:management": "node scripts/management-browser-acceptance.mjs"
+    "acceptance:management": "node scripts/management-browser-acceptance.mjs",
+    "academy:factual:evidence": "tsx scripts/generate-academy-factual-evidence.ts",
+    "academy:factual:audit": "tsx scripts/audit-academy-factual-evidence.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.984.0",

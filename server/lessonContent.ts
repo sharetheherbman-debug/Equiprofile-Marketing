@@ -1584,9 +1584,9 @@ The shoulders should be **relaxed and level**, drawn gently back and down. Hunch
 
 ## Arms and Hands
 
-The arms hang naturally from the shoulders, bending at the elbow to create a soft, straight line from the rider's elbow through the wrist and rein to the horse's mouth. This is called the **elbow–hand–bit line**. The angle at the elbow should be roughly 90 degrees at the halt.
+The arms hang naturally from the shoulders, bending at the elbow to create a soft, straight line from the rider's elbow through the wrist and rein to the horse's mouth. This is called the **elbow–hand–bit line**. The elbow should remain comfortably soft and allow a straight, elastic connection without forcing a fixed angle.
 
-The hands should be carried just above and slightly in front of the withers, about 10 cm (4 inches) apart, with the thumbs on top and the knuckles facing forward. The fingers close softly around the rein — not gripping tightly, not holding loosely. Imagine holding a small bird: firmly enough that it cannot escape, gently enough that you do not hurt it.
+The hands should be carried just above and slightly in front of the withers, with the thumbs on top and the knuckles facing forward. Their position and separation should allow a quiet, even contact and be reviewed with a qualified instructor rather than set by a fixed measurement. The fingers close softly around the rein — not gripping tightly, not holding loosely. Imagine holding a small bird: firmly enough that it cannot escape, gently enough that you do not hurt it.
 
 The wrists should remain straight and supple, not bent upward, downward or sideways. Stiff, rigid hands transmit every movement of the rider's body down the rein to the horse's mouth, causing discomfort and confusion.
 
@@ -2247,9 +2247,9 @@ Tacking up is the process of fitting the saddle and bridle to the horse. It must
 2. Undo the headcollar and refasten it around the neck so you maintain control.
 3. Hold the bridle by the headpiece in your right hand and guide the bit into the horse's mouth with your left hand. If the horse is reluctant, gently press your thumb into the corner of the mouth (the bars), where there are no teeth, to encourage it to open.
 4. Lift the headpiece over the ears, one at a time, being gentle with each ear.
-5. Fasten the throatlash — you should be able to fit a fist's width between the throatlash and the horse's jaw.
-6. Fasten the noseband — you should be able to fit two fingers between the noseband and the horse's face.
-7. Check the bit is at the correct height — it should create one to two wrinkles at the corner of the mouth.
+5. Fasten the throatlash, noseband and bit only in accordance with qualified tack-fitting, oral-health and manufacturer guidance for the individual horse.
+6. Check for signs of restriction, discomfort, rubbing or altered behaviour and stop if the horse becomes distressed.
+7. Do not rely on a copied finger-width, wrinkle or measurement rule to determine fit; obtain qualified assessment when there is any doubt.
 8. Ensure the browband is not pinching the ears and the forelock is pulled free.
 
 ## Arena Assessment
@@ -2264,10 +2264,10 @@ Before you ride, check the arena:
 
 An effective lesson has three phases:
 1. **Warm-up** — Gradual preparation of horse and rider (covered in the previous lesson).
-2. **Main work** — The productive phase focused on a specific goal. Choose one or two objectives per session rather than trying to improve everything at once. Examples: "Today I will focus on accurate 20-metre circles" or "Today I will work on smooth trot-canter transitions."
+2. **Main work** — The productive phase focused on a specific goal. Choose a small number of objectives appropriate to the current horse, rider, facility and qualified coach guidance rather than trying to improve everything at once. For example, focus on a coach-selected figure or a smooth trot-canter transition.
 3. **Cool-down** — Gradual return to resting state.
 
-Set goals that are **specific**, **measurable** and **achievable** within the session. "Ride better" is too vague; "Ride three accurate 20-metre circles on each rein at trot" is specific and measurable.
+Set goals that are **specific**, **measurable** and **achievable** within the session. “Ride better” is too vague; “practise the coach-selected figure with even bend and rhythm, then record the agreed observation” is specific and measurable.
 
 ## Mental Readiness
 
@@ -2281,15 +2281,15 @@ Riding is as much a mental skill as a physical one. Before mounting:
 
 Before every ride, verify:
 - Riding hat is correctly fitted and meets current safety standards (PAS 015, SNELL, ASTM/SEI)
-- Boots or jodhpur boots have a smooth sole and a small heel (at least 1 cm)
+- Boots or jodhpur boots have a suitable sole and heel for the current stirrup, riding activity and applicable safety guidance
 - Gloves provide grip on the reins
 - Body protector if required by the yard or activity
 - Whip and spurs are only carried if appropriate for the rider's level and the horse's needs`,
     keyPoints: [
       "Always slide the saddle back into position — never forward — to keep the hair lying flat",
-      "The throatlash should allow a fist's width; the noseband should allow two fingers' width",
+      "Bridle and bit fit require individual qualified assessment; do not use copied finger-width or wrinkle rules as a substitute",
       "Check the arena surface, fencing and any obstacles before riding",
-      "Set one or two specific, measurable goals for each session",
+      "Set a small number of specific, measurable goals appropriate to the current horse, rider and qualified coach guidance",
       "Mental readiness affects the horse — approach every ride with calm focus",
     ],
     safetyNote:
@@ -2765,7 +2765,7 @@ Horses are extremely perceptive of human body language and emotional state. A ne
 
 When leading a horse:
 1. **Walk beside the horse**, level with its shoulder on the near (left) side. Do not walk in front of the horse (you cannot see it and it may walk over you) or behind it (you have no control and risk being kicked).
-2. **Hold the lead rope** correctly: the right hand holds the rope approximately 15–20 cm from the headcollar clip, providing direct control. The left hand holds the excess rope folded — never coiled around the hand. The loose end should never trail on the ground where it can be stepped on.
+2. **Hold the lead rope** correctly: keep a safe, manageable amount of rope between your hand and the headcollar clip, as demonstrated by a competent person for the individual horse and setting. Hold excess rope folded—never coiled around the hand—and keep the loose end clear of the ground.
 3. **Walk purposefully** at the horse's pace. Look ahead to where you are going, not back at the horse. Your body language and direction of travel guide the horse.
 4. **Keep the horse at arm's length** — close enough to maintain control but far enough that it cannot tread on your feet.
 
@@ -4358,7 +4358,7 @@ A **general-purpose (GP) saddle** is the most common type of saddle for everyday
 - **Knee roll** — A padded roll at the front of the saddle flap that helps keep the rider's knee in the correct position.
 - **Stirrup bar** — A hinged metal bar attached to the saddle tree (hidden beneath the flap) from which the stirrup leather hangs. The safety catch on the stirrup bar should always be **down** (open) so the stirrup leather can slide free if the rider falls.
 - **Stirrup leather** — The adjustable strap that hangs from the stirrup bar and holds the stirrup iron.
-- **Stirrup iron** — The metal foot rest. It should be wide enough that there is approximately 1.5 cm of clearance on each side of the rider's boot. Too wide risks the foot going through; too narrow risks the foot becoming jammed.
+- **Stirrup iron** — The metal foot rest. Its fit must be assessed with the rider’s boot, current equipment, manufacturer guidance and applicable safety standard; it must not trap the foot or allow it to pass through.
 - **Girth** — The broad strap that passes under the horse's belly to hold the saddle in place. Available in leather, synthetic materials or string (cord). Fastens to girth straps on both sides of the saddle.
 - **Girth straps (billets)** — Three straps hanging from each side of the saddle tree. Typically the first and third (or first and second) are used.
 - **Panel** — The padded underside of the saddle that distributes the rider's weight over the horse's back. Should be evenly stuffed and smooth.
@@ -4773,7 +4773,7 @@ A numnah or saddle pad is not a solution for a poorly fitting saddle. Its purpos
 
 ## When to Call a Saddle Fitter
 
-- Every 6–12 months as a routine check
+- At intervals determined by the qualified fitter, the horse’s current shape, workload, tack condition and any signs of discomfort
 - If the horse has gained or lost weight significantly
 - If the horse has changed shape (e.g., muscled up through work, or lost muscle through time off)
 - If you notice dry spots, sweat patches, white hairs or sore areas under the saddle after riding
@@ -4783,11 +4783,11 @@ A numnah or saddle pad is not a solution for a poorly fitting saddle. Its purpos
 A qualified saddle fitter (look for Society of Master Saddlers or equivalent qualification) can assess, adjust and reflock the saddle to improve the fit.`,
     keyPoints: [
       "A poorly fitting saddle causes pain, white hairs, muscle atrophy and behavioural problems",
-      "Three fingers' clearance between the pommel and the withers (unmounted); two fingers when mounted",
-      "The gullet must clear the spine completely — at least 3–4 fingers wide",
+      "Pommel, wither and spinal clearance require qualified assessment in the horse’s current ridden and unmounted context; do not use copied finger-count rules",
+      "The gullet must provide suitable spinal clearance as assessed by a qualified fitter and current manufacturer guidance",
       "The panels should make even contact with no bridging or rocking",
       "A numnah is not a fix for a badly fitting saddle — professional fitting is essential",
-      "Have the saddle checked by a qualified fitter every 6–12 months or when the horse's condition changes",
+      "Have the saddle assessed by a qualified fitter whenever the horse, rider, workload, tack condition or comfort indicators warrant review",
     ],
     safetyNote:
       "Never ride in a saddle that is obviously too big, too small, too wide or too narrow for the horse. A saddle that rocks, slips or sits on the withers is unsafe and causing the horse pain. If you suspect a saddle fit problem, stop riding in that saddle and seek professional advice. Riding in pain causes the horse to compensate with abnormal movement, which can lead to secondary injuries.",
@@ -6391,20 +6391,20 @@ Polework should be introduced gradually. Start with one pole, then add more as c
     category: "Polework & Jump Foundations",
     sortOrder: 2,
     objectives: [
-      "Understand correct trot pole distances for horses and ponies",
-      "Set up a row of three to five trot poles with accurate spacing",
-      "Ride through a trot pole grid maintaining rhythm, balance, and straightness",
-      "Adjust distances for different horse sizes and stride lengths",
+      "Understand why pole spacing must be set for the individual horse, exercise and conditions",
+      "Prepare a coach-approved pole exercise with a safe approach and exit",
+      "Ride through a pole exercise while maintaining rhythm, balance and straightness",
+      "Observe the horse’s response and seek qualified adjustment when spacing or setup needs review",
     ],
     content: `Once you are confident walking and trotting over single poles, the next step is to work through a row of poles — commonly called a grid. Grids develop the horse's ability to judge distances, improve its coordination, and build the strength needed for jumping. For the rider, grids demand consistent rhythm, accurate steering, and core stability.
 
-## Correct Trot Pole Distances
+## Individual Pole Spacing
 
-The standard distance between trot poles for an average 16hh horse is approximately 1.2 to 1.4 metres (4 to 4.5 feet). For ponies under 14.2hh, reduce the distance to approximately 0.9 to 1.1 metres (3 to 3.5 feet). These distances allow the horse to place one trot stride between each pole without stretching or shortening unnaturally.
+Pole spacing is not a universal horse-versus-pony table. It depends on the individual horse’s way of going, fitness, current training, rider, surface, pole type and exercise objective. A qualified coach should set, observe and adjust the exercise; a learner must not apply a copied measurement from a lesson as an instruction.
 
-## Setting Up a Trot Grid
+## Setting Up a Pole Exercise
 
-Lay three to five poles in a straight line at the correct distance. Ensure the poles are perpendicular to the line of travel and parallel to each other. Place the grid on a straight section of the arena — not on a turn. There should be at least three horse-lengths of straight approach before the first pole and space to ride straight away after the last pole.
+Use a straight, level area with a clear approach and exit, and set the number and arrangement of poles only as approved for the individual horse and exercise. Confirm that poles are secure, visible and not placed on a turn, in a gateway or where surface conditions create a risk.
 
 ## Riding Through the Grid
 
@@ -6418,16 +6418,16 @@ If the horse consistently clips poles or takes choppy steps, the distance may ne
 
 Once the basic grid is comfortable, you can raise alternate poles onto small blocks to create a bouncing effect that encourages greater engagement. You can also add a small cross-pole after the grid as an introduction to jumping from trot.`,
     keyPoints: [
-      "Standard trot pole distance is 1.2–1.4m for horses, 0.9–1.1m for ponies",
-      "Set grids on straight lines with adequate approach and exit space",
+      "Pole spacing must be set, observed and adjusted for the individual horse, exercise, surface and qualified-coach guidance",
+      "Use a straight, level setup with a clear approach and exit that has been assessed as safe for the current exercise",
       "Maintain consistent rhythm — the horse should step neatly between each pole",
       "Adjust distances to suit the individual horse's stride length",
       "Progress by raising alternate poles or adding a small fence after the grid",
     ],
     safetyNote:
-      "Always measure pole distances carefully. Incorrect spacing forces the horse into awkward strides that can cause trips or knock confidence. Check poles have not rolled between uses.",
+      "Do not set or alter pole spacing from a copied generic table. Use a qualified coach to assess the horse, rider, surface, pole arrangement and current exercise; stop if the horse appears uncomfortable, unsettled or unsafe. Check that poles have not rolled between uses.",
     practicalApplication:
-      "Set up four trot poles at 1.3m spacing. Ride through in trot on both reins five times each. Observe whether your horse steps centrally between each pole. If it clips any pole, adjust the spacing and repeat.",
+      "With a qualified coach, set a pole exercise appropriate to the individual horse and current conditions. Ride only the coach-agreed approaches, observe rhythm and straightness, and report any concern for the setup to be reassessed rather than changing it independently.",
     commonMistakes: [
       "Not measuring distances accurately — guessing leads to incorrect spacing",
       "Allowing the horse to drift sideways through the grid instead of staying straight",
@@ -6437,17 +6437,16 @@ Once the basic grid is comfortable, you can raise alternate poles onto small blo
     ],
     knowledgeCheck: [
       {
-        question:
-          "What is the standard trot pole distance for an average 16hh horse?",
+        question: "How should trot-pole spacing be determined?",
         options: [
-          "0.5 metres",
-          "1.2 to 1.4 metres",
-          "2.0 metres",
-          "3.0 metres",
+          "By copying the same measurement for every horse",
+          "By a qualified coach assessing the individual horse, exercise, rider, surface and current conditions",
+          "By placing poles as close together as possible",
+          "By changing several parts of the exercise at once until the horse stops touching poles",
         ],
         correctIndex: 1,
         explanation:
-          "The standard distance is 1.2–1.4 metres, which allows one trot stride between each pole for a horse of average size.",
+          "Pole spacing is individual. A qualified coach should set and observe the exercise, then make safe adjustments based on the horse, rider, footing and learning objective rather than a copied table.",
       },
       {
         question:
@@ -6460,7 +6459,7 @@ Once the basic grid is comfortable, you can raise alternate poles onto small blo
         ],
         correctIndex: 2,
         explanation:
-          "Clipping poles usually means the distances are wrong for that horse's stride. Adjust the spacing and observe whether the problem resolves.",
+          "Clipping poles is a reason to stop and ask a qualified coach to reassess the horse, approach, rhythm, surface and setup. Do not independently apply a generic spacing correction.",
       },
     ],
     aiTutorPrompts: [
@@ -6566,18 +6565,18 @@ The jumping position can and should be practised without poles first. At halt, s
     objectives: [
       "Understand what a cross-rail fence is and why it is used for early jumping",
       "Approach and jump a small cross-rail from trot with correct position and rhythm",
-      "Know how to ride a simple course of two to three small fences",
+      "Know how to follow a qualified coach’s safe, horse-specific plan for a simple fence exercise",
       "Identify and correct common faults when jumping small fences",
     ],
     content: `A cross-rail (or cross-pole) is the ideal first fence for a novice jumper. The poles cross in the centre, creating a low point in the middle that naturally guides the horse to jump in the centre. Cross-rails are inviting, forgiving, and build confidence for both horse and rider.
 
 ## Setting Up a Cross-Rail
 
-A cross-rail is made by resting two poles in an X shape — one end of each pole is on the ground, and the other end is raised on a cup or block. The centre of the X should be approximately 30–45cm high. Place a ground pole approximately 2.5 metres in front of the cross-rail to help the horse judge its take-off point.
+A cross-rail is made by resting two poles in an X shape—one end of each pole is on the ground and the other end is raised on a suitable support. Height, placing-pole use and all distances must be set, checked and observed by a qualified coach for the individual horse, rider, surface and current exercise; do not copy a generic setup from this lesson.
 
 ## Approaching the Fence
 
-Approach in a steady, balanced trot. Look beyond the fence, not at it. Maintain your rhythm and keep your leg on to sustain the forward energy. About three strides out, adopt a slightly forward position with your weight sinking into your heels. Trust the horse — do not interfere with the reins.
+Approach in a steady, balanced trot. Look beyond the fence, not at it. Maintain your rhythm and keep your leg on to sustain the forward energy. Adopt the position and timing directed by the qualified coach for the current approach; do not apply a copied stride-count cue. Trust the horse — do not interfere with the reins.
 
 ## Over the Fence
 
@@ -6585,7 +6584,7 @@ As the horse takes off, fold forward from the hip and push your hands forward al
 
 ## Building a Short Course
 
-Once you are comfortable over a single cross-rail, you can begin linking two or three fences together with turns between them. Plan your track before you start: know which fences you will jump, in what order, and how you will turn between them. Ride each fence as if it were the only one — maintain rhythm, straightness, and balance throughout.
+Once the qualified coach judges horse and rider ready, the coach may introduce an appropriate linked-fence exercise with turns between elements. Plan your track before you start: know which fences you will jump, in what order, and how you will turn between them. Ride each fence as if it were the only one — maintain rhythm, straightness, and balance throughout.
 
 ## What Makes a Good Jump?
 
@@ -6600,7 +6599,7 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
     safetyNote:
       "Always wear a body protector for jumping. Never jump alone — always have someone on the ground who can rebuild fences and assist in an emergency. Start with fences well within your comfort zone and build up gradually.",
     practicalApplication:
-      "Set up a single cross-rail approximately 35cm at the centre with a placing pole 2.5m in front. Trot over it five times on each rein. Have someone observe your position, rhythm, and straightness.",
+      "Under qualified-coach supervision, use the current horse-specific cross-rail exercise. Focus on position, rhythm and straightness, stop if safety or welfare concerns arise, and ask the coach to reassess the setup rather than changing height, distance or placing poles independently.",
     commonMistakes: [
       "Looking down at the fence instead of beyond it",
       "Getting in front of the movement — leaning too far forward before take-off",
@@ -6636,7 +6635,7 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
       },
     ],
     aiTutorPrompts: [
-      "How far should a placing pole be from a cross-rail?",
+      "Why must a qualified coach set a cross-rail’s height, placing pole and distances for the current horse and rider?",
       "My horse runs out at fences — what should I do?",
       "How do I know when I'm ready to raise the fences?",
     ],
@@ -6841,75 +6840,73 @@ Call the vet immediately for: any sign of colic, suspected laminitis, deep or jo
     sortOrder: 3,
     objectives: [
       "Assemble a basic equine first-aid kit",
-      "Know how to clean and dress a minor wound safely",
-      "Understand when cold hosing is appropriate and how to do it correctly",
-      "Know the correct procedures for managing a horse while waiting for the vet",
+      "Understand the limits of a non-veterinary first response",
+      "Recognise when to contact a veterinary professional without delay",
+      "Record useful observations and follow current veterinary or yard emergency instructions",
     ],
-    content: `Every horse carer should be able to provide basic first aid. While serious injuries and illnesses need veterinary attention, knowing how to manage a situation before the vet arrives can prevent complications and reduce suffering.
+    content: `A first response is not a diagnosis or treatment plan. If a horse is injured, unwell, distressed or behaves outside its normal pattern, protect people from immediate danger, contact the veterinary professional promptly and follow the directions you are given. Do not delay contact while attempting additional checks or online research.
 
-## The First-Aid Kit
+## The First-Response Kit and Plan
 
-A well-stocked equine first-aid kit should contain: a digital thermometer, clean wound dressings (non-stick), conforming bandage, self-adhesive bandage (Vetwrap), cotton wool, antiseptic wound wash or spray, clean scissors, disposable gloves, a clean bucket, poultice material (Animalintex), and the vet's emergency phone number.
+Keep the yard’s current emergency contacts, horse identification details, authorised first-response supplies and written emergency procedure accessible. Check supplies under the responsible person’s procedure and use products or equipment only within your competence and the current veterinary or manufacturer directions.
 
-## Wound Management
+## Observation and Escalation
 
-For minor wounds: put on gloves, gently clean the wound with clean water or saline solution (not hot, not cold — lukewarm), remove any visible debris, apply antiseptic spray, and cover with a non-stick dressing and light bandage if the wound is in a bandageable area. For wounds on the body that cannot be bandaged, clean and spray with antiseptic and monitor for signs of infection (heat, swelling, discharge, increasing pain).
+From a safe position, record factual observations such as the time concern was noticed, what changed, the horse’s demeanour, visible swelling, bleeding or damage, and any relevant recent events. Do not diagnose, probe a wound, administer medication, apply products, bandage, cool an area, move the horse or withhold feed unless a veterinary professional or the current written emergency procedure directs you to do so.
 
-## Cold Hosing
+## Waiting for Veterinary Direction
 
-Cold hosing is one of the most effective first-aid treatments for swelling, bruising, sprains, and post-exercise leg care. Run cold water gently over the affected area for 15–20 minutes, two to three times daily. The water should flow continuously — standing in a bucket of cold water is not the same. Cold hosing reduces inflammation, numbs pain, and promotes healing.
-
-## Waiting for the Vet
-
-When waiting for the vet, keep the horse calm and contained. Do not feed a colicky horse. Do not force a lame horse to walk. Keep a bleeding wound under gentle pressure with a clean dressing. Record what happened, when it happened, and what you have observed — the vet will want this information. If you have taken the horse's TPR, share this with the vet on arrival.`,
+Keep people safe and follow the veterinary professional’s instructions about containment, access, handling and any further observation. Give the veterinary professional the factual record, including any measurements taken only when competent and requested. Escalate immediately if the horse’s condition changes or safety cannot be maintained.`,
     keyPoints: [
-      "Always have a stocked first-aid kit accessible in the yard",
-      "Clean wounds with lukewarm water or saline — never use strong chemicals directly on open wounds",
-      "Cold hosing for 15–20 minutes reduces swelling and inflammation effectively",
-      "When waiting for the vet, keep the horse calm, record observations, and do not feed if colic is suspected",
-      "Know the limits of first aid — always call the vet for deep wounds, joint-near injuries, or worsening conditions",
+      "Keep current emergency contacts, horse details, authorised supplies and the yard procedure accessible",
+      "A non-veterinary first response is observation, scene safety, accurate recording and prompt escalation—not diagnosis or treatment",
+      "Use products, cooling, bandaging, medication, feeding changes or movement only when current professional direction and competence permit",
+      "Give the veterinary professional a factual record and report any material change promptly",
+      "When in doubt or when safety cannot be maintained, contact the veterinary professional without delay",
     ],
     safetyNote:
-      "When treating a wound on a horse's leg, kneel to one side rather than directly in front of or behind the leg. The horse may kick or stamp if in pain. Have someone hold the horse's head during treatment.",
+      "Do not place yourself in a position where a painful, frightened or distressed horse could injure you. Follow the current yard emergency procedure and veterinary direction; do not attempt a clinical technique beyond your competence.",
     practicalApplication:
-      "Check the first-aid kit in your yard. Make a list of anything missing or expired and replace it. Practise bandaging a leg using conforming bandage and Vetwrap on a calm horse under supervision.",
+      "With the responsible person, locate the current yard emergency procedure, veterinary contacts, horse-identification records and authorised supplies. Identify the information that should be recorded if a concern is observed; do not practise clinical techniques except within an approved, professionally supervised training context.",
     commonMistakes: [
-      "Using cotton wool directly on an open wound — fibres can stick and cause infection",
-      "Bandaging too tightly, which can cause pressure injuries",
-      "Not cleaning a wound thoroughly before applying dressings",
-      "Cold hosing for too short a time to be effective — fifteen minutes minimum is needed",
-      "Failing to call the vet because the wound looks small — depth and location matter more than surface size",
+      "Delaying veterinary contact while attempting extra checks, internet research or unapproved treatment",
+      "Diagnosing from appearance alone or assuming a concern is minor",
+      "Applying products, bandages, cooling or medication outside current professional direction and competence",
+      "Putting people in an unsafe position around a painful, frightened or distressed horse",
+      "Failing to record observations and communicate changes to the veterinary professional",
     ],
     knowledgeCheck: [
       {
-        question: "How long should you cold hose an area of swelling?",
+        question:
+          "What is the appropriate first response when a horse has an injury or acute health concern?",
         options: [
-          "2 minutes",
-          "5 minutes",
-          "15–20 minutes",
-          "1 hour continuously",
+          "Choose a treatment from a generic online guide before contacting anyone",
+          "Protect people from immediate danger, record factual observations, contact the veterinary professional promptly and follow current instructions",
+          "Assume the issue is minor if the horse is still standing",
+          "Keep trying different treatments until the horse appears more comfortable",
         ],
-        correctIndex: 2,
+        correctIndex: 1,
         explanation:
-          "Cold hosing is effective at 15–20 minutes per session. Shorter durations do not provide sufficient cooling to reduce inflammation.",
+          "A learner’s role is safety, accurate observation and prompt professional escalation. Diagnosis and treatment depend on the horse, concern and veterinary direction.",
       },
       {
-        question: "What should you NOT use directly on an open wound?",
+        question:
+          "Which action should be avoided without current professional direction and appropriate competence?",
         options: [
-          "Saline solution",
-          "Clean water",
-          "Cotton wool fibres",
-          "Non-stick dressing",
+          "Recording what was observed and when",
+          "Providing the veterinary professional with the horse’s identification details",
+          "Applying a treatment, product, bandage or cooling regimen",
+          "Locating the yard emergency procedure",
         ],
         correctIndex: 2,
         explanation:
-          "Cotton wool sheds fibres that can stick in a wound, causing infection and delayed healing. Use non-stick dressings or clean gauze instead.",
+          "Do not apply treatment or carry out a clinical technique beyond your competence or the direction given for the current situation.",
       },
     ],
     aiTutorPrompts: [
-      "Can you walk me through how to bandage a horse's lower leg correctly?",
-      "What should I do if a wound won't stop bleeding?",
-      "How do I know if a wound needs stitching?",
+      "What factual observations should I record before speaking with the veterinary professional?",
+      "Where should a responsible yard keep its current emergency contacts and horse-identification records?",
+      "Why must a first response remain within current professional direction and my competence?",
     ],
     linkedCompetencies: ["first_aid_basics", "welfare_awareness"],
   },
@@ -7984,11 +7981,11 @@ Do not measure progress by how many planks you can do — measure it by how your
 
 ## Goal Setting for Riders
 
-Effective goal setting uses the SMART framework: Specific, Measurable, Achievable, Relevant, Time-bound. "I want to ride a consistent 20m circle in trot on both reins in my next lesson" is SMART. "I want to be better" is not. Set three types of goals: outcome goals (results you want), performance goals (specific improvements), and process goals (daily actions to take).
+Effective goal setting uses the SMART framework: Specific, Measurable, Achievable, Relevant, Time-bound. “I will practise a coach-selected, appropriate figure in trot with even bend and rhythm, then review it at the agreed point” is SMART. “I want to be better” is not. Set outcome goals (results you want), performance goals (specific improvements) and process goals (actions you can control). Goals must remain appropriate to the horse, rider, facility, current coach guidance and welfare context.
 
 ## Visualisation
 
-Visualisation is one of the most powerful mental tools available. Before riding, spend 3–5 minutes with eyes closed imagining your session in detail: the approach, the aids, the feel of a good transition, the rhythm of a good canter. Research shows that mental rehearsal activates the same neural pathways as physical practice. Visualise successfully, not anxiously.
+Visualisation can be used as one optional preparation exercise. Before riding, use a brief, comfortable rehearsal that suits the rider’s current plan: imagine the approach, aids, feel of a balanced transition and rhythm of the canter. Stop or adapt the exercise if it increases distress, and seek appropriate professional support when anxiety is persistent or overwhelming.
 
 ## Focus and Concentration
 
@@ -9452,16 +9449,16 @@ The small intestine handles digestion and absorption of proteins, fats, sugars, 
 
 ## Hindgut
 
-The hindgut is where fibre is fermented by billions of beneficial microorganisms. This microbial population is sensitive to sudden dietary changes — all feed changes must be made gradually over 7-14 days.
+The hindgut is where fibre is fermented by a microbial population that may be disrupted by abrupt dietary change. Any change to feed, forage or routine must follow an individual plan agreed with the responsible person and, where needed, a qualified nutrition or veterinary professional.
 
-## Colic Prevention
+## Colic Awareness
 
-Colic is the leading cause of equine death. Feed little and often, ensure constant forage access, introduce changes slowly, and always provide clean water.`,
+Colic can be an emergency. Support a consistent, individually appropriate feeding and forage plan, maintain access to clean water, record relevant changes, and contact the veterinary professional promptly if abdominal-pain signs or other concerns are observed.`,
     keyPoints: [
       "The horse's stomach is small — designed for little and often",
       "The hindgut ferments fibre using sensitive microbial populations",
       "Sudden diet changes can cause colic",
-      "All feed changes over 7-14 days",
+      "Any dietary change must follow an individual, professionally informed plan rather than a universal timetable",
       "Constant forage access is essential",
     ],
     safetyNote:
@@ -9489,11 +9486,16 @@ Colic is the leading cause of equine death. Feed little and often, ensure consta
           "The horse's small stomach and continuous acid production require frequent small meals.",
       },
       {
-        question: "Over how many days should you introduce a new feed?",
-        options: ["Immediately", "2-3 days", "7-14 days", "30 days"],
+        question: "How should a change to feed or forage be managed?",
+        options: [
+          "Use the same timetable for every horse",
+          "Make the change immediately so the horse gets used to it",
+          "Follow an individual plan agreed with the responsible person and qualified professional where needed",
+          "Change several feeding factors at once so results are faster",
+        ],
         correctIndex: 2,
         explanation:
-          "Feed changes should be gradual over 7-14 days for hindgut microbes to adapt.",
+          "Horses and circumstances differ. Feeding changes require an individual approach, records and appropriate professional input rather than a copied universal schedule.",
       },
     ],
     aiTutorPrompts: [
@@ -9593,25 +9595,19 @@ Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof
       "Understand feeding before and after exercise",
       "Weigh feed correctly using scales",
     ],
-    content: `Consistent feeding routines are essential for horse health.
-
+    content: `Consistent feeding routines should be based on the individual horse’s current written feeding plan, workload, condition, management and professional advice.
 ## The Golden Rules
-
-1. Feed little and often  2. Feed plenty of forage  3. Feed by weight, not volume  4. Make changes gradually  5. Keep to a routine  6. Ensure constant access to clean water  7. Do not ride for at least one hour after a hard feed  8. Feed according to size, condition, workload, and temperament
-
+1. Provide an individually appropriate forage-led plan  2. Feed by weight, not volume  3. Record and manage dietary changes through the agreed individual plan  4. Keep accurate feeding records  5. Ensure access to clean water  6. Review the plan when workload, condition, health, forage or management changes
 ## Weighing Feed
-
-A scoop of one feed weighs very differently to another. Always weigh on scales until confident with quantities.
-
+A scoop of one feed can weigh differently from a scoop of another. Use suitable scales and the current individual plan rather than estimating by volume.
 ## Exercise and Feeding
-
-Do not give a large feed immediately before or after exercise. Allow at least one hour between feeding and riding.`,
+Plan feeding and exercise around the individual horse and current professional advice. Do not apply a copied interval or make abrupt changes before or after work.`,
     keyPoints: [
       "Feed little and often with plenty of forage",
       "Always weigh feed",
-      "Make all feed changes gradually over 7-14 days",
-      "Keep to consistent feeding times",
-      "Allow one hour between hard feed and exercise",
+      "Manage dietary changes through the documented individual plan rather than a universal timetable",
+      "Keep current, accurate feeding records",
+      "Plan feed and exercise around the individual horse and current professional advice",
     ],
     safetyNote:
       "Riding immediately after a large feed can cause discomfort or colic.",
@@ -9637,15 +9633,16 @@ Do not give a large feed immediately before or after exercise. Allow at least on
         explanation: "A scoop of oats weighs differently to a scoop of cubes.",
       },
       {
-        question: "How long between feeding hard feed and riding?",
+        question: "How should feeding and exercise be planned?",
         options: [
-          "No wait needed",
-          "15 minutes",
-          "At least one hour",
-          "24 hours",
+          "Use the same interval for every horse",
+          "Follow the documented individual plan and current professional advice",
+          "Make a last-minute change whenever a horse seems energetic",
+          "Ignore the workload and management context",
         ],
-        correctIndex: 2,
-        explanation: "The horse needs blood supply to the gut for digestion.",
+        correctIndex: 1,
+        explanation:
+          "Feeding and exercise planning is individual. A lesson should not substitute a fixed generic interval for the horse’s current plan and appropriate professional input.",
       },
     ],
     aiTutorPrompts: [
@@ -9980,11 +9977,11 @@ Welfare compromise can be subtle. A horse standing alone without shelter may app
       "Identify key welfare obligations",
       "Consider ethical alternatives to ownership",
     ],
-    content: `Owning a horse is a significant long-term commitment. Horses can live 25-30 years or more.
+    content: `Owning a horse is a significant long-term commitment that can extend across changing health, welfare, financial and care needs.
 
 ## Financial Commitment
 
-Costs include livery, feed, farrier (every 6-8 weeks), vet care, dental care, insurance, tack, and transport. Unexpected costs can be substantial.
+Costs can include livery, feed, hoof-care and veterinary professional services, dental care, insurance, tack and transport. The necessary frequency, scope and cost vary by horse, location, current professional advice and the arrangement in place. Unexpected costs can be substantial.
 
 ## Time Commitment
 
@@ -9998,7 +9995,7 @@ When you take on a horse, you commit to its entire life — including old age an
 
 Sharing or loaning allows enjoyment without full financial commitment. Always use written agreements.`,
     keyPoints: [
-      "Horse ownership is a 25-30 year commitment",
+      "Horse ownership requires a long-term, welfare-led commitment that can change over the horse’s lifetime",
       "Costs include farrier, vet, feed, livery, insurance, and emergencies",
       "Daily care needed regardless of circumstances",
       "Sharing or loaning are ethical alternatives",
@@ -10016,15 +10013,17 @@ Sharing or loaning allows enjoyment without full financial commitment. Always us
     ],
     knowledgeCheck: [
       {
-        question: "How long can a horse typically live?",
+        question:
+          "What should a prospective owner plan for before taking responsibility for a horse?",
         options: [
-          "10-15 years",
-          "15-20 years",
-          "25-30 years or more",
-          "5-10 years",
+          "Only the first few months, because later needs can be ignored",
+          "A long-term welfare, financial, care and contingency commitment that can change over the horse’s lifetime",
+          "Only the purchase price and routine feed",
+          "A standard service timetable that will be identical for every horse",
         ],
-        correctIndex: 2,
-        explanation: "Horses commonly live 25-30 years.",
+        correctIndex: 1,
+        explanation:
+          "Responsible ownership requires a realistic long-term plan, current professional care, contingency arrangements and welfare-led decision-making. There is no single lifespan or service calendar that safely applies to every horse.",
       },
       {
         question: "What is a responsible alternative to ownership?",
