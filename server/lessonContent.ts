@@ -5168,108 +5168,113 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
     category: "Flatwork",
     sortOrder: 2,
     objectives: [
-      "Understand the mechanics of the trot gait and why rhythm is important",
-      "Develop the ability to rise (post) in rhythm with the horse's trot",
-      "Learn to maintain balance in both rising and sitting trot",
-      "Identify and correct loss of rhythm or balance in the trot",
+      "Use qualified coaching to recognise a suitable, individual trot rhythm and balance task",
+      "Practise rising trot only within a coach-approved progression",
+      "Recognise when a trot exercise requires more support, a slower progression, or a stop",
+      "Report changes in rider security, horse comfort, tack, footing, or conditions to the qualified coach",
     ],
-    content: `The trot is a two-beat diagonal gait in which the horse's legs move in diagonal pairs — the left fore and right hind strike the ground at the same time, followed by the right fore and left hind. Between each pair of steps there is a brief moment of suspension when all four feet are off the ground. This natural rhythm gives the trot its characteristic bouncy feel, and learning to move in harmony with it is one of the most important skills for the developing rider.
+    content: `Trot work must be planned for the individual rider, horse, saddle, footing, setting, level of instruction, and current conditions. Reviewed coach guidance directs that ridden work is undertaken on safe horses suitable for the participant level and under coach instruction and supervision. This lesson is a reflective vocabulary aid, not a substitute for an instructor’s real-time assessment, a horse-health or tack assessment, or a fixed progression.
 
-Rhythm refers to the regularity and consistency of the horse's steps. A good working trot should have an even, metronome-like beat — one-two, one-two — that the rider can feel through the saddle. When rhythm is lost, it usually indicates that either the horse is unbalanced, the rider is interfering with the horse's movement, or the pace is too fast or too slow.
+A coach may use **rhythm**, **balance**, **security**, **position**, and **contact** as coaching terms. Whether a trot is suitable depends on the individual partnership and task. A learner must not use a change in feel or appearance to diagnose horse balance, rider error, pain, tack fit, or a particular cause. If the rider loses security, the horse appears uncomfortable or difficult to control, the tack or footing is unsuitable, or conditions change, stop and obtain qualified advice.
 
-Rising trot, also known as posting trot, is the most common way for riders to trot. The rider rises out of the saddle on one beat and sits lightly back into the saddle on the next, in time with the horse's movement. To rise correctly, the rider should allow the horse's movement to push the hips slightly forward and upward rather than actively standing in the stirrups. The movement comes from the thigh and hip joint, not the knee or ankle. The upper body should remain balanced over the centre of the saddle, not tipping forward or falling behind the movement.
+A qualified coach may introduce rising trot when the rider, horse, setting, tack, support, and current safety arrangements are appropriate. The coach selects the position cue, pace, duration, exercise, aids, and level of assistance for the individual. The reviewed coach guidance focuses on balance and security in the saddle and permits support, such as a neck strap, where required. Do not treat a generic cue as a universal anatomical instruction or continue when the rider is insecure.
 
-Rising on the correct diagonal is an important concept. In rising trot, the rider should rise when the outside foreleg moves forward and sit when it returns to the ground. This can be checked by glancing briefly at the horse's outside shoulder — the rider should rise as the shoulder moves forward. Riding on the correct diagonal helps the horse to balance, especially on circles and turns. The diagonal should be changed when the rider changes direction by sitting for an extra beat.
+**Diagonal** is a coaching concept that a qualified instructor may introduce at an appropriate stage. The reviewed introductory coach guidance states that a rider need not recognise a “correct diagonal” to demonstrate security in rising trot at that level. A coach should decide whether, when, and how diagonal awareness is taught for the individual rider and task; do not look down, change a diagonal, or apply a fixed rule in a way that compromises balance, safety, or current instruction.
 
-Sitting trot requires the rider to remain seated in the saddle throughout the trot. This is more challenging because the rider must absorb the horse's movement through a supple lower back and relaxed seat muscles. Stiffness in the back, gripping with the thighs, or bracing in the stirrups will cause the rider to bounce uncomfortably and disturb the horse's rhythm. To sit the trot effectively, the rider should think of allowing the hips to follow the horse's movement, keeping the core engaged but not rigid, and maintaining a deep, draped leg.
+Sitting-trot work is not appropriate for every horse-and-rider partnership or every stage of learning. A qualified coach must decide whether it is suitable and how to support the rider. Do not interpret tension, discomfort, loss of balance, or an uneven feel as a diagnosis or a reason to force a rider or horse through an exercise. Stop and obtain qualified guidance if rider security, horse comfort, tack, footing, or conditions are unsuitable.
 
-Balance in the trot is influenced by the rider's position, the horse's way of going, and the quality of the contact. A balanced rider sits centrally in the saddle with equal weight on both seat bones, the shoulders directly above the hips, and the heels below the hips. If the rider leans to one side, grips with one leg more than the other, or collapses through the waist, the horse will compensate by drifting, falling in on circles, or becoming crooked.
+Balance and position must be observed in context by a qualified coach. Tack fit, horse comfort, rider health, task, environment, and training can all require appropriate review. A position observation alone does not prove why a horse moves in a particular way or establish a correction. Persistent pain, limitation, horse discomfort, or tack concern requires the relevant qualified professional.
 
-To develop trot rhythm and balance, riders should practise trotting on large circles, changing the rein frequently, and riding transitions within the trot — lengthening and shortening the stride. Exercises without stirrups are also invaluable for building an independent seat, though these should only be attempted when the rider feels confident and the horse is calm.
+A qualified coach may select an appropriately simple trot exercise and may modify, stop, or postpone it as conditions change. Do not set a generic pattern, duration, diagonal task, speed, no-stirrup exercise, or progression from this lesson. Any no-stirrup activity requires explicit coach approval, a suitable partnership, and current safety controls; it is not a universal assessment or fitness tool.
 
-A useful exercise is to count the rhythm aloud — "one-two, one-two" — while trotting. This helps the rider internalise the beat and immediately notice if the rhythm changes. Over time, the rider develops an instinctive feel for the correct tempo and can adjust the horse's pace with subtle aids.
+If a qualified coach selects a verbal, visual, or physical cue, use it only as directed and within a safe, supported setting. A cue can help a coaching conversation but does not establish a “correct” tempo, diagnose a change, or authorise a learner to alter the horse’s pace independently.
 
-The quality of the trot is a direct reflection of the partnership between horse and rider. When both are balanced, relaxed, and moving in harmony, the trot feels effortless and flowing. This is the foundation upon which all further schooling in trot — shoulder-in, half-pass, medium and collected trot — is built.`,
+Trot schooling should progress only through an individual, welfare-aware coaching plan. The qualified coach and responsible person must decide whether the partnership is ready for any new exercise, pace, or movement.`,
     keyPoints: [
-      "The trot is a two-beat diagonal gait with a moment of suspension between each stride",
-      "In rising trot, allow the horse's movement to push the hips forward rather than actively standing",
-      "Rise on the correct diagonal — rise when the outside foreleg moves forward",
-      "In sitting trot, absorb the movement through a supple lower back and relaxed seat",
-      "Maintain equal weight on both seat bones and keep the shoulders above the hips for balance",
-      "Count the rhythm aloud to develop feel and recognise changes in tempo",
+      "Trot work must use a horse, rider, tack, setting, supervision, and exercise appropriate to the individual partnership",
+      "A qualified coach selects any rising-trot position cue and support; learners should not treat one cue as universal anatomy",
+      "Diagonal awareness is coach-led and stage-specific; the reviewed introductory coach guidance does not require a rider to recognise it to demonstrate rising-trot security",
+      "Sitting trot is not automatically appropriate; stop and seek coaching if rider security, horse comfort, tack, footing, or conditions are unsuitable",
+      "Position observations do not diagnose rider health, saddle fit, horse comfort, or the cause of a movement concern",
+      "Use a verbal or physical cue only as coach-directed support, not as a universal diagnosis or self-correction method",
     ],
     safetyNote:
-      "When practising sitting trot or exercises without stirrups, only do so on a calm, well-mannered horse in an enclosed arena. If you feel insecure, return to rising trot immediately and discuss your concerns with your instructor.",
+      "Do not begin or progress trot, sitting-trot, diagonal, or no-stirrup work without coach instruction and the responsible person’s current safety arrangements. Stop if rider security, horse comfort or behaviour, tack, footing, weather, supervision, or emergency arrangements become unsuitable, then obtain qualified advice.",
     practicalApplication:
-      "During your next ride, spend time in rising trot focusing on the correct diagonal. Change the rein at least four times, checking your diagonal each time. Then attempt short periods of sitting trot on a large circle, counting the rhythm aloud to maintain an even tempo.",
+      "Ask a qualified coach which trot work, support, and observation are suitable for your current horse-and-rider partnership. Follow the coach’s individual plan rather than setting a fixed diagonal, circle, sitting-trot, no-stirrup, or counting exercise from this lesson. Report any safety, comfort, tack, or conditions concern promptly.",
     commonMistakes: [
-      "Rising too high out of the saddle, which makes the rider unsteady and behind the movement",
-      "Gripping with the knees in sitting trot, causing the lower leg to swing and the rider to bounce",
-      "Forgetting to check and change the diagonal when changing direction",
-      "Allowing the upper body to tip forward in rising trot",
-      "Losing rhythm by letting the horse speed up or slow down without correction",
+      "Continuing a trot exercise without the instruction, supervision, support, or conditions identified in the current coaching plan",
+      "Using a position observation to diagnose rider health, horse comfort, tack fit, or the cause of a performance concern",
+      "Treating a coach-selected diagonal concept as a universal rule rather than stage- and partnership-specific instruction",
+      "Progressing to sitting trot, no-stirrup work, a faster pace, or a new exercise without coach approval",
+      "Trying to correct a perceived rhythm change independently rather than stopping and seeking qualified coaching when needed",
     ],
     knowledgeCheck: [
       {
-        question: "How many beats does the trot have?",
-        options: ["One beat", "Two beats", "Three beats", "Four beats"],
-        correctIndex: 1,
-        explanation:
-          "The trot is a two-beat diagonal gait. The horse's legs move in diagonal pairs with a moment of suspension between each step.",
-      },
-      {
-        question: "When should the rider rise in rising trot?",
+        question: "Who should decide whether a developing rider’s trot exercise is suitable and how it progresses?",
         options: [
-          "When the inside foreleg moves forward",
-          "When the outside foreleg moves forward",
-          "On every third beat",
-          "It does not matter when the rider rises",
+          "The rider alone, using a generic online checklist",
+          "A qualified coach within the current responsible-person safety arrangements",
+          "Any spectator who sees the horse moving",
+          "The rider’s desire to progress to a faster pace",
         ],
         correctIndex: 1,
         explanation:
-          "The rider should rise when the outside foreleg moves forward and sit when it comes back to the ground. This helps the horse balance, particularly on circles and turns.",
+          "The reviewed coach guidance requires ridden work to be on safe horses suitable for the participant level and under coach instruction and supervision. The individual partnership and current conditions determine the suitable exercise.",
       },
       {
-        question: "What is the main cause of bouncing in sitting trot?",
+        question: "What does the reviewed introductory coach guidance say about recognising a correct diagonal?",
         options: [
-          "The horse trotting too slowly",
-          "The saddle being too large",
-          "Stiffness in the rider's lower back and gripping with the thighs",
-          "Holding the reins too long",
+          "It must be recognised before any rising trot",
+          "It is never used in coaching",
+          "It is not required at that introductory stage for a rider to demonstrate security in rising trot",
+          "It may be selected only by a spectator",
         ],
         correctIndex: 2,
         explanation:
-          "Stiffness in the lower back and gripping with the thighs prevents the rider from absorbing the horse's movement, causing them to bounce in the saddle.",
+          "The reviewed introductory coach guidance says the correct diagonal does not have to be recognised at that level, while coach instruction and supervision remain required. A coach decides when diagonal awareness is suitable for the individual rider and task.",
       },
       {
-        question: "How does the rider change the diagonal?",
+        question: "What should a rider do if they lose security or notice a horse-comfort, tack, footing, or conditions concern during trot work?",
         options: [
-          "By changing the rein length",
-          "By sitting for one extra beat before resuming rising",
-          "By rising faster",
-          "By leaning to the opposite side",
+          "Continue until the planned exercise is complete",
+          "Try a faster pace to test the issue",
+          "Stop or move to safety as directed and obtain qualified coaching or responsible-person advice",
+          "Diagnose the cause and prescribe an exercise",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A generic lesson cannot diagnose the cause of a concern. Stop, follow the current safety arrangement, and obtain qualified advice before continuing or progressing the work.",
+      },
+      {
+        question: "When is no-stirrup trot work appropriate?",
+        options: [
+          "For every rider as a required balance test",
+          "Whenever the rider wants a harder exercise",
+          "Only when a qualified coach approves it for the individual partnership and current safety conditions",
+          "Only after the rider counts aloud for a set time",
+        ],
+        correctIndex: 2,
+        explanation:
+          "No-stirrup work is not a universal assessment or progression. It requires coach approval, a suitable horse-and-rider partnership, and current safety controls.",
+      },
+      {
+        question: "How should a learner use a verbal rhythm cue selected by a coach?",
+        options: [
+          "As universal proof that the horse’s tempo is correct",
+          "Only as coach-directed support in the current safe exercise",
+          "As a reason to change the horse’s pace independently",
+          "As a substitute for instruction and supervision",
         ],
         correctIndex: 1,
         explanation:
-          "To change the diagonal, the rider simply sits for one extra beat — sit-sit instead of sit-rise — and then continues rising. This shifts them onto the other diagonal pair.",
-      },
-      {
-        question: "Why is counting the rhythm aloud useful?",
-        options: [
-          "It calms the horse down",
-          "It helps the rider internalise the beat and notice tempo changes",
-          "It is required in dressage tests",
-          "It helps the horse change pace",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Counting the rhythm aloud helps the rider develop an internal sense of the correct tempo. If the counting speeds up or slows down, the rider can immediately feel that the rhythm has changed and make corrections.",
+          "A verbal cue can support a coach-led exercise, but it does not diagnose horse movement or authorise a learner to make independent pace corrections.",
       },
     ],
     aiTutorPrompts: [
-      "What exercises can help me develop a more independent seat in sitting trot?",
-      "How do I know if I am on the correct diagonal without looking down?",
-      "Can you explain why rhythm is considered one of the scales of training?",
+      "What current coach-approved trot exercise and support are appropriate for my horse-and-rider partnership?",
+      "When is diagonal awareness appropriate in my current coach-led progression?",
+      "What safety or comfort changes should make me stop and seek qualified advice during trot work?",
     ],
     linkedCompetencies: ["control_at_trot", "balance_and_coordination"],
   },
