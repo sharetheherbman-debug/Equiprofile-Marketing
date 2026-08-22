@@ -4321,19 +4321,37 @@ export const studentRouter = router({
     const dbConn = await getDb();
     if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
-    // Find groups this student is in
+    // Resources are visible only through active student-group relationships.
+    // This prevents a teacher's all-scope or individual resource from reaching
+    // students outside that teacher's current active groups.
     const memberships = await dbConn
-      .select({ groupId: studentGroupMembers.groupId })
+      .select({
+        groupId: studentGroupMembers.groupId,
+        teacherId: studentGroups.teacherId,
+      })
       .from(studentGroupMembers)
-      .where(eq(studentGroupMembers.studentUserId, ctx.user.id));
-    const groupIds = memberships.map((m) => m.groupId);
+      .innerJoin(studentGroups, eq(studentGroupMembers.groupId, studentGroups.id))
+      .where(
+        and(
+          eq(studentGroupMembers.studentUserId, ctx.user.id),
+          eq(studentGroups.isActive, true),
+        ),
+      );
+    const groupIds = memberships.map((membership) => membership.groupId);
+    const teacherIds = Array.from(
+      new Set(memberships.map((membership) => membership.teacherId)),
+    );
+    if (!teacherIds.length) return [];
 
-    // Get resources shared with: all, this student specifically, or groups they're in
     const conditions = [
-      eq(teacherResources.shareScope, "all"),
+      and(
+        eq(teacherResources.shareScope, "all"),
+        inArray(teacherResources.teacherId, teacherIds),
+      ),
       and(
         eq(teacherResources.shareScope, "individual"),
         eq(teacherResources.studentId, ctx.user.id),
+        inArray(teacherResources.teacherId, teacherIds),
       ),
     ];
     if (groupIds.length > 0) {
@@ -4341,6 +4359,7 @@ export const studentRouter = router({
         and(
           eq(teacherResources.shareScope, "group"),
           inArray(teacherResources.groupId, groupIds),
+          inArray(teacherResources.teacherId, teacherIds),
         ),
       );
     }

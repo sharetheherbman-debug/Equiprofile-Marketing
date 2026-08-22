@@ -69,6 +69,7 @@ Corrective rewrites already made are documented in `docs/academy/factual-source-
 | Server-scored completion/progress persistence | Pass | Disposable completion persisted from server-owned facts. |
 | Academy owner organisation/dashboard | Pass for organisation/membership baseline | Organisation, plan/seat counts, member list and invitation surface rendered. |
 | Teacher invitation/acceptance | Pass for disposable flow | Invite acceptance routed the email-matched user to the Instructor Portal. |
+| Teacher/student isolation and resource scope | Locally hardened, not end-to-end accepted | Direct task/lesson assignment, messages, assignments, reports and targeted resources now require current active teacher-group membership; resource delivery is constrained to the same relationship. Focused regression contract passes locally. Authenticated multi-user browser/DB acceptance remains required. |
 | Student/teacher feedback | **Not yet fully evidenced** | Requires role-specific acceptance fixture and browser journey. |
 | Assignments/tasks | **Not yet fully evidenced** | Requires student + teacher create/complete/review journey. |
 | Groups/classes | **Not yet fully evidenced** | Requires create/member/change/isolation journey. |

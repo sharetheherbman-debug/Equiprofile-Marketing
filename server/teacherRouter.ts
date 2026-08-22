@@ -42,6 +42,56 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
   }
 }
 
+type TeacherDb = NonNullable<Awaited<ReturnType<typeof getDb>>>;
+
+/** Require an active group owned by the current teacher. */
+async function requireTeacherOwnedActiveGroup(
+  dbConn: TeacherDb,
+  teacherId: number,
+  groupId: number,
+) {
+  const [group] = await dbConn
+    .select({ id: studentGroups.id })
+    .from(studentGroups)
+    .where(
+      and(
+        eq(studentGroups.id, groupId),
+        eq(studentGroups.teacherId, teacherId),
+        eq(studentGroups.isActive, true),
+      ),
+    )
+    .limit(1);
+  if (!group) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+  }
+}
+
+/** Require that a student belongs to at least one active group owned by the current teacher. */
+async function requireTeacherStudentMembership(
+  dbConn: TeacherDb,
+  teacherId: number,
+  studentUserId: number,
+) {
+  const [membership] = await dbConn
+    .select({ id: studentGroupMembers.id })
+    .from(studentGroupMembers)
+    .innerJoin(studentGroups, eq(studentGroupMembers.groupId, studentGroups.id))
+    .where(
+      and(
+        eq(studentGroups.teacherId, teacherId),
+        eq(studentGroups.isActive, true),
+        eq(studentGroupMembers.studentUserId, studentUserId),
+      ),
+    )
+    .limit(1);
+  if (!membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Student is not in your active groups.",
+    });
+  }
+}
+
 /**
  * Teacher procedure — extends protectedProcedure to check that the user has
  * the teacher plan/experience OR is an admin.
@@ -427,20 +477,22 @@ export const teacherRouter = router({
       category: z.enum(["care", "grooming", "feeding", "study", "exercise", "safety", "other"]).default("care"),
       dueDate: z.string().optional(),
       frequency: z.enum(["once", "daily", "weekly"]).default("once"),
-    }).refine(d => d.studentUserId !== undefined || d.groupId !== undefined, {
-      message: "Either studentUserId or groupId must be provided",
+    }).refine(d => (d.studentUserId !== undefined) !== (d.groupId !== undefined), {
+      message: "Provide exactly one of studentUserId or groupId",
     }))
     .mutation(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
-      // If assigning to a group, verify teacher owns it
-      if (input.groupId) {
-        const [group] = await dbConn.select({ id: studentGroups.id })
-          .from(studentGroups)
-          .where(and(eq(studentGroups.id, input.groupId), eq(studentGroups.teacherId, ctx.user.id)))
-          .limit(1);
-        if (!group) throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+      if (input.groupId !== undefined) {
+        await requireTeacherOwnedActiveGroup(dbConn, ctx.user.id, input.groupId);
+      }
+      if (input.studentUserId !== undefined) {
+        await requireTeacherStudentMembership(
+          dbConn,
+          ctx.user.id,
+          input.studentUserId,
+        );
       }
 
       const [result] = await dbConn.insert(teacherAssignedTasks).values({
@@ -848,12 +900,15 @@ export const teacherRouter = router({
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
-      if (input.groupId) {
-        const [group] = await dbConn.select({ id: studentGroups.id })
-          .from(studentGroups)
-          .where(and(eq(studentGroups.id, input.groupId), eq(studentGroups.teacherId, ctx.user.id)))
-          .limit(1);
-        if (!group) throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+      if (input.groupId !== undefined) {
+        await requireTeacherOwnedActiveGroup(dbConn, ctx.user.id, input.groupId);
+      }
+      if (input.studentUserId !== undefined) {
+        await requireTeacherStudentMembership(
+          dbConn,
+          ctx.user.id,
+          input.studentUserId,
+        );
       }
 
       const [result] = await dbConn.insert(teacherLessonAssignments).values({
@@ -1086,6 +1141,7 @@ export const teacherRouter = router({
     .mutation(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await requireTeacherStudentMembership(dbConn, ctx.user.id, input.studentId);
 
       const [result] = await dbConn.insert(teacherStudentMessages).values({
         teacherId: ctx.user.id,
@@ -1102,6 +1158,7 @@ export const teacherRouter = router({
     .query(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await requireTeacherStudentMembership(dbConn, ctx.user.id, input.studentId);
 
       const msgs = await dbConn.select()
         .from(teacherStudentMessages)
@@ -1174,6 +1231,31 @@ export const teacherRouter = router({
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
 
+      if (input.shareScope === "all") {
+        if (input.groupId !== undefined || input.studentId !== undefined) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "All-scope resources cannot include a group or student target.",
+          });
+        }
+      } else if (input.shareScope === "group") {
+        if (input.groupId === undefined || input.studentId !== undefined) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Group resources require exactly one owned active group.",
+          });
+        }
+        await requireTeacherOwnedActiveGroup(dbConn, ctx.user.id, input.groupId);
+      } else {
+        if (input.studentId === undefined || input.groupId !== undefined) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Individual resources require exactly one student in your active groups.",
+          });
+        }
+        await requireTeacherStudentMembership(dbConn, ctx.user.id, input.studentId);
+      }
+
       const [result] = await dbConn.insert(teacherResources).values({
         teacherId: ctx.user.id,
         title: input.title,
@@ -1229,6 +1311,7 @@ export const teacherRouter = router({
     .mutation(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await requireTeacherStudentMembership(dbConn, ctx.user.id, input.studentId);
 
       const [result] = await dbConn.insert(studentAssignments).values({
         teacherId: ctx.user.id,
@@ -1389,6 +1472,7 @@ export const teacherRouter = router({
     .mutation(async ({ ctx, input }) => {
       const dbConn = await getDb();
       if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+      await requireTeacherStudentMembership(dbConn, ctx.user.id, input.studentId);
 
       const [result] = await dbConn.insert(studentReports).values({
         teacherId: ctx.user.id,
