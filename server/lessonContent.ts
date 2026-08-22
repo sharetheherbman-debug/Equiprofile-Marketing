@@ -5499,115 +5499,115 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
     category: "Rider Development",
     sortOrder: 5,
     objectives: [
-      "Understand what an independent seat is and why it matters for effective riding",
-      "Identify the key elements of a balanced riding position",
-      "Learn exercises to develop core stability and an independent seat",
-      "Recognise how rider balance directly affects the horse's way of going",
+      "Use qualified coaching to reflect on rider position, balance, and security",
+      "Recognise that position cues must be adapted to the individual rider, horse, saddle, activity, and conditions",
+      "Recognise when any mounted or off-horse exercise requires qualified approval or health-professional input",
+      "Report rider-security, horse-comfort, tack, footing, or conditions concerns through the qualified coaching route",
     ],
-    content: `An independent seat is the ability to maintain a stable, balanced position in the saddle without relying on the reins for support or the stirrups for security. It means the rider can use each aid — hands, legs, and seat — independently and with precision, without one action interfering with another. Developing an independent seat is one of the most important goals for any rider, as it directly affects how well the rider communicates with the horse and how freely the horse can move.
+    content: `“Independent seat” is a coaching term that may describe a rider’s developing balance, security, and ability to follow qualified instruction without using the reins as support. It is not a medical diagnosis, a universal position standard, proof of horse comfort, or a substitute for assessment by a qualified coach, health professional, saddle fitter, or veterinarian. The reviewed coach guidance requires ridden work on horses suitable for the participant level and under coach instruction and supervision; every position cue and exercise must be adapted to the individual partnership and current conditions.
 
-The foundation of the independent seat is correct alignment. When viewed from the side, the rider's ear, shoulder, hip, and heel should be in a vertical line. This alignment places the rider's centre of gravity directly over the horse's centre of gravity, creating a partnership in balance. If any of these points fall out of alignment — the shoulder ahead of the hip, the heel drawn up, or the hip behind the shoulder — the rider becomes unbalanced and must compensate, often by gripping with the knees, hanging on the reins, or bracing in the stirrups.
+A qualified coach may observe how the rider appears positioned in the current saddle, task, pace, and setting. Familiar reference points such as the head, shoulders, hips, legs, feet, hands, and stirrups can help a coach communicate, but no single line, posture, or cue is correct for every rider, horse, discipline, or circumstance. An observation does not establish a rider’s anatomy, saddle fit, horse comfort, centre of gravity, or the cause of a movement concern.
 
-Core stability is central to the independent seat. The rider's core muscles — the abdominals, obliques, and lower back muscles — act as the stabilising centre from which all movement radiates. A strong core allows the rider to absorb the horse's movement without stiffening, to follow the motion of each gait, and to apply aids clearly and effectively. However, core engagement does not mean rigidity; the rider must be firm yet elastic, stable yet supple.
+A coach may use terms such as stability, balance, comfort, tension, and security in an individual coaching discussion. Learners should not infer that apparent tension, weakness, asymmetry, pain, or loss of balance has one cause or can be corrected through a generic lesson. Persistent pain, injury, limitation, or health concern requires an appropriately qualified health professional; horse discomfort, behaviour, or tack concerns require the appropriate responsible or qualified person.
 
-The pelvis plays a crucial role in balance. The rider should sit on the two seat bones and the pubic bone — the three-point seat — with the pelvis in a neutral position, neither tipped too far forward (which hollows the back) nor too far back (which rounds the back and causes the rider to sit on the back of the seat bones). A neutral pelvis allows the lower back to absorb movement and the hips to follow the horse's stride.
+A qualified coach may use a cue about the rider’s pelvis, upper body, hips, or seat only after considering the individual rider, horse, saddle, pace, task, comfort, and safety context. The cue is not a diagnosis or a fixed anatomical treatment. If a rider feels pain, numbness, insecurity, or persistent discomfort, they should stop and seek appropriate qualified advice rather than attempting to self-correct through a generic instruction.
 
-The legs contribute to balance but should not be the primary source of stability. The thigh should lie flat against the saddle with a long, draped feel. The knee should be soft and slightly bent, not gripping. The lower leg should hang naturally at the horse's side, with the ball of the foot on the stirrup and the heel gently stretching down. Gripping with the knee or calf is a common fault that actually reduces stability by lifting the rider out of the saddle and preventing the seat from deepening.
+The reviewed coach guidance supports a focus on rider position, balance, security, appropriate assistance, and safe foot placement in the stirrup. The qualified coach must determine any further leg, knee, foot, or stirrup cue for the individual rider and activity. Do not assume that a visible position feature proves a cause, creates a particular horse response, or can be changed safely without qualified input.
 
-The hands and arms must operate independently of the rider's balance. Many developing riders use the reins as a balancing aid, holding on when they feel insecure. This creates a hard, unforgiving contact that restricts the horse's movement and causes the horse to resist or become tense. The arms should hang naturally from relaxed shoulders, with a straight line from elbow to hand to the horse's mouth. The fingers should close softly around the reins, maintaining an elastic contact that follows the horse's head movement.
+Riders should not use reins or other equipment in a way that conflicts with their current coach instruction or compromises safety. If the rider feels insecure, the coach may select a safe support or change the exercise; the reviewed guidance allows aids such as a neck strap where required. Do not treat a generic hand, arm, shoulder, rein, or contact description as a universal rule or a means to diagnose horse comfort or behaviour.
 
-Exercises to develop an independent seat include riding without stirrups at walk and trot, arm exercises while riding (such as placing hands on hips, raising arms to the side, or touching the horse's ears and tail), and transitions within and between gaits. Lunging lessons — where the rider is on a lunge line controlled by the instructor — are particularly valuable because the rider can focus entirely on position without worrying about steering.
+A qualified coach may select an exercise, level of assistance, and progression only after assessing the current partnership and conditions. No-stirrup work, arm movements, transitions, lunge work, and any unfamiliar task are not universal balance tests or programmes. They require explicit coach approval, a suitable horse, appropriate equipment and setting, supervision, and current emergency arrangements. Stop or postpone the activity when rider security, horse comfort or behaviour, tack, footing, weather, or support is unsuitable.
 
-Off-horse exercises are equally important. Yoga, Pilates, and core stability work all develop the suppleness, strength, and body awareness that transfer directly to riding. Specific exercises include the plank, single-leg balance work, hip flexor stretches, and exercises on a stability ball that mimic the movement of the saddle.
+Any off-horse activity must suit the individual’s health, experience, and current professional advice. This lesson does not prescribe yoga, Pilates, core work, rehabilitation, stretching, strength training, duration, frequency, or a health outcome. Seek an appropriately qualified health or exercise professional for pain, injury, persistent limitation, or individual exercise planning.
 
-The independent seat is not achieved overnight. It is a gradual process that requires patience, consistent practice, and honest self-assessment. Riders should regularly check their position — are the shoulders back, is the core engaged, is the seat deep, are the hands independent? — and be willing to return to basics whenever faults creep in. The reward is a rider who sits in true harmony with the horse, communicating through subtle shifts of weight and gentle aids rather than force and tension.`,
+Developing rider balance should follow an individual, welfare-aware coaching plan. The qualified coach and responsible person decide whether the current horse, rider, tack, setting, supervision, and exercise remain suitable. Use this lesson to prepare questions for a qualified coach, not to self-prescribe a correction, blame the rider or horse, or progress an activity independently.`,
     keyPoints: [
-      "An independent seat means the rider can use hands, legs, and seat independently without relying on any one for balance",
-      "Correct alignment — ear, shoulder, hip, heel in a vertical line — is the foundation of balance",
-      "Core stability provides the stabilising centre for all rider movement; it should be firm yet elastic",
-      "The pelvis should be in a neutral position, allowing the lower back to absorb the horse's movement",
-      "Riding without stirrups and lunge lessons are invaluable for developing an independent seat",
-      "Off-horse exercises such as Pilates and core stability work directly benefit the rider's position",
+      "“Independent seat” is a coaching term, not a diagnosis, universal standard, proof of horse comfort, or substitute for qualified assessment",
+      "Position cues must be adapted by a qualified coach to the individual rider, horse, saddle, task, and current conditions",
+      "Pain, injury, persistent limitation, horse discomfort, behaviour, or tack concerns require the appropriate qualified professional",
+      "An observation of the rider’s pelvis, seat, legs, hands, or shoulders does not establish cause or a safe correction",
+      "No-stirrup work, lunge work, or any new exercise require explicit coach approval, suitable conditions, and current safety controls",
+      "Off-horse exercise must be individualised and must not be prescribed from this lesson as a treatment or guaranteed riding outcome",
     ],
     safetyNote:
-      "Riding without stirrups should only be done on a calm, reliable horse in an enclosed arena and under supervision. If you feel unbalanced, take your stirrups back immediately. Never attempt exercises without stirrups at canter until your instructor confirms you are ready.",
+      "Do not begin or progress no-stirrup work, lunge work, or any new balance exercise without coach instruction and the responsible person’s current safety arrangements. Stop if rider security, horse comfort or behaviour, tack, footing, weather, supervision, or emergency arrangements become unsuitable, then obtain qualified advice.",
     practicalApplication:
-      "During your next lesson, ask your instructor for five minutes of walk work without stirrups. Focus on letting your legs hang long and heavy, sitting on your seat bones, and maintaining a tall upper body. If comfortable, try a short period of trot without stirrups on a 20-metre circle. Between rides, practise a two-minute plank and single-leg balance exercises at home.",
+      "Ask a qualified coach which position observation, support, and exercise are suitable for your current horse-and-rider partnership. Follow the individual plan rather than starting no-stirrup, lunge, fitness, strengthening, stretching, or position-correction work from this lesson. Report any safety, comfort, tack, footing, or conditions concern promptly.",
     commonMistakes: [
-      "Gripping with the knees, which lifts the seat out of the saddle and reduces stability",
-      "Using the reins for balance, creating a hard contact that restricts the horse",
-      "Tipping forward from the waist, placing the rider ahead of the horse's centre of gravity",
-      "Rounding the lower back and sitting on the back of the seat bones instead of maintaining a neutral pelvis",
-      "Stiffening through the hips and lower back instead of absorbing the horse's movement",
+      "Using a position cue to diagnose rider health, horse comfort, saddle fit, or the cause of a performance concern",
+      "Continuing an exercise without the instruction, supervision, support, or conditions identified in the current coaching plan",
+      "Progressing to no-stirrup, lunge, a faster pace, or a new exercise without explicit coach approval",
+      "Self-prescribing an off-horse fitness, rehabilitation, or treatment programme from a generic riding lesson",
+      "Blaming either rider or horse without qualified assessment of the individual partnership and current context",
     ],
     knowledgeCheck: [
       {
-        question: "What is an independent seat?",
+        question: "How should a learner use the term ‘independent seat’?",
         options: [
-          "The ability to ride without a saddle",
-          "The ability to maintain balance without relying on the reins or stirrups, using each aid independently",
-          "A type of saddle designed for balance",
-          "The ability to ride with one hand",
+          "As a medical diagnosis of the rider",
+          "As a coach-led description that must be adapted to the individual partnership and current conditions",
+          "As proof that the horse is comfortable",
+          "As a reason to begin no-stirrup work alone",
         ],
         correctIndex: 1,
         explanation:
-          "An independent seat means the rider can maintain a stable, balanced position without using the reins for support or stirrups for security, and can apply each aid independently.",
+          "Independent seat is a coaching term. It does not diagnose a rider or horse, prove horse comfort, or replace qualified assessment and coach-approved progression.",
       },
       {
-        question: "Which alignment is correct for a balanced riding position?",
+        question: "Who should determine whether a position cue is suitable for a rider?",
         options: [
-          "Ear, knee, toe in a line",
-          "Shoulder, hand, heel in a line",
-          "Ear, shoulder, hip, heel in a vertical line",
-          "Head, elbow, knee, ankle in a line",
+          "The rider alone using a fixed online diagram",
+          "A qualified coach considering the rider, horse, saddle, task, discipline, and current conditions",
+          "Any spectator who sees the horse move",
+          "A generic assessment that applies to every partnership",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A visible position feature does not establish anatomy, saddle fit, horse comfort, or cause. The qualified coach must adapt a cue to the individual partnership and context.",
+      },
+      {
+        question: "What should a rider do if a position concern is accompanied by pain, persistent limitation, insecurity, horse discomfort, or a tack concern?",
+        options: [
+          "Continue until a generic exercise fixes it",
+          "Diagnose the cause from the rider’s position",
+          "Stop or move to safety as directed and seek the appropriate qualified advice",
+          "Progress to a more difficult balance exercise",
         ],
         correctIndex: 2,
         explanation:
-          "The ear, shoulder, hip, and heel should form a vertical line when viewed from the side. This places the rider's centre of gravity over the horse's centre of gravity.",
-      },
-      {
-        question: "Why is gripping with the knee a fault?",
-        options: [
-          "It causes the rider to lean forward",
-          "It lifts the seat out of the saddle and pushes the lower leg away, reducing stability",
-          "It makes the horse go faster",
-          "It wears out the saddle",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Gripping with the knee acts as a pivot point, lifting the seat out of the saddle and swinging the lower leg away from the horse's side. This reduces stability and makes it harder to apply effective leg aids.",
+          "A generic lesson cannot diagnose the cause of a concern. Stop, follow the current safety arrangement, and obtain qualified coaching, health, tack, or horse-care advice as appropriate.",
       },
       {
         question:
-          "What off-horse activity is particularly beneficial for developing rider balance?",
+          "How should a rider choose an off-horse exercise for a position or balance concern?",
         options: [
-          "Running long distances",
-          "Weightlifting with heavy weights",
-          "Pilates or core stability exercises",
-          "Swimming",
+          "Use a generic programme as treatment",
+          "Choose the most difficult online exercise",
+          "Use an individual plan from an appropriate qualified professional when needed",
+          "Assume that all core exercises transfer directly to riding",
         ],
         correctIndex: 2,
         explanation:
-          "Pilates and core stability exercises develop the suppleness, strength, and body awareness that directly transfer to the riding position. They specifically target the core muscles that stabilise the rider in the saddle.",
+          "This lesson does not prescribe fitness, rehabilitation, stretching, or treatment. Pain, injury, persistent limitation, and individual exercise planning require an appropriately qualified professional.",
       },
       {
         question:
-          "What is the benefit of lunge lessons for developing an independent seat?",
+          "When may lunge work or no-stirrup work be considered?",
         options: [
-          "The rider can go faster on the lunge",
-          "The rider can focus entirely on position without worrying about steering",
-          "The horse learns to lunge better",
-          "The instructor can stand further away",
+          "For every rider as a required balance test",
+          "Only when a qualified coach explicitly approves it for the individual partnership and current safety conditions",
+          "Whenever the rider wants a harder activity",
+          "When there is no supervision available",
         ],
         correctIndex: 1,
         explanation:
-          "On the lunge, the instructor controls the horse, freeing the rider to concentrate fully on their position, balance, and the feel of the horse's movement without the distraction of steering.",
+          "Lunge and no-stirrup work are not universal balance tests or programmes. They require coach approval, suitable conditions, appropriate equipment, supervision, and current safety controls.",
       },
     ],
     aiTutorPrompts: [
-      "What are the best off-horse exercises I can do to improve my seat and core stability?",
-      "How do I know if I am gripping with my knees, and what does it feel like when I stop?",
-      "Can you explain the concept of a three-point seat and neutral pelvis in more detail?",
+      "Which individual position, balance, or off-horse support should I discuss with a qualified coach or health professional?",
+      "Which current coach-approved observation and support are appropriate for my horse-and-rider partnership?",
+      "When should I stop a balance exercise and seek qualified coaching, health, tack, or horse-care advice?",
     ],
     linkedCompetencies: ["balance_and_coordination", "rider_position"],
   },
