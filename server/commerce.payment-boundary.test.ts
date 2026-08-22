@@ -7,10 +7,6 @@ const bootstrap = fs.readFileSync(
   path.join(root, "server/_core/index.ts"),
   "utf8",
 );
-const migration = fs.readFileSync(
-  path.join(root, "drizzle/0024_commerce_payment_reconciliation.sql"),
-  "utf8",
-);
 
 describe("Store payment boundary", () => {
   it("uses an isolated Store webhook and Store-specific secret", () => {
@@ -22,7 +18,9 @@ describe("Store payment boundary", () => {
   });
 
   it("records provider events with replay protection before reconciliation", () => {
-    expect(migration).toContain("commercePaymentEvents_provider_event_unique");
+    expect(bootstrap).toContain(
+      "commercePaymentEvents WHERE provider = 'stripe'",
+    );
     expect(bootstrap).toContain("providerEventId = ${event.id}");
     expect(bootstrap).toContain("cached: true");
     expect(bootstrap).toContain("reconcilePaidStoreCheckout");

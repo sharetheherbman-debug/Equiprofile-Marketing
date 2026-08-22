@@ -141,7 +141,6 @@ describe("Academy TEST billing contract", () => {
   const academyRouter = readRepoFile("server/academyRouter.ts");
   const bootstrap = readRepoFile("server/_core/index.ts");
   const academyBilling = readRepoFile("server/academy/billing.ts");
-  const migration = readRepoFile("drizzle/0030_academy_billing_test_mode.sql");
 
   it("uses owner-authorized server-priced TEST checkout and a billing portal", () => {
     expect(academyRouter).toContain(
@@ -164,7 +163,9 @@ describe("Academy TEST billing contract", () => {
     expect(bootstrap).toContain("academyBillingEvents");
     expect(bootstrap).toContain("cached: true");
     expect(bootstrap).toContain("stripe.webhooks.constructEvent");
-    expect(migration).toContain("academyBillingEvents_provider_event_unique");
+    expect(bootstrap).toContain(
+      "academyBillingEvents WHERE provider = 'stripe'",
+    );
     expect(academyBilling).toContain(
       'environment.ACADEMY_STRIPE_TEST_MODE !== "true"',
     );
