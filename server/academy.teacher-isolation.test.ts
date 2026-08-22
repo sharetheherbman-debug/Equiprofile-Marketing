@@ -25,6 +25,8 @@ describe("Academy teacher/student isolation boundaries", () => {
     expect(teacher).toContain(
       "Provide exactly one of studentUserId or groupId",
     );
+    expect(teacher).not.toContain("LEARNING_PATHWAYS");
+    expect(teacher).not.toContain("scenarios: [\"s001\"");
 
     for (const [procedure, nextProcedure] of [
       ["assignTask", "listAssignedTasksByTeacher"],
