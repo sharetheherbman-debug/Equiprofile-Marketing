@@ -3132,22 +3132,22 @@ Good housekeeping, clear routes, timely reporting of damaged fittings, and suita
     objectives: [
       "Explain the purpose of risk assessments in an equestrian setting",
       "Describe how to report an incident or near-miss",
-      "Understand the importance of recording incidents for learning and liability",
+      "Understand why the responsible person may record incidents and near misses for learning and current procedures",
       "Identify the key elements of a basic risk assessment",
     ],
-    content: `Risk assessment and incident reporting are not just bureaucratic exercises — they are practical tools that save lives and prevent injuries. In an equestrian environment, where large animals, heavy equipment and outdoor conditions combine, the potential for serious accidents is ever-present. Understanding how to identify risks, assess their severity and record incidents is an essential skill for anyone working on a yard.
+    content: `Risk management and incident reporting are practical parts of a responsible yard’s current safety procedure. In an equestrian environment, horses, equipment, vehicles, chemicals, weather, and people can create hazards. Learners should identify observable hazards, follow the responsible person’s procedure, and obtain competent help rather than attempting to set legal, insurance, safeguarding, or emergency controls independently.
 
 ## What Is a Risk Assessment?
 
-A risk assessment is a systematic process of identifying hazards, evaluating the likelihood and severity of harm, and implementing measures to reduce the risk. It is not about eliminating all risk — that is impossible in any equestrian setting — but about making risks as low as reasonably practicable.
+A risk assessment is a structured process for identifying hazards, assessing risk, deciding and implementing controls, recording significant findings where required, and reviewing whether controls work. The Health and Safety Executive (HSE) describes this framework for UK workplaces; the applicable process, responsible person, and legal duties vary by jurisdiction, work arrangement, insurer, and site.
 
-**The five steps of a basic risk assessment:**
+**A UK HSE workplace example has five linked stages:**
 
-1. **Identify the hazards** — Walk around the area and list anything that could cause harm. Examples: loose fencing, slippery surfaces, a horse known to kick, children near horses, broken equipment.
-2. **Decide who might be harmed and how** — Consider all the people who use the yard: staff, riders, children, visitors, farriers, vets. How might each person be affected by each hazard?
-3. **Evaluate the risk and decide on precautions** — For each hazard, consider: How likely is it to cause harm? How severe could the harm be? What can be done to reduce the risk? Precautions might include fixing broken fencing, providing training, requiring hard hats in certain areas, or banning unsupervised access.
-4. **Record your findings and implement them** — Write the assessment down. Assign responsibility for each action and set deadlines.
-5. **Review and update when needed** — Risk assessments are living documents. Review them whenever the situation changes (for example, new horses, modified buildings, changed work or staffing) and follow the current employer, insurer and legal review requirements rather than relying on a lesson interval.
+1. **Identify hazards** — consider work, equipment, substances, premises, non-routine tasks, and observable unsafe conditions.
+2. **Assess the risks** — consider who may be harmed, how, existing controls, and whether further action is needed.
+3. **Control the risks** — use controls determined by the responsible person and current requirements; do not attempt technical, legal, or safeguarding decisions outside your competence.
+4. **Record significant findings where required** — the responsible person decides the authorised record, access, personal-data handling, and actions; in the UK HSE example, significant findings must be recorded when five or more people are employed.
+5. **Review the controls** — report changes, worker concerns, accidents, near misses, or ineffective controls through the current procedure so the responsible person can review and update the assessment.
 
 ## Types of Hazards in an Equestrian Setting
 
@@ -3160,53 +3160,40 @@ A risk assessment is a systematic process of identifying hazards, evaluating the
 
 ## Incident Reporting
 
-An **incident** is any event that causes injury, ill health, damage to property, or a near-miss. Reporting incidents is essential because:
+An **incident** or **near miss** is an event that the yard’s current procedure identifies for reporting or review. Timely factual reporting can help the responsible person address hazards, recognise patterns, preserve required information, and meet current legal, insurer, safeguarding, employment, and organisational requirements.
 
-1. **Learning** — Understanding what happened and why prevents recurrence. Patterns may emerge (e.g., most accidents happen at feeding time, or in a particular area of the yard).
-2. **Legal requirement** — Under the Reporting of Injuries, Diseases and Dangerous Occurrences Regulations (RIDDOR), certain serious incidents must be reported to the Health and Safety Executive (HSE).
-3. **Insurance** — Accurate incident records are needed to support insurance claims.
-4. **Duty of care** — If someone is injured and there is no record of the incident or the risk assessment that should have prevented it, the yard owner may face legal liability.
+In the UK, **RIDDOR** is not a report for every accident or near miss. HSE says reportability depends on a work-related event and the current listed reportable injury, disease, dangerous-occurrence, or other criteria. The responsible person must assess and make any report under the current rule; learners must not make legal conclusions from this lesson.
 
 ## What to Record
 
-An incident report should include:
-- **Date, time and location** of the incident
-- **Names and contact details** of those involved and any witnesses
-- **Description** of what happened, step by step
-- **Injuries** sustained, if any, and first aid given
-- **Immediate actions taken** (e.g., horse secured, area cordoned off)
-- **Root cause** — what went wrong and why
-- **Recommendations** — what should be done to prevent recurrence
+The responsible person’s approved report process determines what information is recorded, who may access it, and how personal information is handled. A learner should report factual observations promptly through that process, such as the time and location, what was observed, immediate safe actions taken within their competence, and who has been informed. Do not diagnose injuries, assign blame, conduct an investigation, collect unnecessary personal data, or make legal conclusions unless authorised and competent.
 
 ## Near-Miss Recording
 
-A **near-miss** is an event that could have resulted in injury but did not, by luck or quick action. Near-misses are often more valuable than actual incidents for learning purposes because they provide warnings before someone is hurt. Examples:
-- A loose horse in the car park that was caught before reaching the road
-- A child running behind a horse that did not kick
-- A fire extinguisher found to be out of date during a routine check
+A **near miss** is an event that could have led to harm but did not. It can identify a hazard before an injury occurs. Examples include a loose horse contained before it reaches a public area, an unsafe route reported before someone trips, or damaged safety equipment found and removed from use.
 
-Every near-miss should be recorded and investigated with the same seriousness as an actual incident.
+Report near misses through the yard’s current procedure. The responsible person decides whether and how an event is recorded, investigated, escalated, or reported externally under current requirements.
 
 ## Creating a Safety Culture
 
 Risk assessment and incident reporting work best when everyone on the yard takes them seriously. This means:
-- Encouraging people to report near-misses without blame or punishment
-- Acting on reports promptly and visibly
-- Making safety a regular topic of discussion, not just a response to accidents
-- Providing training and refreshing skills regularly
-- Leading by example — if the yard manager cuts corners on safety, everyone else will too`,
+- Providing a clear, accessible route to report hazards and near misses
+- Acting on reports within the site’s current responsibilities and procedure
+- Discussing safety in an appropriate, respectful way and protecting confidentiality where required
+- Providing competent training, supervision, and refreshers appropriate to each role
+- Modelling the current safe procedures and escalating concerns through the designated route`,
     keyPoints: [
-      "A risk assessment identifies hazards, evaluates risk and implements precautions to reduce harm",
-      "The five steps are: identify hazards, decide who is at risk, evaluate and act, record findings, review regularly",
-      "Incident reports must include date, time, location, people involved, description, injuries, actions and recommendations",
-      "Near-misses should be recorded and investigated as seriously as actual incidents",
-      "Under RIDDOR, certain serious incidents must be reported to the HSE",
+      "A risk-management process identifies hazards, assesses risk, implements controls, records significant findings where required, and reviews controls",
+      "The HSE UK workplace example is: identify hazards, assess risks, control risks, record findings, and review controls",
+      "Use the responsible person’s approved reporting process and provide factual observations only within your competence",
+      "Report near misses through the current site procedure so the responsible person can decide the required action",
+      "In the UK, the responsible person must assess current RIDDOR criteria; not every accident or near miss is RIDDOR-reportable",
       "A positive safety culture encourages reporting and acts on findings promptly",
     ],
     safetyNote:
-      "If an accident results in a serious injury (broken bone, hospitalisation, loss of consciousness), call emergency services immediately (999). Do not move the injured person unless they are in immediate danger. Provide first aid if you are trained to do so. Preserve the scene for investigation if possible, and record everything you can remember as soon as practicable.",
+      "If there is an immediate risk to life or safety, raise the alarm and contact the applicable emergency service. Do not enter danger, attempt a medical assessment, move an injured person, or provide care beyond your training and current emergency procedure. Once safe, report factual observations to the responsible person and follow emergency-service instructions.",
     practicalApplication:
-      "Ask to see the yard's risk assessments and incident book. If they do not exist, offer to help create them. Start by conducting a simple walk-around risk assessment of the yard, listing every hazard you can identify and suggesting practical precautions. Record any near-misses you witness and discuss them with the yard manager. Over time, this practice becomes second nature and makes the yard safer for everyone.",
+      "Ask the responsible person how hazards, incidents, and near misses are reported at the yard. With permission, identify observable hazards and report them through the designated route. Do not create, alter, access, or share risk or incident records unless authorised; do not investigate, collect personal information, or determine legal reporting requirements yourself.",
     commonMistakes: [
       "Treating risk assessment as a paper exercise rather than a practical safety tool",
       "Not recording near-misses because 'nothing happened'",
@@ -3225,7 +3212,7 @@ Risk assessment and incident reporting work best when everyone on the yard takes
         ],
         correctIndex: 1,
         explanation:
-          "A risk assessment identifies hazards, evaluates how likely they are to cause harm and how severe that harm could be, then implements practical precautions to reduce the risk to an acceptable level.",
+          "A risk-management process identifies hazards, assesses who may be harmed and how, implements controls through the responsible person, records significant findings where required, and reviews whether controls work.",
       },
       {
         question: "Why should near-misses be recorded?",
@@ -3237,7 +3224,7 @@ Risk assessment and incident reporting work best when everyone on the yard takes
         ],
         correctIndex: 1,
         explanation:
-          "Near-misses are valuable learning opportunities. They highlight risks that exist before an actual injury occurs, allowing corrective action to be taken proactively.",
+          "Near misses can reveal hazards before injury occurs. They should be reported through the current yard procedure so the responsible person can decide the appropriate action.",
       },
       {
         question: "How often should risk assessments be reviewed?",
