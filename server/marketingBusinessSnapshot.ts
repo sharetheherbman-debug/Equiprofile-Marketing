@@ -61,6 +61,7 @@ export interface MarketingBusinessSnapshot {
     name: string;
     domain: string;
     description?: string;
+    product_lines: ["management"];
   };
   products: Array<Record<string, unknown>>;
   plans: Array<Record<string, unknown>>;
@@ -226,7 +227,9 @@ export function buildBusinessSnapshotFromRows(
   const platformPositioning = cleanObject(product.platformPositioningJson);
 
   const productRecord: Record<string, unknown> = {
-    name: brand.brandName,
+    product_line: "management",
+    name: "EquiProfile Management",
+    brand_name: brand.brandName,
     category: selectCategory(product, profiles),
     domain,
     landing_page_url: landingPageUrl,
@@ -247,9 +250,12 @@ export function buildBusinessSnapshotFromRows(
     productRecord.pricing_note = product.pricingDetails;
   }
 
-  const featureRecords = coreFeatures.map((feature) => ({ name: feature }));
+  const featureRecords = coreFeatures.map((feature) => ({
+    product_line: "management",
+    name: feature,
+  }));
   const offerRecords = product.primaryOffer
-    ? [{ name: product.primaryOffer, signup_url: signupUrl }]
+    ? [{ product_line: "management", name: product.primaryOffer, signup_url: signupUrl }]
     : [];
 
   const stableFacts = {
@@ -257,6 +263,7 @@ export function buildBusinessSnapshotFromRows(
       id: applicationId,
       name: brand.brandName,
       domain,
+      product_lines: ["management"] as ["management"],
       ...(brand.tagline ? { description: brand.tagline } : {}),
     },
     products: [productRecord],
@@ -279,7 +286,7 @@ export function buildBusinessSnapshotFromRows(
   ).toISOString();
 
   return {
-    snapshot_id: `${applicationId}-business-${fingerprint}`,
+    snapshot_id: `${applicationId}-management-${fingerprint}`,
     occurred_at: occurredAt,
     ...stableFacts,
   };
