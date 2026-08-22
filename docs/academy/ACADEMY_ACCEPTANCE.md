@@ -3,7 +3,7 @@
 **Source branch:** `phase-1/small-medium-completion`
 **Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`
 **Release status:** **NOT READY TO DEPLOY**
-**Reason:** 101 lesson-level source-to-claim factual reviews remain unresolved, and several authenticated role workflows still require complete acceptance evidence.
+**Reason:** 61 lesson-level source-to-claim factual reviews remain unresolved, and several authenticated role workflows still require complete acceptance evidence.
 
 This is an evidence record, not a completion claim. A capability is marked **Complete/Pass** only when the current branch contains implementation plus suitable automated or disposable-environment evidence. External production services remain separate activation gates.
 
@@ -28,19 +28,20 @@ This is an evidence record, not a completion claim. A capability is marked **Com
 | Structural quality gate | Pass | 105/105 meet the current structural/editorial thresholds; zero placeholders/shallow records/semantic-duplicate flags in the generated structural report. |
 | Server-trusted completion | Pass | Score and canonical lesson facts are derived server-side; completion persistence is versioned/idempotent. |
 | Unsupported accreditation wording | Pass | No unsupported BHS/Pony Club accreditation or endorsement claim is permitted. |
-| **Specific factual acceptance** | **BLOCKED** | Current factual evidence register records **101 lessons as `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`** and only 4 as `NOT_MATERIAL_FACT_CHECK_REQUIRED`. Source mapping is not factual acceptance. |
-| Safety/clinical/legal/numerical claim acceptance | **BLOCKED where included in the 101** | Material claims must be source-to-claim reviewed or rewritten as appropriately individualised/professional-guidance principles. |
+| **Specific factual acceptance** | **BLOCKED** | Current factual evidence register records **61 lessons as `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`**, 41 as `CLAIM_REVIEWED_AND_ACCEPTED`, and 3 as `NOT_MATERIAL_FACT_CHECK_REQUIRED`. Source mapping is not factual acceptance. |
+| Safety/clinical/legal/numerical claim acceptance | **BLOCKED where included in the 61** | Material claims must be source-to-claim reviewed or rewritten as appropriately individualised/professional-guidance principles. |
 
 ### Binding factual-review count
 
 The current `lesson-factual-evidence-register.json` is the source of truth until the large lesson-review pass is completed:
 
 - Lessons registered: **105**
-- `NOT_MATERIAL_FACT_CHECK_REQUIRED`: **4**
-- `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`: **101**
-- Release-blocking unresolved specific-claim reviews: **101**
+- `NOT_MATERIAL_FACT_CHECK_REQUIRED`: **3**
+- `CLAIM_REVIEWED_AND_ACCEPTED`: **41**
+- `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`: **61**
+- Release-blocking unresolved specific-claim reviews: **61**
 
-Do **not** replace these unresolved states with generated or inferred PASS values. The remaining 101 reviews are the principal large Academy task for the next completion pass.
+Do **not** replace these unresolved states with generated or inferred PASS values. The remaining 61 reviews are the principal Academy factual task for the next completion pass.
 
 Corrective rewrites already made are documented in `docs/academy/factual-source-findings.md`; those corrections do not imply that every remaining material statement in the affected lesson has been independently accepted.
 
@@ -99,11 +100,11 @@ Corrective rewrites already made are documented in `docs/academy/factual-source-
 
 | Check | Status | Evidence / remaining work |
 | --- | --- | --- |
-| Fresh additive migration chain | Pass in disposable environment | New Academy/Commerce migrations applied without a production reset. |
+| Final-Core fresh and supported-upgrade migration paths | Pass in disposable local MariaDB | Classification-gated fresh, exact tracked Management, explicit exact-legacy adoption, current no-op, and unknown fail-closed paths reached the full final Core contract without a production reset. |
 | Academy organisation/membership/invites migration-owned | Complete | Additive schema is present. |
 | Academy invitation delivery fields | Complete | Additive migration present. |
 | Academy TEST billing fields/event ledger | Complete | Additive migration present. |
-| Commerce lifecycle tables | Complete for current branch | Final Core reconciliation requires a fresh migration-from-zero and upgrade rehearsal again. |
+| Commerce lifecycle tables | Complete for current branch | The final Core fresh and supported-upgrade rehearsals now cover the reviewed Commerce lifecycle contract. |
 | Production DB touched | No | No production migration/deployment was performed. |
 
 ## 8. Responsive acceptance
@@ -122,7 +123,7 @@ The latest corrective PR report at the Manus stopping point records:
 
 - TypeScript check: passed
 - Preflight: passed
-- Full regression suite: **25 test files / 182 tests passed**
+- Full deterministic single-fork regression suite on the final Core candidate: **120 test files / 878 tests passed**
 - Academy naming audit: passed
 - Academy curriculum audit: passed
 - Academy structural-quality audit: 105/105 structurally ready
@@ -130,7 +131,7 @@ The latest corrective PR report at the Manus stopping point records:
 - Management/Academy/Shop/server build: passed
 - PR-scoped Prettier/whitespace: passed
 
-There is **no GitHub Actions run attached to `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`**. The complete suite must be rerun on the final reconciled Core SHA.
+Core CI run `32565926495` passed Security Scan, Changed Code Quality, deterministic Test & Build, and UI Smoke Test for the current draft candidate branch; deployment remained skipped.
 
 ## 10. External dependencies still outstanding
 
@@ -146,12 +147,12 @@ These external items do **not** excuse unfinished internal software paths.
 
 Academy must not be marked production-ready until all of the following are true:
 
-1. All 101 unresolved source-to-claim lesson reviews are explicitly completed and resulting corrections pass the full curriculum suite.
+1. All 61 unresolved source-to-claim lesson reviews are explicitly completed and resulting corrections pass the full curriculum suite.
 2. Student/Teacher assignments, feedback, groups and scheduling receive complete authenticated acceptance.
 3. Academy Owner curriculum/admin/activity/reporting surfaces receive complete authenticated acceptance.
 4. Provider-enabled Tutor acceptance passes against the final Core AI/GenX route.
-5. Academy is reconciled into the final single EquiProfile Core without regressing Management or Shop.
-6. The final Core SHA passes clean migration, full tests/builds and browser/mobile acceptance.
+5. Academy remains reconciled into the final single EquiProfile Core without regressing Management or Shop.
+6. The final Core SHA continues to pass clean migration, full tests/builds and browser/mobile acceptance after any remaining Academy corrections.
 
 ## 12. Safety / repository state
 
