@@ -19,12 +19,18 @@ describe("EquiProfile Stable server entitlement boundary", () => {
     expect(routers).toContain("breeding: router({\n    createRecord: stablePlanProcedure");
   });
 
-  it("blocks legacy lesson and trainer APIs server-side for non-Stable plans", () => {
+  it("blocks legacy lesson and trainer APIs server-side using the effective entitlement", () => {
     expect(trpcCore).toContain('"lessonBookings."');
     expect(trpcCore).toContain('"trainerAvailability."');
     expect(trpcCore).toContain("requiresStableEntitlement(path)");
-    expect(trpcCore).toContain('prefs.planTier === "stable"');
-    expect(trpcCore).toContain("prefs.bothDashboardsUnlocked === true");
+    expect(trpcCore).toContain("resolveEffectiveManagementEntitlement");
+    expect(trpcCore).toContain('state.entitlement.effectivePlanTier === "stable"');
+    expect(trpcCore).toContain("state.entitlement.effectiveBothDashboardsUnlocked");
     expect(trpcCore).toContain('code: "FORBIDDEN"');
+  });
+
+  it("does not bypass complimentary overlays by reading raw preference access directly", () => {
+    expect(trpcCore).not.toContain('prefs.planTier === "stable"');
+    expect(trpcCore).not.toContain("prefs.bothDashboardsUnlocked === true");
   });
 });
