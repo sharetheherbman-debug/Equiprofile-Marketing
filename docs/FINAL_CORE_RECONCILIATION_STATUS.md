@@ -4,7 +4,7 @@
 
 **Starting point:** Management-authoritative `phase-1/small-medium-completion` at `b20a622039c65503f8d54dceeff5b072f1521cc6`
 
-**Current candidate:** `57af2c4362ebedc1851b1306df06e21caab2f2a0`
+**Current candidate:** Current `release-candidate/final-core-2026-08-22` branch head; verify the exact SHA and CI checks before any release decision.
 
 **Status:** **IN PROGRESS — NOT READY TO DEPLOY**
 
