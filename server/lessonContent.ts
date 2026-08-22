@@ -9207,76 +9207,80 @@ Use this lesson to prepare questions for a qualified professional, not to copy a
     category: "Handling & Groundwork",
     sortOrder: 6,
     objectives: [
-      "Use in-hand work to develop collection and engagement",
-      "Understand lateral work from the ground",
-      "Develop the horse's response to subtle body language cues",
-      "Apply groundwork principles to rehabilitation",
+      "Recognise that advanced groundwork, fitness, and rehabilitation planning require individual assessment and qualified professional direction",
+      "Understand that exercise selection, equipment, handler position, and progression cannot be taken from a generic lesson",
+      "Use factual observation and appropriate escalation rather than diagnosing behaviour, pain, fitness, welfare, or training needs",
+      "Know when a veterinary, rehabilitation, welfare, or qualified professional concern requires the authorised support route",
     ],
-    content: `Advanced groundwork goes beyond basic handling into training and rehabilitation.
+    content: `Advanced groundwork may include specialist non-ridden training or conditioning activity, but it is not a generic exercise programme and is not rehabilitation advice. It requires individual-horse assessment, qualified professional competence, current site procedures, appropriate equipment and personal protective equipment, welfare checks, safe space and surface, supervision, and an emergency plan. This lesson does not qualify a learner to select or perform in-hand collection, lateral work, long-reining, lungeing, whip work, body-language techniques, rehabilitation activity, muscle conditioning, training progression, or a veterinary, behavioural, welfare, or emergency decision.
 
-## In-Hand Work for Collection
+## Individual Planning, Not a Copied Exercise
 
-Using a bridle and short whip as an extension of the hand, the handler walks beside the horse asking for increased engagement of the hindquarters. This develops balance and self-carriage.
+World Horse Welfare identifies groundwork, fitness, and rehabilitation as expert-led topics. Its return-to-work guidance says plans must be tailored and adapted to each horse, with expert help when readiness or health is uncertain. British Horse Society fitness guidance similarly advises slow, practical, individual plans rather than rushing or copying another horse’s workload. Therefore, a lesson cannot establish that a particular exercise, step count, distance, circle, rein aid, whip, position, amount of “engagement,” movement pattern, session length, or progression is suitable or beneficial for any individual horse.
 
-## Lateral Work from the Ground
+The responsible person and qualified professional must assess the horse’s current health information, welfare, fitness, training, behaviour, history, equipment, tack, environment, surface, space, access, support, weather, handler competence, and current risks before considering any activity. A horse’s changed behaviour, resistance, discomfort, lameness, reduced performance, tack concern, or unusual response has many possible causes. Do not diagnose pain, stiffness, weakness, asymmetry, attitude, training need, or a rehabilitation stage from a generic observation.
 
-Shoulder-in and travers can be introduced from the ground before the rider attempts them in the saddle, teaching the horse the movement pattern.
+## Training and Handling Boundary
 
-## Body Language Refinement
+A qualified professional must select and demonstrate any advanced handling or training method, including the equipment, position, contact, communication, exercise, line, whip, rein, pace, route, surface, timing, rest, progression, and stop criteria for the individual horse. Do not use a bridle, whip, reins, lines, or body position as a generic instruction; ask a horse for collection, engagement, lateral work, response to a cue, or a rehabilitation exercise; or copy a demonstration from text alone.
 
-At advanced levels, the handler's body position, energy, and intention become primary communication tools.
+Never wrap a line or rein around the hand or body, use equipment beyond your competence, force a response, punish a horse, attempt to work through discomfort, or continue when safety or welfare conditions are unsuitable. A learner should not infer that advanced groundwork is required before ridden work, that it replaces ridden work, or that it is safer because it is performed from the ground.
 
-## Rehabilitation Applications
+## Rehabilitation, Health, and Welfare
 
-Groundwork is invaluable for horses returning from injury. Controlled in-hand work allows targeted muscle development without the strain of carrying a rider.`,
+If a horse is returning from injury, has lameness, changed behaviour, pain, poor performance, fitness, tack, hoof, feeding, dental, health, welfare, or rehabilitation concerns, use the authorised veterinary and qualified-professional route. Do not begin, restart, progress, reduce, or substitute an exercise plan from this lesson. Rehabilitation and workload decisions must follow the individual professional plan and current welfare procedure.
+
+## Stop and Escalate
+
+Stop, move to safety as directed, and obtain the responsible person, qualified professional, veterinary support, or emergency support when required if the horse becomes unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe; equipment, surface, space, weather, support, supervision, welfare, safeguarding, or emergency arrangements change; or the learner is unsure.`,
     keyPoints: [
-      "Advanced groundwork includes in-hand work for collection and lateral exercises",
-      "Shoulder-in and travers can be taught from the ground first",
-      "Body language becomes primary communication at advanced levels",
-      "Groundwork is essential for rehabilitation",
-      "Classical in-hand work develops self-carriage",
+      "Advanced groundwork, fitness, and rehabilitation planning require individual-horse assessment, qualified professional competence, welfare checks, suitable equipment and environment, supervision, and emergency planning",
+      "A generic lesson cannot select an advanced in-hand exercise, equipment, position, cue, pace, route, surface, duration, progression, or claimed biomechanical outcome for an individual horse",
+      "Changed behaviour, resistance, discomfort, lameness, reduced performance, tack concern, or unusual response requires factual observation and appropriate qualified assessment, not a generic diagnosis",
+      "Rehabilitation, health, welfare, fitness, workload, tack, hoof, feeding, dental, and behaviour concerns require the authorised veterinary and qualified-professional route",
+      "Do not use a bridle, whip, rein, line, body position, or advanced exercise as a copied learner instruction or substitute for individual professional guidance",
     ],
     safetyNote:
-      "Advanced groundwork requires an experienced handler and well-established basic groundwork.",
+      "Do not perform or direct advanced groundwork, select or adjust equipment, choose a route or duration, assess movement, or continue outside qualified professional instruction and the current site procedure. Never force a response, punish a horse, use equipment beyond competence, or continue if health, welfare, safety, supervision, or emergency arrangements are unsuitable.",
     practicalApplication:
-      "Under expert supervision, practise asking a schooled horse for three steps of shoulder-in from the ground.",
+      "Only under qualified in-person professional instruction and the responsible person’s current procedure, observe how the individual horse, handler, health information, welfare, equipment, space, surface, fitness, support, supervision, and emergency route are assessed. Do not select, perform, copy, or progress an advanced groundwork or rehabilitation activity from this lesson alone.",
     commonMistakes: [
-      "Attempting advanced exercises before basics are solid",
-      "Over-using the whip",
-      "Working for too long",
-      "Not recognising confusion vs resistance",
-      "Ignoring the horse's physical condition",
+      "Selecting, performing, copying, or progressing an advanced groundwork, conditioning, or rehabilitation exercise without individual qualified direction and the current procedure",
+      "Using a generic exercise, equipment, position, cue, distance, timing, surface, route, or progression as a universal method or claimed treatment",
+      "Using a bridle, whip, rein, line, or body position beyond competence; wrapping equipment around the hand or body; forcing a response; or punishing a horse",
+      "Diagnosing pain, lameness, weakness, asymmetry, behaviour, fitness, welfare, tack fit, health, or a rehabilitation stage from a generic observation",
+      "Continuing when the horse is unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe, or when health, welfare, equipment, surface, space, support, supervision, or emergency arrangements are unsuitable",
     ],
     knowledgeCheck: [
       {
-        question: "Why is groundwork valuable for rehabilitation?",
+        question: "Who decides whether an advanced groundwork, conditioning, or rehabilitation activity is appropriate and how it is selected, performed, progressed, monitored, or stopped?",
         options: [
-          "It's easier than riding",
-          "It allows controlled exercise without rider weight",
-          "It doesn't require equipment",
-          "Horses prefer it",
+          "Any learner using a generic lesson or copied exercise",
+          "The responsible person and appropriate qualified or veterinary professional after individual assessment and current risk review",
+          "A fixed distance or session duration",
+          "A horse’s previous response alone",
         ],
         correctIndex: 1,
         explanation:
-          "Groundwork allows targeted exercise without the strain of carrying a rider.",
+          "World Horse Welfare and British Horse Society guidance support tailored, adaptable individual planning and expert help when readiness or health is uncertain. A generic lesson cannot prescribe a rehabilitation or advanced training programme.",
       },
       {
-        question: "What is the foundation of classical in-hand work?",
+        question: "What should happen if a horse shows changed behaviour, discomfort, lameness, reduced performance, a tack concern, or an unusual response during or around advanced groundwork?",
         options: [
-          "Speed",
-          "Jumping",
-          "Developing collection and engagement of the hindquarters",
-          "Lunging",
+          "Select a harder exercise to improve engagement",
+          "Diagnose the cause and adjust the exercise alone",
+          "Stop, move to safety as directed, and use the authorised responsible-person, qualified-professional, veterinary, or emergency route",
+          "Treat the response as resistance and continue",
         ],
         correctIndex: 2,
         explanation:
-          "Classical in-hand work focuses on engaging the hindquarters for balance and collection.",
+          "These observations can have many causes. Do not diagnose, force, or work through a concern; follow the current welfare and escalation procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How do I start teaching shoulder-in from the ground?",
-      "What groundwork exercises help tendon recovery?",
-      "How does in-hand work relate to ridden collection?",
+      "What current qualified-professional and site procedure applies if advanced groundwork or a rehabilitation activity is proposed or becomes unsafe?",
+      "How should I report a factual health, lameness, welfare, equipment, surface, handler-safety, or emergency concern through the authorised route?",
+      "What authority, in-person instruction, health and welfare assessment, equipment check, supervision, and emergency procedure are required before any advanced groundwork activity?",
     ],
     linkedCompetencies: ["groundwork_skills", "horse_care"],
   },
