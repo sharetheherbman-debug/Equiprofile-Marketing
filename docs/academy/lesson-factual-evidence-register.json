@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 60,
-    "claimReviewedAndAccepted": 42
+    "sourceMappedRequiresSpecificClaimReview": 61,
+    "claimReviewedAndAccepted": 41
   },
   "lessons": [
     {
@@ -4038,21 +4038,15 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "must",
         "required"
       ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The universal dietary-transition period and categorical colic ranking were removed; the lesson now requires an individual feeding plan, factual records and prompt veterinary escalation for concerns.",
-      "lessonChangeMade": "Removed the universal dietary-transition calendar and categorical colic ranking; the lesson now requires an individual feeding plan, factual records and prompt veterinary escalation for concerns.",
-      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
-      "reviewDecision": {
-        "reviewedAt": "2026-08-21",
-        "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.worldhorsewelfare.org/advice/feeding-horses",
-        "claimReviewed": "The universal dietary-transition period and categorical colic ranking were removed; the lesson now requires an individual feeding plan, factual records and prompt veterinary escalation for concerns.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
-      }
+      "whatWasVerified": "Prior acceptance covered only the removal of a universal dietary-transition period and categorical colic ranking. Full review identified remaining material digestive anatomy, acid, forage, fibre-fermentation, feeding, hydration, colic, veterinary-escalation and assessment claims that do not yet have individual source-to-claim decisions.",
+      "lessonChangeMade": "The prior bounded rewrite is retained, but the lesson is returned to unresolved status pending a complete individual claim review and any necessary corrective rewrite.",
+      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
+      "reviewDecision": null
     },
     {
       "lessonSlug": "types-of-feed",
