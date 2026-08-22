@@ -9949,76 +9949,80 @@ Sharing or loaning allows enjoyment without full financial commitment. Always us
     category: "Equine Welfare & Ethics",
     sortOrder: 3,
     objectives: [
-      "Identify signs of neglect",
-      "Distinguish between abuse and poor management",
-      "Know who to contact for welfare concerns",
-      "Understand legal and moral obligations",
+      "Recognise that factual welfare observations may require authorised review but do not prove neglect, abuse, a welfare breach, legal responsibility, or reportability",
+      "Understand that a generic lesson cannot determine intent, abuse, neglect, poor management, criminality, or the appropriate legal or welfare outcome",
+      "Know how to use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route without confrontation or unauthorised intervention",
+      "Record first-hand factual observations and understand the legal-information boundary of this lesson",
     ],
-    content: `Recognising neglect or abuse is a critical welfare skill.
+    content: `Welfare concerns should be taken seriously, but a generic lesson cannot diagnose neglect, abuse, pain, illness, distress, a welfare breach, a legal duty, a criminal offence, intent, poor management, reportability, or the correct remedy. Individual context, location, first-hand evidence, current procedures, professional assessment, and emergency circumstances matter. This lesson does not authorise a learner to investigate, confront, enter private land, move a horse, feed or water a horse, provide treatment, seize property, publish information, make an accusation, give legal advice, or take action beyond competence.
 
-## Signs of Neglect
+## Factual Observation, Not a Verdict
 
-Poor body condition, overgrown hooves, matted or lice-infested coat, no access to clean water, no shelter, or untreated injuries.
+Visible condition, hoof length, coat condition, water access, shelter, injury, behaviour, training, equipment, movement, environment, weather, hazards, or interaction can be important factual observations. They do not by themselves establish neglect, abuse, deliberate harm, excessive force, pain, lameness, disease, a welfare breach, criminality, or reportability. A horse may have circumstances that are not visible to a learner, including natural shelter, water out of view, temporary management arrangements, a current veterinary or responsible-person plan, or a context that needs professional assessment.
 
-## Signs of Abuse
+Record only what you have first-hand observed using the current approved process: the location, date and time, identity or description where appropriate, visible facts, immediate risks, and what was seen or heard. Do not interpret a cause, assert an intention, diagnose a condition, make a legal conclusion, create a public record, share personal information, or pressure another person to act. Do not rely on images, social media, hearsay, a single appearance, breed type, age, body shape, turnout arrangement, rug, or a generic checklist as proof.
 
-Deliberate physical harm, excessive force during training, riding a clearly lame horse, or using equipment that causes pain.
+## Safe and Authorised Escalation
 
-## Reporting Concerns
+If factual observations suggest an immediate danger, injury, collapse, non-weight-bearing lameness, road risk, inability to safely manage the situation, or another condition in the current emergency procedure, use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route without delay. For non-urgent concerns, follow the authorised local process and provide first-hand factual information if requested. Routes, reporting thresholds, contact methods, confidentiality rules, age limits, legal responsibilities, and urgency arrangements vary by location and scenario.
 
-Contact the RSPCA, World Horse Welfare, or the Blue Cross. Provide specific details: location, description, what you observed.
+Do not confront an owner, handler, rider, or another person. Do not enter private land, remove or move a horse, offer feed or water, adjust equipment, provide treatment, take photographs or video outside the authorised procedure, post on social media, or make an allegation. If the concern is within a school, yard, workplace, event, or organisation, use its safeguarding, incident, welfare, and emergency procedures as well as any relevant external authorised route.
 
-## Your Responsibility
+## Legal Information Boundary
 
-Under the Animal Welfare Act 2006, every owner has a legal duty of care. Reporting concerns is responsible, not interfering.`,
+UK welfare guidance describes responsibilities for people responsible for a horse and explains that a court may consider the statutory code in welfare proceedings, but breach of the code is not itself an offence. Law and enforcement arrangements can vary by jurisdiction and change over time. Do not give legal advice, state that a person has committed an offence, or decide which authority has jurisdiction from this lesson. Use current official guidance and authorised advice.
+
+## Reflective Use
+
+The purpose of this lesson is to help a learner recognise the importance of careful factual observation, personal safety, confidentiality, individual context, and authorised escalation. Ask: what did I actually see, what do I not know, what immediate risk exists, who is responsible, which current procedure applies, and what support route is appropriate?`,
     keyPoints: [
-      "Signs include poor body condition, overgrown hooves, untreated illness",
-      "Abuse includes deliberate harm and misuse of equipment",
-      "Contact RSPCA or World Horse Welfare to report",
-      "Provide specific factual details",
-      "Under the Animal Welfare Act 2006, owners have a legal duty of care",
+      "Visible condition, hoof length, coat condition, water access, shelter, injury, behaviour, training, equipment, movement, environment, weather, hazards, or interaction can be factual observations but do not prove neglect, abuse, a welfare breach, or a legal outcome",
+      "A generic lesson cannot determine intent, deliberate harm, excessive force, pain, lameness, illness, abuse, neglect, poor management, criminality, or reportability",
+      "Use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route appropriate to the location, scenario, and urgency",
+      "Record only authorised first-hand factual observations; do not investigate, confront, trespass, make an accusation, share personal information, or take unauthorised action",
+      "Do not give legal advice or make legal conclusions; follow current official guidance and authorised advice because law and enforcement arrangements vary and can change",
     ],
     safetyNote:
-      "Do not confront a suspected abuser directly. Report to welfare organisations.",
+      "Do not confront, investigate, enter private land, move a horse, offer feed or water, adjust equipment, provide treatment, publish information, make an allegation, or take action beyond competence. Follow the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority procedure; routes vary by location and scenario.",
     practicalApplication:
-      "Learn the contact details for your local equine welfare organisation.",
+      "With the responsible person’s permission, identify the current organisation’s welfare, safeguarding, incident, emergency, and relevant external escalation procedures. Practise recording authorised factual observations without diagnosing a cause, identifying a person publicly, confronting anyone, entering private land, moving a horse, or taking an unauthorised action.",
     commonMistakes: [
-      "Assuming someone else will report",
-      "Not recognising subtle neglect",
-      "Confusing breed type with neglect",
-      "Confronting owners directly",
-      "Not documenting what you see",
+      "Assuming a single observation, image, social-media post, hearsay, breed type, age, body shape, turnout arrangement, rug, or generic checklist proves neglect, abuse, a welfare breach, a legal duty, criminality, or reportability",
+      "Diagnosing intent, deliberate harm, excessive force, pain, lameness, illness, welfare, or legal responsibility rather than recording factual observations and using authorised assessment",
+      "Confronting, investigating, trespassing, moving a horse, offering feed or water, adjusting equipment, treating a horse, publishing information, making an accusation, or taking action beyond competence",
+      "Giving legal advice or deciding an offence, jurisdiction, enforcement route, reportability, confidentiality requirement, or remedy from this lesson",
+      "Failing to use the authorised immediate-danger, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority route when factual observations suggest an urgent condition covered by current procedure",
     ],
     knowledgeCheck: [
       {
-        question: "What should you do if you suspect neglect?",
+        question: "What should a learner do if factual observations create a welfare concern?",
         options: [
-          "Ignore it",
-          "Confront the owner aggressively",
-          "Report to a welfare organisation with specific details",
-          "Post on social media",
+          "Diagnose neglect or abuse and confront the person responsible",
+          "Enter private land and change the horse’s food, water, equipment, treatment, or management",
+          "Record authorised first-hand factual observations and use the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority route appropriate to the situation",
+          "Publish the concern on social media",
         ],
         correctIndex: 2,
         explanation:
-          "Reporting to a welfare organisation allows professional investigation.",
+          "Do not diagnose, confront, trespass, or take unauthorised action. Follow current authorised procedures and use emergency routes when factual observations indicate an urgent condition.",
       },
       {
-        question: "Which UK law requires a duty of care for horses?",
+        question: "What can a generic Academy lesson determine from a single concerning welfare observation?",
         options: [
-          "The Horse Act 1998",
-          "The Animal Welfare Act 2006",
-          "The Countryside Act 2000",
-          "There is no such law",
+          "That neglect, abuse, intent, an offence, and the required enforcement action have been proved",
+          "That a named person must be confronted or publicly identified",
+          "Only that an observation may require factual recording and the authorised current assessment or escalation route",
+          "That the learner should enter private land and intervene",
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explanation:
-          "The Animal Welfare Act 2006 places a legal duty of care on animal owners.",
+          "Individual context, professional assessment, location, current procedures, and emergency circumstances matter. This lesson does not diagnose, make legal conclusions, or authorise intervention.",
       },
     ],
     aiTutorPrompts: [
-      "What are early warning signs of neglect?",
-      "How to report a welfare concern in the UK?",
-      "What is the Animal Welfare Act?",
+      "How can I record first-hand factual welfare observations without diagnosing neglect, abuse, pain, illness, a legal duty, or a reportable breach?",
+      "What current responsible-person, veterinary, welfare, safeguarding, incident, emergency, and relevant local authority procedure applies in this location and scenario?",
+      "How do I maintain personal safety, confidentiality, individual context, and authorised escalation boundaries when a welfare concern arises?",
     ],
     linkedCompetencies: ["welfare_awareness", "health_awareness"],
   },
