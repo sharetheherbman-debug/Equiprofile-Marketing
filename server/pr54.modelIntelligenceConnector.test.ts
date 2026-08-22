@@ -8,7 +8,14 @@ function readSource(relPath: string): string {
 
 describe("PR54A-2 provider capability persistence completion", () => {
   it("1. PR54A-2 audit doc exists", () => {
-    expect(existsSync(resolve(process.cwd(), "docs/audits/PR54A2_PROVIDER_CAPABILITY_COMPLETION_AUDIT.md"))).toBe(true);
+    expect(
+      existsSync(
+        resolve(
+          process.cwd(),
+          "docs/audits/PR54A2_PROVIDER_CAPABILITY_COMPLETION_AUDIT.md",
+        ),
+      ),
+    ).toBe(true);
   });
 
   it("2-3. provider model + health schema tables exist", () => {
@@ -41,7 +48,10 @@ describe("PR54A-2 provider capability persistence completion", () => {
       "server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts",
     ];
     for (const relPath of required) {
-      expect(existsSync(resolve(process.cwd(), relPath)), `${relPath} missing`).toBe(true);
+      expect(
+        existsSync(resolve(process.cwd(), relPath)),
+        `${relPath} missing`,
+      ).toBe(true);
     }
   });
 
@@ -52,22 +62,30 @@ describe("PR54A-2 provider capability persistence completion", () => {
   });
 
   it("8. GenX model count is dynamic and not hardcoded", () => {
-    const syncSource = readSource("server/modules/marketing/provider-capabilities/providerCapabilitySync.ts");
+    const syncSource = readSource(
+      "server/modules/marketing/provider-capabilities/providerCapabilitySync.ts",
+    );
     expect(syncSource).toContain("providerCounts");
     expect(syncSource).not.toContain("modelCount: 1");
     expect(syncSource).not.toContain("modelCount: 2");
   });
 
   it("9-11. Qwen and HF are task-aware first-class mappings and HF failure isolation remains task-first", () => {
-    const syncSource = readSource("server/modules/marketing/provider-capabilities/providerCapabilitySync.ts");
-    const matrixSource = readSource("server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts");
+    const syncSource = readSource(
+      "server/modules/marketing/provider-capabilities/providerCapabilitySync.ts",
+    );
+    const matrixSource = readSource(
+      "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts",
+    );
     expect(syncSource).toContain("getConfiguredQwenModels");
     expect(syncSource).toContain("getTaskMappedHuggingFaceModels");
     expect(matrixSource).toContain("standardPreference: [...DEFAULT_STANDARD]");
   });
 
   it("12-15. task matrix includes required tasks and long-form/raw-video constraints", () => {
-    const matrixSource = readSource("server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts");
+    const matrixSource = readSource(
+      "server/modules/marketing/provider-capabilities/marketingTaskCapabilityMatrix.ts",
+    );
     const requiredTasks = [
       "campaign_strategy",
       "hook_generation",
@@ -95,21 +113,29 @@ describe("PR54A-2 provider capability persistence completion", () => {
     for (const task of requiredTasks) {
       expect(matrixSource).toContain(task);
     }
-    const resolverSource = readSource("server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts");
+    const resolverSource = readSource(
+      "server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts",
+    );
     expect(resolverSource).toContain("media_factory_assembled_video");
     expect(matrixSource).toContain("text_to_video_scene_clip");
   });
 
   it("16-18. route resolver honors standard/elite ordering and budget blocking", () => {
-    const resolver = readSource("server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts");
-    const budget = readSource("server/modules/marketing/provider-capabilities/marketingBudgetPolicy.ts");
-    expect(resolver).toContain("input.policy.mode === \"elite\"");
+    const resolver = readSource(
+      "server/modules/marketing/provider-capabilities/marketingProviderRouteResolver.ts",
+    );
+    const budget = readSource(
+      "server/modules/marketing/provider-capabilities/marketingBudgetPolicy.ts",
+    );
+    expect(resolver).toContain('input.policy.mode === "elite"');
     expect(resolver).toContain("allowGenXFallbackInStandard");
     expect(budget).toContain("budget_blocked");
   });
 
   it("19. readiness report includes avatar/voice/music", () => {
-    const readiness = readSource("server/modules/marketing/provider-capabilities/marketingProviderReadinessService.ts");
+    const readiness = readSource(
+      "server/modules/marketing/provider-capabilities/marketingProviderReadinessService.ts",
+    );
     expect(readiness).toContain("avatar");
     expect(readiness).toContain("voice");
     expect(readiness).toContain("music");
@@ -133,8 +159,14 @@ describe("PR54A-2 provider capability persistence completion", () => {
       "server/modules/marketing/social-publishing/adapters/emailPublisher.ts",
       "server/modules/marketing/social-publishing/adapters/blogSeoPublisher.ts",
     ];
-    for (const relPath of adapterPaths) expect(existsSync(resolve(process.cwd(), relPath)), `${relPath} missing`).toBe(true);
-    const base = readSource("server/modules/marketing/social-publishing/adapters/basePublisherStub.ts");
+    for (const relPath of adapterPaths)
+      expect(
+        existsSync(resolve(process.cwd(), relPath)),
+        `${relPath} missing`,
+      ).toBe(true);
+    const base = readSource(
+      "server/modules/marketing/social-publishing/adapters/basePublisherStub.ts",
+    );
     expect(base).toContain("setup_needed");
   });
 
@@ -142,14 +174,20 @@ describe("PR54A-2 provider capability persistence completion", () => {
     const routers = readSource("server/routers.ts");
     expect(routers).toContain("Only approved schedule drafts can be published");
     expect(routers).toContain("hasRealPostId");
-    expect(routers).toContain("publishStatus: persistedSuccess ? (\"published\" as const) : (\"export_only\" as const)");
+    expect(routers).toMatch(
+      /publishStatus:\s*persistedSuccess\s*\?\s*\(\"published\" as const\)\s*:\s*\(\"export_only\" as const\)/,
+    );
   });
 
   it("28-31. guardrails preserved (provider scope, no free-form chat path, no academy edits)", () => {
     const routers = readSource("server/routers.ts");
-    expect(routers).toContain("SUPPORTED_AI_PROVIDERS = [\"genx\", \"huggingface\", \"qwen\"]");
+    expect(routers).toContain(
+      'SUPPORTED_AI_PROVIDERS = ["genx", "huggingface", "qwen"]',
+    );
     expect(routers).not.toContain("/api/chat/free-form");
-    const academySource = readSource("docs/audits/PR54A2_PROVIDER_CAPABILITY_COMPLETION_AUDIT.md");
+    const academySource = readSource(
+      "docs/audits/PR54A2_PROVIDER_CAPABILITY_COMPLETION_AUDIT.md",
+    );
     expect(academySource).toContain("This PR is not Academy");
   });
 });
@@ -161,7 +199,29 @@ describe("PR54A-2 sync behavior", () => {
       discoverProviderModels: vi.fn(async () => ({
         discoveredAt: "2026-05-31T00:00:00.000Z",
         providers: {
-          genx: [{ provider: "genx", id: "genx-a", source: "live_discovery", executableTasks: ["strategy"], executionMode: "sync", endpointFamily: "openai_chat", routeReason: "ok", categories: ["strategy"], suitabilityScore: 1, multimodal: false, qualityTiers: ["standard"], supportsVideo: false, supportsImage: false, supportsVoice: false, supportsAudio: false, supportsAvatar: false, supportsImageToVideo: false, supportsPlayableMedia: false, videoPromptOnly: false }],
+          genx: [
+            {
+              provider: "genx",
+              id: "genx-a",
+              source: "live_discovery",
+              executableTasks: ["strategy"],
+              executionMode: "sync",
+              endpointFamily: "openai_chat",
+              routeReason: "ok",
+              categories: ["strategy"],
+              suitabilityScore: 1,
+              multimodal: false,
+              qualityTiers: ["standard"],
+              supportsVideo: false,
+              supportsImage: false,
+              supportsVoice: false,
+              supportsAudio: false,
+              supportsAvatar: false,
+              supportsImageToVideo: false,
+              supportsPlayableMedia: false,
+              videoPromptOnly: false,
+            },
+          ],
           qwen: [],
           huggingface: [],
         },
@@ -171,15 +231,26 @@ describe("PR54A-2 sync behavior", () => {
     vi.doMock("./_core/ai/providers/providerRegistry", () => ({
       getProviderHealth: vi.fn(async () => []),
     }));
-    vi.doMock("./modules/marketing/provider-capabilities/providerModelStore", () => ({
-      upsertMarketingProviderModel: vi.fn(async () => 1),
-    }));
-    vi.doMock("./modules/marketing/provider-capabilities/providerHealthStore", () => ({
-      createMarketingProviderHealthCheck: vi.fn(async () => 1),
-    }));
+    vi.doMock(
+      "./modules/marketing/provider-capabilities/providerModelStore",
+      () => ({
+        upsertMarketingProviderModel: vi.fn(async () => 1),
+      }),
+    );
+    vi.doMock(
+      "./modules/marketing/provider-capabilities/providerHealthStore",
+      () => ({
+        createMarketingProviderHealthCheck: vi.fn(async () => 1),
+      }),
+    );
 
-    const mod = await import("./modules/marketing/provider-capabilities/providerCapabilitySync");
-    const result = await mod.syncMarketingProviderCapabilitiesForWorkspace({ tenantId: "t", workspaceId: "w", forceRefresh: true });
+    const mod =
+      await import("./modules/marketing/provider-capabilities/providerCapabilitySync");
+    const result = await mod.syncMarketingProviderCapabilitiesForWorkspace({
+      tenantId: "t",
+      workspaceId: "w",
+      forceRefresh: true,
+    });
     expect(result.providerCounts.genx).toBe(1);
     expect(result.providerCounts.qwen).toBe(0);
   });
