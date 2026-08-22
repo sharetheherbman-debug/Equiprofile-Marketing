@@ -38,10 +38,44 @@ function validDate(value: unknown): value is string {
   );
 }
 
+function readLegacyComplimentaryAccess(
+  preferences: Record<string, unknown>,
+): ComplimentaryAccessGrant | null {
+  if (preferences.freeAccess !== true) return null;
+  const rawTier = preferences.freeAccessTier ?? preferences.planTier;
+  const tier: ComplimentaryTier = rawTier === "stable" || rawTier === "pro"
+    ? rawTier
+    : "management_full";
+  const rawEnd = preferences.freeAccessUntil;
+  let endsAt: string | null = null;
+  if (rawEnd !== null && rawEnd !== undefined && rawEnd !== "") {
+    const parsed = new Date(String(rawEnd));
+    if (!Number.isFinite(parsed.getTime())) return null;
+    endsAt = parsed.toISOString();
+  }
+  const rawStart = preferences.freeAccessGrantedAt ?? preferences.freeAccessStartedAt;
+  const parsedStart = rawStart ? new Date(String(rawStart)) : new Date(0);
+  return {
+    version: 1,
+    tier,
+    startsAt: Number.isFinite(parsedStart.getTime()) ? parsedStart.toISOString() : new Date(0).toISOString(),
+    endsAt,
+  };
+}
+
+/**
+ * Reads the canonical overlay first. Legacy free-access preferences are
+ * compatibility-only: a canonical null/invalid marker never falls back to an
+ * old flag, which makes an explicit revoke durable without billing mutation.
+ */
 export function readComplimentaryAccess(
   preferences: Record<string, unknown> | null | undefined,
 ): ComplimentaryAccessGrant | null {
-  const raw = preferences?.complimentaryAccess;
+  if (!preferences) return null;
+  if (!Object.prototype.hasOwnProperty.call(preferences, "complimentaryAccess")) {
+    return readLegacyComplimentaryAccess(preferences);
+  }
+  const raw = preferences.complimentaryAccess;
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const candidate = raw as Partial<ComplimentaryAccessGrant>;
   if (candidate.version !== 1) return null;
@@ -115,6 +149,10 @@ export function revokeComplimentaryAccess(
   return {
     ...(preferences ?? {}),
     complimentaryAccess: null,
+    // Prevent a retained historical preference from re-enabling the overlay.
+    freeAccess: false,
+    freeAccessUntil: null,
+    freeAccessDays: null,
   };
 }
 

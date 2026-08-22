@@ -19,6 +19,8 @@
     "test": "vitest run",
     "db:push": "drizzle-kit migrate",
     "db:migrate": "bash scripts/migrate.sh",
+    "db:inspect": "tsx scripts/audit-migration-baseline.ts",
+    "db:provision-fresh": "tsx scripts/provision-final-core-schema.ts --mode=fresh",
     "db:generate": "drizzle-kit generate",
     "seed:templates": "tsx server/seeds/trainingTemplates.ts",
     "build:management": "node scripts/build-target.mjs management",

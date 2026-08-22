@@ -141,7 +141,12 @@ function fixDatabaseUrl(url: string): string {
  * when the drizzle-kit migration step was skipped or baseline mode marked
  * migration 0008 as applied on an existing DB that was actually missing tables.
  */
-async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
+/**
+ * Applies the historical idempotent schema-reconciliation surface only when a
+ * controlled migration command explicitly enables it. Application startup must
+ * never use this as a substitute for a reviewed database migration.
+ */
+export async function reconcileCoreSchema(db: ReturnType<typeof drizzle>): Promise<void> {
   if (_tablesEnsured) return;
 
   const statements: string[] = [
@@ -2638,9 +2643,12 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     _tablesEnsured = true;
   } catch (error) {
     if (!shouldSuppressTestDbNoise()) {
-      console.error("[Database] Failed to ensure tables:", error);
+      console.error("[Database] Controlled schema reconciliation failed:", error);
     }
-    // Don't set _tablesEnsured so it retries next time
+    _ensureTablesPromise = null;
+    // Controlled migration callers must fail loudly rather than leaving a
+    // partially reconciled database eligible for application startup.
+    throw error;
   }
 }
 
@@ -2686,15 +2694,19 @@ export async function getDb() {
         console.log("[Database] Connection established");
       }
 
-      // Ensure all required tables exist on first connection.
-      // Use a shared promise so concurrent callers don't run ensureTables twice.
-      if (!_ensureTablesPromise) {
-        _ensureTablesPromise = ensureTables(_db);
-      }
-      await _ensureTablesPromise;
-      if (!_tablesEnsured) {
-        _ensureTablesPromise = null;
-        throw new Error("database_table_ensure_failed");
+      // Schema mutation is migration-command-only. This prevents a production
+      // app process from silently creating or altering tables on an unknown or
+      // drifted database. The controlled reconciler must be deliberately
+      // enabled by the migration workflow after inspection and backup checks.
+      if (process.env.CORE_SCHEMA_RECONCILIATION_MODE === "explicit") {
+        if (!_ensureTablesPromise) {
+          _ensureTablesPromise = reconcileCoreSchema(_db);
+        }
+        await _ensureTablesPromise;
+        if (!_tablesEnsured) {
+          _ensureTablesPromise = null;
+          throw new Error("database_schema_reconciliation_failed");
+        }
       }
       await runStartupMediaTruthRepairOnce();
     } catch (error) {

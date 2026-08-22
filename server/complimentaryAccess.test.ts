@@ -111,6 +111,82 @@ describe("complimentary Management access overlay", () => {
     });
   });
 
+  it("allows an expired paid account only while an active complimentary overlay exists", () => {
+    const base = {
+      subscriptionStatus: "expired",
+      planTier: "pro" as const,
+      bothDashboardsUnlocked: false,
+    };
+    const granted = grantComplimentaryAccess({}, {
+      tier: "management_full",
+      days: 7,
+      now: NOW,
+    });
+
+    expect(resolveEffectiveManagementEntitlement(base, granted, NOW)).toMatchObject({
+      subscriptionStatus: "expired",
+      planTier: "pro",
+      effectivePlanTier: "stable",
+      effectiveBothDashboardsUnlocked: true,
+      complimentaryAccessState: "active",
+    });
+  });
+
+  it("reads an active legacy free-access preference as a compatibility overlay", () => {
+    const legacy = {
+      freeAccess: true,
+      freeAccessTier: "stable",
+      freeAccessUntil: "2026-09-01T12:00:00.000Z",
+      planTier: "pro",
+    };
+    const base = {
+      subscriptionStatus: "expired",
+      planTier: "pro" as const,
+      bothDashboardsUnlocked: false,
+    };
+
+    expect(readComplimentaryAccess(legacy)).toMatchObject({ tier: "stable" });
+    expect(resolveEffectiveManagementEntitlement(base, legacy, NOW)).toMatchObject({
+      effectivePlanTier: "stable",
+      complimentaryAccessState: "active",
+    });
+  });
+
+  it("treats expired legacy free access as expired without blocking a paid subscriber", () => {
+    const legacy = {
+      freeAccess: true,
+      freeAccessUntil: "2026-08-01T12:00:00.000Z",
+      planTier: "stable",
+    };
+    const base = {
+      subscriptionStatus: "active",
+      planTier: "stable" as const,
+      bothDashboardsUnlocked: false,
+    };
+
+    expect(resolveEffectiveManagementEntitlement(base, legacy, NOW)).toMatchObject({
+      subscriptionStatus: "active",
+      effectivePlanTier: "stable",
+      complimentaryAccessState: "expired",
+    });
+  });
+
+  it("suppresses retained legacy flags when the canonical overlay is revoked", () => {
+    const revoked = revokeComplimentaryAccess({
+      freeAccess: true,
+      freeAccessUntil: "2026-09-01T12:00:00.000Z",
+      freeAccessDays: 30,
+    });
+
+    expect(revoked).toMatchObject({
+      complimentaryAccess: null,
+      freeAccess: false,
+      freeAccessUntil: null,
+      freeAccessDays: null,
+    });
+    expect(readComplimentaryAccess(revoked)).toBeNull();
+  });
+
   it("rejects invalid durations rather than creating an ambiguous entitlement", () => {
     expect(() =>
       grantComplimentaryAccess({}, { tier: "pro", days: 0, now: NOW }),

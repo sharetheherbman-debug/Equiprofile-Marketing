@@ -106,6 +106,7 @@ import {
 import {
   grantComplimentaryAccess,
   readComplimentaryAccess,
+  resolveEffectiveManagementEntitlement,
   revokeComplimentaryAccess,
 } from "./complimentaryAccess";
 import { getLiveVisitorCount } from "./_core/analyticsTracker";
@@ -532,12 +533,23 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     });
   }
 
-  // Check trial expiry BEFORE status check — a "trial" status with a past
-  // trialEndsAt must be rejected, not silently allowed.
+  const prefs = parseUserPrefs(user.preferences);
+  const basePlanTier = prefs.planTier === "stable" ? "stable" : "pro";
+  const entitlement = resolveEffectiveManagementEntitlement({
+    subscriptionStatus: user.subscriptionStatus,
+    planTier: basePlanTier,
+    bothDashboardsUnlocked: Boolean(prefs.bothDashboardsUnlocked),
+  }, prefs);
+  const complimentaryAccessActive = entitlement.complimentaryAccessState === "active";
+
+  // An expired trial remains blocked unless the separate complimentary overlay
+  // is active. An expired legacy free-access marker can never override a paid
+  // subscription because the effective entitlement is resolved independently.
   if (
     user.subscriptionStatus === "trial" &&
     user.trialEndsAt &&
-    new Date(user.trialEndsAt) < new Date()
+    new Date(user.trialEndsAt) < new Date() &&
+    !complimentaryAccessActive
   ) {
     throw new TRPCError({
       code: "FORBIDDEN",
@@ -545,25 +557,10 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     });
   }
 
-  // Check per-user timed free access expiry.
-  // If admin has granted free access with an expiry and it has passed, deny.
-  const prefs = parseUserPrefs(user.preferences);
-  if (prefs.freeAccess && prefs.freeAccessUntil) {
-    const now = new Date();
-    const expiryDate = new Date(prefs.freeAccessUntil);
-    if (expiryDate < now) {
-      // Free access period has ended — block access
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message:
-          "Your complimentary access period has ended. Please subscribe to continue.",
-      });
-    }
-  }
-
-  // Check subscription status
+  // Active paid/trial access is billing-owned. Complimentary access is only a
+  // separate effective overlay and is never allowed to rewrite that status.
   const validStatuses = ["trial", "active"];
-  if (!validStatuses.includes(user.subscriptionStatus)) {
+  if (!validStatuses.includes(user.subscriptionStatus) && !complimentaryAccessActive) {
     if (
       user.subscriptionStatus === "overdue" ||
       user.subscriptionStatus === "expired" ||
