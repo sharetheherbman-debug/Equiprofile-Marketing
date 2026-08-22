@@ -37,4 +37,31 @@ describe("Academy curriculum and Tutor boundaries", () => {
       "never deletes rows or learner-completion history",
     );
   });
+
+  it("withholds unreviewed static practice scenarios across server, UI, and offline-cache boundaries", () => {
+    const router = read("server/studentRouter.ts");
+    const start = router.indexOf("// ── Scenario Training");
+    const end = router.indexOf("// ── Training Log", start);
+    const scenarioProcedures = router.slice(start, end);
+    const dashboard = read("client/src/pages/StudentDashboard.tsx");
+    const serviceWorker = read("client/public/service-worker.js");
+
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    expect(scenarioProcedures).toContain(
+      "intentionally withheld. Their embedded learner",
+    );
+    expect(scenarioProcedures).toContain(".query(() => [])");
+    expect(scenarioProcedures).toContain("PRECONDITION_FAILED");
+    expect(scenarioProcedures).toContain(
+      "withheld_pending_factual_and_safety_review",
+    );
+    expect(scenarioProcedures).not.toContain("SCENARIO_DATA.find");
+    expect(scenarioProcedures).not.toContain("SCENARIO_DATA.filter");
+    expect(dashboard).toContain(
+      "Static daily scenarios are withheld while their factual and safety review is completed.",
+    );
+    expect(serviceWorker).not.toContain("/api/trpc/student.getDailyScenarios");
+    expect(serviceWorker).toContain("academy-scenarios-withheld-20260822");
+  });
 });

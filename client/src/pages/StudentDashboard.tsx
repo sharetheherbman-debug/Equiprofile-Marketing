@@ -625,7 +625,7 @@ function OverviewView({ onNavigate }: { onNavigate: (v: ActiveView) => void }) {
                   Daily Practice
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  3 fresh scenarios matched to your level
+                  Reviewed lessons and authorised practice tools
                 </p>
               </div>
             </div>
@@ -2571,8 +2571,7 @@ function ScenarioTrainingView() {
       </div>
 
       <p className="text-sm text-gray-500 -mt-2">
-        3 fresh scenarios each day — matched to your level and progress. Come
-        back tomorrow for new ones!
+        Static daily scenarios are withheld while their factual and safety review is completed. Continue with reviewed Academy lessons or authorised teacher work.
       </p>
 
       {answeredAll && (
@@ -2595,7 +2594,7 @@ function ScenarioTrainingView() {
           <div className="text-center py-8">
             <Zap className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-500">
-              No scenarios available right now.
+              Daily scenarios are temporarily withheld pending factual and safety review. Continue with reviewed Academy lessons or authorised teacher-assigned work.
             </p>
           </div>
         </SCard>

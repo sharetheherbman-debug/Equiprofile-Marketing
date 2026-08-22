@@ -3099,6 +3099,9 @@ export const studentRouter = router({
   }),
 
   // ── Scenario Training ────────────────────────────────────────────────────
+  // Legacy static scenarios are intentionally withheld. Their embedded learner
+  // content has not completed the Academy's individual source-to-claim review.
+  // Reviewed Academy lessons and authorised teacher assignments remain available.
   listScenarios: studentProcedure
     .input(
       z
@@ -3107,46 +3110,12 @@ export const studentRouter = router({
             .enum(["beginner", "developing", "intermediate", "advanced"])
             .optional(),
           category: z.string().optional(),
-          /** Optional list of already-seen scenario IDs for rotation/repetition control */
           excludeIds: z.array(z.string()).optional(),
-          /** Max scenarios to return per request — defaults to 8 for manageable batches */
           limit: z.number().int().min(1).max(50).optional(),
         })
         .optional(),
     )
-    .query(({ input }) => {
-      let results = SCENARIO_DATA as Scenario[];
-      if (input?.level) {
-        results = results.filter((s) => s.level === input.level);
-      }
-      if (input?.category) {
-        results = results.filter((s) => s.category === input.category);
-      }
-
-      // ── Rotation / Randomization Logic ────────────────────────────────
-      // 1. Filter out already-seen scenarios if the client sends exclusion list
-      const excludeSet = new Set(input?.excludeIds ?? []);
-      let unseen = results.filter((s) => !excludeSet.has(s.id));
-      // If all scenarios at this level/category have been seen, reset and show all (full rotation)
-      if (unseen.length === 0) {
-        unseen = results;
-      }
-      // 2. Shuffle using Fisher-Yates for true randomization
-      const shuffled = [...unseen];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      // 3. Return limited batch (default 8)
-      const limit = input?.limit ?? 8;
-      const batch = shuffled.slice(0, limit);
-
-      // Strip correct answer info before sending — frontend gets it after answering
-      return batch.map(({ choices, ...rest }) => ({
-        ...rest,
-        choices: choices.map(({ id, text }) => ({ id, text })),
-      }));
-    }),
+    .query(() => []),
 
   checkScenarioAnswer: studentProcedure
     .input(
@@ -3155,84 +3124,29 @@ export const studentRouter = router({
         choiceId: z.string(),
       }),
     )
-    .mutation(({ input }) => {
-      const scenario = SCENARIO_DATA.find((s) => s.id === input.scenarioId);
-      if (!scenario) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Scenario not found",
-        });
-      }
-      const choice = scenario.choices.find((c) => c.id === input.choiceId);
-      if (!choice) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Choice not found" });
-      }
-      // Return the full choice with explanation + all choices with explanations so the frontend can show the reveal
-      return {
-        isCorrect: choice.isCorrect,
-        selectedChoice: choice,
-        allChoices: scenario.choices,
-        learningTakeaway: scenario.learningTakeaway,
-      };
+    .mutation(() => {
+      throw new TRPCError({
+        code: "PRECONDITION_FAILED",
+        message:
+          "Static practice scenarios are unavailable pending Academy factual and safety review. Use reviewed Academy lessons or your current teacher-assigned work.",
+      });
     }),
 
-  /** Daily Practice — deterministic 3 scenarios per user per day */
-  getDailyScenarios: studentProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.id;
-    const user = await db.getUserById(userId);
-    const prefs = parseUserPrefs(user?.preferences);
-    const currentLevel = (prefs.studentLevel as string) ?? "beginner";
-
-    // Deterministic daily seed based on userId + date
+  /** Static Daily Practice is intentionally fail-closed until all scenarios are reviewed. */
+  getDailyScenarios: studentProcedure.query(() => {
     const today = new Date();
-    const dayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-    const seedStr = `${userId}-${dayKey}`;
-    let seed = 0;
-    for (let i = 0; i < seedStr.length; i++) {
-      seed = ((seed << 5) - seed + seedStr.charCodeAt(i)) | 0;
-    }
-
-    // Seeded random number generator (mulberry32)
-    function mulberry32(s: number) {
-      return function () {
-        s |= 0;
-        s = (s + 0x6d2b79f5) | 0;
-        let t = Math.imul(s ^ (s >>> 15), 1 | s);
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
-    const rng = mulberry32(seed);
-
-    // Prefer scenarios at current level, then one level below/above
-    const levelOrder = ["beginner", "developing", "intermediate", "advanced"];
-    const currentIdx = levelOrder.indexOf(currentLevel);
-    const preferredLevels = [currentLevel];
-    if (currentIdx > 0) preferredLevels.push(levelOrder[currentIdx - 1]);
-    if (currentIdx < levelOrder.length - 1)
-      preferredLevels.push(levelOrder[currentIdx + 1]);
-
-    // Filter scenarios to preferred levels
-    let pool = SCENARIO_DATA.filter((s) => preferredLevels.includes(s.level));
-    if (pool.length < 3) pool = [...SCENARIO_DATA]; // fallback to all
-
-    // Shuffle with seeded RNG
-    const shuffled = [...pool];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
-    // Pick exactly 3
-    const daily = shuffled.slice(0, 3);
-
-    // Strip correct answer info
+    const date = String(today.getFullYear()) + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
     return {
-      date: dayKey,
-      scenarios: daily.map(({ choices, ...rest }) => ({
-        ...rest,
-        choices: choices.map(({ id, text }) => ({ id, text })),
-      })),
+      date,
+      availability: "withheld_pending_factual_and_safety_review" as const,
+      scenarios: [] as Array<{
+        id: string;
+        title: string;
+        level: ScenarioLevel;
+        category: string;
+        prompt: string;
+        choices: Array<{ id: string; text: string }>;
+      }>,
     };
   }),
 
