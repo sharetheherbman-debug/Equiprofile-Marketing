@@ -6638,81 +6638,78 @@ Use this lesson to ask: who is responsible; what current written plan and veteri
     category: "Horse Health & First Response",
     sortOrder: 2,
     objectives: [
-      "Recognise the signs of common ailments including colic, laminitis, thrush, and mud fever",
-      "Understand when a condition is a vet emergency versus manageable first aid",
-      "Know basic first-response actions for each common ailment",
-      "Understand the importance of not delaying veterinary attention when needed",
+      "Recognise that labels such as colic, laminitis, hoof concerns, skin concerns, wounds, breathing concerns, movement changes, and other health/welfare concerns require current professional, responsible-person, veterinary, safety, welfare, and emergency-route context",
+      "Understand that World Horse Welfare describes colic as abdominal pain with different possible causes, and World Horse Welfare and the British Horse Society treat suspected laminitis as an emergency requiring prompt veterinary contact",
+      "Record authorised factual context and observations without identifying a condition, assessing severity, deciding a cause, treatment, prognosis, outcome, or emergency status, or changing feed, water, turnout, medication, handling, movement, or care",
+      "Use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route when a health or welfare concern is outside the individual plan or unclear",
     ],
-    content: `Horses are surprisingly prone to a range of common ailments. Understanding what these look like and how to respond is essential for every horse carer. Recognising the difference between a minor issue and a veterinary emergency can save a horse's life.
+    content: `A health or welfare concern may be described with a familiar label, but labels do not establish a diagnosis, severity, cause, treatment, prognosis, outcome, or emergency status for an individual horse. This lesson is an educational boundary only. It is not a procedure for identifying, ruling out, diagnosing, assessing, examining, handling, moving, restraining, monitoring, treating, medicating, feeding, watering, housing, turning out, exercising, restricting, bandaging, cleaning, applying a product, choosing a kit, making an emergency decision, or troubleshooting any health or welfare concern.
 
-## Colic
+## Colic and Laminitis: Limited Source Context
 
-Colic is abdominal pain and is the single biggest emergency in horse care. Signs include: looking at the flanks, pawing the ground, lying down and getting up repeatedly, rolling, sweating, and loss of appetite. Colic ranges from mild (gas build-up) to life-threatening (twisted gut). Any sign of colic should be treated seriously. Remove food, keep the horse walking gently if it wants to roll violently, and call the vet immediately. Do not wait to see if it passes.
+World Horse Welfare describes colic as abdominal pain rather than a single disease, with different possible causes; it directs a carer to make an emergency veterinary call at the first signs and follow the veterinary practice’s advice. World Horse Welfare and the British Horse Society describe suspected laminitis as an emergency requiring prompt veterinary contact. British Horse Society guidance explains that signs can be subtle and variable, that the frequently described “laminitic stance” occurs in less than half of diagnosed cases, and that diagnosis and management require veterinary assessment and an individual plan.
 
-## Laminitis
+These sources do not authorise a learner to decide that an individual horse has colic, laminitis, a hoof condition, a skin condition, a wound condition, a breathing condition, lameness, pain, stress, dehydration, a feed/water problem, or any other diagnosis. They do not provide a universal distinction between “minor” and “emergency,” a generic treatment protocol, a generic feed/water/turnout/movement decision, or a reason to delay veterinary contact while comparing signs with a list, image, another horse, a previous episode, an online example, or a stated label.
 
-Laminitis is inflammation of the sensitive laminae inside the hoof — it is extremely painful and can be career-ending or fatal if not treated. Signs include: reluctance to move, shifting weight, the classic "rocking horse" stance (leaning back to take weight off the front feet), heat in the hooves, and a bounding digital pulse. Laminitis is triggered by overfeeding (especially rich grass or grain), obesity, stress, or toxins. At first signs, remove the horse from grass, do not force it to walk, and call the vet urgently.
+## Professional and Responsible-Person Scope
 
-## Thrush
+The current responsible person, veterinary practice, yard, welfare, safety, incident, emergency, authorised reporting procedure, and relevant qualified professionals determine what action is appropriate; who is authorised; what records, contacts, equipment, supplies, access, supervision, handling, movement, transport, welfare, safety, hygiene, isolation, care, clinical and emergency arrangements apply; and whether activity can begin, continue, change, pause, or stop. A generic lesson cannot determine any of those decisions.
 
-Thrush is a bacterial infection of the frog of the hoof, recognised by a foul-smelling black discharge. It is caused by standing in wet, dirty conditions. Treatment involves cleaning the frog thoroughly, applying antibacterial spray or solution, and improving the horse's living conditions. Prevention is better than cure — regular hoof picking and clean bedding are key.
+## Authorised Factual Observation and Escalation
 
-## Mud Fever
+Where the responsible person permits it and the current written procedure requires it, a learner may record authorised factual context and observations such as date, time, location, current instruction, people present, visible environment, visible behaviour, a visible change, and which escalation route was used. Do not touch, restrain, move, inspect, palpate, pick out feet, obtain a sample, test, measure, assess, diagnose, treat, medicate, determine a cause, determine severity, decide fitness/welfare, decide a prognosis, or decide an emergency status from this lesson.
 
-Mud fever (pastern dermatitis) affects the lower legs, causing scabs, swelling, and soreness. It is caused by prolonged exposure to wet, muddy conditions. Treatment involves gently washing and drying the legs, removing scabs carefully, and applying antibacterial cream. Severe cases may need veterinary treatment including antibiotics.
+If a health, welfare, pain, comfort, behaviour, environment, movement, hoof, skin, wound, breathing, feed/water, handling, safety, incident, emergency, transport, record, procedure, or rule concern is outside the current plan or unclear, stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route. Do not delay required emergency support, or independently change feed, water, turnout, movement, medication, treatment, housing, handling, transport, equipment, supplies, or a care plan.
 
-## When to Call the Vet
+## Reflective Use
 
-Call the vet immediately for: any sign of colic, suspected laminitis, deep or joint-near wounds, eye injuries, severe lameness, difficulty breathing, profuse bleeding, or any condition that is worsening despite first aid.`,
+Use this lesson to ask: who is responsible; what current individual plan and veterinary/yard procedure apply; what factual information may be recorded; what remains unknown; and what escalation route is current? The aim is safe recognition of professional scope, not self-directed ailment management.`,
     keyPoints: [
-      "Colic is an emergency — any sign of abdominal pain requires immediate veterinary attention",
-      "Laminitis signs include reluctance to move, heat in the hooves, and the rocking horse stance",
-      "Thrush is recognised by foul-smelling black discharge from the frog and is caused by poor conditions",
-      "Mud fever affects the lower legs and requires cleaning, drying, and antibacterial treatment",
-      "When in doubt, always call the vet — delayed treatment can turn a minor problem into a major one",
+      "A familiar label, sign list, image, another horse, previous episode, online example, or apparent lack of change does not establish a diagnosis, severity, cause, treatment, prognosis, outcome, or emergency status for an individual horse",
+      "World Horse Welfare describes colic as abdominal pain with different possible causes and directs a carer to make an emergency veterinary call at first signs; suspected laminitis is treated as an emergency requiring prompt veterinary contact",
+      "British Horse Society guidance describes variable/subtle laminitis signs and notes that the commonly described “laminitic stance” occurs in less than half of diagnosed cases; it is not a learner diagnosis rule",
+      "Only the current responsible person, veterinary practice, yard, welfare, safety, incident, emergency, authorised reporting procedure, and relevant qualified professionals determine records, contacts, supplies, handling, movement, transport, clinical action, care, and escalation",
+      "A learner may record authorised factual context and observations but must not independently examine, handle, move, test, measure, inspect, diagnose, treat, medicate, change feed/water/turnout, decide fitness/welfare, determine severity/cause/prognosis, or decide an emergency status",
     ],
     safetyNote:
-      "A colicky horse can be dangerous — it may throw itself to the ground without warning. Stay alert, keep a safe distance, and do not attempt to restrain a horse that is thrashing. Wait for the vet.",
+      "Do not use this lesson to touch, restrain, move, inspect, palpate, pick out feet, obtain a sample, test, measure, assess, diagnose, treat, medicate, decide fitness/welfare, determine severity/cause/prognosis, decide an emergency status, or change feed, water, turnout, housing, handling, movement, transport, equipment, supplies, or a care plan. Follow the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting procedure.",
     practicalApplication:
-      "Create a quick-reference card listing the signs and first-response actions for colic, laminitis, thrush, and mud fever. Keep it in the tack room or feed room where it can be accessed quickly in an emergency.",
+      "With the responsible person’s permission, review the current individual emergency-care, veterinary-contact, welfare, safety, incident, emergency, authorisation, and reporting procedure. Identify the authorised decision-maker, the factual information that may be recorded, and the escalation route. Do not create a generic ailment action card or undertake an examination, handling, treatment, feed/water, turnout, movement, medication, or emergency decision from this lesson.",
     commonMistakes: [
-      "Waiting to see if colic improves on its own before calling the vet",
-      "Continuing to exercise a horse showing early signs of laminitis",
-      "Neglecting regular hoof picking, allowing thrush to develop",
-      "Ripping off mud fever scabs without softening them first, causing pain and infection risk",
-      "Assuming a horse is fine because it is still eating — some horses eat through significant pain",
+      "Treating a familiar label, sign list, image, another horse, previous episode, online example, or apparent lack of change as a diagnosis, severity assessment, cause, treatment plan, prognosis, outcome, or emergency decision",
+      "Using a generic lesson to decide whether a concern is “minor,” to delay professional contact, or to override the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, individual-plan, or authorised reporting route",
+      "Touching, restraining, moving, inspecting, palpating, picking out feet, obtaining a sample, testing, measuring, assessing, diagnosing, treating, medicating, deciding fitness/welfare, determining severity/cause/prognosis, or deciding an emergency status from a generic lesson",
+      "Independently changing feed, water, turnout, housing, handling, movement, transport, equipment, supplies, treatment, medication, or a care plan",
+      "Failing to record only authorised factual context and observations when a concern needs escalation",
     ],
     knowledgeCheck: [
       {
-        question:
-          "What is the most important first action if you suspect colic?",
+        question: "What is the correct scope of a familiar ailment label or an online sign list for an individual horse?",
         options: [
-          "Give the horse a feed to see if appetite returns",
-          "Walk the horse briskly for an hour",
-          "Remove food, keep the horse calm, and call the vet immediately",
-          "Apply a poultice to the stomach area",
+          "It establishes a diagnosis, severity, cause, treatment, prognosis, outcome, and emergency status",
+          "It allows a learner to change feed, water, turnout, medication, movement, housing, or treatment before professional contact",
+          "It can support recognition that a concern needs the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route; it is not a diagnosis or self-triage rule",
+          "It replaces the current individual care plan and veterinary direction",
         ],
         correctIndex: 2,
-        explanation:
-          "Colic is a potential emergency. Remove food to prevent further gut problems, keep the horse calm, and contact the vet immediately. Do not wait.",
+        explanation: "World Horse Welfare and British Horse Society guidance supports prompt veterinary escalation for relevant concerns, not generic learner diagnosis, treatment, or self-directed management.",
       },
       {
-        question: "What is the classic stance of a horse with laminitis?",
+        question: "What should a learner do if a health, welfare, pain, comfort, behaviour, environment, movement, hoof, skin, wound, breathing, feed/water, handling, safety, incident, emergency, transport, record, procedure, or rule concern is outside the current plan or unclear?",
         options: [
-          "Standing on three legs",
-          "Leaning forward",
-          "Rocking horse stance — leaning back to reduce weight on the front feet",
-          "Lying flat on its side",
+          "Determine the cause and severity from a generic symptom list before acting",
+          "Touch, restrain, move, inspect, test, measure, diagnose, treat, medicate, or change feed/water/turnout from this lesson",
+          "Stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route",
+          "Delay required professional contact while comparing the horse with another horse, online example, previous episode, or a stated label",
         ],
         correctIndex: 2,
-        explanation:
-          "The rocking horse stance — with hind legs pushed under the body and front legs stretched forward — is the classic sign of laminitic pain in the front feet.",
+        explanation: "A learner may record authorised factual context and observations, but must not independently identify a condition, assess severity, decide a cause, treatment, prognosis, outcome, or emergency status.",
       },
     ],
     aiTutorPrompts: [
-      "What are the different types of colic and how do they differ?",
-      "How can I prevent laminitis in a good doer on rich pasture?",
-      "What should be in a basic equine first-aid kit?",
+      "What current individual emergency-care, veterinary-contact, welfare, safety, incident, emergency, authorisation, and reporting procedure applies, and who is authorised to act?",
+      "How can I record authorised factual context and observations without identifying a condition, assessing severity, deciding a cause/treatment/prognosis, changing care, or deciding an emergency status?",
+      "Why do World Horse Welfare and British Horse Society sources require professional escalation for colic/laminitis concerns rather than a generic learner diagnosis or treatment plan?",
     ],
     linkedCompetencies: [
       "daily_health_check",

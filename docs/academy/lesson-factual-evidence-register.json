@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 65,
-    "claimReviewedAndAccepted": 37
+    "sourceMappedRequiresSpecificClaimReview": 64,
+    "claimReviewedAndAccepted": 38
   },
   "lessons": [
     {
@@ -2677,35 +2677,43 @@
       "sources": [
         {
           "organisation": "World Horse Welfare",
-          "title": "Horse health essentials",
-          "url": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-          "checkedAt": "2026-08-21"
+          "title": "Colic in horses",
+          "url": "https://www.worldhorsewelfare.org/advice/colic-in-horses",
+          "checkedAt": "2026-08-22"
         },
         {
           "organisation": "World Horse Welfare",
-          "title": "Preparing for an emergency – equine first aid",
-          "url": "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/preparing-for-an-emergency-equine-first-aid",
-          "checkedAt": "2026-08-21"
+          "title": "Laminitis in horses",
+          "url": "https://www.worldhorsewelfare.org/advice/laminitis-in-horses",
+          "checkedAt": "2026-08-22"
         },
         {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
+          "organisation": "British Horse Society",
+          "title": "Laminitis",
+          "url": "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/equine-diseases/laminitis/",
+          "checkedAt": "2026-08-22"
         },
         {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
+          "organisation": "British Horse Society",
+          "title": "Horse emergencies and emergency care planning",
+          "url": "https://www.bhs.org.uk/horse-care-and-welfare/ownership-loaning/owning-a-horse/horse-emergencies-and-emergency-care-planning/",
+          "checkedAt": "2026-08-22"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [],
-      "whatWasVerified": "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
-      "lessonChangeMade": "No source-text change is recorded by this mapping step.",
-      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
-      "reviewDecision": null
+      "sourceCheckDate": "2026-08-22",
+      "materialNumberOrRuleMentions": [
+        "less than half"
+      ],
+      "whatWasVerified": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REWRITE: World Horse Welfare describes colic as abdominal pain with different possible causes and directs emergency veterinary contact at first signs; World Horse Welfare and British Horse Society treat suspected laminitis as an emergency requiring prompt veterinary contact. British Horse Society states that the frequently described laminitic stance occurs in less than half of diagnosed cases. The rewritten lesson treats those findings as non-diagnostic context only and otherwise teaches authorised factual observation, current professional/responsible-person scope, no independent examination or care change, and escalation.",
+      "lessonChangeMade": "Removed diagnosis, type/severity/cause/prognosis, sign-rule, treatment, medication, first-aid, hoof/skin cleaning, feed, water, turnout, housing, movement, restraint, kit, emergency-action-card, and symptom-interpretation instructions. Replaced them across learner text, assessments and Tutor prompts with source-bounded context, professional-scope recognition, authorised factual observation and escalation.",
+      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
+      "reviewDecision": {
+        "reviewedAt": "2026-08-22",
+        "reviewedBy": "academy-source-comparison",
+        "sourceUrl": "https://www.worldhorsewelfare.org/advice/colic-in-horses",
+        "claimReviewed": "Complete post-rewrite lesson scope: objectives, learner text, key points, safety note, practical activity, common-mistake warnings, knowledge-check explanations and Tutor prompts, limited to cited colic/laminitis emergency context; authorised factual observation; current responsible-person/veterinary/yard/welfare/safety scope; no independent examination, treatment, care change, diagnosis or self-triage; and professional escalation.",
+        "outcome": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REWRITE"
+      }
     },
     {
       "lessonSlug": "equine-first-aid-basics",
