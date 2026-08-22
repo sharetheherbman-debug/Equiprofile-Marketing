@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, phase-1/small-medium-completion]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, phase-1/small-medium-completion]
 
 jobs:
   test:
@@ -34,8 +34,8 @@ jobs:
       - name: Type check
         run: npm run check
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests in deterministic single-fork mode
+        run: npx vitest run --pool=forks --poolOptions.forks.singleFork=true
 
       - name: Build application
         run: npm run build
