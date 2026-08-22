@@ -9375,70 +9375,79 @@ Colic can be an emergency. Support a consistent, individually appropriate feedin
     category: "Nutrition & Feeding",
     sortOrder: 2,
     objectives: [
-      "Identify common types of horse feed",
-      "Understand the difference between forage and hard feed",
-      "Recognise when supplementary feeding is needed",
-      "Describe the importance of quality control in feed",
+      "Recognise broad feed categories while understanding that the individual feeding plan, not a generic list, determines suitability",
+      "Understand that forage, concentrates, balancers, supplements, water, quality, and storage decisions require individual welfare and nutrition assessment",
+      "Know that a qualified nutrition or veterinary professional may be required before selecting, adding, removing, or changing feed or supplements",
+      "Use factual observation and the current responsible-person procedure to identify and report feed, forage, storage, water, condition, health, welfare, or safety concerns",
     ],
-    content: `Horse feed falls into two broad categories: forage and concentrates.
+    content: `Feed selection is an individual horse-health, welfare, nutrition, management, and safety decision. This lesson introduces broad categories only. It does not prescribe a diet, calculate quantities, diagnose a nutritional or health problem, decide that a feed is safe or unsafe for an individual horse, select a supplement, treat a condition, interpret a laboratory analysis, replace a veterinary or qualified nutrition assessment, or authorise a feed, forage, hydration, storage, grazing, weight, or workload change.
 
-## Forage
+## Broad Feed Categories
 
-Hay is dried grass. Good hay should smell sweet, feel dry, and be free of dust and mould. Haylage is semi-dried wrapped grass — more palatable but higher in energy. Grass is the most natural forage.
+World Horse Welfare and British Horse Society describe forage as high-fibre material that can include grass, hay, haylage, chaffs, fibre products, and other sources selected for the individual horse. They describe concentrates as energy-dense feeds that may be used for some horses, while balancers and supplements may have different purposes. Category names do not establish that a particular product, ingredient, amount, nutrient content, texture, moisture level, energy level, or feed type is suitable for every horse.
 
-## Concentrates
+A responsible person and, where needed, a qualified nutrition or veterinary professional must consider the individual horse’s current feeding plan, body condition, age, workload, health information, welfare, dental and hoof information, access to water, forage, grazing, environment, management, feed analysis, manufacturer information, storage, and current risks. Do not decide that a horse needs extra calories, concentrates, chaff, a balancer, a supplement, haylage, straw, soaked forage, or a restriction from this lesson alone.
 
-Concentrates include cubes, coarse mixes, and straights (oats, barley, sugar beet). These supplement the diet for horses in work or needing extra calories.
+## Forage and Concentrate Boundaries
 
-## Chaff
+Both reviewed sources describe forage-led feeding and regular access to clean water as central general principles, but the quantity, type, method, timing, and access arrangement must follow the individual plan. Some horses need a tailored approach to control calories, condition, chewing opportunity, health, work, turnout, or other circumstances. Do not use “majority,” “constant,” “natural,” “rich,” “high energy,” “little and often,” or a copied percentage as a universal instruction.
 
-Chaff (chopped hay or straw) is added to hard feeds to slow eating and encourage chewing, promoting better digestion.
+Concentrates, balancers, and supplements are not interchangeable. A product’s label, an ingredient list, a scoop, a feed type, a yard routine, or another horse’s diet is not enough to select the correct feeding plan. Consult the responsible person and obtain appropriate qualified support before changing a diet, adding a supplement, responding to a weight, condition, hydration, health, workload, or grazing concern, or using a product for a claimed health outcome.
 
-## Quality Control
+## Feed, Forage, Water, and Storage Quality
 
-Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof containers. Check use-by dates.`,
+The reviewed sources support good hygiene, clean feed and utensils, dry and appropriate storage, clean water, and not feeding visibly mouldy feed or forage. These principles do not let a learner diagnose respiratory disease, toxicity, contamination, spoilage, a feed-borne illness, a water problem, or a horse’s condition from a smell, dust, appearance, date, or generic rule. Follow the current site procedure, record factual observations, remove access only when instructed by the responsible person or emergency procedure, and seek the appropriate professional support.
+
+## Stop and Escalate
+
+Stop and use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route if feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare becomes concerning; if a product is damaged, contaminated, expired, unidentified, incorrectly stored, or not in the current plan; or if the learner is unsure. Do not feed, withhold, substitute, dose, or change a product independently.`,
     keyPoints: [
-      "Forage should form the majority of every horse's diet",
-      "Concentrates are supplementary",
-      "Chaff slows eating and improves digestion",
-      "Always check feed quality",
-      "Store feed properly",
+      "Forage, concentrates, balancers, supplements, water, quality, and storage decisions must follow the individual horse’s current feeding, welfare, and professional plan",
+      "Forage, concentrate, balancer, supplement, product, ingredient, quantity, nutrient, texture, moisture, and energy claims are not universal instructions",
+      "A product name, label, ingredient list, scoop, feed type, yard routine, or another horse’s diet does not establish suitability for an individual horse",
+      "Use factual observation and the current procedure to report feed, forage, water, storage, hygiene, condition, health, safety, or welfare concerns; do not diagnose the cause",
+      "Do not feed, withhold, substitute, dose, add, remove, or change a feed product independently when it is outside the current plan or conditions are uncertain",
     ],
     safetyNote:
-      "Dusty or mouldy hay causes serious respiratory conditions. Always inspect before feeding.",
+      "Do not use appearance, smell, dust, a date, or a generic rule to diagnose contamination, respiratory disease, toxicity, spoilage, a feed-borne illness, a water problem, or a horse’s condition. Follow the current site procedure, report factual concerns, and use responsible-person, veterinary, qualified nutrition, welfare, or emergency support when required.",
     practicalApplication:
-      "Identify five different types of feed at your yard and categorise each.",
+      "With the responsible person’s permission, read the current written feeding plan and observe how authorised people check product identity, storage, water access, hygiene, and records. Ask who selected the plan and what current professional, welfare, and escalation procedures apply. Do not categorise a product as suitable, feed a horse, change a product, or make a health or nutrition decision from this lesson alone.",
     commonMistakes: [
-      "Overfeeding concentrates",
-      "Feeding dusty hay",
-      "Not storing feed properly",
-      "Assuming all horses need hard feed",
-      "Feeding rich haylage to laminitis-prone horses",
+      "Selecting, adding, removing, withholding, substituting, dosing, or changing forage, concentrate, balancer, supplement, water, or another product outside the individual current plan and authorised procedure",
+      "Using a generic category, product label, ingredient, scoop, feed type, yard routine, or another horse’s diet as proof that a product is suitable",
+      "Diagnosing contamination, respiratory disease, toxicity, spoilage, a feed-borne illness, a water problem, or a horse’s condition from appearance, smell, dust, a date, or a generic rule",
+      "Treating a concentrate, balancer, supplement, chaff, haylage, straw, soaked forage, or restriction as a universal response to workload, weight, condition, hydration, health, grazing, or welfare",
+      "Continuing when feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare is concerning or outside the current plan",
     ],
     knowledgeCheck: [
       {
-        question: "What should form the majority of a horse's diet?",
-        options: ["Concentrates", "Forage", "Supplements", "Treats"],
+        question: "What determines whether a particular forage, concentrate, balancer, supplement, or product is suitable for a horse?",
+        options: [
+          "Its category name or another horse’s diet",
+          "The individual horse’s current feeding, welfare, and professional plan after appropriate assessment",
+          "A generic online list",
+          "The product’s colour or smell alone",
+        ],
         correctIndex: 1,
-        explanation: "Forage should always be the bulk of the diet.",
+        explanation: "Broad feed categories do not select an individual diet. The responsible person and, where needed, qualified nutrition or veterinary professionals must consider the current plan and individual context.",
       },
       {
-        question: "Why is chaff added to hard feed?",
+        question: "What should happen if feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare is concerning or outside the current plan?",
         options: [
-          "Better taste",
-          "Cheaper",
-          "To slow eating and improve digestion",
-          "To add colour",
+          "Choose a replacement feed from a generic list",
+          "Make a rapid change to test whether the concern improves",
+          "Use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route and report factual observations",
+          "Assume the problem is caused by a single ingredient",
         ],
         correctIndex: 2,
         explanation:
-          "Chaff encourages chewing and saliva production for better digestion.",
+          "A generic lesson cannot diagnose the cause or select a diet change. Follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "What's the difference between hay and haylage?",
-      "How do I know if my horse needs hard feed?",
-      "What are the signs of poor-quality hay?",
+      "What current responsible-person and qualified-professional procedure applies if feed, forage, water, storage, or a horse’s condition is concerning?",
+      "How should I report factual feed, forage, water, appetite, condition, health, welfare, or safety observations without selecting a product or diagnosing a cause?",
+      "What authority, written feeding plan, product check, storage procedure, professional support, and emergency route apply before any feed change?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "horse_care"],
   },
