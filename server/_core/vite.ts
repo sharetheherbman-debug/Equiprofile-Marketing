@@ -1,18 +1,8 @@
 /**
- * Frontend Serving — True 2-Frontend Architecture
+ * Frontend serving for the Management-only release candidate.
  *
- * Production:
- *   dist/public/management/  →  served on equiprofile.online
- *     management-assets/     →  /management-assets/ URL namespace
- *   dist/public/school/      →  served on school.equiprofile.online
- *     school-assets/         →  /school-assets/ URL namespace
- *
- * Each frontend has its own isolated asset directory.  URL namespaces never
- * overlap, so cross-site asset collisions are impossible — no merge step needed.
- *
- * Development:
- *   Uses Vite dev server for the site set by VITE_SITE env var
- *   (defaults to "management"). Switch with: VITE_SITE=school npm run dev
+ * Production serves only dist/public/management. Academy, Shop and legacy
+ * School are deliberately not production dependencies in this release.
  */
 import express, { type Express } from "express";
 import fs from "fs";
@@ -23,33 +13,11 @@ import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 import { getGeneratedStorageRoot } from "./storage/runtimeFileStorage";
 
-// ── Hostname detection ─────────────────────────────────────────────────────
-
-/** Patterns that identify the school subdomain */
-const SCHOOL_HOSTNAME_PATTERNS = [
+const PAUSED_PRODUCT_HOSTS = new Set([
+  "academy.equiprofile.online",
+  "shop.equiprofile.online",
   "school.equiprofile.online",
-  "school.localhost",
-  "school.127.0.0.1",
-];
-
-/**
- * Determine which frontend to serve based on the request hostname.
- * Returns "school" for school.equiprofile.online, "management" for everything else.
- */
-function getSiteModeFromRequest(hostname: string): "management" | "school" {
-  const lower = hostname.toLowerCase().split(":")[0]; // strip port
-  if (
-    lower.startsWith("school.") ||
-    SCHOOL_HOSTNAME_PATTERNS.some(
-      (p) => lower === p || lower.startsWith(p + ":"),
-    )
-  ) {
-    return "school";
-  }
-  return "management";
-}
-
-// ── Development (Vite dev server) ──────────────────────────────────────────
+]);
 
 const SENSITIVE_PATH_PATTERNS = [
   /^\/\.env(?:[./]|$)/i,
@@ -87,8 +55,15 @@ function sendSafeNotFound(req: express.Request, res: express.Response) {
   return res.status(404).type("text/plain").send("Not Found");
 }
 
+function normalizedHostname(hostname: string): string {
+  return hostname.toLowerCase().split(":")[0];
+}
+
+function isPausedProductHost(hostname: string): boolean {
+  return PAUSED_PRODUCT_HOSTS.has(normalizedHostname(hostname));
+}
+
 export async function setupVite(app: Express, server: Server) {
-  // Serve generated media assets at /media/generated/* in dev mode too
   const storageRoot = getGeneratedStorageRoot();
   fs.mkdirSync(storageRoot, { recursive: true });
   app.use(
@@ -120,11 +95,8 @@ export async function setupVite(app: Express, server: Server) {
 
   app.use(vite.middlewares);
 
-  // SPA fallback for development — serve index.html for non-static routes
   app.use((req, res, next) => {
-    if (isSensitiveProbePath(req.path)) {
-      return sendSafeNotFound(req, res);
-    }
+    if (isSensitiveProbePath(req.path)) return sendSafeNotFound(req, res);
     if (
       req.originalUrl.startsWith("/api/") ||
       req.originalUrl.startsWith("/trpc") ||
@@ -134,15 +106,11 @@ export async function setupVite(app: Express, server: Server) {
       return next();
     }
 
-    const url = req.originalUrl;
-
-    // In dev, serve the site matching VITE_SITE (defaults to management)
-    const devSite = process.env.VITE_SITE || "management";
     const clientTemplate = path.resolve(
       import.meta.dirname,
       "../..",
       "client",
-      devSite,
+      "management",
       "index.html",
     );
 
@@ -153,30 +121,23 @@ export async function setupVite(app: Express, server: Server) {
           `src="./src/main.tsx"`,
           `src="./src/main.tsx?v=${nanoid()}"`,
         );
-
-        const rawPage = await vite.transformIndexHtml(url, template);
+        const rawPage = await vite.transformIndexHtml(req.originalUrl, template);
         res.status(200).set({ "Content-Type": "text/html" }).end(rawPage);
-      } catch (e) {
-        vite.ssrFixStacktrace(e as Error);
-        next(e);
+      } catch (error) {
+        vite.ssrFixStacktrace(error as Error);
+        next(error);
       }
     })();
   });
 }
-
-// ── Production (static files) ──────────────────────────────────────────────
 
 export function serveStatic(app: Express) {
   const baseDist =
     process.env.NODE_ENV === "development"
       ? path.resolve(import.meta.dirname, "../..", "dist", "public")
       : path.resolve(import.meta.dirname, "public");
-
   const mgmtDist = path.resolve(baseDist, "management");
-  const schoolDist = path.resolve(baseDist, "school");
 
-  // Serve generated media assets at /media/generated/*
-  // STORAGE_ROOT defaults to /var/equiprofile/storage (override: EQUIPROFILE_STORAGE_ROOT)
   const storageRoot = getGeneratedStorageRoot();
   if (fs.existsSync(storageRoot)) {
     app.use(
@@ -191,20 +152,14 @@ export function serveStatic(app: Express) {
       }),
     );
   } else {
-    // Register route anyway — will 404 until storage root is created
     app.use("/media/generated", (_req, res) => res.status(404).end());
   }
 
-  // Verify both frontend builds exist
-  for (const [name, dir] of [
-    ["management", mgmtDist],
-    ["school", schoolDist],
-  ] as const) {
-    if (!fs.existsSync(dir)) {
-      console.warn(
-        `⚠️  ${name} frontend build not found at ${dir} — run "npm run build:${name}"`,
-      );
-    }
+  const indexPath = path.resolve(mgmtDist, "index.html");
+  if (!fs.existsSync(indexPath)) {
+    console.error(
+      `[vite.ts] Management frontend build missing at ${indexPath}. Run npm run build:management.`,
+    );
   }
 
   const STATIC_FILE_EXTENSIONS = [
@@ -245,86 +200,55 @@ export function serveStatic(app: Express) {
       res.setHeader("Expires", "0");
       res.setHeader("Content-Type", "application/javascript");
       res.setHeader("Service-Worker-Allowed", "/");
-    } else if (
-      filePath.includes("/management-assets/") ||
-      filePath.includes("/school-assets/")
-    ) {
+    } else if (filePath.includes("/management-assets/")) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     }
   };
 
-  // Redirect /index.html → / so it goes through the SPA fallback
   app.use((req, _res, next) => {
-    if (req.path === "/index.html") {
-      req.url = "/";
-    }
+    if (req.path === "/index.html") req.url = "/";
     next();
   });
 
   app.use((req, res, next) => {
-    if (isSensitiveProbePath(req.path)) {
-      return sendSafeNotFound(req, res);
+    if (isSensitiveProbePath(req.path)) return sendSafeNotFound(req, res);
+    if (isPausedProductHost(req.hostname || "")) {
+      return res.status(404).type("text/plain").send("Product not enabled on this release");
     }
     next();
   });
 
-  // Serve static assets from BOTH frontend builds.
-  // Assets live in distinct URL namespaces (/management-assets/ and
-  // /school-assets/) so express.static serving from both dirs is safe —
-  // the paths are orthogonal and cannot collide.
   app.use(
     express.static(mgmtDist, { index: false, setHeaders: setStaticHeaders }),
   );
-  app.use(
-    express.static(schoolDist, { index: false, setHeaders: setStaticHeaders }),
-  );
 
-  // Known scanner / exploit probe paths — 404 immediately
-  // SPA fallback — hostname-aware: serves the correct index.html per domain
   app.use((req, res, next) => {
-    // Skip API / tRPC routes
     if (
       req.originalUrl.startsWith("/api/") ||
       req.originalUrl.startsWith("/trpc")
     ) {
       return next();
     }
-
-    // Block probes
-    if (isSensitiveProbePath(req.path)) {
-      return sendSafeNotFound(req, res);
-    }
-
+    if (isSensitiveProbePath(req.path)) return sendSafeNotFound(req, res);
     if (isApiLikeRoute(req.path)) {
       return res.status(404).json({ error: "Not found" });
     }
 
-    // Don't serve index.html for real asset requests
     const isStaticFile =
       req.originalUrl.startsWith("/management-assets/") ||
-      req.originalUrl.startsWith("/school-assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
-    if (isStaticFile) {
-      return res.status(404).send("Not Found");
-    }
+    if (isStaticFile) return res.status(404).send("Not Found");
 
-    // Determine which frontend to serve based on hostname
-    const siteMode = getSiteModeFromRequest(req.hostname || "");
-    const siteDistPath = siteMode === "school" ? schoolDist : mgmtDist;
-    const indexPath = path.resolve(siteDistPath, "index.html");
-
-    // No-cache for HTML shell (users always get latest)
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
 
     if (!fs.existsSync(indexPath)) {
-      console.error(
-        `[vite.ts] index.html not found for ${siteMode}: ${indexPath}`,
-      );
-      return res.status(503).type("text/plain").send("Frontend temporarily unavailable");
+      return res
+        .status(503)
+        .type("text/plain")
+        .send("Management frontend temporarily unavailable");
     }
-
-    res.sendFile(indexPath);
+    return res.sendFile(indexPath);
   });
 }
