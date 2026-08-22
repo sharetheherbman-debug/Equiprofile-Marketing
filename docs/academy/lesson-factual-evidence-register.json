@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 61,
-    "claimReviewedAndAccepted": 41
+    "sourceMappedRequiresSpecificClaimReview": 62,
+    "claimReviewedAndAccepted": 40
   },
   "lessons": [
     {
@@ -4156,18 +4156,12 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
+      "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: Generic pre/post-exercise and transition intervals were removed. Feeding and work planning now follow the documented individual plan and current professional advice.",
-      "lessonChangeMade": "Removed generic pre- and post-exercise intervals and transition timing; feeding and work planning now follows the documented individual plan and current professional advice.",
-      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
-      "reviewDecision": {
-        "reviewedAt": "2026-08-21",
-        "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/feeding-horses/",
-        "claimReviewed": "Generic pre/post-exercise and transition intervals were removed. Feeding and work planning now follow the documented individual plan and current professional advice.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
-      }
+      "whatWasVerified": "Prior acceptance covered only removal of generic pre/post-exercise and transition intervals. Full review identified remaining material feeding-plan, forage, weight, water, records, exercise, condition, health, welfare, professional-escalation and assessment claims that do not yet have individual source-to-claim decisions.",
+      "lessonChangeMade": "The prior bounded rewrite is retained, but the lesson is returned to unresolved status pending a complete individual claim review and any necessary corrective rewrite.",
+      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
+      "reviewDecision": null
     },
     {
       "lessonSlug": "balancing-a-diet",
