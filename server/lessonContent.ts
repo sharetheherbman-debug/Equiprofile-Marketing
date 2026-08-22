@@ -2744,7 +2744,7 @@ Horses are extremely perceptive of human body language and emotional state. A ne
       "Explain how to turn a horse safely when leading",
       "Understand the risks associated with poor leading technique",
     ],
-    content: `Leading a horse is one of the most frequent tasks on any yard, yet it is often done casually, leading to accidents that could easily be prevented. A horse can weigh ten times as much as its handler — you cannot out-muscle a horse. Good leading technique relies on positioning, communication and anticipation rather than brute strength.
+    content: `Leading requires deliberate handling, suitable equipment, an appropriate setting, and supervision or qualified help when the horse, handler, or situation is unfamiliar. Do not try to out-pull a horse; use a safe position, a lead rope handled without wrapping, and a plan to step away if safety is compromised.
 
 ## Basic Leading Position
 
@@ -2752,7 +2752,7 @@ When leading a horse:
 1. **Walk beside the horse**, level with its shoulder on the near (left) side. Do not walk in front of the horse (you cannot see it and it may walk over you) or behind it (you have no control and risk being kicked).
 2. **Hold the lead rope** correctly: keep a safe, manageable amount of rope between your hand and the headcollar clip, as demonstrated by a competent person for the individual horse and setting. Hold excess rope folded—never coiled around the hand—and keep the loose end clear of the ground.
 3. **Walk purposefully** at the horse's pace. Look ahead to where you are going, not back at the horse. Your body language and direction of travel guide the horse.
-4. **Keep the horse at arm's length** — close enough to maintain control but far enough that it cannot tread on your feet.
+4. **Maintain a safe working space** that permits control without standing directly in front of or behind the horse. The suitable distance varies with the horse, lead, environment, and competent instruction.
 
 ## Turning
 
@@ -2764,44 +2764,38 @@ When turning a horse while leading:
 ## Leading Through Doorways and Gateways
 
 This is one of the most hazardous activities on the yard:
-1. **Open the door or gate fully** before leading the horse through. A half-open door is a pinch point where the horse can catch its hip or the handler can be crushed.
-2. **Walk through with the horse**, side by side. Do not go through first and pull the horse behind you — if it rushes, it will barge into you.
-3. **Ensure the gap is wide enough.** Horses have wide hips and may try to rush through a narrow space.
-4. **Close and secure the gate immediately** after passing through.
+1. **Check the route and opening first.** Use a gate or doorway only when it is wide enough, the footing is suitable, and the handler has a clear route away from the horse.
+2. **Use the safe doorway method taught for the individual horse and facility.** Missouri and Mississippi Extension guidance both emphasise avoiding crowding, maintaining control, and moving clear of the horse’s path.
+3. **Close or secure the gate when it is safe to do so.** Do not place yourself in a pinch point or try to manage a rushing horse alone.
 
 ## Leading on Roads and Public Areas
 
-If you must lead a horse on a road:
-- Wear a hi-vis vest and ensure the horse has hi-vis equipment.
-- Walk on the left side of the road (in the UK), with yourself between the horse and the traffic.
-- Keep the horse as close to the edge as safely possible.
-- Use hand signals to communicate with drivers.
-- Never lead two horses simultaneously on a road.
+Leading a horse on a road creates additional risk. Follow the current law and official road-safety guidance for the jurisdiction, use appropriate visibility and protective equipment, and do not proceed unless the responsible qualified person has assessed the route, horse, handler, traffic conditions, and supervision.
 
 ## Leading Difficult Horses
 
 Some horses are reluctant to lead (they plant their feet and refuse to move) or are too enthusiastic (they jog, push forward or try to overtake the handler). Strategies include:
-- For a reluctant horse, do not stand in front and pull. Stand at the shoulder and ask the horse forward with a vocal command and a tap on the hindquarters with the free end of the rope or a schooling whip.
-- For a forward horse, use a chain lead or a bridle for additional control. Make frequent transitions (halt, walk, halt) to regain the horse's attention.
-- If a horse rears or becomes dangerous while being led, let go of the rope. Your safety is more important than keeping hold of the horse.
+- Do not pull against a reluctant horse or attempt to overpower a forward horse.
+- Do not introduce chain leads, bridles, whips, or other control equipment without qualified instruction for the individual horse.
+- If the horse becomes dangerous, prioritise the handler’s safe exit. Do not risk being dragged; alert the responsible person and obtain qualified help before trying again.
 
 ## Leading to and from the Field
 
 Leading to and from turnout is one of the highest-risk times on the yard:
 - The horse may be excited to go out or reluctant to leave its companions.
 - Always use a headcollar and lead rope — never lead by the mane or forelock.
-- Walk through the field gate, turn the horse to face the gate, then remove the headcollar.
-- Never release a horse facing the open field, as it may gallop off and kick out in excitement, striking you.
+- Lead completely through the gate, turn the horse back toward the entry direction, use the facility’s safe gate-closing procedure, then release only when the handler has an escape route.
+- Step clear after release. If the horse is excited, unfamiliar, or likely to rush, do not manage the turnout alone; obtain qualified help.
 - When catching, approach calmly, put the headcollar on, and lead the horse sensibly to the gate.`,
     keyPoints: [
       "Walk level with the horse's shoulder — never in front or behind",
-      "Hold the lead rope with the right hand near the clip and the excess folded in the left hand — never coiled around the hand",
+      "Keep a lead rope at a safe manageable length with excess folded rather than wrapped around the hand, wrist, or body",
       "Push the horse's head away from you when turning — never pull it toward you",
-      "Open gates and doors fully before leading a horse through to prevent crushing",
-      "When releasing into a field, turn the horse to face the gate before removing the headcollar",
+      "Use a route and opening that are suitable for the horse, footing, and handler’s safe escape path",
+      "Lead through the gate, turn the horse back toward the entry direction, and release only with a clear safe exit",
     ],
     safetyNote:
-      "If a horse bolts while you are leading it, let go of the lead rope immediately. Being dragged by a bolting horse can cause catastrophic injuries. A loose horse can be caught; a dragged handler needs an ambulance. Always wear sturdy footwear with a hard toe cap — never lead horses in sandals, trainers or open-toed shoes.",
+      "Do not wrap lead equipment around the body. If a horse becomes unsafe to handle, prioritise a safe exit rather than risking being dragged, alert the responsible person, and obtain qualified help. Wear suitable closed, protective footwear for the current handling task.",
     practicalApplication:
       "Practise leading on both sides of the horse (near and off side) so you are confident on either side when needed. Lead through gateways and doorways regularly, focusing on opening the door or gate wide and walking through calmly alongside the horse. If you are leading a horse that is new to you, ask about its behaviour when being led — does it rush? Is it nervous in certain areas? Knowledge prevents accidents.",
     commonMistakes: [
