@@ -2751,20 +2751,17 @@
           "checkedAt": "2026-08-21"
         }
       ],
-      "sourceCheckDate": "2026-08-21",
-      "materialNumberOrRuleMentions": [
-        "15–20 minute",
-        "must"
-      ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: Fixed cooling, wound-treatment and waiting regimens were removed. Learners now use scene safety, factual observation, prompt veterinary contact and current professional direction.",
-      "lessonChangeMade": "Replaced fixed cold-hosing and learner-led wound-treatment directions with a first-response scope of scene safety, factual observation, prompt veterinary contact and current professional instruction.",
+      "sourceCheckDate": "2026-08-22",
+      "materialNumberOrRuleMentions": [],
+      "whatWasVerified": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REVIEW: World Horse Welfare frames emergency first response around helping a horse while keeping people safe, without making a generic lesson a substitute for veterinary clinical direction. British Horse Society supports accessible contacts, health information, emergency planning, authorised decision-making and veterinary-practice involvement. The full lesson only teaches non-clinical safety, authorised factual recording, current plan/contact/supply awareness, professional direction and escalation; it makes no universal kit, clinical technique, handling, medication, treatment, product, bandage, cooling, movement, feeding or emergency-decision claim.",
+      "lessonChangeMade": "The prior removal of fixed cooling, wound-treatment and waiting regimens is retained. The complete current lesson, assessments and Tutor prompts were checked as a non-clinical safety, observation, plan/contact/supply awareness and professional-escalation boundary; no learner-facing change was required.",
       "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
       "reviewDecision": {
-        "reviewedAt": "2026-08-21",
+        "reviewedAt": "2026-08-22",
         "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/preparing-for-an-emergency-equine-first-aid",
-        "claimReviewed": "Fixed cooling, wound-treatment and waiting regimens were removed. Learners now use scene safety, factual observation, prompt veterinary contact and current professional direction.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
+        "sourceUrl": "https://www.bhs.org.uk/horse-care-and-welfare/ownership-loaning/owning-a-horse/horse-emergencies-and-emergency-care-planning/",
+        "claimReviewed": "Complete current lesson scope: objectives, learner text, key points, safety note, practical activity, common-mistake warnings, knowledge-check explanations and Tutor prompts, limited to non-clinical safety, authorised factual recording, current plan/contact/supply awareness, veterinary direction and escalation.",
+        "outcome": "ACCEPTED_AFTER_COMPLETE_BOUNDED_REVIEW"
       }
     },
     {
