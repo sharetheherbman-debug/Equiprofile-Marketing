@@ -7697,81 +7697,83 @@ You do not need a gym membership. A simple 15-minute routine three times a week 
     category: "Rider Fitness & Mindset",
     sortOrder: 2,
     objectives: [
-      "Understand why confidence issues are common in riding and that they are normal",
-      "Identify personal confidence triggers and patterns",
-      "Learn practical strategies for rebuilding and maintaining confidence",
-      "Know when to seek professional help for anxiety that impacts riding",
+      "Recognise that confidence, fear, stress, and anxiety experiences vary and are not diagnoses a riding lesson can make",
+      "Use factual self-observation and qualified-coach communication without self-diagnosing a cause",
+      "Understand that any riding activity or progression requires qualified coach approval and current safety, welfare, and consent arrangements",
+      "Know when anxiety, fear, or panic requires appropriate health support or urgent local help",
     ],
-    content: `Confidence is one of the most important factors in riding — and one of the most fragile. A fall, a spook, a bad experience, or even watching someone else's accident can dent riding confidence profoundly. Understanding confidence, recognising when it is struggling, and knowing how to rebuild it are vital skills.
+    content: `Feeling less confident, worried, tense, fearful, or stressed around riding can have many possible causes and can affect people differently. A lesson cannot diagnose anxiety, trauma, panic, a horse’s behaviour, a rider’s health, or the cause of a concern. This content is a non-clinical wellbeing and safety aid; it does not replace a qualified coach, health professional, emergency service, veterinarian, saddle fitter, or responsible-person procedure.
 
-## Why Confidence Matters
+## Safety, Welfare, and Choice Come First
 
-A confident rider makes clear, decisive aids. The horse responds to confidence — horses are herd animals that look to their leader for reassurance. A nervous rider transmits tension through their body: tightened muscles, restricted breathing, and unclear aids. The horse picks up on this and becomes tense or uncertain itself, creating a negative spiral.
+No rider should be pressured to start, continue, or progress an activity that is outside their current qualified coaching plan or safety arrangements. The qualified coach and responsible person must consider the individual rider, horse, task, equipment, environment, footing, weather, supervision, consent, welfare, safeguarding, and emergency arrangements. If the rider feels unsafe, uncomfortable, unable to continue, or declines an activity—or if the horse, tack, conditions, or support become unsuitable—the activity must be paused, adapted, stopped, or escalated through the current procedure.
 
-## Common Confidence Challenges
+A rider can describe factual experiences to the qualified coach, such as feeling worried before a particular activity, feeling less secure after time away, or noticing a change in comfort. These observations are a starting point for a coach-led safety conversation, not proof of a psychological, medical, welfare, tack, or behavioural cause. Do not use this lesson to self-diagnose, to decide a horse is reliable or suitable, or to select a replacement activity independently.
 
-Loss of confidence can stem from: a fall or near-miss, a horse that is too strong or unpredictable, advancing too quickly to new skills, a period away from riding, peer pressure to attempt things you are not ready for, or a gradual accumulation of small anxious moments. All of these are normal and common — you are not alone.
+## Supported, Individual Progression
 
-## Rebuilding Confidence
+NHS guidance advises setting small targets and, where appropriate, slowly building time in worrying situations rather than avoiding everything at once. In riding, this does **not** mean self-directed exposure, forcing an exercise, repeating a frightening event, or using a generic progression. A qualified coach must decide whether any coach-approved activity is suitable, what support is needed, and whether it should stop. The rider may ask for the current plan, support, options, and stop/escalation route to be explained.
 
-The most effective confidence-building strategy is systematic desensitisation — gradually re-exposing yourself to the thing you find difficult, starting from a level that feels manageable and building up slowly. If canter worries you, go back to work that feels comfortable — walk and trot — and rebuild from there. Set small, achievable goals and celebrate reaching them.
+British Equestrian’s wellbeing material recognises that equestrian activity can contribute to wellbeing and connection, but riding is not a treatment and no horse, lesson, phrase, breathing technique, visualisation exercise, or goal guarantees confidence or mental-health improvement. Avoid comparing progress with other riders or treating a setback as evidence of failure.
 
-## Practical Strategies
+## Optional Calming Support
 
-Breathing techniques help enormously: breathe in for 4 counts, hold for 2, out for 6. This activates the body's relaxation response. Positive self-talk matters — replace "I can't do this" with "I am working on this and improving." Visualisation — imagining yourself riding successfully — programmes the brain for success. Riding a reliable schoolmaster horse can rebuild trust.
+NHS describes a comfortable, unforced breathing exercise as one option some people use for stress, anxiety, or panic. A rider may discuss a suitable approach with an appropriate health professional and use it only when it does not distract from safety or current coach instruction. Do not force the breath, use fixed counts as a prescription, continue if it causes discomfort or dizziness, or attempt a breathing exercise instead of responding to an immediate riding safety concern.
 
-## When to Seek Help
+Some riders find it helpful to talk to a trusted person or set a small, coach-agreed goal. Others may need different support. A qualified coach can support the riding context but cannot diagnose or treat mental-health conditions, investigate safeguarding concerns, or promise confidentiality where reporting may be required.
 
-If anxiety around riding is significantly impacting your enjoyment, sleep, or daily life, consider speaking to a sports psychologist or counsellor who understands equestrian sport. There is no shame in seeking help — many professional riders use sports psychology regularly.`,
+## When to Seek Further Help
+
+NHS advises obtaining medical help if a person is struggling to cope with anxiety, fear, or panic, especially when self-help is not helping or symptoms affect daily life. Seek urgent local mental-health or emergency support for a crisis or emergency. The appropriate route depends on location and individual circumstances; a riding lesson must not delay urgent help.`,
     keyPoints: [
-      "Confidence loss is normal and common — every rider experiences it at some point",
-      "Nervous riding creates tension that the horse picks up, creating a negative spiral",
-      "Rebuild confidence gradually — go back to a comfortable level and build up slowly",
-      "Breathing techniques, positive self-talk, and visualisation are practical confidence tools",
-      "Seek professional help if anxiety is significantly impacting your riding or daily life",
+      "Confidence, fear, stress, and anxiety experiences vary; a riding lesson must not diagnose their cause or a rider’s health",
+      "Rider, horse, tack, welfare, environment, and safety concerns require factual observation and the appropriate qualified assessment, not a generic causal conclusion",
+      "Any riding activity or progression must be qualified-coach approved, welfare-aware, individual, and stopped or escalated when conditions are unsuitable",
+      "Comfortable, unforced breathing may be an optional support for some people but is not a treatment, fixed prescription, or substitute for immediate safety action",
+      "Seek appropriate health support when struggling to cope with anxiety, fear, or panic; obtain urgent local help for a mental-health crisis or emergency",
     ],
     safetyNote:
-      "Never let anyone pressure you into doing something that feels unsafe. A good instructor will support your confidence journey and respect your boundaries. If your gut says no, listen to it.",
+      "Do not start, continue, or progress a riding activity outside the current qualified coaching and responsible-person procedure. Pause, stop, adapt, or escalate if rider understanding, consent, security, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, privacy, or emergency arrangements become unsuitable. Seek urgent local help for a mental-health crisis or emergency.",
     practicalApplication:
-      "Identify one area of your riding where confidence is lower than you would like. Set three small, progressive goals to build your confidence in that area over the next month. Discuss these goals with your instructor so they can support you.",
+      "Discuss a factual confidence or safety concern with a qualified coach and ask what the current support, activity, stop/escalation route, and responsible-person procedure are. Do not set or progress a riding exposure, horse, pace, exercise, or goal from this lesson alone; obtain appropriate health support if anxiety, fear, or panic is difficult to cope with or affects daily life.",
     commonMistakes: [
-      "Pushing through fear without addressing it — this usually makes confidence worse, not better",
-      "Comparing yourself to other riders instead of measuring your own progress",
-      "Avoiding the thing you find difficult forever — gradual exposure is the path forward",
-      "Believing you should never feel nervous — some nervousness is normal and healthy",
-      "Not telling your instructor about confidence concerns — they need to know to help you",
+      "Forcing, self-directing, or continuing an activity without qualified coach approval and current safety, welfare, consent, and support arrangements",
+      "Using a generic lesson to diagnose a rider’s anxiety, health, confidence, a horse’s behaviour, tack fit, welfare, or the cause of a concern",
+      "Treating riding, a particular horse, visualisation, breathing, or a self-set target as a guaranteed confidence or mental-health treatment",
+      "Delaying appropriate health help when anxiety, fear, or panic is difficult to cope with, affects daily life, or is a crisis or emergency",
+      "Promising confidentiality, investigating a safeguarding concern, or providing mental-health treatment outside an authorised qualified role",
     ],
     knowledgeCheck: [
       {
-        question: "How does a rider's tension affect the horse?",
+        question: "What should happen if a rider feels unsafe, uncomfortable, unable to continue, or declines an activity—or if current conditions become unsuitable?",
         options: [
-          "It has no effect",
-          "The horse becomes more relaxed",
-          "The horse picks up on the tension and may become tense or uncertain too",
-          "The horse goes faster",
+          "Continue to build confidence through repetition",
+          "Choose a different activity alone",
+          "Pause, stop, adapt, or escalate through the current qualified coaching and responsible-person procedure",
+          "Diagnose the rider or horse from the concern",
         ],
         correctIndex: 2,
         explanation:
-          "Horses are highly attuned to their rider's body language and tension. A tense rider transmits anxiety through muscle tension and unclear aids, causing the horse to become unsettled.",
+          "The individual rider, horse, task, welfare, consent, safety, and current conditions determine the next step. A generic lesson cannot diagnose the cause or choose a safe progression.",
       },
       {
         question:
-          "What is the most effective strategy for rebuilding riding confidence?",
+          "How should a rider use the NHS suggestion to set small targets or gradually build time in worrying situations?",
         options: [
-          "Force yourself to do the scary thing immediately",
-          "Stop riding altogether",
-          "Gradually re-expose yourself starting from a comfortable level",
-          "Only ride in competitions",
+          "As an instruction to force a riding exercise alone",
+          "As a reason to repeat a frightening event regardless of welfare or safety",
+          "Only within an individual, qualified-coach-approved plan with current safety, welfare, consent, and stop/escalation arrangements",
+          "As proof that the rider does not need health support",
         ],
         correctIndex: 2,
         explanation:
-          "Gradual, systematic re-exposure — starting from a level that feels manageable and building up — is the most effective way to rebuild confidence sustainably.",
+          "NHS guidance is not a riding progression protocol. A qualified coach and responsible person must decide whether a riding activity is appropriate, while health concerns require the appropriate health support.",
       },
     ],
     aiTutorPrompts: [
-      "I lost confidence after a fall — how do I start riding again?",
-      "What breathing exercises can I use to calm myself before riding?",
-      "How do I talk to my instructor about my confidence issues?",
+      "How should I discuss a factual confidence or safety concern with my qualified coach and understand the current support and stop/escalation procedure?",
+      "When should I seek appropriate health help for anxiety, fear, or panic rather than treating a riding lesson as mental-health care?",
+      "What authority, safeguarding, welfare, and current site procedure are required before I support another rider’s confidence concern?",
     ],
     linkedCompetencies: ["rider_position", "welfare_awareness"],
   },
