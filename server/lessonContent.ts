@@ -9037,69 +9037,78 @@ A tied horse requires the supervision and safety arrangements set by the respons
     category: "Handling & Groundwork",
     sortOrder: 4,
     objectives: [
-      "Understand the purpose and benefits of lungeing",
-      "Set up for lungeing with correct equipment",
-      "Maintain a safe triangle position",
-      "Control pace and direction on the lunge",
+      "Recognise that lungeing is a specialist handling activity requiring qualified professional competence, individual assessment, and current site procedures",
+      "Understand that a qualified professional must select, inspect, fit, and adjust equipment, protective equipment, circle, environment, and support for the individual horse",
+      "Recognise that handler, horse, line, whip, command, and position techniques require in-person qualified instruction rather than a fixed diagram",
+      "Know when to stop, move to safety, and obtain qualified or emergency support rather than attempting lungeing or a correction independently",
     ],
-    content: `Lungeing is a groundwork technique where the horse works on a circle around the handler at the end of a lunge line.
+    content: `Lungeing is a specialist horse-handling activity in which a horse works on a circle around a qualified handler. It requires in-person professional competence, individual-horse assessment, appropriate personal protective equipment, current site procedures, welfare checks, equipment inspection and fit, suitable space and surface, active supervision, and an emergency plan. This lesson does not qualify a learner to lunge, assess movement, choose equipment, select a circle, use a whip, apply pressure, direct a horse, train a horse, or make a welfare, medical, veterinary, behavioural, or emergency decision.
 
-## Equipment
+## Qualified Scope and Welfare
 
-You need a lunge line (8-10 metres), a lunge whip, a lunge cavesson or headcollar, and protective boots.
+Professional lungeing standards include horse welfare, handler protective equipment, equipment safety and fit, appropriate circle size, handler position, horse position and balance, use of commands and aids, duration, surroundings, and progression. These are professional competencies assessed in context, not a universal self-teaching sequence. A lunge line, whip, cavesson, headcollar, side rein, protective equipment, line length, circle size, surface, pace, command, and duration must be selected by the qualified professional for the individual horse, task, environment, and current conditions.
 
-## The Triangle
+A learner must not infer that lungeing is required for warm-up, exercise, training, assessment, behaviour management, “freshness,” rider preparation, rehabilitation, or any other purpose. The appropriate purpose, if any, is decided by the qualified professional after considering the individual horse’s health, welfare, training, behaviour, fitness, equipment, space, surface, weather, support, and current risk.
 
-The handler, horse, and lunge whip should form a triangle. The handler stands at the centre. The lunge line goes to the horse's head, and the whip points towards the hindquarters.
+## Equipment, Space, and Position
 
-## Voice and Body Language
+Before any lungeing activity, the responsible person or qualified professional must inspect the equipment and setting, decide whether the horse and handler are suitable, identify the safe working area and access, establish supervision and emergency arrangements, and determine whether the activity should take place at all. Do not rely on a generic line length, triangle diagram, whip position, command word, “centre” position, distance, circle size, or equipment list.
 
-Use clear commands: "walk on", "trot", "whoa". Stepping ahead of the horse's shoulder slows them; stepping behind encourages forward movement.
+The handler should receive in-person instruction for the individual method of holding and managing the line, using any whip or aid, communicating, moving, maintaining awareness of surroundings, and responding to a horse change. Never wrap a lunge line around the hand or body, allow it to create an entanglement hazard, use equipment beyond your competence, stand in an unsafe position, or use a whip to punish or force a horse.
 
-## Starting and Stopping
+## Progression, Time, and Assessment
 
-Begin in walk. Ask for trot with voice and a gentle lift of the whip. To stop, lower the whip, say "whoa", and gently take up the lunge line.`,
+Professional standards consider circle size, paces, transitions, responsiveness, equipment adjustment, duration, surroundings, and horse welfare. No fixed number of minutes, paces, exercises, progressions, or assessment method is appropriate for every horse. A learner must not copy a session, judge movement quality, or adjust equipment based on a generic lesson.
+
+## Stop and Escalate
+
+Stop, move to safety as directed, and obtain the responsible person or qualified professional if the horse becomes unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe; equipment, surface, weather, space, gate, support, supervision, welfare, or emergency arrangements change; or the learner is unsure. Follow the current emergency procedure and obtain veterinary or emergency support when required.`,
     keyPoints: [
-      "Lungeing is for exercise, training, warm-up, and movement assessment",
-      "Equipment: lunge line, lunge whip, cavesson, protective boots",
-      "Maintain the triangle: handler, horse, whip",
-      "Use consistent voice commands",
-      "Never wrap the lunge line around your hand",
+      "Lungeing is a specialist handling activity requiring qualified professional competence, individual assessment, welfare checks, equipment inspection, suitable space, active supervision, and emergency planning",
+      "A qualified professional selects and fits any line, whip, cavesson, headcollar, protective equipment, circle, surface, pace, command, and duration for the individual horse and current conditions",
+      "Handler, horse, line, whip, command, and position techniques require in-person qualified instruction rather than a fixed diagram or cue",
+      "Do not infer that lungeing is required for a particular purpose or use a generic lesson to assess movement, behaviour, fitness, welfare, or a safe progression",
+      "Never wrap the lunge line around the hand or body, allow an entanglement hazard, use equipment beyond competence, stand in an unsafe position, or use a whip to punish or force a horse",
     ],
     safetyNote:
-      "Never wrap the lunge line around your hand or wrist. Hold the line in controlled folds.",
+      "Do not lunge, direct a horse, choose or adjust equipment, select a circle or duration, judge movement, or continue an activity outside qualified professional instruction and the current site procedure. Stop, move to safety as directed, and obtain qualified or emergency support if horse behaviour, welfare, equipment, surface, space, support, supervision, or emergency arrangements are unsuitable.",
     practicalApplication:
-      "Practise lungeing a calm horse in walk and trot on both reins for 10 minutes each side.",
+      "Only under qualified in-person professional instruction and the responsible person’s current procedure, observe how the horse, handler, equipment, protective equipment, space, surface, circle, welfare, supervision, duration, and emergency route are assessed. Do not lunge, copy a session, use a line or whip, direct a horse, or adjust equipment from this lesson alone.",
     commonMistakes: [
-      "Wrapping the lunge line around the hand",
-      "Standing too close to the horse",
-      "Using the whip aggressively",
-      "Inconsistent voice commands",
-      "Letting the circle become too small",
+      "Lungeing, directing a horse, selecting or adjusting equipment, choosing a circle, surface, duration, pace, or progression outside qualified professional instruction and the current procedure",
+      "Using a fixed triangle, whip position, command, line length, circle size, pace, duration, or equipment list as a universal technique",
+      "Wrapping the lunge line around the hand or body, allowing entanglement, standing in an unsafe position, or using a whip to punish or force a horse",
+      "Assessing movement, behaviour, fitness, welfare, lameness, or a horse’s training needs from a generic lungeing observation",
+      "Continuing when horse behaviour, welfare, equipment, surface, space, weather, support, supervision, or emergency arrangements are unsuitable",
     ],
     knowledgeCheck: [
       {
-        question: "What shape should handler, horse, and whip form?",
-        options: ["A straight line", "A triangle", "A square", "A circle"],
-        correctIndex: 1,
-        explanation: "The triangle formation gives the best control.",
-      },
-      {
-        question: "How should you hold the lunge line?",
+        question: "Who determines whether lungeing is appropriate and how the horse, handler, equipment, protective equipment, space, circle, duration, and emergency arrangements are managed?",
         options: [
-          "Wrapped around your hand",
-          "In controlled folds",
-          "Dragging on the ground",
-          "Tied to your belt",
+          "Any learner using a generic triangle diagram",
+          "The qualified professional and responsible person after individual assessment and current risk review",
+          "A copied lunge-line length",
+          "The horse’s previous session alone",
         ],
         correctIndex: 1,
-        explanation: "Controlled folds keep the line managed safely.",
+        explanation: "Professional lungeing standards require individual assessment, welfare, equipment safety and fit, handler position, safe control, space, circle, duration, surroundings, and emergency planning. A generic lesson cannot select a safe protocol.",
+      },
+      {
+        question: "What should happen if a lungeing activity becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, or emergency conditions change?",
+        options: [
+          "Continue until the planned duration has finished",
+          "Use more force or a larger whip movement",
+          "Stop, move to safety as directed, and obtain qualified or emergency support through the current procedure",
+          "Diagnose the horse and adjust the equipment alone",
+        ],
+        correctIndex: 2,
+        explanation: "A lungeing concern may require qualified or emergency action. Do not use a generic technique; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "My horse keeps cutting in on the circle",
-      "When should I introduce side reins?",
-      "How long should a lungeing session last?",
+      "What current qualified-professional and site procedure applies if a horse cannot be lunged safely or becomes unsettled?",
+      "How should I report a factual horse-welfare, equipment, surface, space, handler-safety, or emergency concern to the responsible person?",
+      "What authority, in-person instruction, protective equipment, equipment check, supervision, welfare, and emergency procedure are required before any lungeing activity?",
     ],
     linkedCompetencies: ["groundwork_skills", "horse_care"],
   },
