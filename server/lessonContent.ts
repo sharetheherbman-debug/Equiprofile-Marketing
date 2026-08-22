@@ -1546,15 +1546,15 @@ Emergency dismounting carries significant risk and must not be attempted from wr
       "Identify common position faults and their effects",
       "Understand how correct position helps the horse move freely",
     ],
-    content: `A correct, balanced riding position is the foundation of all good riding. Without it, the rider cannot communicate clearly with the horse, cannot stay balanced through transitions and movements, and cannot allow the horse to move freely and comfortably beneath them. Position is not about looking elegant — it is functional. Every aspect of the rider's position has a purpose.
+    content: `Rider position should be developed with a qualified instructor for the individual rider, horse, saddle, activity, and current safety setting. The aim is a balanced, comfortable, effective position rather than a copied pose or a fixed measurement. Stop and seek coaching when a position is uncomfortable, unsafe, or requires the rider to use the reins for balance.
 
 ## The Classical Alignment
 
-When viewed from the side, the correctly positioned rider should have a straight vertical line that passes through four key points: **ear — shoulder — hip — heel**. This alignment places the rider's centre of gravity directly over the horse's centre of gravity, creating a balanced, stable partnership.
+A commonly taught visual check is **ear — shoulder — hip — heel** alignment when viewed from the side. AQHA guidance uses this as a balance reference, but position and stirrup length vary with the rider, horse, saddle, discipline, and activity. Use an instructor's observation rather than forcing a fixed geometry.
 
 ## Head and Eyes
 
-The head is the heaviest part of the body relative to the neck that supports it. Where the head goes, the body follows. Look up and ahead — not down at the horse's neck. Looking down shifts your weight forward, rounds your shoulders and collapses your core. Develop the habit of looking where you are going: through the horse's ears in a straight line, toward the next marker in a school figure, and around the turn when changing direction. This also gives the horse subtle weight cues through your seat.
+Keep attention on the riding environment and use an instructor's feedback to develop an appropriate head, eye, and upper-body position. Do not rely on the reins or the horse's mouth for balance. Position should be adjusted for the individual rider and activity rather than prescribed from a written cue alone.
 
 ## Shoulders and Upper Body
 
@@ -1605,7 +1605,7 @@ Good position is not something you achieve once and forget — it requires const
       "The elbow–hand–bit line should be a straight, soft connection from elbow to horse's mouth",
     ],
     safetyNote:
-      "The most dangerous position fault is allowing the foot to slide through the stirrup. If the rider falls, they can be dragged by the horse. Always ride with the stirrup iron on the ball of the foot and maintain a deep, pushed-down heel. Safety stirrups with a rubber release mechanism can provide additional protection for beginners. Always wear a correctly fitted riding hat that meets current safety standards.",
+      "Use riding boots, stirrups, and saddle safety features appropriate to the rider and discipline. Missouri Extension advises that the ball of the foot rests over the stirrup tread with heel lower than toe for most riding, and warns against equipment that secures a rider to the saddle. Ask a qualified instructor to check fit, equipment condition, and helmet selection before riding.",
     practicalApplication:
       "At the start of every lesson, spend a few minutes in the halt checking your position: are your shoulders level and relaxed? Is your weight even on both seat bones? Are your heels down? Is there a straight line from your ear to your heel? Ask your instructor for feedback, or have someone take a photograph from the side so you can see your alignment. Over time, correct position becomes muscle memory, but it takes consistent practice.",
     commonMistakes: [
