@@ -2,9 +2,15 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+      - "release-candidate/**"
   pull_request:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+      - phase-1/small-medium-completion
 
 jobs:
   test:
@@ -41,6 +47,18 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+
+      - name: Verify focused Management release boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f dist/index.js
+          test -f dist/public/index.html
+          test ! -d dist/academy
+          test ! -d dist/shop
+          test ! -d dist/school
+          grep -q '"db:readiness"' package.json
+          grep -q '"db:migrate": "npm run db:readiness"' package.json
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
