@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 59,
-    "claimReviewedAndAccepted": 43
+    "sourceMappedRequiresSpecificClaimReview": 60,
+    "claimReviewedAndAccepted": 42
   },
   "lessons": [
     {
@@ -1182,16 +1182,10 @@
         "must",
         "required"
       ],
-      "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The fixed risk-assessment review interval was removed; review now follows current employer, insurer, legal and responsible-yard requirements when circumstances change.",
-      "lessonChangeMade": "Removed the fixed risk-assessment review interval and directs learners to current employer, insurer and legal requirements when circumstances change.",
-      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
-      "reviewDecision": {
-        "reviewedAt": "2026-08-21",
-        "reviewedBy": "academy-source-comparison",
-        "sourceUrl": "https://www.gov.uk/keeping-horses",
-        "claimReviewed": "The fixed risk-assessment review interval was removed; review now follows current employer, insurer, legal and responsible-yard requirements when circumstances change.",
-        "outcome": "REWRITTEN_AS_PRINCIPLE"
-      }
+      "whatWasVerified": "PARTIAL_REWRITE_IN_PROGRESS: The fixed review interval and broad reporting/emergency claims were narrowed on 2026-08-22 using current HSE risk-management and RIDDOR guidance. The historical one-claim acceptance did not cover every material legal, reporting, privacy, emergency, or assessment statement.",
+      "lessonChangeMade": "Removed the fixed review interval and rewrote risk-management, reporting, RIDDOR, near-miss, record-access, and emergency language to a bounded responsible-person and current-procedure scope. Full claim-level review remains required.",
+      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
+      "reviewDecision": null
     },
     {
       "lessonSlug": "advanced-safety-awareness",

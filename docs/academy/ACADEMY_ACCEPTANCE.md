@@ -3,7 +3,7 @@
 **Source branch:** `phase-1/small-medium-completion`
 **Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`
 **Release status:** **NOT READY TO DEPLOY**
-**Reason:** 59 lesson-level source-to-claim factual reviews remain unresolved, and several authenticated role workflows still require complete acceptance evidence.
+**Reason:** 60 lesson-level source-to-claim factual reviews remain unresolved, and several authenticated role workflows still require complete acceptance evidence.
 
 This is an evidence record, not a completion claim. A capability is marked **Complete/Pass** only when the current branch contains implementation plus suitable automated or disposable-environment evidence. External production services remain separate activation gates.
 
@@ -28,8 +28,8 @@ This is an evidence record, not a completion claim. A capability is marked **Com
 | Structural quality gate | Pass | 105/105 meet the current structural/editorial thresholds; zero placeholders/shallow records/semantic-duplicate flags in the generated structural report. |
 | Server-trusted completion | Pass | Score and canonical lesson facts are derived server-side; completion persistence is versioned/idempotent. |
 | Unsupported accreditation wording | Pass | No unsupported BHS/Pony Club accreditation or endorsement claim is permitted. |
-| **Specific factual acceptance** | **BLOCKED** | Current factual evidence register records **59 lessons as `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`**, 43 as `CLAIM_REVIEWED_AND_ACCEPTED`, and 3 as `NOT_MATERIAL_FACT_CHECK_REQUIRED`. Source mapping is not factual acceptance. |
-| Safety/clinical/legal/numerical claim acceptance | **BLOCKED where included in the 59** | Material claims must be source-to-claim reviewed or rewritten as appropriately individualised/professional-guidance principles. |
+| **Specific factual acceptance** | **BLOCKED** | Current factual evidence register records **60 lessons as `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`**, 42 as `CLAIM_REVIEWED_AND_ACCEPTED`, and 3 as `NOT_MATERIAL_FACT_CHECK_REQUIRED`. Source mapping is not factual acceptance. |
+| Safety/clinical/legal/numerical claim acceptance | **BLOCKED where included in the 60** | Material claims must be source-to-claim reviewed or rewritten as appropriately individualised/professional-guidance principles. |
 
 ### Binding factual-review count
 
@@ -37,11 +37,11 @@ The current `lesson-factual-evidence-register.json` is the source of truth until
 
 - Lessons registered: **105**
 - `NOT_MATERIAL_FACT_CHECK_REQUIRED`: **3**
-- `CLAIM_REVIEWED_AND_ACCEPTED`: **43**
-- `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`: **59**
-- Release-blocking unresolved specific-claim reviews: **59**
+- `CLAIM_REVIEWED_AND_ACCEPTED`: **42**
+- `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`: **60**
+- Release-blocking unresolved specific-claim reviews: **60**
 
-Do **not** replace these unresolved states with generated or inferred PASS values. The remaining 59 reviews are the principal Academy factual task for the next completion pass.
+Do **not** replace these unresolved states with generated or inferred PASS values. The remaining 60 reviews are the principal Academy factual task for the next completion pass.
 
 Corrective rewrites already made are documented in `docs/academy/factual-source-findings.md`; those corrections do not imply that every remaining material statement in the affected lesson has been independently accepted.
 
@@ -148,7 +148,7 @@ These external items do **not** excuse unfinished internal software paths.
 
 Academy must not be marked production-ready until all of the following are true:
 
-1. All 59 unresolved source-to-claim lesson reviews are explicitly completed and resulting corrections pass the full curriculum suite.
+1. All 60 unresolved source-to-claim lesson reviews are explicitly completed and resulting corrections pass the full curriculum suite.
 2. Student/Teacher assignments, feedback, groups and scheduling receive complete authenticated acceptance.
 3. Academy Owner curriculum/admin/activity/reporting surfaces receive complete authenticated acceptance.
 4. Provider-enabled Tutor acceptance passes against the final Core AI/GenX route.
