@@ -1,26 +1,35 @@
 # Final Core Reconciliation Status
 
 **Branch:** `release-candidate/final-core-2026-08-22`
+
 **Starting point:** Management-authoritative `phase-1/small-medium-completion` at `b20a622039c65503f8d54dceeff5b072f1521cc6`
+
+**Current candidate:** `57af2c4362ebedc1851b1306df06e21caab2f2a0`
+
 **Status:** **IN PROGRESS — NOT READY TO DEPLOY**
 
-This record preserves the current reconciliation truth. No production deployment, merge, production database mutation, DNS change, live Stripe charge, or supplier activation has been performed.
+This record preserves current reconciliation truth. No production deployment, merge, production database mutation, DNS change, live Stripe charge, supplier activation, paid advertising action, or secret exposure has been performed.
 
-| Reconciliation area                                      | Current state                 | Evidence / boundary                                                                                                                                                                                                                                                       |
-| -------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Management-authoritative base                            | Preserved                     | Management router and existing Management source remain the base; Academy and Shop were introduced as additive namespaces.                                                                                                                                                |
-| Canonical Academy and Shop build targets                 | Implemented, compile-checked  | `management`, `academy` and `shop` are explicit build targets; `school` is retained as a compatibility alias only.                                                                                                                                                        |
-| Academy router, curriculum and invitation domain         | Imported and compile-checked  | Canonical Academy router is registered, source curriculum and student router are imported, and invitation delivery has an explicit persisted delivery outcome contract.                                                                                                   |
-| Shop router and Store Stripe boundary                    | Imported and compile-checked  | Commerce router is registered; Store credentials require `ENABLE_STORE_STRIPE=true` and `STORE_STRIPE_SECRET_KEY`, with no SaaS fallback.                                                                                                                                 |
-| Academy/Store webhook isolation                          | Implemented, compile-checked  | Signed raw-body handlers are distinct from the retained SaaS Stripe handler; both fail closed when their dedicated configuration is absent.                                                                                                                               |
-| Migration baseline strategy                              | In progress, **not accepted** | Historical files `0014`–`0024` are preserved as untrusted orphaned artifacts, are not registered or automatically executed, and are being audited. A new canonical forward reconciliation path and read-only baseline inspector are required before migration acceptance. |
-| TypeScript                                               | Pass                          | `npm run check` passes on this continuation branch after the current reconciliation work.                                                                                                                                                                                 |
-| Full regression, build, browser and migration acceptance | Not yet run or not yet passed | These remain release gates and must be rerun after resolving the historical fresh-install migration-runner behavior.                                                                                                                                                      |
+| Reconciliation area | Current state | Evidence / boundary |
+| --- | --- | --- |
+| Management-authoritative base | Preserved | Management remains the authoritative source; Academy and Shop are additive product namespaces. |
+| Canonical Academy and Shop build targets | Implemented and built | `management`, `academy`, and `shop` are explicit build targets; `school` remains a compatibility alias only. |
+| Academy router, curriculum, and invitation domain | Implemented; factual acceptance incomplete | Canonical Academy router and persisted invitation-delivery outcome contract are present. Claim-level factual review remains a release blocker. |
+| Shop router and Store Stripe boundary | Implemented; provider acceptance incomplete | Commerce router is registered. Store Stripe remains TEST-only and requires `ENABLE_STORE_STRIPE=true` plus Store-specific credentials; no SaaS fallback or live provider action occurred. |
+| Academy/Store webhook isolation | Implemented | Signed raw-body handlers are separate from SaaS billing and fail closed when dedicated configuration is absent. |
+| Final-Core migration architecture | **Internally accepted on disposable local MariaDB** | Fresh zero, exact five-entry tracked Management, exact legacy adoption with backup gate, current no-op, and unknown fail-closed paths are documented in [the migration matrix](./MIGRATION_TEST_MATRIX.md). Historical journals are untouched; orphaned `0014`–`0024` are neither executed nor marked applied. |
+| Shared Management entitlement | **Implemented and tested** | tRPC context and subscribed middleware use the canonical paid/trial/complimentary resolver. Expired overlays cannot block paid users; only a valid overlay can extend otherwise blocked access. |
+| Trusted Core-to-Marketing event boundary | **Implemented and tested** | The standalone Marketing connector receives only consented, allow-listed, HTTPS-signed, idempotent events. Payload validation rejects PII, payment, supplier, health, learning, and secret-related fields. Missing connector configuration remains a truthful disabled state. |
+| Core quality gates | **Pass for current candidate** | Local exact single-fork suite: **120 files / 878 tests**; build and type check pass. Remote CI run `32565499226` passed Security Scan, Changed Code Quality, Test & Build, and UI Smoke Test; deployment was skipped. |
 
-## Migration investigation boundary
+## Accepted migration boundary
 
-A dedicated local-only disposable database was used to rehearse fresh installs. The runner tracked only the first five historical entries. This is treated as a **release-blocking migration acceptance gap**, not as evidence that Academy or Shop migrations are accepted. The previously attempted journal reconstruction and copied continuation migration files are being removed: historical migrations `0014`–`0024` will not be retroactively registered, renamed, reordered, or automatically executed. The complete fresh-install and supported-upgrade rehearsal must still pass under the new explicit baseline strategy before release candidacy.
+The normal `npm run db:migrate` command is classification-first and intentionally conservative. It provisions only an inspected zero database, upgrades only the exact fingerprint-gated tracked Management baseline, and returns a no-op for a current final schema. Partial, ambiguous, drifted, and unknown schemas fail closed. An exact untracked legacy baseline is detected but cannot be upgraded automatically; it requires a separately invoked named adoption command plus an owner-controlled backup reference.
 
-## Next required reconciliation work
+> The marker-only replay fixture remains **diagnostic evidence only**. It establishes neither production journal history nor permission to rewrite a migration file, journal row, or orphaned migration.
 
-The remaining work includes the orphaned-migration audit, deterministic final schema manifest, read-only baseline inspector, explicit canonical forward reconciliation strategy, Management complimentary-access integration, final factual review and authenticated Academy acceptance, complete Shop browser/provider acceptance, trusted Core-to-Marketing event wiring, standalone Marketing product-line intelligence work, and full regression/build/security validation.
+## Remaining release blockers
+
+Academy factual acceptance is not complete: the evidence register must retain individual claim-level review rather than bulk promotion. Authenticated Academy role/browser acceptance remains outstanding. Shop internal contracts are passing, but Store Stripe TEST lifecycle/browser evidence requires approved test credentials, and external supplier integrations remain disabled pending separate authorized contracts. Deployment-time SMTP, GenX, Stripe, and connector values must be supplied only through the approved secret store; their absence is not treated as an internal software defect.
+
+The standalone reusable Marketing platform still requires completion of its generic application registry, multi-application/multi-product campaign scope, neutral sample-application acceptance, and final handover verification. These are separate from the trusted Core publisher boundary and continue to block overall release readiness.

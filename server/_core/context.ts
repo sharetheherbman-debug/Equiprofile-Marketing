@@ -1,6 +1,7 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
 import { sdk } from "./sdk";
+import { hasEffectiveManagementAccess } from "../complimentaryAccess";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
@@ -10,31 +11,12 @@ export type TrpcContext = {
 };
 
 /**
- * Check if user has access to protected features
- * User has access if:
- * 1. Trial is active (trialEndsAt > now AND subscriptionStatus = 'trial')
- * 2. Subscription is active (subscriptionStatus = 'active')
- * 3. User is admin (role = 'admin')
+ * Check Management access through the same canonical resolver used by protected
+ * subscription middleware. Billing fields remain authoritative; complimentary
+ * access is an overlay that never mutates stored subscription state.
  */
-function checkUserAccess(user: User | null): boolean {
-  if (!user) return false;
-
-  // Admins always have access
-  if (user.role === "admin") return true;
-
-  // Check if subscription is active
-  if (user.subscriptionStatus === "active") return true;
-
-  // Check if trial is still valid
-  if (user.subscriptionStatus === "trial" && user.trialEndsAt) {
-    const now = new Date();
-    const trialEnd = new Date(user.trialEndsAt);
-    if (trialEnd > now) {
-      return true;
-    }
-  }
-
-  return false;
+export function checkUserAccess(user: User | null, now: Date = new Date()): boolean {
+  return hasEffectiveManagementAccess(user, now);
 }
 
 export async function createContext(

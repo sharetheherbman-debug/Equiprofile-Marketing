@@ -105,6 +105,7 @@ import {
 } from "./_core/email";
 import {
   grantComplimentaryAccess,
+  hasEffectiveManagementAccess,
   readComplimentaryAccess,
   resolveEffectiveManagementEntitlement,
   revokeComplimentaryAccess,
@@ -541,6 +542,7 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     bothDashboardsUnlocked: Boolean(prefs.bothDashboardsUnlocked),
   }, prefs);
   const complimentaryAccessActive = entitlement.complimentaryAccessState === "active";
+  const hasEffectiveAccess = hasEffectiveManagementAccess(user);
 
   // An expired trial remains blocked unless the separate complimentary overlay
   // is active. An expired legacy free-access marker can never override a paid
@@ -559,8 +561,7 @@ const subscribedProcedure = protectedProcedure.use(async ({ ctx, next }) => {
 
   // Active paid/trial access is billing-owned. Complimentary access is only a
   // separate effective overlay and is never allowed to rewrite that status.
-  const validStatuses = ["trial", "active"];
-  if (!validStatuses.includes(user.subscriptionStatus) && !complimentaryAccessActive) {
+  if (!hasEffectiveAccess) {
     if (
       user.subscriptionStatus === "overdue" ||
       user.subscriptionStatus === "expired" ||

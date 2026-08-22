@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   grantComplimentaryAccess,
+  hasEffectiveManagementAccess,
   readComplimentaryAccess,
   resolveEffectiveManagementEntitlement,
   revokeComplimentaryAccess,
@@ -191,5 +192,52 @@ describe("complimentary Management access overlay", () => {
     expect(() =>
       grantComplimentaryAccess({}, { tier: "pro", days: 0, now: NOW }),
     ).toThrow("Complimentary access days must be an integer from 1 to 3650");
+  });
+
+  it("uses one access predicate for active paid, active complimentary, and trial users", () => {
+    const activeOverlay = grantComplimentaryAccess({}, {
+      tier: "pro",
+      days: 7,
+      now: NOW,
+    });
+
+    expect(hasEffectiveManagementAccess({
+      subscriptionStatus: "active",
+      trialEndsAt: null,
+      preferences: "{malformed",
+    }, NOW)).toBe(true);
+    expect(hasEffectiveManagementAccess({
+      subscriptionStatus: "expired",
+      trialEndsAt: null,
+      preferences: JSON.stringify(activeOverlay),
+    }, NOW)).toBe(true);
+    expect(hasEffectiveManagementAccess({
+      subscriptionStatus: "trial",
+      trialEndsAt: "2026-08-22T12:00:01.000Z",
+      preferences: {},
+    }, NOW)).toBe(true);
+  });
+
+  it("denies expired overlays and trials without a valid end date while preserving admins", () => {
+    const expiredOverlay = grantComplimentaryAccess({}, {
+      tier: "stable",
+      days: 1,
+      now: new Date("2026-08-01T12:00:00.000Z"),
+    });
+
+    expect(hasEffectiveManagementAccess({
+      subscriptionStatus: "expired",
+      preferences: expiredOverlay,
+    }, NOW)).toBe(false);
+    expect(hasEffectiveManagementAccess({
+      subscriptionStatus: "trial",
+      trialEndsAt: null,
+      preferences: {},
+    }, NOW)).toBe(false);
+    expect(hasEffectiveManagementAccess({
+      role: "admin",
+      subscriptionStatus: "expired",
+      preferences: {},
+    }, NOW)).toBe(true);
   });
 });

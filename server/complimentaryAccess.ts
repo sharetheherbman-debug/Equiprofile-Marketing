@@ -21,6 +21,14 @@ export type ComplimentaryPreferences = Record<string, unknown> & {
   complimentaryAccess?: ComplimentaryAccessGrant | null;
 };
 
+export type ManagementAccessSubject = {
+  role?: string | null;
+  subscriptionStatus: string;
+  subscriptionPlan?: string | null;
+  trialEndsAt?: Date | string | null;
+  preferences?: string | Record<string, unknown> | null;
+};
+
 export type EffectiveManagementEntitlement = BaseSubscriptionState & {
   effectivePlanTier: ManagementPlanTier;
   effectiveBothDashboardsUnlocked: boolean;
@@ -36,6 +44,24 @@ function validDate(value: unknown): value is string {
     ISO_DATE.test(value) &&
     Number.isFinite(new Date(value).getTime())
   );
+}
+
+export function parseManagementPreferences(
+  raw: string | Record<string, unknown> | null | undefined,
+): ComplimentaryPreferences {
+  if (!raw) return {};
+  if (typeof raw === "object" && !Array.isArray(raw)) {
+    return raw as ComplimentaryPreferences;
+  }
+  if (typeof raw !== "string") return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as ComplimentaryPreferences)
+      : {};
+  } catch {
+    return {};
+  }
 }
 
 function readLegacyComplimentaryAccess(
@@ -161,6 +187,35 @@ export function revokeComplimentaryAccess(
  * falls back to the base subscription; it never blocks an otherwise-valid paid
  * subscription and never rewrites plan/billing state.
  */
+/**
+ * Canonical access predicate for Management-protected surfaces. It preserves
+ * billing-owned paid/trial status and treats complimentary access only as a
+ * separate overlay; it never mutates stored subscription data.
+ */
+export function hasEffectiveManagementAccess(
+  subject: ManagementAccessSubject | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  if (!subject) return false;
+  if (subject.role === "admin") return true;
+  const preferences = parseManagementPreferences(subject.preferences);
+  const planTier: ManagementPlanTier = preferences.planTier === "stable" ? "stable" : "pro";
+  const entitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: subject.subscriptionStatus,
+      planTier,
+      bothDashboardsUnlocked: Boolean(preferences.bothDashboardsUnlocked),
+    },
+    preferences,
+    now,
+  );
+  if (entitlement.complimentaryAccessState === "active") return true;
+  if (subject.subscriptionStatus === "active") return true;
+  if (subject.subscriptionStatus !== "trial" || !subject.trialEndsAt) return false;
+  const trialEndsAt = new Date(subject.trialEndsAt);
+  return Number.isFinite(trialEndsAt.getTime()) && trialEndsAt > now;
+}
+
 export function resolveEffectiveManagementEntitlement(
   base: BaseSubscriptionState,
   preferences: Record<string, unknown> | null | undefined,
