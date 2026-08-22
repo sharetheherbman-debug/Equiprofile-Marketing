@@ -8658,85 +8658,82 @@ In group lessons, plan exercises that can be differentiated. A polework exercise
     category: "Coaching & Teaching Skills",
     sortOrder: 3,
     objectives: [
-      "Communicate instructions clearly and concisely during lessons",
-      "Give effective feedback that builds confidence and supports improvement",
-      "Understand different communication styles for different learner types",
-      "Use questioning techniques to develop riders' understanding",
+      "Recognise that coaching communication requires appropriate qualification, authority, safeguarding, and current site procedures",
+      "Understand that a qualified coach adapts communication and feedback to the individual rider, horse, activity, and conditions",
+      "Use factual observation and qualified-coach escalation rather than assigning a learner type or diagnosing a cause",
+      "Prepare appropriate questions about communication, feedback, safety, welfare, and safeguarding for a qualified coach",
     ],
-    content: `Communication is the coach's most important tool. A coach who knows everything but cannot communicate it effectively will not develop riders. Clear, timely, and encouraging communication transforms a coaching session from a series of instructions into a genuine learning experience.
+    content: `Riding ability does not by itself authorise someone to coach. Professional coaching requires the appropriate qualification, authority, safeguarding, current legal and site procedures, rider and horse suitability, safety, welfare, and responsible-person arrangements. This lesson is a reflection aid for an authorised coaching context; it does not qualify the learner to instruct, supervise, select an activity, assess a rider or horse, manage an incident, or make safeguarding, medical, legal, welfare, or emergency decisions.
 
-## Clarity and Timing
+## Qualified Communication in Context
 
-Instructions should be short, specific, and timed correctly. "Shorten your reins slightly and ask for trot at C" is clear and timely. "Try to sort of get the horse going a bit more" is vague and unhelpful. Give instructions when the rider can act on them — not in the middle of a complex movement, and not too far in advance.
+Professional coach standards require effective verbal and non-verbal communication, demonstrations, coach positioning, rapport, motivation, receiving and providing feedback, participant-centred adaptation, safety, horse welfare, and safeguarding. The qualified coach decides what language, timing, demonstration, support, question, feedback, pause, and escalation route are appropriate for the individual rider, horse, activity, environment, and current conditions.
 
-## The Feedback Sandwich
+A learner may prepare by asking the qualified coach what the current communication and safety plan requires. If a rider does not understand, feels unsafe, uncomfortable, nervous, or distressed—or if the horse, tack, footing, weather, supervision, consent, safeguarding, or environment becomes unsuitable—the activity must be paused, adapted, stopped, or escalated under the current qualified procedure.
 
-Effective feedback follows a positive-constructive-positive structure:
-1. What the rider did well (genuine, specific praise)
-2. What to improve (one thing at a time, with a clear how-to)
-3. An encouraging statement or look-forward
+## Feedback Is Individual, Not a Formula
 
-For example: "That circle was much rounder — well done. On the next one, try to keep your inside leg on a little more through the second half. Let's try it again — I think you'll feel the difference."
+There is no universal feedback sequence, “sandwich,” timing interval, correction cue, or emotional outcome. A qualified coach must consider the rider’s needs, age, experience, communication preferences, culture, disability or health needs where disclosed and relevant, task, horse welfare, safeguarding, and safety. Do not assume that praise, criticism, imagery, repetition, silence, a question, or a demonstration will have the same effect for every person.
 
-## Types of Learner
+A learner should not label someone as a visual, auditory, kinaesthetic, anxious, disruptive, or difficult “type” and then select a generic intervention. Observe and report factual information within the authorised role. The coach should adapt communication and support appropriately and may seek further qualified guidance where required.
 
-Riders learn in different ways. Visual learners benefit from demonstrations and watching others. Auditory learners respond well to verbal instructions and explanations. Kinaesthetic learners need to feel it — exercises, body positioning, and practice. Most people use a mix, but recognising a rider's primary learning style helps you communicate more effectively.
+## Questions and Boundaries
 
-## Questioning Techniques
+A qualified coach may use questions to check understanding, invite reflection, or clarify what the rider noticed, but questions must be suitable for the moment and must not distract from safety. Do not use a question to diagnose a horse’s behaviour, rider’s health, tack fit, welfare, or the cause of a movement concern. Stop and follow the escalation route if a concern arises.
 
-Questions develop thinking and understanding. Closed questions check facts: "Which leg should be on the inside of a canter circle?" Open questions develop thinking: "Why do you think the horse fell out of canter on that corner?" Guided questions lead to discovery: "What did you notice about your balance when the horse turned?" Use questions throughout the lesson, not just at the end.
+Tone, body language, and communication should remain respectful and consistent with safeguarding and current site requirements. Do not shout, intimidate, promise confidentiality where reporting may be required, conduct a safeguarding investigation, or continue an activity when communication or conditions are no longer safe.
 
-## Tone and Body Language
+## Reflecting Within Your Role
 
-Your tone of voice carries as much meaning as your words. Calm, encouraging, and clear tones build trust. Shouting creates anxiety. Your body language matters too — open, relaxed posture invites communication. Crossed arms and frustrated sighing shut it down. Remember: riders are watching you even when you do not think they are.`,
+Within an authorised setting, a learner can practise neutral, factual communication: say when they do not understand, identify a safety concern, report what was observed, and ask the qualified coach which current instruction or procedure applies. The qualified coach remains responsible for selecting and adapting communication, feedback, instruction, and progression.`,
     keyPoints: [
-      "Instructions must be short, specific, and timed so the rider can act on them",
-      "Use the feedback sandwich: praise, one improvement point, encouragement",
-      "Recognise different learning styles — visual, auditory, kinaesthetic — and adapt accordingly",
-      "Use open and guided questions to develop riders' understanding, not just tell them what to do",
-      "Tone and body language are as important as the words — stay calm, clear, and encouraging",
+      "Professional communication, feedback, demonstration, positioning, adaptation, safety, welfare, and safeguarding require qualified-coach responsibility",
+      "No universal feedback formula, timing, cue, or emotional outcome applies to every learner or context",
+      "Do not label a learner type or infer a cause; use factual observation and the qualified coach’s individual adaptation",
+      "A qualified coach decides whether a question is suitable and safe in the current activity; questions must not replace safety-critical instruction",
+      "Tone, body language, communication, and feedback must remain respectful and consistent with safeguarding and current site procedures",
     ],
     safetyNote:
-      "Never shout in anger at a rider — it creates anxiety, erodes trust, and can cause dangerous loss of concentration. If frustration builds, take a breath and reset. Safety-critical instructions should be given firmly and clearly, not in anger.",
+      "Do not coach, supervise, give safety-critical instruction, select a communication method, or continue an activity outside your authority and the current qualified coaching procedure. Pause, stop, or escalate if communication, rider security, consent, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "In your next coaching session, consciously practise the feedback sandwich for every piece of feedback you give. After the session, reflect on how many times you used open questions versus closed questions. Aim to increase your use of open questions next time.",
+      "Ask a qualified coach how their current communication and feedback approach addresses the individual rider, horse, activity, safety, welfare, safeguarding, support, and escalation route. Within an authorised setting, practise reporting factual observations and asking clarifying questions; do not coach, diagnose, or select an intervention from this lesson alone.",
     commonMistakes: [
-      "Giving too many corrections at once — riders can only process one thing at a time",
-      "Only pointing out faults without acknowledging what is going well",
-      "Using jargon the rider does not understand without explaining it",
-      "Talking too much — sometimes silence allows the rider to feel and process",
-      "Inconsistent tone — alternating between encouraging and frustrated confuses the rider",
+      "Assuming that a fixed amount, sequence, or timing of feedback is safe or effective for every rider and activity",
+      "Labelling a learner or inferring a psychological, medical, biomechanical, welfare, tack, or behavioural cause from a generic observation",
+      "Giving instruction, feedback, or a communication intervention outside an authorised qualified-coaching role",
+      "Using questions or discussion in a way that distracts from immediate safety or current qualified instruction",
+      "Ignoring a change in rider understanding, consent, security, horse welfare, or safeguarding conditions that requires pause or escalation",
     ],
     knowledgeCheck: [
       {
-        question: "What is the 'feedback sandwich'?",
+        question: "Who decides whether a feedback approach, question, or communication cue is suitable for a rider?",
         options: [
-          "A snack break during lessons",
-          "Praise, constructive improvement point, encouragement",
-          "Three criticisms in a row",
-          "Only positive feedback with no correction",
+          "Any experienced rider using a fixed feedback formula",
+          "The qualified coach within the current responsible-person and safeguarding arrangements",
+          "The rider alone while moving at any pace",
+          "A generic learning-style label",
         ],
         correctIndex: 1,
         explanation:
-          "The feedback sandwich delivers constructive feedback within a supportive framework: genuine praise, one improvement point with a clear how-to, and an encouraging statement.",
+          "Professional coaching standards require communication, feedback, adaptation, safety, welfare, and safeguarding that meet the individual rider’s needs in the current activity.",
       },
       {
-        question: "Why are open questions valuable in coaching?",
+        question: "What should happen if a rider does not understand, feels unsafe, or if the horse, tack, footing, or conditions become unsuitable?",
         options: [
-          "They test memory",
-          "They develop the rider's thinking and understanding",
-          "They save time",
-          "They are not valuable",
+          "Continue the activity while trying a different generic feedback cue",
+          "Pause, stop, adapt, or escalate through the current qualified coaching procedure",
+          "Diagnose the rider or horse from the observation",
+          "Ignore the concern if the planned lesson has not finished",
         ],
         correctIndex: 1,
         explanation:
-          "Open questions encourage riders to think, reflect, and develop understanding rather than just following instructions. This leads to deeper, more lasting learning.",
+          "A generic lesson cannot diagnose the cause of a concern. The current qualified coach and responsible-person arrangements determine whether the activity is paused, adapted, stopped, or escalated.",
       },
     ],
     aiTutorPrompts: [
-      "Can you give me examples of effective open questions for a riding lesson?",
-      "How do I communicate with a very nervous adult rider?",
-      "What feedback techniques work best for children versus adults?",
+      "Which current communication, feedback, safety, welfare, safeguarding, and escalation questions should I discuss with a qualified coach?",
+      "How should I report a factual rider, horse, tack, footing, or safety concern to the qualified coach?",
+      "What authority, safeguarding, and current site procedure are required before I coach or supervise a rider?",
     ],
     linkedCompetencies: ["coaching_skills"],
   },
