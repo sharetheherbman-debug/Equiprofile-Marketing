@@ -77,7 +77,7 @@ function isEmbeddedMarketingWrite(path: string): boolean {
   );
 }
 
-function trialEndFromCreatedAt(createdAt: Date | string): Date {
+function fallbackTrialEnd(createdAt: Date | string): Date {
   const end = new Date(createdAt);
   end.setDate(end.getDate() + 7);
   return end;
@@ -93,7 +93,9 @@ async function loadManagementAccess(userId: number) {
   const preferences = parseManagementPreferences(user.preferences);
   const planTier: ManagementPlanTier =
     preferences.planTier === "stable" ? "stable" : "pro";
-  const trialEndsAt = trialEndFromCreatedAt(user.createdAt);
+  const trialEndsAt = user.trialEndsAt
+    ? new Date(user.trialEndsAt)
+    : fallbackTrialEnd(user.createdAt);
   const hasAccess = hasEffectiveManagementAccess({
     role: user.role,
     subscriptionStatus: user.subscriptionStatus,
@@ -184,7 +186,7 @@ const checkTrialStatus = t.middleware(async (opts) => {
     throw new TRPCError({
       code: "PAYMENT_REQUIRED",
       message: isExpiredTrial
-        ? "Your 7-day trial has ended. Please upgrade to continue using EquiProfile."
+        ? "Your trial has ended. Please upgrade to continue using EquiProfile."
         : "Your subscription is not active. Please renew or upgrade to continue using EquiProfile.",
     });
   }
