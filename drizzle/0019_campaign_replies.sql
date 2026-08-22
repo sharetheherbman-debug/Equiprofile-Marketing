@@ -16,8 +16,7 @@ CREATE TABLE IF NOT EXISTS `campaignReplies` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `campaignReplies_pk` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Prevent duplicate message ingestion
 CREATE UNIQUE INDEX IF NOT EXISTS `campaignReplies_messageId_idx`
   ON `campaignReplies` (`messageId`(250));
---> statement-breakpoint

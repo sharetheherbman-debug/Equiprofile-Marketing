@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `mediaAssets` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `mediaAssets_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- ─── Brand Profiles ───────────────────────────────────────────────────────────
 -- Persistent brand identity used to enrich content generation.
 -- One profile per tenant (upsert pattern).
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `brandProfiles` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `brandProfiles_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- ─── Brand Avatars ────────────────────────────────────────────────────────────
 -- Persistent brand character / avatar memory.
 -- Injected into avatar generation prompts for consistency.
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `brandAvatars` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `brandAvatars_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- ─── Growth Profiles ──────────────────────────────────────────────────────────
 -- Per-tenant growth intelligence memory.
 -- Tracks goals, audience, cadence, and best-performing patterns.
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `growthProfiles` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `growthProfiles_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- ─── Content Scores ───────────────────────────────────────────────────────────
 -- Deterministic quality scores for marketing drafts and assets.
 -- hookScore, platformFitScore, conversionScore, clarityScore,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `contentScores` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `contentScores_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- ─── Platform Strategy Rules ──────────────────────────────────────────────────
 -- Best-practice strategy rules seeded for each platform.
 -- NOT fake algorithm promises — used to guide content generation.
@@ -150,24 +150,15 @@ CREATE TABLE IF NOT EXISTS `platformStrategyRules` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `platformStrategyRules_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- ─── Indexes ──────────────────────────────────────────────────────────────────
 
 CREATE INDEX IF NOT EXISTS `idx_media_assets_tenant` ON `mediaAssets` (`tenantId`, `type`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_media_assets_job` ON `mediaAssets` (`jobId`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_media_assets_status` ON `mediaAssets` (`tenantId`, `status`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_brand_profiles_tenant` ON `brandProfiles` (`tenantId`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_brand_avatars_tenant` ON `brandAvatars` (`tenantId`, `status`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_growth_profiles_tenant` ON `growthProfiles` (`tenantId`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_content_scores_draft` ON `contentScores` (`draftId`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_content_scores_asset` ON `contentScores` (`assetId`);
---> statement-breakpoint
 CREATE INDEX IF NOT EXISTS `idx_platform_strategy_platform` ON `platformStrategyRules` (`platform`);
---> statement-breakpoint

@@ -20,13 +20,12 @@ CREATE TABLE IF NOT EXISTS `siteSettings` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `siteSettings_key_unique` (`key`)
 );
---> statement-breakpoint
+
 -- Step 2: Add updatedAt column if the table pre-existed without it
 ALTER TABLE `siteSettings`
   ADD COLUMN IF NOT EXISTS `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
---> statement-breakpoint
+
 -- Step 3: Add unique key on `key` column if the table pre-existed without it
 -- (ON DUPLICATE KEY UPDATE requires this unique index to function correctly)
 ALTER TABLE `siteSettings`
   ADD UNIQUE IF NOT EXISTS `siteSettings_key_unique` (`key`);
---> statement-breakpoint

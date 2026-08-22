@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `adminSessions` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `adminSessions_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Admin unlock attempts tracking for rate limiting
 CREATE TABLE IF NOT EXISTS `adminUnlockAttempts` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `adminUnlockAttempts` (
   CONSTRAINT `adminUnlockAttempts_id` PRIMARY KEY(`id`),
   CONSTRAINT `adminUnlockAttempts_userId_unique` UNIQUE(`userId`)
 );
---> statement-breakpoint
+
 -- Stables/Teams for multi-user management
 CREATE TABLE IF NOT EXISTS `stables` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `stables` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `stables_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Stable members with role-based permissions
 CREATE TABLE IF NOT EXISTS `stableMembers` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `stableMembers` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `stableMembers_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Invitations to join stables
 CREATE TABLE IF NOT EXISTS `stableInvites` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `stableInvites` (
   CONSTRAINT `stableInvites_id` PRIMARY KEY(`id`),
   CONSTRAINT `stableInvites_token_unique` UNIQUE(`token`)
 );
---> statement-breakpoint
+
 -- Events and calendar
 CREATE TABLE IF NOT EXISTS `events` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `events_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Event reminders
 CREATE TABLE IF NOT EXISTS `eventReminders` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `eventReminders` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `eventReminders_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Feed costs tracking
 CREATE TABLE IF NOT EXISTS `feedCosts` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `feedCosts` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `feedCosts_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Vaccinations tracking
 CREATE TABLE IF NOT EXISTS `vaccinations` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `vaccinations` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `vaccinations_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Deworming tracking
 CREATE TABLE IF NOT EXISTS `dewormings` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `dewormings` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `dewormings_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Shareable profile links
 CREATE TABLE IF NOT EXISTS `shareLinks` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `shareLinks` (
   CONSTRAINT `shareLinks_id` PRIMARY KEY(`id`),
   CONSTRAINT `shareLinks_token_unique` UNIQUE(`token`)
 );
---> statement-breakpoint
+
 -- Competitions tracking
 CREATE TABLE IF NOT EXISTS `competitions` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS `competitions` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `competitions_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Document tags for better organization
 CREATE TABLE IF NOT EXISTS `documentTags` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `documentTags` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `documentTags_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Stripe webhook events for idempotency
 CREATE TABLE IF NOT EXISTS `stripeEvents` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS `stripeEvents` (
   CONSTRAINT `stripeEvents_id` PRIMARY KEY(`id`),
   CONSTRAINT `stripeEvents_eventId_unique` UNIQUE(`eventId`)
 );
---> statement-breakpoint
+
 -- Message threads for stable communication
 CREATE TABLE IF NOT EXISTS `messageThreads` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `messageThreads` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `messageThreads_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Messages for in-app communication
 CREATE TABLE IF NOT EXISTS `messages` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `messages_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Competition results with detailed scoring
 CREATE TABLE IF NOT EXISTS `competitionResults` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -263,7 +263,7 @@ CREATE TABLE IF NOT EXISTS `competitionResults` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `competitionResults_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Training program templates
 CREATE TABLE IF NOT EXISTS `trainingProgramTemplates` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `trainingProgramTemplates` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `trainingProgramTemplates_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Training programs (instances of templates)
 CREATE TABLE IF NOT EXISTS `trainingPrograms` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `trainingPrograms` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `trainingPrograms_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Automated reports
 CREATE TABLE IF NOT EXISTS `reports` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `reports` (
   `generatedAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `reports_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Report schedules for automation
 CREATE TABLE IF NOT EXISTS `reportSchedules` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -329,7 +329,7 @@ CREATE TABLE IF NOT EXISTS `reportSchedules` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `reportSchedules_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Breeding records
 CREATE TABLE IF NOT EXISTS `breeding` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `breeding` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `breeding_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Foal tracking
 CREATE TABLE IF NOT EXISTS `foals` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -368,7 +368,7 @@ CREATE TABLE IF NOT EXISTS `foals` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `foals_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Pedigree information
 CREATE TABLE IF NOT EXISTS `pedigree` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -390,7 +390,7 @@ CREATE TABLE IF NOT EXISTS `pedigree` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `pedigree_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Lesson bookings for trainers
 CREATE TABLE IF NOT EXISTS `lessonBookings` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -409,7 +409,7 @@ CREATE TABLE IF NOT EXISTS `lessonBookings` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `lessonBookings_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Trainer availability
 CREATE TABLE IF NOT EXISTS `trainerAvailability` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -421,7 +421,7 @@ CREATE TABLE IF NOT EXISTS `trainerAvailability` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `trainerAvailability_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Feature flags for account-level feature enablement
 CREATE TABLE IF NOT EXISTS `accountFeatures` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -441,7 +441,7 @@ CREATE TABLE IF NOT EXISTS `accountFeatures` (
   CONSTRAINT `accountFeatures_id` PRIMARY KEY(`id`),
   CONSTRAINT `accountFeatures_userId_unique` UNIQUE(`userId`)
 );
---> statement-breakpoint
+
 -- API keys for third-party integrations
 CREATE TABLE IF NOT EXISTS `apiKeys` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -458,7 +458,7 @@ CREATE TABLE IF NOT EXISTS `apiKeys` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `apiKeys_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Webhooks for third-party integrations
 CREATE TABLE IF NOT EXISTS `webhooks` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -473,7 +473,7 @@ CREATE TABLE IF NOT EXISTS `webhooks` (
   `createdAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `webhooks_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Tasks system for general horse care and management
 CREATE TABLE IF NOT EXISTS `tasks` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -495,7 +495,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `tasks_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Contacts for vets, farriers, trainers, etc.
 CREATE TABLE IF NOT EXISTS `contacts` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -518,7 +518,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `contacts_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Treatments module
 CREATE TABLE IF NOT EXISTS `treatments` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -541,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `treatments` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `treatments_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Health appointments module
 CREATE TABLE IF NOT EXISTS `appointments` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -565,7 +565,7 @@ CREATE TABLE IF NOT EXISTS `appointments` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `appointments_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Dental care module
 CREATE TABLE IF NOT EXISTS `dentalCare` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -586,7 +586,7 @@ CREATE TABLE IF NOT EXISTS `dentalCare` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `dentalCare_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- X-rays module
 CREATE TABLE IF NOT EXISTS `xrays` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -609,7 +609,7 @@ CREATE TABLE IF NOT EXISTS `xrays` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `xrays_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Tags module
 CREATE TABLE IF NOT EXISTS `tags` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -622,7 +622,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `tags_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Hoofcare module
 CREATE TABLE IF NOT EXISTS `hoofcare` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -643,7 +643,7 @@ CREATE TABLE IF NOT EXISTS `hoofcare` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `hoofcare_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Nutrition logs module
 CREATE TABLE IF NOT EXISTS `nutritionLogs` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -664,7 +664,7 @@ CREATE TABLE IF NOT EXISTS `nutritionLogs` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `nutritionLogs_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 -- Nutrition plans module
 CREATE TABLE IF NOT EXISTS `nutritionPlans` (
   `id` int AUTO_INCREMENT NOT NULL,
@@ -688,4 +688,3 @@ CREATE TABLE IF NOT EXISTS `nutritionPlans` (
   `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `nutritionPlans_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint

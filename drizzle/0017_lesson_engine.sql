@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `lessonPathways` (
   CONSTRAINT `lessonPathways_id` PRIMARY KEY(`id`),
   CONSTRAINT `lessonPathways_slug` UNIQUE(`slug`)
 );
---> statement-breakpoint
+
 CREATE TABLE IF NOT EXISTS `lessonUnits` (
   `id` int AUTO_INCREMENT NOT NULL,
   `slug` varchar(150) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `lessonUnits` (
   CONSTRAINT `lessonUnits_id` PRIMARY KEY(`id`),
   CONSTRAINT `lessonUnits_slug` UNIQUE(`slug`)
 );
---> statement-breakpoint
+
 CREATE TABLE IF NOT EXISTS `lessonCompletion` (
   `id` int AUTO_INCREMENT NOT NULL,
   `studentUserId` int NOT NULL,
@@ -46,12 +46,8 @@ CREATE TABLE IF NOT EXISTS `lessonCompletion` (
   `completedAt` timestamp NOT NULL DEFAULT (now()),
   CONSTRAINT `lessonCompletion_id` PRIMARY KEY(`id`)
 );
---> statement-breakpoint
+
 CREATE INDEX `idx_lessonUnits_pathwaySlug` ON `lessonUnits` (`pathwaySlug`);
---> statement-breakpoint
 CREATE INDEX `idx_lessonUnits_level` ON `lessonUnits` (`level`);
---> statement-breakpoint
 CREATE INDEX `idx_lessonCompletion_studentUserId` ON `lessonCompletion` (`studentUserId`);
---> statement-breakpoint
 CREATE INDEX `idx_lessonCompletion_lessonSlug` ON `lessonCompletion` (`lessonSlug`);
---> statement-breakpoint
