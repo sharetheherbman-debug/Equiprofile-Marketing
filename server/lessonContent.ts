@@ -2452,122 +2452,97 @@ Before any no-stirrup exercise, the qualified coach and responsible person must 
     category: "Rider Foundations",
     sortOrder: 9,
     objectives: [
-      "Break down fundamental riding skills into clear, teachable components",
-      "Identify common beginner rider faults and understand their root causes",
-      "Apply effective correction strategies for foundational position and aid problems",
-      "Structure a progressive beginner lesson plan using sound pedagogical principles",
+      "Recognise that teaching riding requires appropriate qualification, authorisation, safeguarding, and current site procedures",
+      "Use factual observation and qualified-coach escalation rather than diagnosing a learner, horse, or cause",
+      "Understand that a qualified coach adapts communication, support, progression, and feedback to the individual",
+      "Prepare appropriate questions for a qualified coach about lesson planning, risk, welfare, safeguarding, and progression",
     ],
-    content: `Being an accomplished rider is not the same as being able to teach riding. Teaching the foundations requires you to break down skills you perform instinctively into their component parts, understand why beginners make the mistakes they do, and communicate corrections in a way that is clear, encouraging, and effective. This lesson bridges the gap between advanced riding ability and the capacity to pass that knowledge on to others.
+    content: `Riding well does not by itself authorise someone to teach. Coaching adults or children requires the appropriate qualification, authority, safeguarding, insurance, current legal and site requirements, horse-and-rider suitability, risk assessment, and responsible-person procedures. This lesson helps learners recognise those boundaries and prepare questions for a qualified coach; it does not qualify the learner to teach, select horses, plan an activity, supervise a rider, or make welfare, medical, safeguarding, or emergency decisions.
 
-## Breaking Down the Basics
+## Preparing for Qualified Coaching
 
-When you learned to ride, you went through a process of acquiring skills that have since become automatic. Rising trot, applying a leg aid, and maintaining your position are things you now do without conscious thought. To teach these skills, you must reverse-engineer them.
+Official beginner-riding guidance describes a coach taking a new rider step-by-step through mounting, basic controls, and position, with leader support where appropriate. Professional coach standards include participant-centred planning, horse welfare, safety, safeguarding, risk awareness, suitable equipment and environment, communication, feedback, adaptation, and evaluation. The qualified coach and responsible person decide whether the rider, horse, lesson environment, support, and task are suitable.
 
-**The process of skill decomposition:**
-1. **Identify the skill** — For example, "performing a balanced halt from walk."
-2. **List the component actions** — Sit tall, close the fingers on the reins, apply a gentle squeeze with both legs to keep the horse straight, soften the hand the moment the horse halts, praise the horse.
-3. **Sequence the actions** — What comes first? What happens simultaneously?
-4. **Identify the feel** — What should the rider feel when it is done correctly? "You should feel the horse step underneath you and stop squarely. Your weight should be evenly distributed through both seat bones."
-5. **Prepare for common errors** — What will beginners typically get wrong? Too much hand, not enough leg, leaning forward, looking down.
+A learner can prepare by asking the qualified coach what the current plan covers: the lesson aim, participant needs, safety arrangements, horse and equipment suitability, supervision, safeguarding, communication, stop/escalation route, welfare checks, and how the activity will be reviewed. Do not create or alter those arrangements independently from a generic lesson.
 
-This process applies to every foundational skill: mounting, dismounting, steering, transitions, rising trot, and the basic position itself. Write out decompositions for each and practise explaining them in simple language.
+## Observing Without Diagnosing
 
-## Common Rider Faults and Their Root Causes
+A coach may observe a rider’s position, confidence, communication, attention, balance, or response to an instruction. An observation does not prove a psychological, medical, biomechanical, tack, welfare, or behavioural cause. Do not label a rider’s “fault,” attribute it to anxiety, weakness, tiredness, or confidence, or prescribe an exercise or correction from this lesson.
 
-Understanding *why* a fault occurs is far more useful than simply identifying *what* is wrong. Here are the most common beginner faults and their typical root causes:
+If a learner appears uncomfortable, nervous, unable to understand, unsafe, tired, or distressed—or if the horse, tack, footing, weather, or environment becomes unsuitable—the activity must be paused, adapted, stopped, or escalated through the qualified coach and current site procedure. The rider should be encouraged to ask questions and communicate discomfort or concern to the coach.
 
-**Looking down:** Beginners look down because they are anxious and want to see the horse. The root cause is usually a lack of confidence. The correction is to build confidence gradually — once the rider trusts the horse, they naturally look up. In the meantime, give them focal points: "Look at the letter C" or "Look between the horse's ears and out to the fence."
+## Communication and Adaptation
 
-**Gripping with the knees:** This is almost always a balance issue. The rider feels insecure and clamps on with the strongest part of their leg. Paradoxically, this makes them *less* secure by lifting them out of the saddle. The correction is to address balance — exercises without stirrups, holding the pommel, and riding on the lunge all help. Telling the rider to "relax your knee" without addressing the underlying balance problem rarely works.
+Professional coach standards require communication and feedback that meet the rider’s needs. A qualified coach decides what language, demonstration, support, visual cue, progression, repetition, or adaptation is appropriate for the individual. Generic imagery, position cues, mounted exercises, no-stirrup work, lunge work, poles, reins, whips, or transitions are not automatically safe or suitable. Use only the current coach-approved activity and support.
 
-**Round shoulders and collapsed core:** Beginners often slouch because they are tense, tired, or trying to absorb the movement by rounding their back. The correction involves building core strength and giving imagery: "Imagine a string attached to the crown of your head pulling you towards the sky" or "Pretend you have a headlight on your chest — shine it straight ahead."
+A learner may practise neutral, factual communication within their authority: report what was observed, say when they do not understand, and ask what the current qualified plan requires. Do not promise confidentiality where safeguarding requires reporting, investigate an incident, or give a rider medical, legal, welfare, or technical instruction beyond the approved role.
 
-**Hands too high, too wide, or too busy:** This usually stems from using the hands for balance rather than communication. The correction is to develop an independent seat so the hands are freed from a balance role. Exercises such as riding with one hand on the thigh or carrying a whip horizontally between both hands can help stabilise the arm position.
+## Understanding Qualified Lesson Planning
 
-**Stiff, non-following elbows:** If the elbows are locked, the contact becomes rigid and the horse cannot move freely. This is often caused by tension in the shoulders. Encourage the rider to let their arms feel heavy and think of their elbows as hinges that open and close with the horse's head movement.
+Professional coaching qualifications use plans that can include risk assessment, aims, rider and horse suitability, equipment, timings, preparation, activity, cool-down, conclusion, feedback, progression, adaptation, and evaluation. The exact content and duration vary by qualification, rider, horse, discipline, environment, local requirements, and current conditions. Assessment-specific timings are not a universal lesson template.
 
-## Correction Strategies
-
-Effective correction requires timing, tact, and variety. Not every rider responds to the same approach, so you need a toolkit of strategies:
-
-- **Imagery and analogy** — "Imagine your legs are made of lead" is more effective for many riders than "Push your heels down." Imagery bypasses conscious overthinking and speaks directly to the body.
-- **Exaggeration exercises** — Ask the rider to exaggerate the correct position. If they tend to lean forward, ask them to lean so far back they feel they might fall off (within safe limits). This recalibrates their sense of "centre."
-- **Progressive exercises** — Build the skill in stages. Do not ask a beginner to rise to the trot on the open track until they can do it on the lunge with a neck strap for security.
-- **Positive framing** — Instead of "Stop gripping with your knees," say "Think about letting your legs hang long and heavy." The brain responds better to positive instructions than negative ones.
-- **Repetition with variation** — Repeat the same skill but in different contexts — on a circle, on a straight line, with poles, on a different rein. This builds the skill without tedious repetition of the identical exercise.
-
-## Structuring a Lesson Plan
-
-A well-structured beginner lesson plan follows a logical progression:
-
-1. **Introduction (2–3 minutes)** — Greet the rider, ask how they are feeling, recap the previous session, and state today's objective.
-2. **Warm-up (8–10 minutes)** — Mounted exercises at halt and walk to loosen up, followed by walk work on both reins.
-3. **Main work (15–20 minutes)** — Two or three exercises that build towards the session objective. Use progressive difficulty.
-4. **Cool-down (5 minutes)** — Walk on a long rein, praise the horse, recap the session with the rider.
-5. **Review (2 minutes)** — What went well? What will we work on next time?
-
-Always have a **Plan B**. If the planned exercise is too difficult, have a simpler version ready. If the rider achieves the objective quickly, have a progression prepared. Flexibility within a clear structure is the hallmark of good teaching.`,
+A qualified coach should adapt or stop a plan when it is no longer suitable. A learner should report the changed condition, follow the designated stop/escalation route, and obtain qualified direction rather than selecting a “Plan B” or progression alone.`,
     keyPoints: [
-      "Decompose automatic riding skills into their component parts before attempting to teach them",
-      "Understand the root cause of each beginner fault — addressing the cause is more effective than correcting the symptom",
-      "Use a variety of correction strategies: imagery, exaggeration, progressive exercises, and positive framing",
-      "Structure every lesson with a clear warm-up, main work, and cool-down, with Plan B alternatives ready",
-      "Effective teaching requires patience, empathy, and the ability to communicate complex movements in simple language",
+      "Riding ability does not by itself authorise teaching; coaching requires appropriate qualification, authority, safeguarding, and current site procedures",
+      "An observation does not establish a rider’s or horse’s medical, psychological, biomechanical, welfare, tack, or behavioural cause",
+      "A qualified coach adapts communication, support, feedback, and progression to the individual rider, horse, activity, and conditions",
+      "Professional lesson plans may include risk, suitability, aims, equipment, preparation, activity, review, adaptation, and evaluation; no fixed template applies to every context",
+      "Report changed conditions and follow the qualified coach’s designated stop/escalation route rather than selecting an activity or progression alone",
     ],
     safetyNote:
-      "When teaching beginners, always use a calm, reliable horse and work in an enclosed arena. Have a helper on the ground if needed, especially for first-time riders. Never ask a beginner to attempt an exercise without first demonstrating or explaining it clearly. Keep sessions short enough that the rider does not become fatigued, as tiredness leads to poor position and increased risk of falls.",
+      "Do not teach, supervise, select a horse, choose equipment, set a duration, or progress a beginner activity unless you are authorised, competent, and following the current qualified coaching and responsible-person procedures. Pause, stop, or escalate if rider security, understanding, consent, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "Choose one foundational skill — such as rising trot — and write a full decomposition: list every component action, the correct sequence, the desired feel, and the three most common errors with their root causes. Then write a 30-minute lesson plan centred on teaching this skill to a complete beginner, including warm-up, two progressive exercises, and a cool-down. Practise delivering the lesson to a friend or colleague before using it with a real beginner.",
+      "Ask a qualified coach how their current lesson plan addresses rider and horse suitability, risk, welfare, safeguarding, communication, support, progression, adaptation, and review. Practise reporting factual observations and asking clarifying questions within an authorised setting. Do not design, rehearse, or deliver a lesson to a real beginner from this lesson alone.",
     commonMistakes: [
       "Assuming that because you can ride a skill well, you can automatically explain it clearly to someone else",
-      "Correcting the symptom of a fault (e.g., 'Relax your knee') without addressing the root cause (e.g., poor balance)",
-      "Overloading the beginner with too many corrections in one session instead of focusing on one key improvement area",
+      "Diagnosing a rider’s or horse’s “root cause,” health, confidence, biomechanics, welfare, tack fit, or behaviour from a generic observation",
+      "Giving instruction, selecting a horse or activity, or changing a progression outside an authorised qualified-coaching role",
     ],
     knowledgeCheck: [
       {
         question:
-          "What is the first step in teaching a foundational riding skill?",
+          "What must a learner establish before teaching or supervising a beginner rider?",
         options: [
-          "Tell the rider to copy what you do",
-          "Decompose the skill into its component actions and sequence them logically",
-          "Ask the rider to read a textbook about it",
-          "Let the rider figure it out through trial and error",
+          "That they can ride the skill themselves",
+          "The appropriate qualification, authority, safeguarding, current site procedure, and qualified coaching responsibility",
+          "That the beginner has watched an online lesson",
+          "That the learner has a generic fixed lesson plan",
         ],
         correctIndex: 1,
         explanation:
-          "Skill decomposition — breaking a complex movement into its individual parts, sequencing them, and identifying the desired feel — is essential before you can teach it clearly to someone else.",
+          "Riding ability alone does not authorise coaching. Professional standards require safety, welfare, safeguarding, suitability, communication, risk management, and qualified responsibility.",
       },
       {
         question:
-          "What is the most common root cause of a beginner rider gripping with their knees?",
+          "How should a learner respond to an observed rider-position concern?",
         options: [
-          "They are deliberately trying to grip",
-          "Their stirrups are too long",
-          "They feel unbalanced and are using the knee for security",
-          "They are too relaxed in the saddle",
+          "Diagnose the rider’s root cause and prescribe an exercise",
+          "Assume the horse or saddle is responsible",
+          "Report factual observations and follow the qualified coach’s current instruction and escalation route",
+          "Continue the activity without mentioning it",
         ],
         correctIndex: 2,
         explanation:
-          "Knee gripping is almost always a balance issue. The rider instinctively clamps on with the strongest part of their leg because they feel insecure. Addressing the underlying balance problem is more effective than simply telling them to relax their knee.",
+          "A generic observation does not establish a medical, psychological, biomechanical, welfare, tack, or behavioural cause. A learner should report factual observations and follow the authorised coaching procedure.",
       },
       {
         question:
-          "Why is imagery often more effective than direct instruction for correcting rider position?",
+          "Who decides whether a communication cue, demonstration, support, or progression is suitable for a beginner rider?",
         options: [
-          "Riders prefer creative language to technical terms",
-          "Imagery bypasses conscious overthinking and speaks directly to the body's movement patterns",
-          "Direct instruction is always too complicated for riders to understand",
-          "Imagery is only useful for children, not adult riders",
+          "Any experienced rider using a generic lesson",
+          "The qualified coach within the current responsible-person and safeguarding arrangements",
+          "The rider alone before mounting",
+          "A fixed time-based lesson template",
         ],
         correctIndex: 1,
         explanation:
-          "Imagery and analogy bypass the conscious, analytical mind and create a physical response. 'Imagine your legs are made of lead' often produces a better result than 'Push your weight down into your heels' because it evokes a whole-body sensation rather than a mechanical action.",
+          "Professional coaching standards require communication, feedback, support, adaptation, and progressive activity to meet the individual rider’s needs while maintaining safety, welfare, and safeguarding.",
       },
     ],
     aiTutorPrompts: [
-      "Can you help me decompose the skill of a walk-to-trot transition into teachable components?",
-      "What are the best imagery cues for helping a beginner rider develop a deeper seat?",
-      "How should I structure a progressive series of lessons for a complete beginner over six weeks?",
+      "What qualification, authority, safeguarding, and current site procedure are required before I teach or supervise a beginner rider?",
+      "How should I report a factual rider, horse, tack, footing, or safety observation to the qualified coach?",
+      "Which current planning, risk, welfare, safeguarding, support, adaptation, and evaluation questions should I discuss with a qualified coach?",
     ],
     linkedCompetencies: ["rider_position", "coaching_fundamentals"],
   },
