@@ -2067,7 +2067,7 @@ School figures should be ridden with purpose and precision. A rider who rides ac
       "Outline a correct cool-down procedure after exercise",
       "Understand the physiological reasons behind warming up muscles and joints",
     ],
-    content: `Every ridden session should begin with a structured warm-up and end with a proper cool-down. These are not optional extras — they are fundamental to the horse's physical welfare, soundness and long-term health. Just as a human athlete would never sprint without warming up, a horse should never be asked to work intensively without proper preparation.
+    content: `Plan exercise with an individual, progressive warm-up and cool-down that reflects the horse's current fitness, health, workload, weather, ground, temperament, and qualified guidance. Current welfare guidance recognises that there are no rigid rules; do not copy a fixed routine or continue when the horse appears unable to cope.
 
 ## Why Warm Up?
 
@@ -2081,20 +2081,20 @@ The warm-up serves several critical physiological purposes:
 
 ## A Standard Warm-Up Routine
 
-A typical warm-up for a flatwork session lasts **10 to 15 minutes** and follows this structure:
+A warm-up can progress from easy movement to more dynamic work, but its duration and detail must be adjusted for the individual horse and conditions:
 
-**Phase 1 — Walk (5 minutes minimum):**
+**Phase 1 — Easy movement:**
 - Begin with free walk on a long rein, allowing the horse to stretch its head and neck forward and down.
 - Walk on both reins, using large shapes (20-metre circles, changes of rein) to loosen the horse evenly on both sides.
 - This phase allows the horse to warm the muscles, loosen the joints and mentally settle.
 
-**Phase 2 — Trot (5–7 minutes):**
+**Phase 2 — Progressive movement:**
 - Move into a working trot, starting with rising trot to ease the horse's back.
 - Ride large circles, serpentines and changes of rein to encourage the horse to use both sides of its body equally.
 - Gradually take up more contact as the horse begins to soften and engage.
 - Include some transitions within trot (lengthening and shortening the stride) to develop responsiveness.
 
-**Phase 3 — Short canter (if appropriate):**
+**Phase 3 — Further work (if appropriate):**
 - A brief canter on each rein further warms the muscles and prepares the horse for the main session.
 - Keep the canter steady and balanced; this is not the time for collection or extension.
 
@@ -2112,10 +2112,10 @@ The cool-down is just as important as the warm-up:
 - Drop from canter to trot, then from trot to walk over several minutes. Do not go from hard work directly to halt.
 - Include some stretchy trot (allowing the horse to lower its head and stretch over the back) to help the muscles begin to relax.
 
-**Phase 2 — Walk on a long rein (minimum 5–10 minutes):**
+**Phase 2 — Walk and recover:**
 - Walk the horse on a loose rein, allowing it to stretch its neck fully forward and down.
-- This phase allows the heart rate to return to resting level, flushes metabolic waste products (such as lactic acid) from the muscles, and prevents stiffness.
-- In hot weather, this walk phase may need to be extended to allow the horse to cool down fully before returning to the stable.
+- Gradually walk until respiration has recovered, encourage comfortable stretching, and monitor energy and movement quality.
+- In hot weather, reduce intensity and duration, allow extra recovery time, offer water, use shade where available, and apply cool water over the body when active cooling is needed.
 
 **Phase 3 — Post-ride checks:**
 - Once dismounted, check the horse's legs for heat or swelling.
@@ -2125,38 +2125,45 @@ The cool-down is just as important as the warm-up:
 
 ## Signs of a Horse That Has Not Been Cooled Down Properly
 
-- Continued sweating after returning to the stable
-- Elevated breathing rate that does not return to normal within 10–15 minutes
-- Stiffness or reluctance to move the next day
-- Muscle soreness or sensitivity to touch over the back and hindquarters
+- Heavy or excessive sweating
+- Fast or laboured breathing
+- Feeling hot to the touch
+- Lethargy, a drop in performance, tiredness, or declining movement quality
+
+If these concerns occur, stop exercise, begin the appropriate cooling measures, and seek responsible professional guidance rather than self-diagnosing.
 
 A consistent warm-up and cool-down routine protects the horse's body, improves performance over time and demonstrates responsible horsemanship.`,
     keyPoints: [
-      "A warm-up of at least 10–15 minutes prepares muscles, joints and the respiratory system for work",
-      "Always begin with at least 5 minutes of free walk on a long rein",
-      "The cool-down should include 5–10 minutes of walk on a loose rein to return heart rate to resting level",
-      "Warming up also serves as a soundness check — if the horse feels unlevel, investigate before working harder",
-      "In hot weather, extend the cool-down to prevent overheating; in cold weather, use a cooler rug",
+      "Warm-up and cool-down plans are individualised for the horse, conditions, workload, and qualified guidance",
+      "Start with easy movement and progress only as the individual horse is ready",
+      "Gradually reduce work and walk until respiration has recovered, monitoring the horse's energy and movement quality",
+      "If movement quality declines or the horse appears unable to cope, stop exercise and seek responsible qualified guidance",
+      "In hot weather, adapt workload and recovery, offer water and shade, and use active cooling when needed",
     ],
     safetyNote:
-      "If a horse feels uneven, short-striding or reluctant to move forward during the warm-up, do not ignore this and push on. Stop, dismount if necessary, and check the horse's legs and feet for problems. Report any concerns to your instructor or yard manager. Working a lame horse causes further injury and is a welfare issue. Never hose cold water onto a hot, sweating horse's large muscle groups suddenly, as this can cause muscle cramping — cool gradually.",
+      "If movement quality declines, the horse appears unable to cope, or you are concerned about heat or comfort, stop exercise and report it to the responsible yard person, instructor, veterinarian, or other appropriate professional. In hot conditions, recognised welfare guidance supports active cooling with cool water over the body alongside recovery walking, shade where available, and access to water.",
     practicalApplication:
-      "Plan your warm-up routine before you mount. Know how long you have for your session and allocate at least 10 minutes at the start and 10 minutes at the end for warming up and cooling down. If you only have 30 minutes, it is better to have a short but well-structured session with proper warm-up and cool-down than to skip these and ride hard for the full 30 minutes. Record your horse's resting breathing rate so you know when it has returned to normal after exercise.",
+      "Plan the session around the individual horse, current fitness, weather, ground and recovery. Begin with easy movement, progress only as appropriate, and reduce work gradually afterwards. Observe behaviour, breathing, energy and movement quality; if concerns arise, stop and seek qualified guidance rather than applying a copied timing or self-diagnostic rule.",
     commonMistakes: [
       "Skipping the walk phase and going straight into trot or canter",
-      "Warming up for too short a time, especially in cold weather when muscles take longer to prepare",
-      "Failing to cool down properly, leading to stiffness and soreness the next day",
+      "Using a copied warm-up duration instead of adapting the session to the horse, conditions, and current fitness",
+      "Stopping hard work abruptly instead of reducing work gradually and monitoring recovery",
       "Not checking for lameness during the warm-up trot",
       "Dismounting immediately after hard work instead of walking on a long rein first",
     ],
     knowledgeCheck: [
       {
         question:
-          "How long should the walk phase of a warm-up last as a minimum?",
-        options: ["1 minute", "2 minutes", "5 minutes", "15 minutes"],
-        correctIndex: 2,
+          "What should determine the duration and detail of a warm-up?",
+        options: [
+          "A fixed time copied for every horse",
+          "The individual horse, fitness, workload, weather, ground and qualified guidance",
+          "The rider's preference alone",
+          "Whether the horse is already sweating",
+        ],
+        correctIndex: 1,
         explanation:
-          "The initial walk phase should last at least 5 minutes to allow blood flow to increase, joints to lubricate and the horse to settle mentally.",
+          "There are no rigid warm-up rules. Use easy movement and progress according to the individual horse, conditions, workload and qualified advice.",
       },
       {
         question:
@@ -2169,7 +2176,7 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
         ],
         correctIndex: 1,
         explanation:
-          "Walking on a long rein allows the heart rate to drop gradually, blood to flush lactic acid from the muscles, and the horse to stretch and relax, preventing stiffness.",
+          "Gradually reducing work and walking supports recovery. Monitor respiration, energy and movement quality, and adjust recovery to the horse, workload and conditions.",
       },
       {
         question:
@@ -2182,7 +2189,7 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
         ],
         correctIndex: 2,
         explanation:
-          "An unlevel feel during the warm-up may indicate lameness, soreness or a foot problem. Stop, check the horse thoroughly and do not continue working until the cause has been identified.",
+          "A change in movement quality or a horse that appears unable to cope is a reason to stop exercise and seek responsible qualified guidance rather than pushing on or attempting a diagnosis.",
       },
     ],
     aiTutorPrompts: [
