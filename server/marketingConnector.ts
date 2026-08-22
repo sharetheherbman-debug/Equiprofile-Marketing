@@ -123,6 +123,11 @@ export async function sendMarketingConversionEvent(
       {
         ...event,
         currency: "GBP",
+        properties: {
+          ...(event.properties || {}),
+          application: "equiprofile",
+          product_line: "management",
+        },
       },
     );
     return true;
@@ -191,12 +196,11 @@ async function syncRecentConversionSignals(): Promise<void> {
 
       if (createdAt && createdAt >= since) {
         const delivered = await sendMarketingConversionEvent({
-          event_id: `account-registered:${anonymousId}:${createdAt.toISOString()}`,
-          event_type: "account_registered",
+          event_id: `management-registration:${anonymousId}:${createdAt.toISOString()}`,
+          event_type: "management_registration_completed",
           occurred_at: createdAt.toISOString(),
           consent_basis: "anonymous_aggregate",
           properties: {
-            application: "equiprofile",
             subscription_plan: user.subscriptionPlan || "monthly",
           },
         });
@@ -205,12 +209,11 @@ async function syncRecentConversionSignals(): Promise<void> {
 
       if (lastPaymentAt && lastPaymentAt >= since) {
         const delivered = await sendMarketingConversionEvent({
-          event_id: `subscription-payment:${anonymousId}:${lastPaymentAt.toISOString()}`,
-          event_type: "subscription_payment_recorded",
+          event_id: `management-subscription-payment:${anonymousId}:${lastPaymentAt.toISOString()}`,
+          event_type: "management_subscription_payment_recorded",
           occurred_at: lastPaymentAt.toISOString(),
           consent_basis: "anonymous_aggregate",
           properties: {
-            application: "equiprofile",
             subscription_plan: user.subscriptionPlan || "monthly",
             subscription_status: user.subscriptionStatus,
             revenue_value_exported: false,
