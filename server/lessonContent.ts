@@ -9121,76 +9121,80 @@ Stop, move to safety as directed, and obtain the responsible person or qualified
     category: "Handling & Groundwork",
     sortOrder: 5,
     objectives: [
-      "Understand the purpose of long-reining",
-      "Set up equipment for basic long-reining",
-      "Walk behind a horse safely while maintaining rein contact",
-      "Guide a horse through simple turns and transitions",
+      "Recognise that long-reining is a specialist handling activity requiring qualified professional competence, individual assessment, and current site procedures",
+      "Understand that a qualified professional must select, inspect, fit, and use equipment, protective equipment, space, environment, and support for the individual horse",
+      "Recognise that handler position, line management, communication, and horse-response techniques require in-person qualified instruction rather than a fixed learner method",
+      "Know when to stop, move to safety, and obtain qualified or emergency support rather than attempting long-reining or a correction independently",
     ],
-    content: `Long-reining is an advanced groundwork technique where the handler works behind or to the side of the horse using two long reins.
+    content: `Long-reining is a specialist horse-handling activity that may involve long lines and a horse’s response to handling from the ground. It requires in-person qualified professional competence, individual-horse assessment, appropriate equipment and protective equipment, current site procedures, welfare checks, suitable space and surface, active supervision, and an emergency plan. This lesson does not qualify a learner to long-rein, select equipment, position themselves, manage lines, guide a horse, train a horse, assess movement, choose a circle or route, apply pressure, decide a progression, or make a welfare, medical, veterinary, behavioural, or emergency decision.
 
-## Purpose
+## Evidence and Scope Boundary
 
-Long-reining develops the horse's response to rein aids, straightness, and obedience without a rider's weight.
+The reviewed professional coaching standard requires qualified assessment of horse and rider suitability, equipment, environment, risks, safety, welfare, safeguarding, response to concerns or emergencies, and reporting for support. It does not provide a public long-reining procedure, equipment configuration, line length, attachment point, handler position, contact, distance, turn, transition, training purpose, or progression protocol. Therefore, this lesson deliberately does not teach those actions.
 
-## Equipment Setup
+A learner must not infer that long-reining is suitable for a young, unfamiliar, nervous, recovering, fresh, trained, or any other horse; is required for training, exercise, rehabilitation, behaviour management, assessment, or rider preparation; or is safer because the handler is on the ground. Only the qualified professional and responsible person can decide whether it is appropriate after reviewing the individual horse, task, equipment, environment, welfare, fitness, health information available to them, handler competence, support, weather, footing, access, and current risk.
 
-Two long reins (7-8 metres each) attached to the bit rings or cavesson. The reins pass through the stirrups or surcingle rings back to the handler.
+## Equipment, Space, and Handler Safety
 
-## Handler Position
+Before any specialist ground-handling activity, the responsible person or qualified professional must inspect the equipment and setting, identify the safe working area and access, establish supervision and emergency arrangements, and decide whether the activity should take place at all. Do not rely on a generic line length, attachment point, rein route, surcingle, stirrup, headcollar, bit, cavesson, handler location, distance, surface, enclosure, communication cue, or exercise sequence.
 
-Walk behind the horse at a safe distance. Maintain light, elastic contact similar to riding contact.
+The handler must receive in-person instruction for the individual method of handling any line, maintaining awareness of surroundings, communicating, moving, responding to the horse, and using safety equipment. Never wrap lines around the hand or body, allow an entanglement hazard, use equipment beyond your competence, place yourself in an unsafe position, or attempt to hold or force a horse through a response.
 
-## Basic Exercises
+## Stop and Escalate
 
-Start in an enclosed arena. Walk on straight lines first. Gradually introduce gentle turns. Progress to halts and walk-to-halt transitions.`,
+Stop, move to safety as directed, and obtain the responsible person or qualified professional if the horse becomes unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe; equipment, surface, weather, space, gate, support, supervision, welfare, safeguarding, or emergency arrangements change; or the learner is unsure. Follow the current emergency procedure and obtain veterinary or emergency support when required.
+
+## Learning Boundary
+
+Use this lesson to prepare questions for a qualified professional, not to copy a method. Ask how the horse, handler, equipment, protective equipment, space, welfare, supervision, emergency route, and stop/escalation criteria are assessed for the current situation.`,
     keyPoints: [
-      "Long-reining develops rein response and straightness from the ground",
-      "Use two long reins through stirrups or surcingle",
-      "Maintain light elastic contact",
-      "Start with straight lines then simple turns",
-      "Always work in an enclosed area",
+      "Long-reining is a specialist handling activity requiring qualified professional competence, individual assessment, welfare checks, appropriate equipment, suitable space, active supervision, and emergency planning",
+      "The reviewed professional standard does not provide a public long-reining equipment configuration, line length, attachment point, handler position, contact, or training protocol",
+      "A qualified professional must decide whether long-reining is appropriate and select the individual horse, handler, equipment, setting, support, welfare, and safety method",
+      "Handler position, line management, communication, horse response, exercise, route, duration, and progression require in-person qualified instruction rather than a generic learner method",
+      "Stop, move to safety as directed, and obtain qualified or emergency support when horse behaviour, welfare, equipment, surface, space, support, supervision, safeguarding, or emergency arrangements are unsuitable",
     ],
     safetyNote:
-      "Long-reining requires experience. Work under supervision. A horse unaccustomed to reins around its hindquarters may kick.",
+      "Do not long-rein, manage lines, select or adjust equipment, choose a route or duration, guide a horse, judge movement, or continue an activity outside qualified professional instruction and the current site procedure. Never wrap lines around the hand or body or allow an entanglement hazard. Stop, move to safety as directed, and obtain qualified or emergency support if conditions are unsuitable.",
     practicalApplication:
-      "Under supervision, practise walking a trained horse in straight lines using long reins.",
+      "Only under qualified in-person professional instruction and the responsible person’s current procedure, observe how the individual horse, handler, equipment, protective equipment, space, surface, welfare, supervision, and emergency route are assessed. Do not long-rein, copy a configuration, manage lines, direct a horse, or adjust equipment from this lesson alone.",
     commonMistakes: [
-      "Working a horse unfamiliar with reins around hindquarters",
-      "Pulling on the reins instead of guiding",
-      "Standing too close behind the horse",
-      "Not working in an enclosed area",
-      "Using equipment that is too long or short",
+      "Long-reining, managing lines, selecting or adjusting equipment, choosing a route, surface, duration, or progression outside qualified professional instruction and the current procedure",
+      "Using a generic equipment configuration, attachment point, line length, handler position, contact, distance, route, cue, or progression as a universal technique",
+      "Wrapping lines around the hand or body, allowing entanglement, standing in an unsafe position, or trying to force or hold a horse through a response",
+      "Assessing movement, behaviour, fitness, welfare, lameness, health, or training needs from a generic long-reining observation",
+      "Continuing when horse behaviour, welfare, equipment, surface, space, weather, support, supervision, safeguarding, or emergency arrangements are unsuitable",
     ],
     knowledgeCheck: [
       {
-        question: "What is the primary purpose of long-reining?",
+        question: "Who determines whether long-reining is appropriate and how the horse, handler, equipment, protective equipment, space, welfare, supervision, and emergency arrangements are managed?",
         options: [
-          "To tire the horse",
-          "To develop rein response and straightness from the ground",
-          "To replace riding entirely",
-          "To teach jumping",
+          "Any learner using a generic online diagram",
+          "The qualified professional and responsible person after individual assessment and current risk review",
+          "A copied line length or attachment point",
+          "The horse’s previous activity alone",
         ],
         correctIndex: 1,
         explanation:
-          "Long-reining develops rein aids understanding and straightness without rider weight.",
+          "The reviewed professional standard supports qualified assessment of suitability, equipment, environment, risk, safety, welfare, safeguarding, and emergencies. It does not provide a generic long-reining protocol.",
       },
       {
-        question: "Where should the long reins pass through?",
+        question: "What should happen if long-reining becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, welfare, or emergency conditions change?",
         options: [
-          "Through the horse's legs",
-          "Through the stirrup irons or surcingle rings",
-          "Over the horse's back loosely",
-          "Through the noseband",
+          "Continue until the planned exercise is complete",
+          "Use a generic correction or change equipment alone",
+          "Stop, move to safety as directed, and obtain qualified or emergency support through the current procedure",
+          "Assume the horse needs more pressure",
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explanation:
-          "The reins pass through stirrups or surcingle rings for correct contact angle.",
+          "A specialist ground-handling concern may require qualified or emergency action. Do not use a generic technique; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How do I introduce long-reining to a young horse?",
-      "What exercises improve straightness with long reins?",
-      "Is long-reining suitable for all horses?",
+      "What current qualified-professional and site procedure applies if long-reining is proposed or becomes unsafe?",
+      "How should I report a factual horse-welfare, equipment, surface, space, handler-safety, or emergency concern to the responsible person?",
+      "What authority, in-person instruction, protective equipment, equipment check, supervision, welfare, and emergency procedure are required before any specialist ground-handling activity?",
     ],
     linkedCompetencies: ["groundwork_skills", "riding_position"],
   },
