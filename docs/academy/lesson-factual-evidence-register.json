@@ -4,8 +4,8 @@
   "summary": {
     "lessonsRegistered": 105,
     "lowRiskNoMaterialFactCheckRequired": 3,
-    "sourceMappedRequiresSpecificClaimReview": 64,
-    "claimReviewedAndAccepted": 38
+    "sourceMappedRequiresSpecificClaimReview": 65,
+    "claimReviewedAndAccepted": 37
   },
   "lessons": [
     {
@@ -4879,15 +4879,16 @@
         "60-80 bpm",
         "100-120 bpm"
       ],
-      "whatWasVerified": "ACCEPTED: The same adult-at-rest TPR reference is used only with individual baseline and symptom context. Residual numeric quiz options are deliberately incorrect distractors, not clinical thresholds.",
-      "lessonChangeMade": "Retained the reviewed adult-at-rest TPR reference while removing self-triage expectations and requiring prompt veterinary contact without delaying for extra observations.",
-      "reviewStatus": "CLAIM_REVIEWED_AND_ACCEPTED",
+      "whatWasVerified": "The historical decision supports only a narrow adult-at-rest TPR reference and the treatment of residual quiz values as incorrect distractors. It does not substantiate every medical, emergency, welfare, nutrition, hydration, management, self-triage, observation, escalation, or Tutor claim in this high-risk lesson.",
+      "lessonChangeMade": "The bounded veterinary-contact rewrite is retained. The lesson is returned to unresolved status pending a complete individual source-to-claim review and any necessary corrective rewrite; this reconciliation does not invalidate the narrow recorded TPR evidence.",
+      "reviewStatus": "SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW",
       "reviewDecision": {
-        "reviewedAt": "2026-08-21",
-        "reviewedBy": "academy-source-comparison",
+        "reviewedAt": "2026-08-22",
+        "reviewedBy": "academy-acceptance-scope-reconciliation",
         "sourceUrl": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-        "claimReviewed": "The same adult-at-rest TPR reference is used only with individual baseline and symptom context. Residual numeric quiz options are deliberately incorrect distractors, not clinical thresholds.",
-        "outcome": "ACCEPTED"
+        "claimReviewed": "Historical acceptance scope for the full lesson, compared with its high-risk medical, emergency, welfare, nutrition, hydration, management, self-triage, observation, escalation, and Tutor content.",
+        "outcome": "RETURNED_TO_UNRESOLVED",
+        "reason": "The historical decision accepted a narrow adult-at-rest TPR/distractor claim only. It did not record a complete individual source-to-claim review of all remaining material claims in the lesson."
       }
     },
     {
