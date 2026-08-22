@@ -294,3 +294,11 @@ The prior `CLAIM_REVIEWED_AND_ACCEPTED` decision covered only removal of a unive
 The prior `CLAIM_REVIEWED_AND_ACCEPTED` decision covered only removal of generic pre/post-exercise and transition intervals. Review of the live lesson and binding entry identified additional material feeding-plan, forage, weight, water, records, exercise, condition, health, welfare, professional-escalation, and assessment claims that do not yet have individual source-to-claim decisions. The binding register has therefore been corrected to `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW` rather than treating the narrow prior rewrite as whole-lesson acceptance.
 
 > **Review decision:** The lesson is **unresolved**. No factual acceptance is inferred from existing sources or the prior interval rewrite. A later review must obtain and record authoritative source support for each retained material claim or rewrite/remove it.
+
+## 2026-08-22 — `balancing-a-diet` source-to-claim review in progress
+
+| Lesson scope | Reviewed source | Source-supported finding | Curriculum action |
+| --- | --- | --- | --- |
+| Individual feeding, condition, workload, forage, water and professional review | [World Horse Welfare, _Feeding horses_](https://www.worldhorsewelfare.org/advice/feeding-horses), updated 22 June 2026; [British Horse Society, _Feeding horses_](https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/feeding-horses/), reviewed 22 April 2026 | The sources support individual feeding decisions based on condition and workload, regular condition monitoring, forage-led plans, clean water, gradual plan changes, and veterinary or qualified nutrition support where needed. BHS cautions that weight/condition and behaviour can have multiple causes. | Remove the fixed 0–5 scoring system, ideal score, body-part method, causal claims, universal forage-only claim, laminitis prediction, and learner-directed diet change. Retain only factual observation, current approved plan, individual professional assessment, welfare, and escalation boundaries. |
+
+> **Review decision:** `balancing-a-diet` remains `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW` until all retained material nutrition, condition, health, welfare, professional-support, and assessment claims have individual evidence or a bounded rewrite.

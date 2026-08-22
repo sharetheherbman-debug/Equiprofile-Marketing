@@ -9531,66 +9531,79 @@ Plan feeding and exercise around the individual horse and current professional a
     category: "Nutrition & Feeding",
     sortOrder: 4,
     objectives: [
-      "Understand basic nutritional needs",
-      "Assess body condition using scoring",
-      "Adjust feed to match workload",
-      "Recognise signs of imbalance",
+      "Recognise that diet balancing requires individual assessment of welfare, condition, workload, health information, forage, management, and the current approved plan",
+      "Use factual observations and authorised condition-monitoring processes without diagnosing health, nutrition, fitness, pain, or welfare causes",
+      "Understand that only the responsible person and appropriate qualified nutrition or veterinary professional can select, change, restrict, or progress a diet",
+      "Know when condition, behaviour, appetite, water, droppings, coat, hoof, health, or welfare observations require the authorised support route",
     ],
-    content: `A balanced diet provides the correct amount of energy, protein, fibre, vitamins, and minerals.
+    content: `Balancing a horse’s diet is an individual health, welfare, nutrition, management, and safety decision. This lesson is not a ration calculator, a body-condition scoring protocol, a diagnostic tool, a laminitis risk assessment, a feed prescription, or a substitute for the responsible person, qualified nutrition professional, veterinarian, farrier, dental professional, or current emergency procedure. It does not authorise a learner to add, remove, restrict, substitute, dose, or change feed, forage, water, supplements, grazing, turnout, exercise, or medication.
 
-## Body Condition Scoring
+## Individual Plans, Not Fixed Scores
 
-Use the 0-5 system. Score 0 is emaciated; 5 is obese. Ideal for most riding horses is 2.5-3. Check neck crest, ribs, spine, and quarters.
+World Horse Welfare and British Horse Society describe diet and fitness planning as individual processes that consider condition, workload, forage, water, management, health information, welfare, and the horse’s current needs. They support regular condition monitoring, but a fixed 0–5 system, “ideal” score, body-part checklist, timeline, quantity, or diet response is not a universal instruction in this lesson. Use only the authorised site method and current plan, and do not diagnose a horse’s condition, health, fitness, pain, nutritional status, or welfare from an appearance, scale, weigh tape, coat, hoof, rib, crest, spine, or generic score.
 
-## Energy Requirements
+A responsible person and, where needed, a qualified nutrition or veterinary professional must consider the individual horse’s age, current feeding plan, forage and feed information, body condition, workload, health information, dental and hoof information, behaviour, appetite, water access, droppings, environment, grazing, turnout, equipment, management, season, support, and current risks. Do not assume that workload alone determines energy needs, that a leisure horse needs only forage, that a thin horse needs concentrates, that an overweight horse needs restriction, or that a particular product will correct an observed concern.
 
-Energy needs increase with workload. Most leisure horses thrive on good forage alone. Over-feeding energy leads to weight gain and behavioural issues.
+## Observations and Current Plan
 
-## Signs of Imbalance
+Factual records can help the authorised professional review an existing plan. Record only what is observed through the current site process—for example, the approved condition measurement, appetite, water access, droppings, current workload, forage or feed identity, and a change in comfort or behaviour. Do not label a cause, rank a risk, choose a feed change, or promise a result.
 
-A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes can indicate dietary imbalance. Consult an equine nutritionist if in doubt.`,
+Changes in coat, hoof quality, weight, body shape, appetite, droppings, energy, behaviour, comfort, performance, chewing, or water intake can have many possible causes. The reviewed sources do not allow a learner to conclude that an observation is a dietary imbalance, nutritional deficiency, excess energy, laminitis, pain, or another health condition. Report factual observations and use the current responsible-person, qualified nutrition, veterinary, welfare, or emergency route.
+
+## Health and Welfare Escalation
+
+A nutrition, condition, workload, or feed concern may require professional review. Stop and use the authorised procedure if a horse’s condition, appetite, water, droppings, behaviour, comfort, health, welfare, feed, forage, storage, hygiene, grazing, turnout, workload, or safety becomes concerning or is outside the current plan. Do not make a rapid diet or exercise change, restrict forage, add a supplement, treat an apparent condition, or delay veterinary or emergency support when required.
+
+## Learning Boundary
+
+Use this lesson to understand why individual planning matters and to prepare questions for authorised professionals. Ask who selected the current plan, how condition and workload are monitored, what factual records are required, and which support or emergency route applies if a concern arises.`,
     keyPoints: [
-      "Assess body condition regularly using the 0-5 system",
-      "Most leisure horses thrive on forage alone",
-      "Energy needs increase with workload",
-      "Signs of poor nutrition include dull coat and weight changes",
-      "Consult an equine nutritionist for complex needs",
+      "Diet balancing requires individual assessment of welfare, condition, workload, health information, forage, management, and the current approved plan",
+      "A fixed score, ideal condition, body-part checklist, timeline, quantity, feed type, or diet response is not a universal instruction for an individual horse",
+      "Workload, condition, feed, forage, water, health, behaviour, comfort, hoof, coat, and welfare observations require factual recording and appropriate qualified assessment, not a generic causal conclusion",
+      "Do not diagnose a dietary imbalance, deficiency, excess energy, laminitis, pain, fitness, or health condition from an appearance, score, coat, hoof, weight, body shape, appetite, droppings, or behaviour",
+      "Use the authorised responsible-person, qualified nutrition, veterinary, welfare, or emergency route before changing feed, forage, water, supplements, grazing, turnout, exercise, or medication",
     ],
     safetyNote:
-      "Overweight horses are at serious risk of laminitis. Monitor body condition closely.",
+      "Do not use a generic score, appearance, weight, body shape, coat, hoof, appetite, droppings, workload, or behaviour observation to diagnose laminitis, health, pain, nutrition, or welfare. Record factual observations and follow the current responsible-person, veterinary, qualified nutrition, welfare, or emergency procedure when concerns arise.",
     practicalApplication:
-      "Condition score three horses at your yard using the 0-5 system.",
+      "With the responsible person’s permission, observe how authorised people use the current written feeding plan and approved condition-monitoring process. Ask who reviews workload, forage, feed, water, condition, welfare, records, and escalation criteria. Do not score, diagnose, rank, feed, restrict, supplement, or change an individual horse’s plan from this lesson alone.",
     commonMistakes: [
-      "Over-feeding treats without accounting for them",
-      "Assuming thin horses always need more hard feed",
-      "Not scoring regularly",
-      "Feeding the same ration year-round",
-      "Relying on visual assessment alone",
+      "Adding, removing, restricting, substituting, dosing, or changing feed, forage, water, supplements, grazing, turnout, exercise, or medication outside the individual current plan and authorised procedure",
+      "Using a generic body score, ideal range, body-part checklist, timeline, quantity, product, workload, or appearance as proof that a diet change is suitable",
+      "Diagnosing dietary imbalance, deficiency, excess energy, laminitis, pain, fitness, health, or welfare from condition, weight, coat, hoof, appetite, droppings, energy, behaviour, or performance observations",
+      "Assuming a horse’s age, leisure status, workload, season, thinness, body shape, or weight alone determines a forage, concentrate, balancer, supplement, or restriction",
+      "Continuing when condition, appetite, water, droppings, behaviour, comfort, health, welfare, feed, forage, storage, grazing, turnout, workload, or safety is concerning or outside the current plan",
     ],
     knowledgeCheck: [
       {
-        question: "Ideal body condition score for riding horses?",
-        options: ["0-1", "2.5-3", "4-5", "It doesn't matter"],
-        correctIndex: 1,
-        explanation: "2.5-3 on the 0-5 scale indicates a healthy weight.",
-      },
-      {
-        question: "What can a dull coat indicate?",
+        question: "What determines whether a condition, workload, feed, forage, water, supplement, grazing, turnout, or exercise change is suitable for a horse?",
         options: [
-          "Needs a bath",
-          "Possible dietary imbalance",
-          "The horse is cold",
-          "Nothing",
+          "A generic ideal score or range",
+          "The individual horse’s current approved plan after responsible-person and appropriate qualified assessment",
+          "Another horse’s diet",
+          "A coat or body-shape observation alone",
         ],
         correctIndex: 1,
+        explanation: "A generic lesson cannot select a diet or workload change. The individual plan and appropriate assessment determine what is suitable.",
+      },
+      {
+        question: "What should happen if a change in condition, appetite, water, droppings, coat, hoof, behaviour, comfort, health, welfare, feed, forage, or workload is concerning or outside the current plan?",
+        options: [
+          "Choose a generic diet change or supplement",
+          "Diagnose a nutritional deficiency or laminitis from the observation",
+          "Record factual observations and use the current responsible-person, qualified nutrition, veterinary, welfare, or emergency route",
+          "Wait until the horse’s appearance changes further",
+        ],
+        correctIndex: 2,
         explanation:
-          "A dull coat is often a first sign of nutritional deficiency.",
+          "Many observations have multiple possible causes. Do not diagnose or change the plan from a generic lesson; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How do I body condition score a horse?",
-      "My horse is overweight — what should I change?",
-      "What vitamins and minerals does my horse need?",
+      "What current approved condition-monitoring and responsible-person procedure applies to this individual horse?",
+      "How should I report factual condition, feed, forage, water, appetite, droppings, comfort, health, welfare, or safety observations without changing the plan or diagnosing a cause?",
+      "What authority, written feeding plan, qualified nutrition or veterinary review, welfare procedure, and emergency route apply before any diet or workload change?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "health_awareness"],
   },
