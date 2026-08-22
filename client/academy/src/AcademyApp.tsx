@@ -28,12 +28,14 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { getUIVersion } from "@/config/uiVersion";
 
-// Canonical Academy marketing pages use the Academy module namespace.
-import AcademyHome from "@/pages/academy/Home";
-import AcademyFeatures from "@/pages/academy/Features";
-import AcademyPricing from "@/pages/academy/Pricing";
-import AcademyAbout from "@/pages/academy/About";
-import AcademyContact from "@/pages/academy/Contact";
+// Canonical Academy routes deliberately reuse the existing School public-page
+// modules until their Academy-native visual replacement is complete. Routing and
+// canonical host naming remain Academy-facing; no nonexistent module alias is used.
+import AcademyHome from "@/pages/school/Home";
+import AcademyFeatures from "@/pages/school/Features";
+import AcademyPricing from "@/pages/school/Pricing";
+import AcademyAbout from "@/pages/school/About";
+import AcademyContact from "@/pages/school/Contact";
 
 // Shared public pages
 import TermsPage from "@/pages/TermsPage";
@@ -98,7 +100,8 @@ const Competitions = lazy(() => import("@/pages/Competitions"));
 const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
 const StudentDashboard = lazy(() => import("@/pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("@/pages/TeacherDashboard"));
-const AcademyDashboard = lazy(() => import("@/pages/AcademyDashboard"));
+// The existing SchoolDashboard is retained as the Academy dashboard compatibility implementation.
+const AcademyDashboard = lazy(() => import("@/pages/SchoolDashboard"));
 const AcademyInviteAccept = lazy(() => import("@/pages/AcademyInviteAccept"));
 
 // V2 Frontend Pages — lazy-loaded for code splitting
