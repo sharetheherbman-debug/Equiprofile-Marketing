@@ -2690,6 +2690,10 @@ export async function getDb() {
       }
 
       _db = drizzle(fixedUrl);
+      // mysql2 establishes a pool lazily. Verify the connection now so callers
+      // receive either a usable database or the documented null fallback rather
+      // than a deferred connection failure during unrelated feature discovery.
+      await _db.execute(sql`SELECT 1`);
       if (!shouldSuppressTestDbNoise()) {
         console.log("[Database] Connection established");
       }

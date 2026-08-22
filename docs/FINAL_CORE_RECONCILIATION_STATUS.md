@@ -1,7 +1,7 @@
 # Final Core Reconciliation Status
 
-**Branch:** `release-candidate/final-core-2026-08-22`  
-**Starting point:** Management-authoritative `phase-1/small-medium-completion` at `b20a622039c65503f8d54dceeff5b072f1521cc6`  
+**Branch:** `release-candidate/final-core-2026-08-22`
+**Starting point:** Management-authoritative `phase-1/small-medium-completion` at `b20a622039c65503f8d54dceeff5b072f1521cc6`
 **Status:** **IN PROGRESS — NOT READY TO DEPLOY**
 
 This record preserves the current reconciliation truth. No production deployment, merge, production database mutation, DNS change, live Stripe charge, or supplier activation has been performed.

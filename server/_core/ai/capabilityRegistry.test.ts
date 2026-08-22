@@ -20,6 +20,7 @@ describe("capabilityRegistry", () => {
     const rows = await getProviderCapabilityRegistryRows();
     const genxVideo = rows.find((row) => row.provider === "genx" && row.task === "text_to_video" && row.modelId === "genx-video-t2v-test");
     const qwenVideo = rows.find((row) => row.provider === "qwen" && row.task === "text_to_video");
+    const huggingFaceVideo = rows.find((row) => row.provider === "huggingface" && row.task === "text_to_video");
 
     expect(genxVideo).toMatchObject({
       status: "ready",
@@ -27,11 +28,11 @@ describe("capabilityRegistry", () => {
       supportsImageToVideo: false,
       endpointFamily: "genx_async_job",
     });
-    expect(qwenVideo?.status).toBe("setup_needed");
-    expect(qwenVideo?.lastError).toMatch(/setup_needed/i);
+    expect(qwenVideo).toBeUndefined();
+    expect(huggingFaceVideo).toBeUndefined();
   });
 
-  it("exposes effective task routing diagnostics with fallback candidates", async () => {
+  it("exposes GenX-only effective task routing diagnostics", async () => {
     const diagnostics = await getEffectiveTaskRoutingDiagnostics();
     const textToVideo = diagnostics.find((row) => row.task === "text_to_video");
 
@@ -41,6 +42,6 @@ describe("capabilityRegistry", () => {
       endpointFamily: "genx_async_job",
       pollingEndpoint: "/api/v1/jobs/:id",
     });
-    expect((textToVideo?.fallback ?? []).length).toBeGreaterThan(0);
+    expect(textToVideo?.fallback ?? []).toEqual([]);
   });
 });

@@ -14,14 +14,17 @@ describe("providerModelDiscovery", () => {
     resetProviderModelDiscoveryCacheForTests();
   });
 
-  it("discovers at least Qwen fallback model metadata", async () => {
+  it("discovers GenX only and keeps disabled legacy providers empty", async () => {
+    process.env.GENX_MODEL = "gpt-5.4";
     resetProviderModelDiscoveryCacheForTests();
     const snapshot = await discoverProviderModels(true);
 
-    expect(snapshot.providers.qwen.length).toBeGreaterThan(0);
-    expect(snapshot.providers.qwen[0].id).toBeTruthy();
-    expect(snapshot.providers.qwen[0].categories).toContain("copywriting");
-    expect(snapshot.providers.qwen[0].executableTasks).toContain("copywriting");
+    expect(snapshot.providers.genx.length).toBeGreaterThan(0);
+    expect(snapshot.providers.genx[0].id).toBeTruthy();
+    expect(snapshot.providers.genx[0].categories).toContain("copywriting");
+    expect(snapshot.providers.genx[0].executableTasks).toContain("copywriting");
+    expect(snapshot.providers.qwen).toEqual([]);
+    expect(snapshot.providers.huggingface).toEqual([]);
   });
 
   it("uses cached discovery when not forced", async () => {
@@ -52,14 +55,14 @@ describe("providerModelDiscovery", () => {
     expect(genx?.executableTasks).toContain("campaign_generation");
   });
 
-  it("does not mark Qwen media models executable without a native media endpoint", async () => {
+  it("does not expose disabled legacy-provider media models", async () => {
     resetProviderModelDiscoveryCacheForTests();
     const candidates = await resolveModelCandidatesForTask("text_to_video", true);
 
     expect(candidates.some((candidate) => candidate.provider === "qwen")).toBe(false);
   });
 
-  it("resolves configured GenX media models before HF/Qwen for video tasks", async () => {
+  it("resolves configured GenX media models for video tasks", async () => {
     process.env.GENX_VIDEO_MODEL = "genx-video-t2v-test";
     resetProviderModelDiscoveryCacheForTests();
     const candidates = await resolveModelCandidatesForTask("text_to_video", true);

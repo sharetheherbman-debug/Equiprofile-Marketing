@@ -1,8 +1,8 @@
 # EquiProfile Academy Acceptance
 
-**Source branch:** `phase-1/small-medium-completion`  
-**Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`  
-**Release status:** **NOT READY TO DEPLOY**  
+**Source branch:** `phase-1/small-medium-completion`
+**Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`
+**Release status:** **NOT READY TO DEPLOY**
 **Reason:** 101 lesson-level source-to-claim factual reviews remain unresolved, and several authenticated role workflows still require complete acceptance evidence.
 
 This is an evidence record, not a completion claim. A capability is marked **Complete/Pass** only when the current branch contains implementation plus suitable automated or disposable-environment evidence. External production services remain separate activation gates.

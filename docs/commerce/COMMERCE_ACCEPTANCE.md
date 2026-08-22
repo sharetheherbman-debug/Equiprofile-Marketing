@@ -1,7 +1,7 @@
 # EquiProfile Shop / Commerce Acceptance Record
 
-**Source branch:** `phase-1/small-medium-completion`  
-**Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`  
+**Source branch:** `phase-1/small-medium-completion`
+**Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`
 **Release status:** internal Commerce software is substantially implemented, but **not ready for live supplier/payment activation** until the final Core reconciliation and credentialled test acceptance are complete.
 
 ## 1. Customer software implemented

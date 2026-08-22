@@ -1,14 +1,14 @@
 /**
  * Theme Override CSS
- * 
+ *
  * Edit this file to customize your EquiProfile deployment's visual appearance
  * without rebuilding the application. Changes take effect immediately upon page reload.
- * 
+ *
  * Usage:
  *   1. Edit the CSS variables below to match your brand colors
  *   2. Add custom styles as needed
  *   3. Save the file - no rebuild required!
- * 
+ *
  * For post-deployment edits:
  *   nano /var/www/equiprofile/dist/public/theme-override.css
  */
