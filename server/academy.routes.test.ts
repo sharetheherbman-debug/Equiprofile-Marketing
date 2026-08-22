@@ -137,6 +137,40 @@ describe("Academy owner compatibility contract", () => {
   });
 });
 
+describe("Academy guest and role route boundary", () => {
+  const routerSource = readRepoFile("client/academy/src/AcademyApp.tsx");
+
+  it("keeps public Academy pages and invite acceptance available before authentication", () => {
+    for (const route of ["/academy", "/academy/features", "/academy/pricing", "/academy-invite"]) {
+      expect(routerSource).toContain(`path="${route}"`);
+    }
+    const inviteRoute = routerSource.slice(
+      routerSource.indexOf('path="/academy-invite"'),
+      routerSource.indexOf("{/* Onboarding"),
+    );
+    expect(inviteRoute).not.toContain("ProtectedRoute");
+  });
+
+  it("protects owner, teacher and student dashboard surfaces with their intended boundaries", () => {
+    const academyDashboard = routerSource.slice(
+      routerSource.indexOf('path="/academy-dashboard"'),
+      routerSource.indexOf('path="/school-dashboard"'),
+    );
+    const studentDashboard = routerSource.slice(
+      routerSource.indexOf('path="/student-dashboard"'),
+      routerSource.indexOf('path="/teacher-dashboard"'),
+    );
+    const teacherDashboard = routerSource.slice(
+      routerSource.indexOf('path="/teacher-dashboard"'),
+      routerSource.indexOf("{/* Canonical Academy dashboard"),
+    );
+
+    expect(academyDashboard).toContain("ProtectedRoute");
+    expect(studentDashboard).toContain("StudentRoute");
+    expect(teacherDashboard).toContain("TeacherRoute");
+  });
+});
+
 describe("Academy TEST billing contract", () => {
   const academyRouter = readRepoFile("server/academyRouter.ts");
   const bootstrap = readRepoFile("server/_core/index.ts");
