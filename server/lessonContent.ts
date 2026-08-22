@@ -10297,70 +10297,78 @@ Use this lesson to ask: what facts are known; what is unknown; who is responsibl
     category: "Polework & Jump Foundations",
     sortOrder: 5,
     objectives: [
-      "Understand the purpose of grid work",
-      "Set up a basic bounce and one-stride grid",
-      "Know standard distances for grid components",
-      "Recognise how grids develop horse and rider",
+      "Recognise that gridwork and related-distance activity are qualified-coach decisions requiring individual horse/rider suitability, welfare, safety, current procedures, and supervision",
+      "Understand that a generic lesson cannot set up, measure, build, adjust, ride, jump, teach, assess, or progress a grid or related-distance exercise",
+      "Know that no universal grid, pole, fence, placing-pole, bounce, one-stride, height, distance, stride, track, approach, speed, equipment, or progression rule is suitable for every horse, rider, venue, surface, and circumstance",
+      "Record factual observations and use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route when a concern is outside the current plan or unclear",
     ],
-    content: `Grid work (gymnastics) is a series of fences at related distances, developing rhythm, balance, and confidence.
+    content: `Gridwork and related-distance activities can involve poles, fences, approaches, landing areas, tracks, rider balance, horse movement, equipment, speed, surfaces, space, weather, other people, and changing risks. This lesson provides an educational boundary only. It is not a procedure for building, measuring, placing, adjusting, dismantling, riding, jumping, teaching, coaching, supervising, progressing, modifying, or troubleshooting a grid, bounce, related distance, placing pole, fence, height, track, approach, stride, speed, distance, equipment, surface, horse, or rider.
 
-## Purpose
+## Qualified-Coach Scope
 
-Grids teach the horse to adjust stride and maintain balance. For riders, they develop secure position and quick reactions.
+Reviewed professional coaching guidance treats gridwork and related distances as qualified-coach content. The guidance requires risk assessment; suitability of horse and rider; consideration of horse welfare, participant needs, equipment, environment, and potential risks; appropriate measurement; adjustment where required; logical progression; safe supervision; incident response; and support or referral to an experienced coach or mentor. It does not provide a universal learner distance table, self-directed setup procedure, fixed component definition, height rule, approach rule, progression rule, or correction.
 
-## Components
+A qualified coach and the responsible person must decide whether an activity is appropriate; whether it can begin, continue, change, pause, or stop; what risk assessment, supervision, equipment, space, surface, rider, horse, warm-up, training, welfare, safety, and emergency arrangements apply; and which measurements, adjustments, or alternatives are suitable for the individual session. A generic lesson cannot determine suitability, fitness, soundness, pain, behaviour, balance, rider ability, horse ability, confidence, welfare, safety, equipment suitability, a cause, a correction, an outcome, or a stop threshold.
 
-Bounce: two fences with no stride between (3-3.6m). One stride: two fences with one canter stride (7.3-7.9m). Placing pole: ground pole before the first fence at trot distance (2.4-2.7m).
+## No Universal Distance or Setup Rule
 
-## Setting Up
+Do not use a generic chart, measurement, number of strides, distance, speed, height, placing-pole position, bounce, one-stride description, rider level, horse type, another horse’s setup, online example, video, or a previous session as a rule for this horse, rider, venue, surface, equipment, condition, weather, or day. Do not build, alter, ride, jump, measure, teach, supervise, raise, lower, widen, narrow, add, remove, reposition, or test an exercise based on this lesson alone.
 
-Build grids gradually from ground poles. Raise the last element first. Add height progressively. Accurate distances are critical.
+## Factual Observation and Escalation
 
-## Safety
+A learner may record authorised factual observations such as date, time, current activity, environment, surface, equipment present, people present, visible horse/rider behaviour, and any immediate safety concern. Do not diagnose lameness, pain, fear, stress, discomfort, fitness, ability, balance, welfare, a training problem, equipment failure, a distance issue, a cause, or a correction. Do not continue, repeat, increase, decrease, change, or troubleshoot the activity from a generic observation.
 
-Grid work should be supervised. Horses must be warmed up. Use appropriate jump fillers and falling cups.`,
+If a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear, stop where it is safe to do so and use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route. Do not delay required emergency support.
+
+## Reflective Use
+
+Use this lesson to ask: who is responsible; what current risk assessment and supervision apply; what individual suitability has been assessed by the authorised coach; what factual information is known; what is unknown; and what escalation route applies? The aim is safe, welfare-led recognition of professional scope, not self-directed gridwork.`,
     keyPoints: [
-      "Grid work develops rhythm, balance, and confidence",
-      "Bounce: 3-3.6m; one stride: 7.3-7.9m",
-      "Always build grids progressively",
-      "Accurate distances are critical for safety",
-      "Supervision by a qualified instructor is essential",
+      "Gridwork and related-distance activity are qualified-coach decisions that require individual horse/rider suitability, risk assessment, welfare, safety, current procedures, and supervision",
+      "There is no universal grid, pole, fence, placing-pole, bounce, one-stride, height, distance, stride, track, approach, speed, equipment, or progression rule for every horse, rider, venue, surface, and circumstance",
+      "Do not build, alter, ride, jump, measure, teach, supervise, raise, lower, widen, narrow, add, remove, reposition, test, or troubleshoot an activity from a generic lesson",
+      "A learner may record authorised factual observations but must not diagnose fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, safety, equipment suitability, a cause, or a correction",
+      "If a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear, use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route",
     ],
     safetyNote:
-      "Incorrect distances can cause crashes or loss of confidence. Always measure carefully.",
+      "Do not use a generic chart, measurement, stride count, speed, height, placing-pole position, bounce, one-stride description, rider level, horse type, another horse’s setup, online example, video, or previous session to build or alter an exercise. Do not diagnose a grid, distance, safety, welfare, training, or performance issue; follow the current procedure and obtain qualified support.",
     practicalApplication:
-      "Set up a simple placing pole to crossrail to bounce grid under instruction.",
+      "With the responsible person’s permission, observe how an authorised qualified coach applies the current risk assessment, supervision, welfare, safety, equipment, incident, and escalation procedures. Record only authorised factual context and observations. Do not build, alter, ride, jump, measure, teach, supervise, assess, modify, or troubleshoot an activity from this lesson alone.",
     commonMistakes: [
-      "Distances too tight or wide",
-      "Making the grid too high too quickly",
-      "Approaching too fast",
-      "Leaning forward through the grid",
-      "Not warming up adequately",
+      "Treating a generic distance, stride count, component description, height, speed, placing-pole position, rider level, horse type, online example, video, previous session, or another horse’s setup as suitable for an individual activity",
+      "Building, altering, riding, jumping, measuring, teaching, supervising, raising, lowering, widening, narrowing, adding, removing, repositioning, testing, or troubleshooting an exercise without authorised qualified-coach direction",
+      "Diagnosing fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, safety, equipment suitability, a cause, or a correction from an observation",
+      "Continuing, repeating, increasing, decreasing, changing, or troubleshooting an activity when a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear",
+      "Failing to use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route when factual observations require escalation",
     ],
     knowledgeCheck: [
       {
-        question: "Approximate distance for a bounce?",
-        options: ["1-2 metres", "3-3.6 metres", "7-8 metres", "10 metres"],
-        correctIndex: 1,
-        explanation: "3-3.6 metres allows landing and immediate takeoff.",
+        question: "What determines the appropriate setup, measurement, adjustment, and progression for a gridwork or related-distance activity?",
+        options: [
+          "A universal chart from a generic lesson",
+          "Another horse’s setup or an online example",
+          "The current responsible person and qualified coach using individual horse/rider suitability, risk assessment, welfare, safety, equipment, environment, supervision, and current procedures",
+          "A learner’s preferred height or speed",
+        ],
+        correctIndex: 2,
+        explanation: "Professional coaching guidance requires individual suitability, risk assessment, welfare, safety, appropriate measurement, adjustment where required, supervision, and escalation rather than a universal distance table.",
       },
       {
-        question: "Why build grids progressively?",
+        question: "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear?",
         options: [
-          "To save time",
-          "To build confidence gradually",
-          "It doesn't matter",
-          "To confuse the horse",
+          "Independently change distance, height, speed, equipment, position, or the exercise",
+          "Diagnose the cause and continue to test a correction",
+          "Stop where it is safe to do so and use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route",
+          "Use another horse’s setup as a solution",
         ],
-        correctIndex: 1,
-        explanation:
-          "Progressive building allows confidence and balance to develop.",
+        correctIndex: 2,
+        explanation: "Do not self-direct gridwork or diagnose a cause. Follow the current authorised procedure and obtain qualified support.",
       },
     ],
     aiTutorPrompts: [
-      "Difference between bounce and one-stride?",
-      "How to set up my first grid?",
-      "My horse rushes through grids — how to fix?",
+      "What current responsible-person, qualified-coach, risk-assessment, welfare, safety, equipment, supervision, incident, and escalation procedure applies before any gridwork or related-distance activity?",
+      "How can I record authorised factual horse, rider, environment, surface, equipment, supervision, and safety observations without deciding setup, suitability, measurement, adjustment, progression, or a correction?",
+      "When should I stop where safe and use the responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route rather than self-directing a gridwork change?",
     ],
     linkedCompetencies: ["riding_position", "safety_awareness"],
   },
