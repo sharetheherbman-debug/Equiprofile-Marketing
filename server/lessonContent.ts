@@ -2214,23 +2214,23 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
       "Understand how to assess arena conditions and set up equipment",
       "Explain the importance of mental readiness and goal-setting before riding",
     ],
-    content: `Preparing for a riding lesson or schooling session involves more than just arriving and getting on the horse. Good preparation ensures the horse is comfortable, the tack fits correctly, the arena is safe, and the rider has a clear plan for what they want to achieve. This lesson brings together the practical and mental aspects of lesson preparation.
+    content: `Preparing for a riding lesson or schooling session includes responsible pre-ride checks, a realistic plan, and a decision not to ride when horse, tack, rider, ground, or facility conditions are not safe. Saddle, bridle, bit, and noseband fit are individual matters requiring qualified assessment; do not treat this lesson as a substitute for a qualified fitter, instructor, veterinarian, or manufacturer guidance.
 
 ## Tacking Up
 
-Tacking up is the process of fitting the saddle and bridle to the horse. It must be done carefully and correctly every time:
+Tacking up requires careful handling and individual fit assessment. Follow the current qualified instruction, equipment guidance, and yard procedure for the horse rather than applying copied measurements or a universal sequence:
 
 **Putting on the saddle:**
 1. Place the numnah (saddle cloth) on the horse's back, slightly forward of where the saddle will sit, then slide it back into position so the hair lies flat underneath.
-2. Lift the saddle and place it gently on the numnah, slightly forward of the withers, then slide it back into the correct position. The saddle should sit behind the shoulder blade so it does not restrict the horse's movement.
-3. Let the girth down on the off (right) side. Move to the near (left) side, reach under the belly and buckle the girth. Tighten gradually — do not yank it tight in one go, as this is uncomfortable and some horses will react by biting, kicking or inflating their belly.
+2. Place the saddle only as instructed for the individual horse and saddle. If fit, placement, balance, or comfort is uncertain, stop and obtain a qualified saddle-fitting assessment.
+3. Secure the girth in accordance with the current instruction for the horse and equipment. A girth should be snug but not overtight; recheck it before mounting under the current procedure and seek help where fit is uncertain.
 4. Pull the numnah up into the gullet of the saddle so it is not pressing down on the withers.
 5. Check that the saddle is level and balanced when viewed from behind.
 
 **Putting on the bridle:**
 1. Stand at the horse's near side, facing the same direction as the horse.
 2. Undo the headcollar and refasten it around the neck so you maintain control.
-3. Hold the bridle by the headpiece in your right hand and guide the bit into the horse's mouth with your left hand. If the horse is reluctant, gently press your thumb into the corner of the mouth (the bars), where there are no teeth, to encourage it to open.
+3. Fit the bridle only by the safe method you have been taught. Do not force the bit, and stop for qualified advice if the horse resists, appears distressed, or has oral-health concerns.
 4. Lift the headpiece over the ears, one at a time, being gentle with each ear.
 5. Fasten the throatlash, noseband and bit only in accordance with qualified tack-fitting, oral-health and manufacturer guidance for the individual horse.
 6. Check for signs of restriction, discomfort, rubbing or altered behaviour and stop if the horse becomes distressed.
@@ -2240,7 +2240,7 @@ Tacking up is the process of fitting the saddle and bridle to the horse. It must
 ## Arena Assessment
 
 Before you ride, check the arena:
-- **Surface** — Is it too deep, too hard, too wet or too dusty? Poor surfaces cause injury.
+- **Surface** — Consider whether the surface is level, excessively hard, deep, slippery, wet, or dusty. Adapt or cancel the session if conditions are unsuitable for the horse, activity, and qualified guidance.
 - **Obstacles** — Are there poles, jumps or equipment left out that need to be moved?
 - **Fencing** — Is the fence intact? Are gates secure?
 - **Other users** — Who else will be riding? Adjust your plan to share space safely.
@@ -2265,17 +2265,17 @@ Riding is as much a mental skill as a physical one. Before mounting:
 ## Equipment Check
 
 Before every ride, verify:
-- Riding hat is correctly fitted and meets current safety standards (PAS 015, SNELL, ASTM/SEI)
+- Riding helmet is correctly fitted, in sound condition, and suitable for the activity and applicable current safety requirements
 - Boots or jodhpur boots have a suitable sole and heel for the current stirrup, riding activity and applicable safety guidance
 - Gloves provide grip on the reins
 - Body protector if required by the yard or activity
 - Whip and spurs are only carried if appropriate for the rider's level and the horse's needs`,
     keyPoints: [
-      "Always slide the saddle back into position — never forward — to keep the hair lying flat",
+      "Use only the individual horse's qualified saddle-placement and fitting guidance; stop if fit or comfort is uncertain",
       "Bridle and bit fit require individual qualified assessment; do not use copied finger-width or wrinkle rules as a substitute",
       "Check the arena surface, fencing and any obstacles before riding",
       "Set a small number of specific, measurable goals appropriate to the current horse, rider and qualified coach guidance",
-      "Mental readiness affects the horse — approach every ride with calm focus",
+      "Plan calmly, set realistic goals, and stop rather than ride when the rider or setting is not ready",
     ],
     safetyNote:
       "Never ride in footwear without a heel, such as trainers or wellies, as your foot can slide through the stirrup. Always wear a correctly fitted, current-standard riding hat — even for a short session. Check all tack for wear and damage before every ride: stitching on stirrup leathers, girth straps and reins should be strong and intact. If any piece of tack is damaged, do not use it.",
