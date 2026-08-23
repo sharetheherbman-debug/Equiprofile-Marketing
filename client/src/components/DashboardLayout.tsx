@@ -81,6 +81,10 @@ import { ThemeToggle } from "./ThemeToggle";
 import { NotificationCenter } from "./NotificationCenter";
 import { TrialBanner } from "./TrialBanner";
 import { useAdminViewMode } from "@/contexts/AdminViewContext";
+import {
+  parseManagementPreferences,
+  resolveEffectiveManagementEntitlement,
+} from "@shared/managementEntitlement";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -287,9 +291,21 @@ function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutCo
   });
 
   const { data: subscriptionStatus } = trpc.user.getSubscriptionStatus.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
-  const isStablePlan = subscriptionStatus?.planTier === "stable";
+  const managementPreferences = parseManagementPreferences(user?.preferences);
+  const basePlanTier = subscriptionStatus?.planTier === "stable" || managementPreferences.planTier === "stable"
+    ? "stable"
+    : "pro";
+  const managementEntitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: subscriptionStatus?.status ?? user?.subscriptionStatus ?? "unknown",
+      planTier: basePlanTier,
+      bothDashboardsUnlocked: subscriptionStatus?.bothDashboardsUnlocked ?? Boolean(managementPreferences.bothDashboardsUnlocked),
+    },
+    managementPreferences,
+  );
+  const isStablePlan = managementEntitlement.effectivePlanTier === "stable";
   const isAdmin = user?.role === "admin";
-  const bothDashboardsUnlocked = !!subscriptionStatus?.bothDashboardsUnlocked;
+  const bothDashboardsUnlocked = managementEntitlement.effectiveBothDashboardsUnlocked;
   const effectiveIsStablePlan = isAdmin ? viewMode === "stable" : isStablePlan;
   const effectiveIsAdmin = isAdmin && (!viewMode || viewMode === "admin");
   const dualDashboardEligible = effectiveIsStablePlan && bothDashboardsUnlocked;
