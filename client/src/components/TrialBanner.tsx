@@ -3,19 +3,35 @@ import { Button } from "@/components/ui/button";
 import { Clock, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import {
+  parseManagementPreferences,
+  resolveEffectiveManagementEntitlement,
+} from "@shared/managementEntitlement";
 
 /**
  * Trial-countdown banner shown at the top of protected pages.
  *
- * Only visible when `subscriptionStatus === "trial"` — paid / active
- * users never see it. Admins are also excluded.
+ * Billing remains authoritative, but an active complimentary Management grant
+ * truthfully extends access and must suppress an expired-trial warning while it
+ * is active. Expired complimentary access falls back to the underlying trial.
  */
 export function TrialBanner() {
   const { user } = useAuth();
 
   if (!user) return null;
 
-  // Calculate trial days remaining
+  const preferences = parseManagementPreferences(user.preferences);
+  const entitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: user.subscriptionStatus,
+      planTier: preferences.planTier === "stable" ? "stable" : "pro",
+      bothDashboardsUnlocked: Boolean(preferences.bothDashboardsUnlocked),
+    },
+    preferences,
+  );
+
+  if (entitlement.complimentaryAccessState === "active") return null;
+
   const trialDaysLeft = user.trialEndsAt
     ? Math.ceil(
         (new Date(user.trialEndsAt).getTime() - Date.now()) /
@@ -29,7 +45,6 @@ export function TrialBanner() {
     user.subscriptionStatus === "trial" && trialDaysLeft <= 0;
   const isSubscriptionActive = user.subscriptionStatus === "active";
 
-  // Don't show banner if user has active subscription or is admin
   if (isSubscriptionActive || user.role === "admin") {
     return null;
   }
