@@ -4,6 +4,10 @@ import { ReactNode, useEffect } from "react";
 import { useLocation } from "wouter";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
+import {
+  parseManagementPreferences,
+  resolveEffectiveManagementEntitlement,
+} from "@shared/managementEntitlement";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -14,11 +18,12 @@ interface ProtectedRouteProps {
 }
 
 /**
- * Protected route wrapper
+ * Protected route wrapper.
  *
- * Ensures user is authenticated before rendering children.
- * Redirects to login if not authenticated.
- * Optionally can require admin role, stable plan, or student plan.
+ * Management access and Stable routing use the same canonical complimentary
+ * entitlement resolver as the server. Billing fields remain authoritative;
+ * an active complimentary overlay may extend access, while an expired overlay
+ * falls back to the underlying paid/trial state.
  */
 export function ProtectedRoute({
   children,
@@ -30,35 +35,26 @@ export function ProtectedRoute({
   const { user, loading, isAuthenticated, error } = useAuth();
   const [location, setLocation] = useLocation();
 
-  const isStablePlan = (() => {
-    if (!user?.preferences) return false;
-    try {
-      const prefs = JSON.parse(user.preferences);
-      return prefs.planTier === "stable" || !!prefs.bothDashboardsUnlocked;
-    } catch {
-      return false;
-    }
-  })();
+  const preferences = parseManagementPreferences(user?.preferences);
+  const basePlanTier = preferences.planTier === "stable" ? "stable" : "pro";
+  const managementEntitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: user?.subscriptionStatus ?? "unknown",
+      planTier: basePlanTier,
+      bothDashboardsUnlocked: Boolean(preferences.bothDashboardsUnlocked),
+    },
+    preferences,
+  );
+  const complimentaryAccessActive =
+    managementEntitlement.complimentaryAccessState === "active";
+  const isStablePlan = managementEntitlement.effectivePlanTier === "stable";
 
-  const isStudentPlan = (() => {
-    if (!user?.preferences) return false;
-    try {
-      const prefs = JSON.parse(user.preferences);
-      return prefs.planTier === "student" || prefs.selectedExperience === "student";
-    } catch {
-      return false;
-    }
-  })();
-
-  const isTeacherPlan = (() => {
-    if (!user?.preferences) return false;
-    try {
-      const prefs = JSON.parse(user.preferences);
-      return prefs.planTier === "teacher" || prefs.selectedExperience === "teacher";
-    } catch {
-      return false;
-    }
-  })();
+  const isStudentPlan =
+    preferences.planTier === "student" ||
+    preferences.selectedExperience === "student";
+  const isTeacherPlan =
+    preferences.planTier === "teacher" ||
+    preferences.selectedExperience === "teacher";
 
   const isAdmin = user?.role === "admin";
   const trialEndsAt = user?.trialEndsAt
@@ -68,11 +64,13 @@ export function ProtectedRoute({
       : null;
   const accessExpired =
     !isAdmin &&
+    !complimentaryAccessActive &&
     user?.subscriptionStatus === "trial" &&
     !!trialEndsAt &&
     trialEndsAt.getTime() <= Date.now();
   const subscriptionLocked =
     !isAdmin &&
+    !complimentaryAccessActive &&
     (user?.subscriptionStatus === "expired" ||
       user?.subscriptionStatus === "overdue" ||
       (user?.subscriptionStatus === "cancelled" &&
@@ -89,8 +87,8 @@ export function ProtectedRoute({
     if (loading) return;
 
     // If there's a network/fetch error but we had a previous user in cache,
-    // don't redirect — the user may still have a valid session and just had
-    // a momentary network issue. Only redirect if we definitively have no auth.
+    // don't redirect — the user may still have a valid session and just had a
+    // momentary network issue. Only redirect if we definitively have no auth.
     if (!isAuthenticated && !error) {
       const oauthUrl = getLoginUrl();
       const returnUrl = encodeURIComponent(
@@ -103,21 +101,18 @@ export function ProtectedRoute({
       return;
     }
 
-    // If there's a network error but no cached user, redirect to login
+    // If there's a network error but no cached user, redirect to login.
     if (!isAuthenticated && error) {
-      // Check if we have cached user info — if so, don't redirect yet
       const cachedUser = localStorage.getItem("equiprofile-user-info");
       if (!cachedUser) {
         const loginUrl = `/login?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`;
         window.location.href = loginUrl;
         return;
       }
-      // If we have cached user but server returned error, wait for retry
       return;
     }
 
     if (requireAdmin && !isAdmin) {
-      // Redirect to dashboard if user is not admin
       setLocation("/dashboard");
     }
 
@@ -151,7 +146,6 @@ export function ProtectedRoute({
     setLocation,
   ]);
 
-  // Show loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -163,7 +157,6 @@ export function ProtectedRoute({
     );
   }
 
-  // Don't render until authenticated
   if (!isAuthenticated) {
     return null;
   }
@@ -222,22 +215,18 @@ export function ProtectedRoute({
     );
   }
 
-  // Don't render if admin required but user is not admin
   if (requireAdmin && !isAdmin) {
     return null;
   }
 
-  // Don't render if stable plan required but user is not on stable plan (admin bypasses)
   if (stableOnly && !isStablePlan && !isAdmin) {
     return null;
   }
 
-  // Don't render if student plan required but user is not on student plan (admin bypasses)
   if (studentOnly && !isStudentPlan && !isAdmin) {
     return null;
   }
 
-  // Don't render if teacher plan required but user is not on teacher plan (admin bypasses)
   if (teacherOnly && !isTeacherPlan && !isAdmin) {
     return null;
   }
@@ -245,26 +234,17 @@ export function ProtectedRoute({
   return <>{children}</>;
 }
 
-/**
- * Stable plan route - requires Stable subscription tier.
- * Redirects to /billing with toast if user is on a lower plan.
- */
+/** Stable plan route - requires the effective Stable entitlement. */
 export function StableRoute({ children }: { children: ReactNode }) {
   return <ProtectedRoute stableOnly>{children}</ProtectedRoute>;
 }
 
-/**
- * Student plan route - requires Student subscription tier.
- * Admin can always access.
- */
+/** Student plan route - requires Student subscription tier. Admin can access. */
 export function StudentRoute({ children }: { children: ReactNode }) {
   return <ProtectedRoute studentOnly>{children}</ProtectedRoute>;
 }
 
-/**
- * Teacher plan route - requires Teacher subscription tier.
- * Admin can always access.
- */
+/** Teacher plan route - requires Teacher subscription tier. Admin can access. */
 export function TeacherRoute({ children }: { children: ReactNode }) {
   return <ProtectedRoute teacherOnly>{children}</ProtectedRoute>;
 }
