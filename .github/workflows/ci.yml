@@ -192,3 +192,8 @@ jobs:
           JWT_SECRET: smoke-test-secret-min-32-chars-here
           ADMIN_UNLOCK_PASSWORD: Smoke!CI#Test99
           DATABASE_URL: mysql://smoke:smoke@127.0.0.1:3306/smoke_db
+
+      - name: Run authenticated Management browser acceptance
+        run: npm run acceptance:management
+        env:
+          NODE_ENV: test
