@@ -94,14 +94,25 @@ describe("Management browser navigation entitlement", () => {
     });
   });
 
-  it("forces DashboardLayout to consume the shared effective entitlement", () => {
-    const source = fs.readFileSync(
+  it("forces both navigation and route/paywall gates to consume the shared entitlement", () => {
+    const dashboard = fs.readFileSync(
       path.resolve(process.cwd(), "client/src/components/DashboardLayout.tsx"),
       "utf8",
     );
-    expect(source).toContain('from "@shared/managementEntitlement"');
-    expect(source).toContain("resolveEffectiveManagementEntitlement(");
-    expect(source).toContain("managementEntitlement.effectivePlanTier");
-    expect(source).toContain("managementEntitlement.effectiveBothDashboardsUnlocked");
+    const protectedRoute = fs.readFileSync(
+      path.resolve(process.cwd(), "client/src/components/ProtectedRoute.tsx"),
+      "utf8",
+    );
+
+    expect(dashboard).toContain('from "@shared/managementEntitlement"');
+    expect(dashboard).toContain("resolveEffectiveManagementEntitlement(");
+    expect(dashboard).toContain("managementEntitlement.effectivePlanTier");
+    expect(dashboard).toContain("managementEntitlement.effectiveBothDashboardsUnlocked");
+
+    expect(protectedRoute).toContain('from "@shared/managementEntitlement"');
+    expect(protectedRoute).toContain("resolveEffectiveManagementEntitlement(");
+    expect(protectedRoute).toContain('managementEntitlement.complimentaryAccessState === "active"');
+    expect(protectedRoute).toContain("managementEntitlement.effectivePlanTier === \"stable\"");
+    expect(protectedRoute).toContain("!complimentaryAccessActive");
   });
 });
