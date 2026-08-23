@@ -7,3 +7,4 @@ Disallow: /admin/
 
 Sitemap: https://equiprofile.online/sitemap.xml
 Sitemap: https://academy.equiprofile.online/academy-sitemap.xml
+Sitemap: https://shop.equiprofile.online/shop-sitemap.xml

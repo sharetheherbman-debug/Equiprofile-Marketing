@@ -58,6 +58,60 @@ import {
 // Set inside server.listen() callback once the port is bound.
 let _activeServer: import("http").Server | null = null;
 
+type CoreDb = NonNullable<Awaited<ReturnType<typeof getDb>>>;
+
+async function releaseStoreCheckoutReservation(
+  database: CoreDb,
+  orderId: number,
+  nextStatus: "payment_failed" | "cancelled",
+) {
+  return database.transaction(async (tx) => {
+    const rows = (
+      (await tx.execute(
+        sql`SELECT id, status FROM commerceOrders WHERE id = ${orderId} LIMIT 1 FOR UPDATE`,
+      )) as any
+    )[0] as Array<{ id: number; status: string }>;
+    const order = rows[0];
+    if (
+      !order ||
+      !["checkout_pending", "payment_pending"].includes(order.status)
+    ) {
+      return false;
+    }
+    await tx.execute(sql`
+      UPDATE commerceSupplierInventory si
+      JOIN commerceSupplierProducts sp ON sp.id = si.supplierProductId
+      JOIN commerceOrderItems oi
+        ON oi.variantId = sp.variantId
+        AND oi.supplierId = sp.supplierId
+        AND sp.id = (
+          SELECT MIN(sp2.id)
+          FROM commerceSupplierProducts sp2
+          WHERE sp2.variantId = oi.variantId AND sp2.supplierId = oi.supplierId
+        )
+      SET si.quantity = COALESCE(si.quantity, 0) + oi.quantity,
+          si.availabilityStatus = CASE
+            WHEN COALESCE(si.quantity, 0) + oi.quantity <= 5 THEN 'low_stock'
+            ELSE 'in_stock'
+          END
+      WHERE oi.orderId = ${orderId}
+    `);
+    await tx.execute(
+      sql`UPDATE commerceOrders SET status = ${nextStatus}, storePaymentStatus = 'failed' WHERE id = ${orderId} AND status = ${order.status}`,
+    );
+    return true;
+  });
+}
+
+function xmlEscape(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
 // Port checking functions removed - now using deterministic port binding
 // If port is in use, server will fail with clear error message instead of auto-switching
 
@@ -193,6 +247,41 @@ async function startServer() {
     },
   });
 
+  app.get("/shop-sitemap.xml", async (_req, res) => {
+    const database = await getDb();
+    if (!database) {
+      return res
+        .status(503)
+        .type("text/plain")
+        .send("Shop catalogue unavailable");
+    }
+    const products = (
+      (await database.execute(sql`
+        SELECT slug, updatedAt
+        FROM commerceProducts
+        WHERE status = 'published'
+          AND developmentOnly = FALSE
+          AND isArchived = FALSE
+          AND imageRightsStatus = 'licensed'
+        ORDER BY slug
+      `)) as any
+    )[0] as Array<{ slug: string; updatedAt: Date | string }>;
+    const urls = [
+      "  <url><loc>https://shop.equiprofile.online/</loc></url>",
+      ...products.map((product) => {
+        const location = `https://shop.equiprofile.online/?product=${encodeURIComponent(product.slug)}`;
+        const modified = new Date(product.updatedAt).toISOString().slice(0, 10);
+        return `  <url><loc>${xmlEscape(location)}</loc><lastmod>${modified}</lastmod></url>`;
+      }),
+    ];
+    res
+      .status(200)
+      .type("application/xml")
+      .send(
+        `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>`,
+      );
+  });
+
   // Store Stripe webhook — deliberately isolated from SaaS subscription billing.
   // It remains inactive until dedicated Store configuration is present.
   app.post(
@@ -212,7 +301,11 @@ async function startServer() {
       }
       let event: Stripe.Event;
       try {
-        event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          webhookSecret,
+        );
       } catch (error: any) {
         return res.status(400).json({
           error: `Store webhook signature verification failed: ${error.message}`,
@@ -222,22 +315,18 @@ async function startServer() {
       if (!dbConn) {
         return res.status(503).json({ error: "Database unavailable" });
       }
-      const existing = (
-        (await dbConn.execute(
-          sql`SELECT id FROM commercePaymentEvents WHERE provider = 'stripe' AND providerEventId = ${event.id} LIMIT 1`,
-        )) as any
-      )[0] as Array<{ id: number }>;
-      if (existing?.[0]) return res.json({ received: true, cached: true });
-
       const object = event.data.object as
         | Stripe.Checkout.Session
         | Stripe.PaymentIntent
         | Stripe.Charge;
       const metadata = "metadata" in object ? object.metadata : null;
       if (!isStoreScopedMetadata(metadata)) {
-        await dbConn.execute(
-          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)})`,
-        );
+        const ignoredInsert = (await dbConn.execute(
+          sql`INSERT IGNORE INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson, processedAt) VALUES ('stripe', ${event.id}, ${event.type}, 'ignored', ${JSON.stringify(event.data.object)}, CURRENT_TIMESTAMP)`,
+        )) as unknown as [{ affectedRows?: number }, unknown];
+        if (Number(ignoredInsert[0]?.affectedRows ?? 0) === 0) {
+          return res.json({ received: true, cached: true });
+        }
         return res.json({ received: true, ignored: true });
       }
       const orderId = Number(metadata.orderId);
@@ -255,9 +344,21 @@ async function startServer() {
         userPreferences: string | null;
       }>;
       if (!order[0]) {
-        await dbConn.execute(
-          sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)})`,
-        );
+        const failedInsert = (await dbConn.execute(
+          sql`INSERT IGNORE INTO commercePaymentEvents (provider, providerEventId, eventType, status, payloadJson, processedAt) VALUES ('stripe', ${event.id}, ${event.type}, 'failed', ${JSON.stringify(event.data.object)}, CURRENT_TIMESTAMP)`,
+        )) as unknown as [{ affectedRows?: number }, unknown];
+        if (Number(failedInsert[0]?.affectedRows ?? 0) === 0) {
+          return res.json({ received: true, cached: true });
+        }
+        return res.json({ received: true, rejected: true });
+      }
+      if (metadata.orderNumber !== order[0].orderNumber) {
+        const mismatchedInsert = (await dbConn.execute(
+          sql`INSERT IGNORE INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, status, payloadJson, processedAt) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, 'failed', ${JSON.stringify(event.data.object)}, CURRENT_TIMESTAMP)`,
+        )) as unknown as [{ affectedRows?: number }, unknown];
+        if (Number(mismatchedInsert[0]?.affectedRows ?? 0) === 0) {
+          return res.json({ received: true, cached: true });
+        }
         return res.json({ received: true, rejected: true });
       }
       const paymentReference =
@@ -266,9 +367,17 @@ async function startServer() {
           : "id" in object
             ? object.id
             : "";
-      await dbConn.execute(
-        sql`INSERT INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, paymentIntentId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, ${paymentReference || null}, 'received', ${JSON.stringify(event.data.object)})`,
-      );
+      const eventInsert = (await dbConn.execute(
+        sql`INSERT IGNORE INTO commercePaymentEvents (provider, providerEventId, eventType, orderId, paymentIntentId, status, payloadJson) VALUES ('stripe', ${event.id}, ${event.type}, ${orderId}, ${paymentReference || null}, 'received', ${JSON.stringify(event.data.object)})`,
+      )) as unknown as [{ affectedRows?: number }, unknown];
+      if (Number(eventInsert[0]?.affectedRows ?? 0) === 0) {
+        const retryClaim = (await dbConn.execute(
+          sql`UPDATE commercePaymentEvents SET status = 'received', processedAt = NULL WHERE provider = 'stripe' AND providerEventId = ${event.id} AND status = 'failed'`,
+        )) as unknown as [{ affectedRows?: number }, unknown];
+        if (Number(retryClaim[0]?.affectedRows ?? 0) === 0) {
+          return res.json({ received: true, cached: true });
+        }
+      }
 
       let reconciliationFailure: string | null = null;
       if (event.type === "checkout.session.completed") {
@@ -288,7 +397,10 @@ async function startServer() {
           // The payment transition is durable. Detached connector delivery uses
           // only explicit consent and aggregate order facts, and cannot affect
           // the webhook acknowledgement or Store payment state.
-          if (resolveMarketingConsent(order[0].userPreferences) === "marketing_opt_in") {
+          if (
+            resolveMarketingConsent(order[0].userPreferences) ===
+            "marketing_opt_in"
+          ) {
             void (async () => {
               try {
                 const itemRows = (
@@ -302,7 +414,10 @@ async function startServer() {
                   eventType: "shop_order_paid",
                   entityType: "order",
                   entityId: order[0].orderNumber,
-                  publicUrl: (process.env.STORE_PUBLIC_URL ?? "https://shop.equiprofile.online").replace(/\/$/, ""),
+                  publicUrl: (
+                    process.env.STORE_PUBLIC_URL ??
+                    "https://shop.equiprofile.online"
+                  ).replace(/\/$/, ""),
                   timestamp: new Date().toISOString(),
                   consentState: "marketing_opt_in",
                   idempotencyKey: `shop-order-paid:${order[0].orderNumber}`,
@@ -322,13 +437,13 @@ async function startServer() {
           }
         }
       } else if (event.type === "payment_intent.payment_failed") {
-        await dbConn.execute(
-          sql`UPDATE commerceOrders SET status = 'payment_failed', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
+        await releaseStoreCheckoutReservation(
+          dbConn,
+          orderId,
+          "payment_failed",
         );
       } else if (event.type === "checkout.session.expired") {
-        await dbConn.execute(
-          sql`UPDATE commerceOrders SET status = 'cancelled', storePaymentStatus = 'failed' WHERE id = ${orderId} AND status IN ('checkout_pending', 'payment_pending')`,
-        );
+        await releaseStoreCheckoutReservation(dbConn, orderId, "cancelled");
       } else if (event.type === "charge.refunded") {
         const charge = object as Stripe.Charge;
         const decision = reconcileStoreRefund({
@@ -338,9 +453,51 @@ async function startServer() {
         });
         if (!decision.accepted) reconciliationFailure = decision.reason;
         else {
-          await dbConn.execute(
-            sql`UPDATE commerceOrders SET status = ${decision.paymentStatus}, storePaymentStatus = ${decision.paymentStatus} WHERE id = ${orderId} AND status IN ('paid', 'acknowledged', 'processing', 'partially_fulfilled', 'fulfilled', 'dispatched', 'delivered', 'returned', 'partially_refunded')`,
-          );
+          try {
+            await dbConn.transaction(async (tx) => {
+              const lockedOrder = (
+                (await tx.execute(
+                  sql`SELECT id FROM commerceOrders WHERE id = ${orderId} LIMIT 1 FOR UPDATE`,
+                )) as any
+              )[0] as Array<{ id: number }>;
+              if (!lockedOrder[0])
+                throw new Error(
+                  "Store order disappeared during refund reconciliation.",
+                );
+              for (const providerRefund of charge.refunds?.data ?? []) {
+                await tx.execute(
+                  sql`UPDATE commerceRefunds SET status = 'succeeded' WHERE orderId = ${orderId} AND stripeRefundId = ${providerRefund.id} AND status = 'pending'`,
+                );
+              }
+              const priorRefunds = (
+                (await tx.execute(
+                  sql`SELECT COALESCE(SUM(amountPence), 0) AS refundedPence FROM commerceRefunds WHERE orderId = ${orderId} AND status = 'succeeded' FOR UPDATE`,
+                )) as any
+              )[0] as Array<{ refundedPence: number | string }>;
+              const priorRefundedPence = Number(
+                priorRefunds[0]?.refundedPence ?? 0,
+              );
+              const refundDelta = charge.amount_refunded - priorRefundedPence;
+              if (refundDelta < 0) {
+                throw new Error(
+                  "Refund event is older than trusted refund bookkeeping.",
+                );
+              }
+              if (refundDelta > 0) {
+                await tx.execute(
+                  sql`INSERT INTO commerceRefunds (orderId, amountPence, status, stripeRefundId, idempotencyKey) VALUES (${orderId}, ${refundDelta}, 'succeeded', ${`event:${event.id}`}, ${`stripe-refund-event:${event.id}`})`,
+                );
+              }
+              await tx.execute(
+                sql`UPDATE commerceOrders SET status = ${decision.paymentStatus}, storePaymentStatus = ${decision.paymentStatus} WHERE id = ${orderId} AND status IN ('paid', 'acknowledged', 'processing', 'partially_fulfilled', 'fulfilled', 'dispatched', 'delivered', 'returned', 'partially_refunded')`,
+              );
+            });
+          } catch (error) {
+            reconciliationFailure =
+              error instanceof Error
+                ? error.message
+                : "Store refund reconciliation transaction failed.";
+          }
         }
       }
       if (reconciliationFailure) {
@@ -378,7 +535,11 @@ async function startServer() {
       }
       let event: Stripe.Event;
       try {
-        event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          signature,
+          webhookSecret,
+        );
       } catch (error: any) {
         return res.status(400).json({
           error: `Academy webhook signature verification failed: ${error.message}`,
@@ -611,7 +772,10 @@ async function startServer() {
                   ? JSON.parse(userForPrefsUpdate.preferences)
                   : {};
                 await db.updateUser(userId, {
-                  preferences: JSON.stringify({ ...existingPrefs, planTier: updatedPlanTier }),
+                  preferences: JSON.stringify({
+                    ...existingPrefs,
+                    planTier: updatedPlanTier,
+                  }),
                 });
               }
 
@@ -668,9 +832,11 @@ async function startServer() {
                 if (invoice.billing_reason !== "subscription_create") {
                   const paidUser = await db.getUserById(userId);
                   if (paidUser) {
-                    const plan = paidUser.subscriptionPlan === "monthly" || paidUser.subscriptionPlan === "yearly"
-                      ? paidUser.subscriptionPlan
-                      : undefined;
+                    const plan =
+                      paidUser.subscriptionPlan === "monthly" ||
+                      paidUser.subscriptionPlan === "yearly"
+                        ? paidUser.subscriptionPlan
+                        : undefined;
                     email
                       .sendRenewalReceiptEmail(paidUser, plan)
                       .catch((err) =>
@@ -809,8 +975,12 @@ async function startServer() {
 
     const result = await resolveMarketingAttributionClick({
       code,
-      userAgent: typeof req.headers["user-agent"] === "string" ? req.headers["user-agent"] : null,
-      referrer: typeof req.headers.referer === "string" ? req.headers.referer : null,
+      userAgent:
+        typeof req.headers["user-agent"] === "string"
+          ? req.headers["user-agent"]
+          : null,
+      referrer:
+        typeof req.headers.referer === "string" ? req.headers.referer : null,
       ip: req.ip ?? null,
     });
 
@@ -854,16 +1024,29 @@ async function startServer() {
       }
 
       // Check env vars first, then fall back to DB-stored dashboard settings
-      const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-      const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpUser =
+        process.env.SMTP_USER ||
+        (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass =
+        process.env.SMTP_PASS ||
+        (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
       const smtpConfigured = !!(smtpUser && smtpPass);
       const stripeReady =
         ENV.enableStripe &&
         !!(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET);
       const uploadsReady = true; // Local disk storage is always available on VPS
-      const aiGenX = !!(process.env.GENX_API_KEY || (await getRuntimeConfig("genx_api_key", "GENX_API_KEY")));
-      const aiHuggingFace = !!(process.env.HUGGINGFACE_API_KEY || (await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY")));
-      const aiQwen = !!(process.env.QWEN_API_KEY || (await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY")));
+      const aiGenX = !!(
+        process.env.GENX_API_KEY ||
+        (await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
+      );
+      const aiHuggingFace = !!(
+        process.env.HUGGINGFACE_API_KEY ||
+        (await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"))
+      );
+      const aiQwen = !!(
+        process.env.QWEN_API_KEY ||
+        (await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"))
+      );
 
       res.json({
         db: true, // If we got here the server started successfully
@@ -896,111 +1079,129 @@ async function startServer() {
       if (!context.user || context.user.role !== "admin") {
         return res.status(403).json({ error: "Admin access required" });
       }
-    // Check env vars first, then fall back to DB-stored dashboard settings
-    const smtpUser = process.env.SMTP_USER || (await getRuntimeConfig("smtp_user", "SMTP_USER"));
-    const smtpPass = process.env.SMTP_PASS || (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
-    const smtpConfigured = !!(smtpUser && smtpPass);
-    const smtpSource = (process.env.SMTP_USER && process.env.SMTP_PASS)
-      ? "environment"
-      : smtpConfigured ? "dashboard settings" : "not configured";
-    const stripeConfigured = !!(
-      process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET
-    );
-    const stripePublicKey = !!(
-      process.env.VITE_STRIPE_PUBLIC_KEY || process.env.STRIPE_PUBLIC_KEY
-    );
-    const aiGenX = !!(process.env.GENX_API_KEY || (await getRuntimeConfig("genx_api_key", "GENX_API_KEY")));
-    const aiHuggingFace = !!(process.env.HUGGINGFACE_API_KEY || (await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY")));
-    const aiQwen = !!(process.env.QWEN_API_KEY || (await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY")));
-    const weatherKey = !!process.env.WEATHER_API_KEY;
-    const adminPasswordSet = !!process.env.ADMIN_UNLOCK_PASSWORD;
-    const jwtSet = !!process.env.JWT_SECRET;
+      // Check env vars first, then fall back to DB-stored dashboard settings
+      const smtpUser =
+        process.env.SMTP_USER ||
+        (await getRuntimeConfig("smtp_user", "SMTP_USER"));
+      const smtpPass =
+        process.env.SMTP_PASS ||
+        (await getRuntimeConfig("smtp_pass", "SMTP_PASS"));
+      const smtpConfigured = !!(smtpUser && smtpPass);
+      const smtpSource =
+        process.env.SMTP_USER && process.env.SMTP_PASS
+          ? "environment"
+          : smtpConfigured
+            ? "dashboard settings"
+            : "not configured";
+      const stripeConfigured = !!(
+        process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET
+      );
+      const stripePublicKey = !!(
+        process.env.VITE_STRIPE_PUBLIC_KEY || process.env.STRIPE_PUBLIC_KEY
+      );
+      const aiGenX = !!(
+        process.env.GENX_API_KEY ||
+        (await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
+      );
+      const aiHuggingFace = !!(
+        process.env.HUGGINGFACE_API_KEY ||
+        (await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"))
+      );
+      const aiQwen = !!(
+        process.env.QWEN_API_KEY ||
+        (await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"))
+      );
+      const weatherKey = !!process.env.WEATHER_API_KEY;
+      const adminPasswordSet = !!process.env.ADMIN_UNLOCK_PASSWORD;
+      const jwtSet = !!process.env.JWT_SECRET;
 
-    let dbOk = false;
-    try {
-      dbOk = !!(await db.getDb());
-    } catch {
-      /* ignore */
-    }
+      let dbOk = false;
+      try {
+        dbOk = !!(await db.getDb());
+      } catch {
+        /* ignore */
+      }
 
-    let realtimeOk = false;
-    try {
-      const { realtimeManager } = await import("./realtime");
-      realtimeOk = typeof realtimeManager?.getStats === "function";
-    } catch {
-      /* ignore */
-    }
+      let realtimeOk = false;
+      try {
+        const { realtimeManager } = await import("./realtime");
+        realtimeOk = typeof realtimeManager?.getStats === "function";
+      } catch {
+        /* ignore */
+      }
 
-    const toStatus = (ok: boolean, warn = false) =>
-      ok ? "green" : warn ? "yellow" : "red";
+      const toStatus = (ok: boolean, warn = false) =>
+        ok ? "green" : warn ? "yellow" : "red";
 
-    res.json({
-      overall: dbOk && jwtSet && adminPasswordSet ? "green" : "red",
-      services: {
-        db: {
-          status: toStatus(dbOk),
-          ok: dbOk,
-          message: dbOk
-            ? "Database connected"
-            : "DATABASE_URL not set or DB unreachable",
+      res.json({
+        overall: dbOk && jwtSet && adminPasswordSet ? "green" : "red",
+        services: {
+          db: {
+            status: toStatus(dbOk),
+            ok: dbOk,
+            message: dbOk
+              ? "Database connected"
+              : "DATABASE_URL not set or DB unreachable",
+          },
+          smtp: {
+            status: toStatus(smtpConfigured, true),
+            ok: smtpConfigured,
+            message: smtpConfigured
+              ? `SMTP configured (via ${smtpSource})`
+              : "Set SMTP_HOST, SMTP_USER, SMTP_PASS in environment or Admin → Settings to enable email",
+          },
+          stripe: {
+            status: toStatus(stripeConfigured && stripePublicKey, true),
+            ok: stripeConfigured && stripePublicKey,
+            message:
+              stripeConfigured && stripePublicKey
+                ? "Stripe configured"
+                : "Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, VITE_STRIPE_PUBLIC_KEY to enable billing",
+          },
+          ai: {
+            status: toStatus(aiGenX || aiHuggingFace || aiQwen, true),
+            ok: aiGenX || aiHuggingFace || aiQwen,
+            message:
+              aiGenX || aiHuggingFace || aiQwen
+                ? "AI configured"
+                : "Set GENX_API_KEY, HUGGINGFACE_API_KEY, or optional QWEN_API_KEY to enable AI features",
+          },
+          weather: {
+            status: "green",
+            ok: true, // Open-Meteo is free and requires no API key
+            message: weatherKey
+              ? "Weather API key configured (additional provider available)"
+              : "Using Open-Meteo (free, no key required) – weather features fully functional",
+          },
+          storage: (() => {
+            const hasProxy = !!(
+              process.env.STORAGE_PROXY_URL && process.env.STORAGE_PROXY_KEY
+            );
+            const storageOk = true; // Local disk storage is always available on VPS
+            const storageMode = hasProxy ? "proxy storage" : "local disk (VPS)";
+            return {
+              status: toStatus(storageOk, !hasProxy),
+              ok: storageOk,
+              message: `Document uploads enabled via ${storageMode} (${ENV.storagePath})`,
+            };
+          })(),
+          realtime: {
+            status: toStatus(realtimeOk),
+            ok: realtimeOk,
+            message: realtimeOk
+              ? "Realtime (SSE) active"
+              : "Realtime manager not initialised",
+          },
+          adminPassword: {
+            status: toStatus(adminPasswordSet),
+            ok: adminPasswordSet,
+            message: adminPasswordSet
+              ? "ADMIN_UNLOCK_PASSWORD is set"
+              : "Set ADMIN_UNLOCK_PASSWORD env var to secure the admin panel",
+          },
         },
-        smtp: {
-          status: toStatus(smtpConfigured, true),
-          ok: smtpConfigured,
-          message: smtpConfigured
-            ? `SMTP configured (via ${smtpSource})`
-            : "Set SMTP_HOST, SMTP_USER, SMTP_PASS in environment or Admin → Settings to enable email",
-        },
-        stripe: {
-          status: toStatus(stripeConfigured && stripePublicKey, true),
-          ok: stripeConfigured && stripePublicKey,
-          message:
-            stripeConfigured && stripePublicKey
-              ? "Stripe configured"
-              : "Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, VITE_STRIPE_PUBLIC_KEY to enable billing",
-        },
-        ai: {
-          status: toStatus(aiGenX || aiHuggingFace || aiQwen, true),
-          ok: aiGenX || aiHuggingFace || aiQwen,
-          message:
-            aiGenX || aiHuggingFace || aiQwen
-              ? "AI configured"
-              : "Set GENX_API_KEY, HUGGINGFACE_API_KEY, or optional QWEN_API_KEY to enable AI features",
-        },
-        weather: {
-          status: "green",
-          ok: true, // Open-Meteo is free and requires no API key
-          message: weatherKey
-            ? "Weather API key configured (additional provider available)"
-            : "Using Open-Meteo (free, no key required) – weather features fully functional",
-        },
-        storage: (() => {
-          const hasProxy = !!(process.env.STORAGE_PROXY_URL && process.env.STORAGE_PROXY_KEY);
-          const storageOk = true; // Local disk storage is always available on VPS
-          const storageMode = hasProxy ? "proxy storage" : "local disk (VPS)";
-          return {
-            status: toStatus(storageOk, !hasProxy),
-            ok: storageOk,
-            message: `Document uploads enabled via ${storageMode} (${ENV.storagePath})`,
-          };
-        })(),
-        realtime: {
-          status: toStatus(realtimeOk),
-          ok: realtimeOk,
-          message: realtimeOk
-            ? "Realtime (SSE) active"
-            : "Realtime manager not initialised",
-        },
-        adminPassword: {
-          status: toStatus(adminPasswordSet),
-          ok: adminPasswordSet,
-          message: adminPasswordSet
-            ? "ADMIN_UNLOCK_PASSWORD is set"
-            : "Set ADMIN_UNLOCK_PASSWORD env var to secure the admin panel",
-        },
-      },
-      timestamp: new Date().toISOString(),
-    });
+        timestamp: new Date().toISOString(),
+      });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
@@ -1086,7 +1287,10 @@ async function startServer() {
     const iconPath =
       process.env.NODE_ENV === "development"
         ? resolve(process.cwd(), "client/public/icons/icon-192x192.png")
-        : resolve(import.meta.dirname, "public/management/icons/icon-192x192.png");
+        : resolve(
+            import.meta.dirname,
+            "public/management/icons/icon-192x192.png",
+          );
 
     if (fs.existsSync(iconPath)) {
       res.setHeader("Content-Type", "image/png");
@@ -1170,7 +1374,13 @@ async function startServer() {
           .slice(0, 64);
         dbConn
           .insert(contactSubmissions)
-          .values({ name, email: fromEmail, subject: taggedSubject, message, ipHash })
+          .values({
+            name,
+            email: fromEmail,
+            subject: taggedSubject,
+            message,
+            ipHash,
+          })
           .catch((err: Error) =>
             console.warn("[Contact] DB insert failed:", err.message),
           );
@@ -1198,9 +1408,8 @@ async function startServer() {
   app.use("/api", salesChatRouter);
 
   // Internal site analytics — page view tracking middleware
-  const { analyticsMiddleware, trackCtaClick } = await import(
-    "./analyticsTracker"
-  );
+  const { analyticsMiddleware, trackCtaClick } =
+    await import("./analyticsTracker");
   app.use(analyticsMiddleware());
   app.post("/api/analytics/cta", express.json(), trackCtaClick);
 
@@ -1316,62 +1525,77 @@ async function startServer() {
   // WhatsApp / Twilio delivery status webhook
   // Twilio POSTs delivery status callbacks here (configure in Twilio Console → Messaging → Senders).
   // Also handles inbound opt-out STOP messages so users can self-unsubscribe.
-  app.post("/api/webhooks/whatsapp", express.urlencoded({ extended: false }), async (req, res) => {
-    try {
-      const body = req.body as Record<string, string>;
+  app.post(
+    "/api/webhooks/whatsapp",
+    express.urlencoded({ extended: false }),
+    async (req, res) => {
+      try {
+        const body = req.body as Record<string, string>;
 
-      // Delivery status update (MessageStatus field from Twilio)
-      if (body.MessageStatus) {
-        console.log(
-          `[WhatsApp] Delivery status: ${body.MessageSid} → ${body.MessageStatus}`,
-        );
-      }
+        // Delivery status update (MessageStatus field from Twilio)
+        if (body.MessageStatus) {
+          console.log(
+            `[WhatsApp] Delivery status: ${body.MessageSid} → ${body.MessageStatus}`,
+          );
+        }
 
-      // Inbound message (Body field from Twilio)
-      if (body.Body && body.From) {
-        const text = body.Body.trim().toUpperCase();
-        const from = body.From; // e.g. whatsapp:+447123456789
+        // Inbound message (Body field from Twilio)
+        if (body.Body && body.From) {
+          const text = body.Body.trim().toUpperCase();
+          const from = body.From; // e.g. whatsapp:+447123456789
 
-        console.log(`[WhatsApp] Inbound message from ${from}: ${text}`);
+          console.log(`[WhatsApp] Inbound message from ${from}: ${text}`);
 
-        if (text === "STOP" || text === "UNSUBSCRIBE" || text === "OPT OUT" || text === "OPTOUT") {
-          console.log(`[WhatsApp] Opt-out request from ${from}`);
-          try {
-            const { getDb } = await import("../db");
-            const db = await getDb();
-            if (db) {
-              // Normalise to E.164 format: strip whatsapp: prefix if present
-              const phone = from.replace(/^whatsapp:/, "");
-              const normalised = phone.startsWith("+") ? phone : `+${phone}`;
-              const matchedUsers = await db
-                .select({ id: users.id, preferences: users.preferences })
-                .from(users)
-                .where(
-                  sql`JSON_UNQUOTE(JSON_EXTRACT(${users.preferences}, '$.whatsappPhone')) = ${normalised}`,
-                );
-              for (const user of matchedUsers) {
-                const prefs = user.preferences ? JSON.parse(user.preferences) : {};
-                prefs.whatsappReminders = false;
-                await db
-                  .update(users)
-                  .set({ preferences: JSON.stringify(prefs) })
-                  .where(eq(users.id, user.id));
-                console.log(`[WhatsApp] Opted out user ${user.id}`);
+          if (
+            text === "STOP" ||
+            text === "UNSUBSCRIBE" ||
+            text === "OPT OUT" ||
+            text === "OPTOUT"
+          ) {
+            console.log(`[WhatsApp] Opt-out request from ${from}`);
+            try {
+              const { getDb } = await import("../db");
+              const db = await getDb();
+              if (db) {
+                // Normalise to E.164 format: strip whatsapp: prefix if present
+                const phone = from.replace(/^whatsapp:/, "");
+                const normalised = phone.startsWith("+") ? phone : `+${phone}`;
+                const matchedUsers = await db
+                  .select({ id: users.id, preferences: users.preferences })
+                  .from(users)
+                  .where(
+                    sql`JSON_UNQUOTE(JSON_EXTRACT(${users.preferences}, '$.whatsappPhone')) = ${normalised}`,
+                  );
+                for (const user of matchedUsers) {
+                  const prefs = user.preferences
+                    ? JSON.parse(user.preferences)
+                    : {};
+                  prefs.whatsappReminders = false;
+                  await db
+                    .update(users)
+                    .set({ preferences: JSON.stringify(prefs) })
+                    .where(eq(users.id, user.id));
+                  console.log(`[WhatsApp] Opted out user ${user.id}`);
+                }
               }
+            } catch (err) {
+              console.error("[WhatsApp] Error processing opt-out:", err);
             }
-          } catch (err) {
-            console.error("[WhatsApp] Error processing opt-out:", err);
           }
         }
-      }
 
-      // Twilio expects an empty 200 TwiML response (or plain 200)
-      res.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>");
-    } catch (error) {
-      console.error("[WhatsApp] Webhook error:", error);
-      res.status(200).send("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Response></Response>");
-    }
-  });
+        // Twilio expects an empty 200 TwiML response (or plain 200)
+        res
+          .status(200)
+          .send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+      } catch (error) {
+        console.error("[WhatsApp] Webhook error:", error);
+        res
+          .status(200)
+          .send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+      }
+    },
+  );
 
   // Import trial lock middleware
   const { trialLockMiddleware } = await import("./trialLock");
@@ -1417,7 +1641,9 @@ async function startServer() {
 
     const found = findServableUploadFile(fileKey);
     if (!found) {
-      console.warn(`[FileServe] 404 - file not found on disk: ${fileKey} (raw: ${rawFileKey})`);
+      console.warn(
+        `[FileServe] 404 - file not found on disk: ${fileKey} (raw: ${rawFileKey})`,
+      );
       return res.status(404).json({ error: "File not found" });
     }
 
@@ -1519,21 +1745,23 @@ async function startServer() {
   }
 
   getRuntimeFileStorageReadiness()
-    .then((readiness) => console.log("[RuntimeStorage]", JSON.stringify(readiness)))
-    .catch((err) => console.error("[RuntimeStorage] readiness check failed", err));
+    .then((readiness) =>
+      console.log("[RuntimeStorage]", JSON.stringify(readiness)),
+    )
+    .catch((err) =>
+      console.error("[RuntimeStorage] readiness check failed", err),
+    );
 
   // Pre-warm the database connection so that ensureTables() runs before the
   // first user request arrives.  Without this, the first API call (e.g.
   // calendar.getEvents) would block for the full ensureTables duration and
   // could exceed the 30 s Nginx proxy timeout.
-  getDb().catch((err) =>
-    console.error("[Startup] DB pre-warm error:", err),
-  );
+  getDb().catch((err) => console.error("[Startup] DB pre-warm error:", err));
 
   // Verify SMTP configuration — non-blocking, logs result to console
-  email.verifySmtpConfig().catch((err) =>
-    console.error("[Startup] SMTP verification error:", err),
-  );
+  email
+    .verifySmtpConfig()
+    .catch((err) => console.error("[Startup] SMTP verification error:", err));
 
   server.listen(port, host, () => {
     console.log(`✓ Server running on http://${host}:${port}/`);

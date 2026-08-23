@@ -91,4 +91,36 @@ export class AvasamSupplierConnector implements SupplierConnector {
   }> {
     throw new AvasamConnectorNotConfiguredError("shipping-profile retrieval");
   }
+
+  async submitOrder(_order: {
+    merchantOrderReference: string;
+    lines: Array<{ supplierSku: string; quantity: number }>;
+  }): Promise<{ supplierOrderReference: string; acceptedAt: Date }> {
+    throw new AvasamConnectorNotConfiguredError("order submission");
+  }
+
+  async getFulfilment(_supplierOrderReference: string): Promise<{
+    status: "pending" | "processing" | "dispatched" | "delivered" | "cancelled";
+    carrier: string | null;
+    trackingReference: string | null;
+    updatedAt: Date;
+  }> {
+    throw new AvasamConnectorNotConfiguredError("fulfilment retrieval");
+  }
+
+  async getTracking(
+    _supplierOrderReference: string,
+  ): Promise<
+    Array<{ eventCode: string; description: string | null; occurredAt: Date }>
+  > {
+    throw new AvasamConnectorNotConfiguredError("tracking retrieval");
+  }
+
+  async requestReturn(_input: {
+    supplierOrderReference: string;
+    lines: Array<{ supplierSku: string; quantity: number }>;
+    reason: string;
+  }): Promise<{ supplierReturnReference: string; acceptedAt: Date }> {
+    throw new AvasamConnectorNotConfiguredError("return submission");
+  }
 }

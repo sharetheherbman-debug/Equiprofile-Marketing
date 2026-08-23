@@ -11,12 +11,13 @@ import {
   type LessonUnitData,
 } from "../lessonContent";
 import { auditAcademyCurriculum } from "./curriculumIntegrity";
+import { isAcademyLessonFactuallyAccepted } from "./factualAcceptance";
 
 /**
  * Bump deliberately when source curriculum semantics change. Importing is keyed
  * by stable slugs, so a content release never deletes learner progress.
  */
-export const ACADEMY_CURRICULUM_VERSION = "2026.1";
+export const ACADEMY_CURRICULUM_VERSION = "2026.2";
 
 export type AcademyCurriculumSyncResult = {
   curriculumVersion: string;
@@ -97,7 +98,12 @@ export async function syncAcademyCurriculum(): Promise<AcademyCurriculumSyncResu
     const currentIndex = pathwayLessons.findIndex(
       (item) => item.slug === lesson.slug,
     );
-    const nextLessonSlug = pathwayLessons[currentIndex + 1]?.slug ?? null;
+    const nextLessonSlug =
+      pathwayLessons
+        .slice(currentIndex + 1)
+        .find((item) => isAcademyLessonFactuallyAccepted(item.slug))?.slug ??
+      null;
+    const isPublished = isAcademyLessonFactuallyAccepted(lesson.slug);
 
     await db
       .insert(lessonUnits)
@@ -120,7 +126,7 @@ export async function syncAcademyCurriculum(): Promise<AcademyCurriculumSyncResu
         nextLessonSlug,
         estimatedMinutes: 15,
         curriculumVersion: ACADEMY_CURRICULUM_VERSION,
-        isPublished: true,
+        isPublished,
       })
       .onDuplicateKeyUpdate({
         set: {
@@ -141,7 +147,7 @@ export async function syncAcademyCurriculum(): Promise<AcademyCurriculumSyncResu
           nextLessonSlug,
           estimatedMinutes: 15,
           curriculumVersion: ACADEMY_CURRICULUM_VERSION,
-          isPublished: true,
+          isPublished,
           updatedAt: new Date(),
         },
       });

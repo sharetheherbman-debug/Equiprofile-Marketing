@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Heart,
@@ -20,10 +20,19 @@ const money = (pence: number) =>
   );
 
 export default function ShopApp() {
+  const utils = trpc.useUtils();
+  const viewer = trpc.auth.me.useQuery(undefined, { retry: false });
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [signInEmail, setSignInEmail] = useState("");
+  const [signInPassword, setSignInPassword] = useState("");
+  const [signInError, setSignInError] = useState<string | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [category, setCategory] = useState<string | undefined>();
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(() =>
+    new URLSearchParams(window.location.search).get("product"),
+  );
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(
     null,
   );
@@ -71,11 +80,137 @@ export default function ShopApp() {
         window.location.assign(result.checkoutUrl);
         return;
       }
+      const orderNumber = result.orderNumber ?? result.order?.orderNumber;
+      if (result.paymentConfigurationRequired && !orderNumber) {
+        setCheckoutNotice(
+          `Checkout preview: ${money(result.totals?.totalPence ?? 0)}. Store payments are not configured, so no order, inventory reservation, or charge was created.`,
+        );
+        return;
+      }
       setCheckoutNotice(
-        `Order ${result.orderNumber ?? result.order?.orderNumber} is prepared. Payment remains NOT CONFIGURED; no charge was made.`,
+        `Order ${orderNumber} is prepared. Payment remains NOT CONFIGURED; no charge was made.`,
       );
     },
   });
+  const signOut = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      utils.auth.me.setData(undefined, null);
+      utils.commerce.cart.get.setData(undefined, []);
+      utils.commerce.orders.setData(undefined, []);
+      setSelectedOrderId(null);
+      setCheckoutNotice(null);
+    },
+  });
+
+  useEffect(() => {
+    const onPopState = () => {
+      setSelectedSlug(
+        new URLSearchParams(window.location.search).get("product"),
+      );
+      setSelectedVariantId(null);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  useEffect(() => {
+    const product = detail.data as any;
+    const baseUrl = `${window.location.origin}${window.location.pathname}`;
+    const ensureMeta = (name: string) => {
+      let node = document.head.querySelector<HTMLMetaElement>(
+        `meta[name="${name}"]`,
+      );
+      if (!node) {
+        node = document.createElement("meta");
+        node.name = name;
+        document.head.appendChild(node);
+      }
+      return node;
+    };
+    let canonical = document.head.querySelector<HTMLLinkElement>(
+      'link[rel="canonical"]',
+    );
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    const existingStructuredData = document.getElementById(
+      "shop-product-structured-data",
+    );
+
+    if (isAdmin || selectedOrderId !== null) {
+      existingStructuredData?.remove();
+      document.title = isAdmin
+        ? "Commerce Admin | EquiProfile"
+        : "Your order | EquiProfile Store";
+      ensureMeta("robots").content = "noindex,nofollow";
+      canonical.href = baseUrl;
+      return;
+    }
+    ensureMeta("robots").content = "index,follow";
+    if (selectedSlug && product) {
+      document.title = `${product.title} | EquiProfile Store`;
+      ensureMeta("description").content = String(product.description)
+        .replace(/\s+/g, " ")
+        .slice(0, 155);
+      canonical.href = `${baseUrl}?product=${encodeURIComponent(selectedSlug)}`;
+      const structuredData =
+        existingStructuredData ?? document.createElement("script");
+      structuredData.id = "shop-product-structured-data";
+      structuredData.setAttribute("type", "application/ld+json");
+      const pricePence = Number(
+        product.salePricePence ?? product.retailPricePence,
+      );
+      structuredData.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.title,
+        description: String(product.description).replace(/\s+/g, " "),
+        ...(product.brand
+          ? { brand: { "@type": "Brand", name: product.brand } }
+          : {}),
+        ...(product.images?.[0]?.storageUrl
+          ? { image: [product.images[0].storageUrl] }
+          : {}),
+        offers: {
+          "@type": "Offer",
+          url: canonical.href,
+          priceCurrency: "GBP",
+          price: (pricePence / 100).toFixed(2),
+          availability:
+            product.availabilityStatus === "in_stock" ||
+            product.availabilityStatus === "low_stock"
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
+      });
+      if (!structuredData.isConnected)
+        document.head.appendChild(structuredData);
+    } else {
+      existingStructuredData?.remove();
+      document.title = "EquiProfile Equestrian Store";
+      ensureMeta("description").content =
+        "EquiProfile Equestrian Store — responsibly sourced equestrian essentials.";
+      canonical.href = baseUrl;
+    }
+  }, [detail.data, isAdmin, selectedOrderId, selectedSlug]);
+
+  const openProduct = (slug: string) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("product", slug);
+    window.history.pushState({}, "", url);
+    setSelectedSlug(slug);
+    setSelectedVariantId(null);
+  };
+
+  const closeProduct = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("product");
+    window.history.pushState({}, "", url);
+    setSelectedSlug(null);
+    setSelectedVariantId(null);
+  };
   const cartItems = cart.data ?? [];
   const cartCount = useMemo(
     () => cartItems.reduce((total, item: any) => total + item.quantity, 0),
@@ -90,6 +225,33 @@ export default function ShopApp() {
       ),
     [cartItems],
   );
+  const submitSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSigningIn(true);
+    setSignInError(null);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: signInEmail, password: signInPassword }),
+      });
+      const result = (await response.json()) as {
+        error?: string;
+        message?: string;
+      };
+      if (!response.ok) {
+        throw new Error(result.error ?? result.message ?? "Sign in failed");
+      }
+      setShowSignIn(false);
+      setSignInPassword("");
+      await Promise.all([viewer.refetch(), cart.refetch(), orders.refetch()]);
+    } catch (error) {
+      setSignInError(error instanceof Error ? error.message : "Sign in failed");
+    } finally {
+      setSigningIn(false);
+    }
+  };
   if (isAdmin)
     return (
       <CommerceAdmin
@@ -269,87 +431,101 @@ export default function ShopApp() {
                   </p>
                 )}
 
-                <form
-                  className="mt-6 border-t pt-5"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    const items = Object.entries(returnQuantities)
-                      .filter(([, quantity]) => Number(quantity) > 0)
-                      .map(([orderItemId, quantity]) => ({
-                        orderItemId: Number(orderItemId),
-                        quantity: Number(quantity),
-                      }));
-                    if (!items.length) return;
-                    requestReturn.mutate({
-                      orderId: order.id,
-                      reason: returnReason,
-                      items,
-                    });
-                  }}
-                >
-                  <h3 className="flex items-center gap-2 font-semibold">
-                    <RotateCcw className="h-4 w-4" /> Request a return
-                  </h3>
-                  <p className="mt-1 text-xs text-slate-500">
-                    The recorded order policy, delivery evidence and remaining
-                    quantity are revalidated by the server when this request is
-                    sent.
-                  </p>
-                  <div className="mt-3 space-y-2">
-                    {(order.items ?? []).map((item: any) => (
-                      <label
-                        key={item.id}
-                        className="flex items-center justify-between gap-4 text-sm"
-                      >
-                        <span>
-                          {item.titleSnapshot}{" "}
-                          <span className="text-slate-500">
-                            (
-                            {item.returnEligibility?.replace(/_/g, " ") ??
-                              "policy pending"}
-                            )
-                          </span>
-                        </span>
-                        <input
-                          type="number"
-                          min="0"
-                          max={item.quantity}
-                          value={returnQuantities[item.id] ?? 0}
-                          onChange={(event) =>
-                            setReturnQuantities((current) => ({
-                              ...current,
-                              [item.id]: Number(event.target.value),
-                            }))
-                          }
-                          className="w-16 rounded border px-2 py-1"
-                          aria-label={`Return quantity for ${item.titleSnapshot}`}
-                        />
-                      </label>
-                    ))}
-                  </div>
-                  <textarea
-                    required
-                    minLength={5}
-                    maxLength={2000}
-                    value={returnReason}
-                    onChange={(event) => setReturnReason(event.target.value)}
-                    placeholder="Tell us why you wish to return the selected item(s)"
-                    className="mt-3 min-h-24 w-full rounded border p-3 text-sm"
-                  />
-                  <button
-                    disabled={requestReturn.isPending}
-                    className="mt-3 rounded-full bg-[#c5a55a] px-4 py-2 text-sm font-semibold text-[#0f1d2e] disabled:bg-slate-300"
+                {(order.items ?? []).some(
+                  (item: any) => Number(item.remainingReturnableQuantity) > 0,
+                ) ? (
+                  <form
+                    className="mt-6 border-t pt-5"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      const items = Object.entries(returnQuantities)
+                        .filter(([, quantity]) => Number(quantity) > 0)
+                        .map(([orderItemId, quantity]) => ({
+                          orderItemId: Number(orderItemId),
+                          quantity: Number(quantity),
+                        }));
+                      if (!items.length) return;
+                      requestReturn.mutate({
+                        orderId: order.id,
+                        reason: returnReason,
+                        items,
+                      });
+                    }}
                   >
-                    {requestReturn.isPending
-                      ? "Submitting…"
-                      : "Submit return request"}
-                  </button>
-                  {requestReturn.error && (
-                    <p className="mt-2 text-sm text-rose-700">
-                      {requestReturn.error.message}
+                    <h3 className="flex items-center gap-2 font-semibold">
+                      <RotateCcw className="h-4 w-4" /> Request a return
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-500">
+                      The recorded order policy, delivery evidence and remaining
+                      quantity are revalidated by the server when this request
+                      is sent.
                     </p>
-                  )}
-                </form>
+                    <div className="mt-3 space-y-2">
+                      {(order.items ?? [])
+                        .filter(
+                          (item: any) =>
+                            Number(item.remainingReturnableQuantity) > 0,
+                        )
+                        .map((item: any) => (
+                          <label
+                            key={item.id}
+                            className="flex items-center justify-between gap-4 text-sm"
+                          >
+                            <span>
+                              {item.titleSnapshot}{" "}
+                              <span className="text-slate-500">
+                                (
+                                {item.returnEligibility?.replace(/_/g, " ") ??
+                                  "policy pending"}
+                                )
+                              </span>
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              max={item.remainingReturnableQuantity}
+                              value={returnQuantities[item.id] ?? 0}
+                              onChange={(event) =>
+                                setReturnQuantities((current) => ({
+                                  ...current,
+                                  [item.id]: Number(event.target.value),
+                                }))
+                              }
+                              className="w-16 rounded border px-2 py-1"
+                              aria-label={`Return quantity for ${item.titleSnapshot}`}
+                            />
+                          </label>
+                        ))}
+                    </div>
+                    <textarea
+                      required
+                      minLength={5}
+                      maxLength={2000}
+                      value={returnReason}
+                      onChange={(event) => setReturnReason(event.target.value)}
+                      placeholder="Tell us why you wish to return the selected item(s)"
+                      className="mt-3 min-h-24 w-full rounded border p-3 text-sm"
+                    />
+                    <button
+                      disabled={requestReturn.isPending}
+                      className="mt-3 rounded-full bg-[#c5a55a] px-4 py-2 text-sm font-semibold text-[#0f1d2e] disabled:bg-slate-300"
+                    >
+                      {requestReturn.isPending
+                        ? "Submitting…"
+                        : "Submit return request"}
+                    </button>
+                    {requestReturn.error && (
+                      <p className="mt-2 text-sm text-rose-700">
+                        {requestReturn.error.message}
+                      </p>
+                    )}
+                  </form>
+                ) : (
+                  <p className="mt-5 border-t pt-5 text-sm text-slate-600">
+                    No further quantity is currently eligible for a return
+                    request.
+                  </p>
+                )}
               </section>
             </div>
           ) : null}
@@ -369,10 +545,7 @@ export default function ShopApp() {
         <header className="border-b border-[#e8d08a]/35 bg-white">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
             <button
-              onClick={() => {
-                setSelectedSlug(null);
-                setSelectedVariantId(null);
-              }}
+              onClick={closeProduct}
               className="inline-flex items-center gap-2 text-sm font-medium"
             >
               <ArrowLeft className="h-4 w-4" /> Back to catalogue
@@ -436,7 +609,7 @@ export default function ShopApp() {
                       product.retailPricePence,
                   )}
                 </p>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-slate-600">
                   Availability is revalidated by the server when added to cart.
                 </p>
               </div>
@@ -461,24 +634,119 @@ export default function ShopApp() {
 
   return (
     <main className="min-h-screen bg-[#f7f5f0] text-[#0f1d2e]">
+      {showSignIn && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-slate-950/60 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shop-sign-in-title"
+        >
+          <form
+            onSubmit={submitSignIn}
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2
+                  id="shop-sign-in-title"
+                  className="font-serif text-2xl font-semibold"
+                >
+                  Sign in to the Store
+                </h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Use your EquiProfile account for carts, orders and returns.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSignIn(false)}
+                aria-label="Close sign in"
+                className="rounded p-1 text-slate-600 hover:bg-slate-100"
+              >
+                ×
+              </button>
+            </div>
+            <label
+              className="mt-5 block text-sm font-medium"
+              htmlFor="shop-sign-in-email"
+            >
+              Email
+            </label>
+            <input
+              id="shop-sign-in-email"
+              type="email"
+              autoComplete="email"
+              required
+              value={signInEmail}
+              onChange={(event) => setSignInEmail(event.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            />
+            <label
+              className="mt-4 block text-sm font-medium"
+              htmlFor="shop-sign-in-password"
+            >
+              Password
+            </label>
+            <input
+              id="shop-sign-in-password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={signInPassword}
+              onChange={(event) => setSignInPassword(event.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            />
+            {signInError && (
+              <p role="alert" className="mt-3 text-sm text-rose-700">
+                {signInError}
+              </p>
+            )}
+            <button
+              disabled={signingIn}
+              className="mt-5 w-full rounded-full bg-[#c5a55a] px-4 py-2.5 font-semibold disabled:bg-slate-300"
+            >
+              {signingIn ? "Signing in…" : "Sign in"}
+            </button>
+          </form>
+        </div>
+      )}
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0f1d2e]/95 text-white backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4">
           <a href="/" className="font-serif text-xl font-semibold">
             EquiProfile <span className="text-[#e8d08a]">Equestrian Store</span>
           </a>
           <div className="flex items-center gap-4">
+            {!viewer.data && (
+              <button
+                onClick={() => setShowSignIn(true)}
+                className="text-xs text-slate-200"
+              >
+                Sign in
+              </button>
+            )}
+            {viewer.data && (
+              <button
+                onClick={() => signOut.mutate()}
+                disabled={signOut.isPending}
+                className="text-xs text-slate-200 disabled:opacity-60"
+              >
+                Sign out
+              </button>
+            )}
             <a href="#orders" className="text-xs text-slate-300">
               <ClipboardList className="mr-1 inline h-3 w-3" /> Orders
             </a>
-            <button
-              onClick={() => {
-                window.location.hash = "admin";
-                setIsAdmin(true);
-              }}
-              className="text-xs text-slate-300"
-            >
-              Admin
-            </button>
+            {viewer.data?.role === "admin" && (
+              <button
+                onClick={() => {
+                  window.location.hash = "admin";
+                  setIsAdmin(true);
+                }}
+                className="text-xs text-slate-300"
+              >
+                Admin
+              </button>
+            )}
             <a
               href="#cart"
               className="flex items-center gap-2 text-sm font-medium"
@@ -574,7 +842,7 @@ export default function ShopApp() {
                   </span>
                 </div>
                 <button
-                  onClick={() => setSelectedSlug(product.slug)}
+                  onClick={() => openProduct(product.slug)}
                   className="mt-5 w-full rounded-lg border border-[#c5a55a] px-4 py-2 text-sm font-medium text-[#c5a55a]"
                 >
                   View product

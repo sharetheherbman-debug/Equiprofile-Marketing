@@ -28,12 +28,20 @@ const scenarios = {
   paid_pro: {
     status: "active",
     plan: "monthly",
-    preferences: { planTier: "pro", bothDashboardsUnlocked: false, onboardingCompleted: true },
+    preferences: {
+      planTier: "pro",
+      bothDashboardsUnlocked: false,
+      onboardingCompleted: true,
+    },
   },
   paid_stable: {
     status: "active",
     plan: "stable_monthly",
-    preferences: { planTier: "stable", bothDashboardsUnlocked: false, onboardingCompleted: true },
+    preferences: {
+      planTier: "stable",
+      bothDashboardsUnlocked: false,
+      onboardingCompleted: true,
+    },
   },
   complimentary_stable_over_pro: {
     status: "active",
@@ -156,18 +164,29 @@ function mockProcedure(name) {
   }
 
   const values = {
-    "adminUnlock.getStatus": { isUnlocked: false, isLockedOut: false, remainingAttempts: 5 },
+    "adminUnlock.getStatus": {
+      isUnlocked: false,
+      isLockedOut: false,
+      remainingAttempts: 5,
+    },
     "user.getSubscriptionStatus": {
       status: scenario.status,
       plan: scenario.plan,
       planTier: rawPlanTier(),
       freeAccess: false,
-      bothDashboardsUnlocked: Boolean(scenario.preferences.bothDashboardsUnlocked),
+      bothDashboardsUnlocked: Boolean(
+        scenario.preferences.bothDashboardsUnlocked,
+      ),
       trialEndsAt: scenario.trialEndsAt ?? null,
       subscriptionEndsAt: user.subscriptionEndsAt,
       lastPaymentAt: user.lastPaymentAt,
     },
-    "user.getDashboardStats": { horseCount: 1, upcomingSessionCount: 0, reminderCount: 0, latestWeather: null },
+    "user.getDashboardStats": {
+      horseCount: 1,
+      upcomingSessionCount: 0,
+      reminderCount: 0,
+      latestWeather: null,
+    },
     "user.getNotificationPreferences": {
       emailNotifications: true,
       healthReminders: true,
@@ -194,25 +213,60 @@ function mockProcedure(name) {
     "billing.getPricing": {
       enabled: true,
       trial: { name: "Trial", features: ["7-day free trial"] },
-      pro: { name: "Pro", monthly: { amount: 1499 }, yearly: { amount: 14990 }, features: ["Complete horse management"] },
-      stable: { name: "Stable", monthly: { amount: 3999 }, yearly: { amount: 39990 }, features: ["Stable management"] },
+      pro: {
+        name: "Pro",
+        monthly: { amount: 1499 },
+        yearly: { amount: 14990 },
+        features: ["Complete horse management"],
+      },
+      stable: {
+        name: "Stable",
+        monthly: { amount: 3999 },
+        yearly: { amount: 39990 },
+        features: ["Stable management"],
+      },
     },
     "school.getMyOrganization": null,
     "academy.getMyOrganization": null,
     "weather.getCurrent": null,
     "weather.getForecast": [],
     "weather.getHourly": [],
-    "analytics.getTrainingStats": { totalSessions: 0, completedSessions: 0, totalDuration: 0, averageDuration: 0, byType: [] },
-    "analytics.getHealthStats": { totalRecords: 0, upcomingReminders: 0, byType: [] },
+    "analytics.getTrainingStats": {
+      totalSessions: 0,
+      completedSessions: 0,
+      totalDuration: 0,
+      averageDuration: 0,
+      byType: [],
+    },
+    "analytics.getHealthStats": {
+      totalRecords: 0,
+      upcomingReminders: 0,
+      byType: [],
+    },
   };
   if (Object.prototype.hasOwnProperty.call(values, name)) return values[name];
 
   const procedure = name.split(".").at(-1) || "";
   if (
     procedure.startsWith("list") ||
-    ["getEvents", "getReminders", "getUpcoming", "getThreads", "getMessages", "getInvites", "getMembers", "getHealthAlerts", "getHorseTimeline"].includes(procedure)
-  ) return [];
-  if (/\.(create|update|delete|complete|revoke|attachToHorse|detachFromHorse|logout)$/.test(name)) {
+    [
+      "getEvents",
+      "getReminders",
+      "getUpcoming",
+      "getThreads",
+      "getMessages",
+      "getInvites",
+      "getMembers",
+      "getHealthAlerts",
+      "getHorseTimeline",
+    ].includes(procedure)
+  )
+    return [];
+  if (
+    /\.(create|update|delete|complete|revoke|attachToHorse|detachFromHorse|logout)$/.test(
+      name,
+    )
+  ) {
     return { success: true, id: 1 };
   }
   return null;
@@ -247,8 +301,15 @@ const acceptanceApi = {
         sendJson(res, 200, { success: true, scenario: scenarioName });
         return;
       }
-      if (url.pathname === "/api/v1/admin/marketing/status" || url.pathname === "/api/v1/admin/marketing/sso") {
-        requestLog.push({ method: req.method, path: url.pathname, status: 503 });
+      if (
+        url.pathname === "/api/v1/admin/marketing/status" ||
+        url.pathname === "/api/v1/admin/marketing/sso"
+      ) {
+        requestLog.push({
+          method: req.method,
+          path: url.pathname,
+          status: 503,
+        });
         sendJson(res, 503, { error: "unavailable" });
         return;
       }
@@ -256,10 +317,24 @@ const acceptanceApi = {
         next();
         return;
       }
-      const names = decodeURIComponent(url.pathname.slice("/api/trpc/".length)).split(",");
-      const payload = names.map((name) => ({ result: { data: { json: mockProcedure(name) } } }));
-      requestLog.push({ method: req.method, path: url.pathname, procedures: names, status: 200, scenario: scenarioName });
-      sendJson(res, 200, url.searchParams.get("batch") === "1" ? payload : payload[0]);
+      const names = decodeURIComponent(
+        url.pathname.slice("/api/trpc/".length),
+      ).split(",");
+      const payload = names.map((name) => ({
+        result: { data: { json: mockProcedure(name) } },
+      }));
+      requestLog.push({
+        method: req.method,
+        path: url.pathname,
+        procedures: names,
+        status: 200,
+        scenario: scenarioName,
+      });
+      sendJson(
+        res,
+        200,
+        url.searchParams.get("batch") === "1" ? payload : payload[0],
+      );
     });
   },
 };
@@ -285,18 +360,29 @@ function report(ok, name, detail = "") {
 }
 
 async function selectScenario(name) {
-  const response = await fetch(`${baseUrl}/__acceptance__/scenario?name=${encodeURIComponent(name)}`);
+  const response = await fetch(
+    `${baseUrl}/__acceptance__/scenario?name=${encodeURIComponent(name)}`,
+  );
   assert.equal(response.ok, true, `failed to select scenario ${name}`);
 }
 
-async function withPage({ scenario, path: route, viewport = { width: 1440, height: 900 } }, checks) {
+async function withPage(
+  { scenario, path: route, viewport = { width: 1440, height: 900 } },
+  checks,
+) {
   await selectScenario(scenario);
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
   const pageErrors = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
   try {
-    const response = await page.goto(`${baseUrl}${route}`, { waitUntil: "domcontentloaded", timeout: 30000 });
+    // The first Management request performs a production-sized Vite transform.
+    // Allow enough time on clean Windows/CI caches without weakening any UI
+    // assertion or hiding a failed HTTP response.
+    const response = await page.goto(`${baseUrl}${route}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 180000,
+    });
     assert(response && response.ok(), `${route} did not return HTTP success`);
     await page.waitForTimeout(1000);
     await checks(page);
@@ -307,11 +393,18 @@ async function withPage({ scenario, path: route, viewport = { width: 1440, heigh
 }
 
 async function visible(page, text) {
-  return page.getByText(text, { exact: true }).filter({ visible: true }).count().catch(() => 0);
+  return page
+    .getByText(text, { exact: true })
+    .filter({ visible: true })
+    .count()
+    .catch(() => 0);
 }
 
 async function expectVisible(page, text) {
-  await page.getByText(text, { exact: true }).first().waitFor({ state: "visible", timeout: 15000 });
+  await page
+    .getByText(text, { exact: true })
+    .first()
+    .waitFor({ state: "visible", timeout: 15000 });
 }
 
 async function runCase(name, fn) {
@@ -328,71 +421,150 @@ try {
   browser = await chromium.launch({ headless: true });
   console.log(`Management browser acceptance — ${baseUrl}`);
 
-  await runCase("Paid Pro stays on standard Management navigation", async () => {
-    await withPage({ scenario: "paid_pro", path: "/dashboard" }, async (page) => {
-      await expectVisible(page, "Dashboard");
-      assert.equal(await visible(page, "Stable Dashboard"), 0);
-      assert(!page.url().includes("/billing"));
-    });
-  });
+  await runCase(
+    "Paid Pro stays on standard Management navigation",
+    async () => {
+      await withPage(
+        { scenario: "paid_pro", path: "/dashboard" },
+        async (page) => {
+          await expectVisible(page, "Dashboard");
+          assert.equal(await visible(page, "Stable Dashboard"), 0);
+          assert(!page.url().includes("/billing"));
+        },
+      );
+    },
+  );
 
   await runCase("Paid Stable reaches Stable dashboard", async () => {
-    await withPage({ scenario: "paid_stable", path: "/stable-dashboard", viewport: { width: 1180, height: 820 } }, async (page) => {
-      await expectVisible(page, "Stable Dashboard");
-      assert(page.url().endsWith("/stable-dashboard"));
-    });
+    await withPage(
+      {
+        scenario: "paid_stable",
+        path: "/stable-dashboard",
+        viewport: { width: 1180, height: 820 },
+      },
+      async (page) => {
+        await expectVisible(page, "Stable Dashboard");
+        assert(page.url().endsWith("/stable-dashboard"));
+      },
+    );
   });
 
-  await runCase("Complimentary Stable over paid Pro reaches Stable-only routes", async () => {
-    await withPage({ scenario: "complimentary_stable_over_pro", path: "/stable-dashboard" }, async (page) => {
-      await expectVisible(page, "Stable Dashboard");
-      assert(page.url().endsWith("/stable-dashboard"));
-      assert.equal(await visible(page, "Your subscription needs attention"), 0);
-    });
-  });
+  await runCase(
+    "Complimentary Stable over paid Pro reaches Stable-only routes",
+    async () => {
+      await withPage(
+        {
+          scenario: "complimentary_stable_over_pro",
+          path: "/stable-dashboard",
+        },
+        async (page) => {
+          await expectVisible(page, "Stable Dashboard");
+          assert(page.url().endsWith("/stable-dashboard"));
+          assert.equal(
+            await visible(page, "Your subscription needs attention"),
+            0,
+          );
+        },
+      );
+    },
+  );
 
-  await runCase("Full complimentary Management bypasses underlying expired paywall and exposes both dashboards", async () => {
-    await withPage({ scenario: "complimentary_full_expired_paid", path: "/dashboard" }, async (page) => {
-      assert.equal(await visible(page, "Your subscription needs attention"), 0);
-      await expectVisible(page, "Standard");
-      await expectVisible(page, "Stable");
-    });
-  });
+  await runCase(
+    "Full complimentary Management bypasses underlying expired paywall and exposes both dashboards",
+    async () => {
+      await withPage(
+        { scenario: "complimentary_full_expired_paid", path: "/dashboard" },
+        async (page) => {
+          assert.equal(
+            await visible(page, "Your subscription needs attention"),
+            0,
+          );
+          await expectVisible(page, "Standard");
+          await expectVisible(page, "Stable");
+        },
+      );
+    },
+  );
 
-  await runCase("Full complimentary Management suppresses expired-trial warning", async () => {
-    await withPage({ scenario: "complimentary_full_expired_trial", path: "/dashboard" }, async (page) => {
-      assert.equal(await visible(page, "Your free trial has ended"), 0);
-      await expectVisible(page, "Standard");
-      await expectVisible(page, "Stable");
-    });
-  });
+  await runCase(
+    "Full complimentary Management suppresses expired-trial warning",
+    async () => {
+      await withPage(
+        { scenario: "complimentary_full_expired_trial", path: "/dashboard" },
+        async (page) => {
+          assert.equal(await visible(page, "Your free trial has ended"), 0);
+          await expectVisible(page, "Standard");
+          await expectVisible(page, "Stable");
+        },
+      );
+    },
+  );
 
-  await runCase("Expired complimentary overlay falls back to active paid Pro", async () => {
-    await withPage({ scenario: "expired_overlay_paid_pro", path: "/dashboard" }, async (page) => {
-      await expectVisible(page, "Dashboard");
-      assert.equal(await visible(page, "Stable Dashboard"), 0);
-      assert.equal(await visible(page, "Your subscription needs attention"), 0);
-    });
-  });
+  await runCase(
+    "Expired complimentary overlay falls back to active paid Pro",
+    async () => {
+      await withPage(
+        { scenario: "expired_overlay_paid_pro", path: "/dashboard" },
+        async (page) => {
+          await expectVisible(page, "Dashboard");
+          assert.equal(await visible(page, "Stable Dashboard"), 0);
+          assert.equal(
+            await visible(page, "Your subscription needs attention"),
+            0,
+          );
+        },
+      );
+    },
+  );
 
-  await runCase("Settings renders responsively at 390px without horizontal overflow", async () => {
-    await withPage({ scenario: "paid_pro", path: "/settings", viewport: { width: 390, height: 844 } }, async (page) => {
-      await expectVisible(page, "Settings");
-      for (const label of ["Profile", "Security", "Notifs", "App", "Help"]) {
-        await expectVisible(page, label);
-      }
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      assert(overflow <= 1, `horizontal overflow is ${overflow}px`);
-    });
-  });
+  await runCase(
+    "Settings renders responsively at 390px without horizontal overflow",
+    async () => {
+      await withPage(
+        {
+          scenario: "paid_pro",
+          path: "/settings",
+          viewport: { width: 390, height: 844 },
+        },
+        async (page) => {
+          await expectVisible(page, "Settings");
+          for (const label of [
+            "Profile",
+            "Security",
+            "Notifs",
+            "App",
+            "Help",
+          ]) {
+            await expectVisible(page, label);
+          }
+          const overflow = await page.evaluate(
+            () =>
+              document.documentElement.scrollWidth -
+              document.documentElement.clientWidth,
+          );
+          assert(overflow <= 1, `horizontal overflow is ${overflow}px`);
+        },
+      );
+    },
+  );
 
-  await runCase("Billing renders current subscription surface on tablet", async () => {
-    await withPage({ scenario: "paid_stable", path: "/billing", viewport: { width: 820, height: 1180 } }, async (page) => {
-      await expectVisible(page, "Billing & Subscription");
-      await expectVisible(page, "Current Plan");
-      assert(page.url().endsWith("/billing"));
-    });
-  });
+  await runCase(
+    "Billing renders current subscription surface on tablet",
+    async () => {
+      await withPage(
+        {
+          scenario: "paid_stable",
+          path: "/billing",
+          viewport: { width: 820, height: 1180 },
+        },
+        async (page) => {
+          await expectVisible(page, "Billing & Subscription");
+          await expectVisible(page, "Current Plan");
+          assert(page.url().endsWith("/billing"));
+        },
+      );
+    },
+  );
 } finally {
   if (browser) await browser.close();
   await server.close();

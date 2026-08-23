@@ -18,16 +18,18 @@ describe("Store payment boundary", () => {
   });
 
   it("records provider events with replay protection before reconciliation", () => {
-    expect(bootstrap).toContain(
-      "commercePaymentEvents WHERE provider = 'stripe'",
-    );
-    expect(bootstrap).toContain("providerEventId = ${event.id}");
+    expect(bootstrap).toContain("INSERT IGNORE INTO commercePaymentEvents");
+    expect(bootstrap).toContain("affectedRows");
     expect(bootstrap).toContain("cached: true");
     expect(bootstrap).toContain("reconcilePaidStoreCheckout");
     expect(bootstrap).toContain("reconcileStoreRefund");
     expect(bootstrap).toContain("storePaymentStatus = 'paid'");
     expect(bootstrap).toContain(
       "storePaymentStatus = ${decision.paymentStatus}",
+    );
+    expect(bootstrap).toContain("INSERT INTO commerceRefunds");
+    expect(bootstrap).toContain(
+      "metadata.orderNumber !== order[0].orderNumber",
     );
   });
 

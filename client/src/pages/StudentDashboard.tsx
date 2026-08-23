@@ -2,7 +2,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import StudentDashboardLayout from "@/components/StudentDashboardLayout";
 import { trpc } from "@/lib/trpc";
-import { useState, useEffect } from "react";
+import { Fragment, useState, useEffect, type ReactNode } from "react";
 import {
   GraduationCap,
   Heart,
@@ -78,6 +78,99 @@ function formatDate(d: Date | string | null | undefined): string {
 function SkeletonBar({ className = "" }: { className?: string }) {
   return (
     <div className={`rounded-md bg-gray-200 animate-pulse ${className}`} />
+  );
+}
+
+function renderInlineLessonMarkdown(value: string): ReactNode[] {
+  return value.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
+    part.startsWith("**") && part.endsWith("**") ? (
+      <strong
+        key={index}
+        className="font-semibold text-gray-800 dark:text-gray-100"
+      >
+        {part.slice(2, -2)}
+      </strong>
+    ) : (
+      <Fragment key={index}>{part}</Fragment>
+    ),
+  );
+}
+
+/** Render the deliberately small Markdown subset used by reviewed lesson copy. */
+function LessonMarkdown({ content }: { content: string }) {
+  const lines = content.replace(/\r\n/g, "\n").split("\n");
+  const blocks: ReactNode[] = [];
+
+  for (let index = 0; index < lines.length; ) {
+    const line = lines[index].trim();
+    if (!line) {
+      index += 1;
+      continue;
+    }
+
+    const heading = /^(#{2,4})\s+(.+)$/.exec(line);
+    if (heading) {
+      const Heading = heading[1].length === 2 ? "h3" : "h4";
+      blocks.push(
+        <Heading
+          key={`heading-${index}`}
+          className="mt-6 mb-2 font-semibold text-gray-800 dark:text-gray-100"
+        >
+          {renderInlineLessonMarkdown(heading[2])}
+        </Heading>,
+      );
+      index += 1;
+      continue;
+    }
+
+    const unordered = /^[-*]\s+(.+)$/.exec(line);
+    const ordered = /^\d+[.)]\s+(.+)$/.exec(line);
+    if (unordered || ordered) {
+      const isOrdered = Boolean(ordered);
+      const items: ReactNode[] = [];
+      while (index < lines.length) {
+        const candidate = lines[index].trim();
+        const match = isOrdered
+          ? /^\d+[.)]\s+(.+)$/.exec(candidate)
+          : /^[-*]\s+(.+)$/.exec(candidate);
+        if (!match) break;
+        items.push(<li key={index}>{renderInlineLessonMarkdown(match[1])}</li>);
+        index += 1;
+      }
+      const List = isOrdered ? "ol" : "ul";
+      blocks.push(
+        <List
+          key={`list-${index}`}
+          className={`mb-4 space-y-1 pl-6 ${isOrdered ? "list-decimal" : "list-disc"}`}
+        >
+          {items}
+        </List>,
+      );
+      continue;
+    }
+
+    const paragraph: string[] = [line];
+    index += 1;
+    while (
+      index < lines.length &&
+      lines[index].trim() &&
+      !/^(#{2,4})\s+/.test(lines[index].trim()) &&
+      !/^([-*]\s+|\d+[.)]\s+)/.test(lines[index].trim())
+    ) {
+      paragraph.push(lines[index].trim());
+      index += 1;
+    }
+    blocks.push(
+      <p key={`paragraph-${index}`} className="mb-4 last:mb-0">
+        {renderInlineLessonMarkdown(paragraph.join(" "))}
+      </p>,
+    );
+  }
+
+  return (
+    <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+      {blocks}
+    </div>
   );
 }
 
@@ -1015,10 +1108,14 @@ function VirtualHorseView() {
 
         <div className="mt-5 pt-4 border-t border-gray-200">
           <p className="text-sm font-medium text-gray-800 flex items-center gap-2">
-            <Flame className="w-4 h-4 text-amber-600" /> Virtual-horse task templates withheld
+            <Flame className="w-4 h-4 text-amber-600" /> Virtual-horse task
+            templates withheld
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            Legacy automated care prompts are unavailable while their factual and safety review is completed. Use reviewed Academy lessons, authorised teacher assignments, or your own non-clinical task records.
+            Legacy automated care prompts are unavailable while their factual
+            and safety review is completed. Use reviewed Academy lessons,
+            authorised teacher assignments, or your own non-clinical task
+            records.
           </p>
         </div>
       </SCard>
@@ -1571,7 +1668,9 @@ function StudyHubView() {
           <div className="text-center py-8">
             <BookOpen className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-500">
-Legacy Study Hub topics are withheld pending factual and safety review. Continue with the reviewed Academy learning path or authorised teacher-assigned work.
+              Legacy Study Hub topics are withheld pending factual and safety
+              review. Continue with the reviewed Academy learning path or
+              authorised teacher-assigned work.
             </p>
           </div>
         </SCard>
@@ -1688,9 +1787,11 @@ const GUIDED_PROMPTS = [
 
 function AITutorView({
   initialQuestion,
+  lessonSlug,
   onQuestionConsumed,
 }: {
   initialQuestion?: string | null;
+  lessonSlug?: string | null;
   onQuestionConsumed?: () => void;
 }) {
   const { data: usage } = trpc.student.getTutorUsage.useQuery();
@@ -1710,7 +1811,11 @@ function AITutorView({
       if (text) {
         setHistory((prev) => [...prev, { role: "user", content: text }]);
         askMut.mutate(
-          { question: text, conversationHistory: [] },
+          {
+            question: text,
+            conversationHistory: [],
+            lessonSlug: lessonSlug ?? undefined,
+          },
           {
             onSuccess: (res) => {
               setHistory((prev) => [
@@ -1727,6 +1832,7 @@ function AITutorView({
     initialQuestion,
     hasConsumedInitial,
     askMut.isPending,
+    lessonSlug,
     onQuestionConsumed,
   ]);
 
@@ -1736,7 +1842,11 @@ function AITutorView({
     setHistory((prev) => [...prev, { role: "user", content: text }]);
     setQuestion("");
     askMut.mutate(
-      { question: text, conversationHistory: history.slice(-6) },
+      {
+        question: text,
+        conversationHistory: history.slice(-6),
+        lessonSlug: lessonSlug ?? undefined,
+      },
       {
         onSuccess: (res) => {
           setHistory((prev) => [
@@ -2495,7 +2605,9 @@ function ScenarioTrainingView() {
       </div>
 
       <p className="text-sm text-gray-500 -mt-2">
-        Static daily scenarios are withheld while their factual and safety review is completed. Continue with reviewed Academy lessons or authorised teacher work.
+        Static daily scenarios are withheld while their factual and safety
+        review is completed. Continue with reviewed Academy lessons or
+        authorised teacher work.
       </p>
 
       {answeredAll && (
@@ -2518,7 +2630,9 @@ function ScenarioTrainingView() {
           <div className="text-center py-8">
             <Zap className="w-8 h-8 text-gray-400 mx-auto mb-2" />
             <p className="text-sm text-gray-500">
-              Daily scenarios are temporarily withheld pending factual and safety review. Continue with reviewed Academy lessons or authorised teacher-assigned work.
+              Daily scenarios are temporarily withheld pending factual and
+              safety review. Continue with reviewed Academy lessons or
+              authorised teacher-assigned work.
             </p>
           </div>
         </SCard>
@@ -2567,7 +2681,7 @@ function estimatePathwayTime(lessonCount: number): string {
 function LessonsView({
   onAskTutor,
 }: {
-  onAskTutor?: (question: string) => void;
+  onAskTutor?: (question: string, lessonSlug: string) => void;
 }) {
   const { data: pathways, isLoading: loadingPathways } =
     trpc.student.listLessonPathways.useQuery();
@@ -2611,21 +2725,15 @@ function LessonsView({
 
   const handleComplete = async () => {
     if (!lessonDetail) return;
-    let score: number | undefined;
-    if (quizMode && quizSubmitted && lessonDetail.knowledgeCheck) {
-      const checks = lessonDetail.knowledgeCheck as Array<{
-        correctIndex: number;
-      }>;
-      const correct = checks.filter(
-        (q, i) => quizAnswers[i] === q.correctIndex,
-      ).length;
-      score = Math.round((correct / checks.length) * 100);
-    }
+    const checks = (lessonDetail.knowledgeCheck ?? []) as Array<{
+      correctIndex: number;
+    }>;
     await completeMutation.mutateAsync({
       lessonSlug: lessonDetail.slug,
-      pathwaySlug: lessonDetail.pathwaySlug,
-      level: lessonDetail.level as any,
-      score,
+      answers:
+        checks.length > 0 && quizMode && quizSubmitted
+          ? checks.map((_question, index) => quizAnswers[index])
+          : undefined,
     });
     utils.student.getLessonProgress.invalidate();
   };
@@ -2714,11 +2822,16 @@ function LessonsView({
             {!isCompleted && (
               <button
                 onClick={handleComplete}
-                disabled={completeMutation.isPending}
+                disabled={
+                  completeMutation.isPending ||
+                  (checks.length > 0 && !quizSubmitted)
+                }
                 className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#2e6da4] hover:bg-[#245a8a] transition-colors disabled:opacity-50"
               >
                 {completeMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
+                ) : checks.length > 0 && !quizSubmitted ? (
+                  "Complete knowledge check first"
                 ) : (
                   "Mark Complete"
                 )}
@@ -2726,6 +2839,12 @@ function LessonsView({
             )}
           </div>
         </div>
+
+        {completeMutation.error && (
+          <p role="alert" className="text-sm text-rose-700">
+            {completeMutation.error.message}
+          </p>
+        )}
 
         {/* Objectives */}
         {objectives.length > 0 && (
@@ -2768,9 +2887,7 @@ function LessonsView({
 
         {/* Main content */}
         <div className="rounded-xl p-5 bg-white dark:bg-[#1a2435] border border-gray-200 dark:border-gray-700 shadow-sm">
-          <div className="prose prose-slate prose-sm max-w-none text-gray-600 whitespace-pre-line leading-relaxed">
-            {lessonDetail.content}
-          </div>
+          <LessonMarkdown content={lessonDetail.content} />
         </div>
 
         {/* Key points */}
@@ -2951,7 +3068,7 @@ function LessonsView({
               {aiPrompts.map((prompt, i) => (
                 <button
                   key={i}
-                  onClick={() => onAskTutor?.(prompt)}
+                  onClick={() => onAskTutor?.(prompt, lessonDetail.slug)}
                   className="text-left text-sm text-gray-500 italic flex items-start gap-2 p-2.5 rounded-lg hover:bg-violet-500/10 hover:text-violet-300 transition-colors group"
                 >
                   <Brain className="w-3.5 h-3.5 text-violet-600 mt-0.5 shrink-0 group-hover:text-violet-300" />
@@ -3802,12 +3919,13 @@ export default function StudentDashboard() {
   const firstName = rawName.split(/\s+/)[0] || "Student";
   const [activeView, setActiveView] = useState<ActiveView>("overview");
   /** Shared AI tutor question — set from lessons/scenarios, consumed by AITutorView */
-  const [pendingAIQuestion, setPendingAIQuestion] = useState<string | null>(
-    null,
-  );
+  const [pendingAITutorContext, setPendingAITutorContext] = useState<{
+    question: string;
+    lessonSlug: string;
+  } | null>(null);
 
-  const navigateToAITutor = (question: string) => {
-    setPendingAIQuestion(question);
+  const navigateToAITutor = (question: string, lessonSlug: string) => {
+    setPendingAITutorContext({ question, lessonSlug });
     setActiveView("ai-tutor");
   };
 
@@ -3866,8 +3984,13 @@ export default function StudentDashboard() {
           {activeView === "assignments" && <AssignmentsView />}
           {activeView === "ai-tutor" && (
             <AITutorView
-              initialQuestion={pendingAIQuestion}
-              onQuestionConsumed={() => setPendingAIQuestion(null)}
+              initialQuestion={pendingAITutorContext?.question}
+              lessonSlug={pendingAITutorContext?.lessonSlug}
+              onQuestionConsumed={() =>
+                setPendingAITutorContext((current) =>
+                  current ? { ...current, question: "" } : null,
+                )
+              }
             />
           )}
           {activeView === "progress" && <ProgressView />}

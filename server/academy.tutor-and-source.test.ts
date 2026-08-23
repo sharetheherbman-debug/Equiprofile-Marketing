@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const root = path.resolve(import.meta.dirname, "..");
 const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
+const compactWhitespace = (value: string) => value.replace(/\s+/g, " ");
 
 describe("Academy curriculum and Tutor boundaries", () => {
   it("does not keep a second React-side lesson-slug curriculum map", () => {
@@ -58,7 +59,7 @@ describe("Academy curriculum and Tutor boundaries", () => {
     );
     expect(scenarioProcedures).not.toContain("SCENARIO_DATA.find");
     expect(scenarioProcedures).not.toContain("SCENARIO_DATA.filter");
-    expect(dashboard).toContain(
+    expect(compactWhitespace(dashboard)).toContain(
       "Static daily scenarios are withheld while their factual and safety review is completed.",
     );
     expect(serviceWorker).not.toContain("/api/trpc/student.getDailyScenarios");
@@ -75,15 +76,25 @@ describe("Academy curriculum and Tutor boundaries", () => {
     expect(start).toBeGreaterThanOrEqual(0);
     expect(end).toBeGreaterThan(start);
     expect(router).toContain("isWithheldLegacyVirtualHorseTask");
-    expect(router).toContain("return tasks.filter((task) => !isWithheldLegacyVirtualHorseTask(task));");
-    expect(taskEngine).toContain("Legacy template prompts are intentionally withheld");
+    expect(router).toContain(
+      "return tasks.filter((task) => !isWithheldLegacyVirtualHorseTask(task));",
+    );
+    expect(taskEngine).toContain(
+      "Legacy template prompts are intentionally withheld",
+    );
     expect(router).toContain("withheld_pending_factual_and_safety_review");
     expect(taskEngine).toContain("PRECONDITION_FAILED");
     expect(taskEngine).not.toContain("TASK_POOLS");
     expect(taskEngine).not.toContain("insert(studentTasks).values");
-    expect(dashboard).toContain("Virtual-horse task templates withheld");
-    expect(dashboard).not.toContain("trpc.student.generateDailyTasks.useMutation");
-    expect(dashboard).not.toContain("trpc.student.toggleTaskEngine.useMutation");
+    expect(compactWhitespace(dashboard)).toContain(
+      "Virtual-horse task templates withheld",
+    );
+    expect(dashboard).not.toContain(
+      "trpc.student.generateDailyTasks.useMutation",
+    );
+    expect(dashboard).not.toContain(
+      "trpc.student.toggleTaskEngine.useMutation",
+    );
   });
 
   it("withholds legacy Study Hub defaults without deleting non-legacy persisted topics", () => {
@@ -96,12 +107,14 @@ describe("Academy curriculum and Tutor boundaries", () => {
     expect(start).toBeGreaterThanOrEqual(0);
     expect(end).toBeGreaterThan(start);
     expect(router).toContain("WITHHELD_LEGACY_STUDY_TOPIC_SLUGS");
-    expect(studyHub).not.toContain("insert(studyTopics).values(DEFAULT_STUDY_TOPICS)");
+    expect(studyHub).not.toContain(
+      "insert(studyTopics).values(DEFAULT_STUDY_TOPICS)",
+    );
     expect(studyHub).toContain(
       "!WITHHELD_LEGACY_STUDY_TOPIC_SLUGS.has(topic.slug)",
     );
     expect(studyHub).toContain("PRECONDITION_FAILED");
-    expect(dashboard).toContain(
+    expect(compactWhitespace(dashboard)).toContain(
       "Legacy Study Hub topics are withheld pending factual and safety review.",
     );
   });

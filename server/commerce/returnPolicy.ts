@@ -9,6 +9,19 @@ export type ReturnPolicyDecision =
   | { eligible: true; windowEndsAt: Date }
   | { eligible: false; reason: string };
 
+const RETURN_REQUEST_ORDER_STATES = new Set<CommerceOrderState>([
+  "fulfilled",
+  "dispatched",
+  "delivered",
+  "return_requested",
+  "returned",
+  "partially_refunded",
+]);
+
+export function canRequestReturnInOrderState(state: CommerceOrderState) {
+  return RETURN_REQUEST_ORDER_STATES.has(state);
+}
+
 /**
  * The operational return policy is intentionally explicit. A missing or invalid
  * configuration disables self-service return requests rather than silently
@@ -30,11 +43,7 @@ export function assessReturnPolicy(input: {
   now?: Date;
 }): ReturnPolicyDecision {
   const now = input.now ?? new Date();
-  if (
-    input.orderStatus !== "delivered" &&
-    input.orderStatus !== "dispatched" &&
-    input.orderStatus !== "fulfilled"
-  ) {
+  if (!canRequestReturnInOrderState(input.orderStatus)) {
     return {
       eligible: false,
       reason: "The order is not in a return-eligible delivery state.",

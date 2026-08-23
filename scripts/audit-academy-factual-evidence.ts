@@ -33,6 +33,7 @@ const register = JSON.parse(fs.readFileSync(registerPath, "utf8")) as {
       reviewedAt: string;
       reviewedBy: string;
       sourceUrl: string;
+      additionalSourceUrls?: string[];
       claimReviewed: string;
       outcome: "ACCEPTED" | "REWRITTEN_AS_PRINCIPLE";
     };
@@ -80,6 +81,31 @@ for (const row of register.lessons) {
       if (!decision.sourceUrl?.startsWith("https://")) {
         issues.push(
           `${row.lessonSlug}: accepted decision missing valid source URL`,
+        );
+      }
+      if (
+        decision.additionalSourceUrls?.some(
+          (sourceUrl) => !sourceUrl.startsWith("https://"),
+        )
+      ) {
+        issues.push(
+          `${row.lessonSlug}: accepted decision has an invalid additional source URL`,
+        );
+      }
+      const decisionSourceUrls = new Set([
+        decision.sourceUrl,
+        ...(decision.additionalSourceUrls ?? []),
+      ]);
+      const registeredSourceUrls = new Set(
+        row.sources.map((source) => source.url),
+      );
+      if (
+        [...decisionSourceUrls].some(
+          (sourceUrl) => !registeredSourceUrls.has(sourceUrl),
+        )
+      ) {
+        issues.push(
+          `${row.lessonSlug}: accepted decision source is missing from the source register`,
         );
       }
       if (!decision.claimReviewed?.trim()) {

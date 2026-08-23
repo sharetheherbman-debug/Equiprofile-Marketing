@@ -90,6 +90,289 @@ const SOURCES = {
     url: "https://www.worldhorsewelfare.org/what-we-do/our-positions/protection-of-equines-during-transport",
     checkedAt: REVIEW_DATE,
   },
+  grooming: {
+    organisation: "Cooperative Extension",
+    title: "How to Groom a Horse",
+    url: "https://horses.extension.org/how-to-groom-a-horse/",
+    checkedAt: "2026-08-22",
+  },
+  mounting: {
+    organisation: "Rutgers Equine Science Center",
+    title: "Mounting, Dismounting, and Riding Horses Safely",
+    url: "https://esc.rutgers.edu/fact_sheet/mounting-dismounting-and-riding-horses-safely/",
+    checkedAt: "2026-08-22",
+  },
+  anatomy: {
+    organisation: "University of Kentucky",
+    title: "Equine Anatomy",
+    url: "https://afs.mgcafe.uky.edu/files/equine_anatomy.pdf",
+    checkedAt: "2026-08-22",
+  },
+  safeHandling: {
+    organisation: "Penn State Extension",
+    title: "Safe Horse Handling",
+    url: "https://extension.psu.edu/safe-horse-handling/",
+    checkedAt: "2026-08-22",
+  },
+  hoofAnatomy: {
+    organisation: "British Horse Society",
+    title: "Hoof anatomy",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/hoof-care/hoof-anatomy/",
+    checkedAt: "2026-08-22",
+  },
+  stirrupSafety: {
+    organisation: "American Quarter Horse Association",
+    title: "Stirrup Safety Tips",
+    url: "https://www.aqha.com/widget/-/stirrup-safety-ti-1",
+    checkedAt: "2026-08-22",
+  },
+  safeRiding: {
+    organisation: "University of Missouri Extension",
+    title: "Safe Riding: Practical Guidelines for Horse and Rider",
+    url: "https://extension.missouri.edu/publications/g2882",
+    checkedAt: "2026-08-22",
+  },
+  fitnessProgramme: {
+    organisation: "British Horse Society",
+    title: "Implementing a fitness programme",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/horse-fitness/implementing-a-fitness-programme/",
+    checkedAt: "2026-08-22",
+  },
+  hotWeatherExercise: {
+    organisation: "British Horse Society",
+    title: "Exercise, competing and travelling a horse in the heat",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/seasonal-care/exercise-travel-and-competing-in-hot-weather/",
+    checkedAt: "2026-08-22",
+  },
+  hotWeatherCare: {
+    organisation: "World Horse Welfare",
+    title: "Hot weather horse care tips",
+    url: "https://www.worldhorsewelfare.org/advice/hot-weather-horse-care-tips",
+    checkedAt: "2026-08-22",
+  },
+  tackFit: {
+    organisation: "British Horse Society",
+    title: "Make sure your tack is fitted correctly",
+    url: "https://www.bhs.org.uk/go-riding-and-learn/stable-mates/tack-fit/",
+    checkedAt: "2026-08-22",
+  },
+  equipment: {
+    organisation: "University of Kentucky Equine Programs",
+    title: "Equipment",
+    url: "https://equine.mgcafe.uky.edu/saddle-up-safely/equipment",
+    checkedAt: "2026-08-22",
+  },
+  groundHandling: {
+    organisation: "University of Missouri Extension",
+    title: "Safe Ground Handling of Horses",
+    url: "https://extension.missouri.edu/publications/g2878",
+    checkedAt: "2026-08-22",
+  },
+  basicHorseSafety: {
+    organisation: "Mississippi State University Extension",
+    title: "Basic Horse Safety",
+    url: "https://4h.extension.msstate.edu/resources/publications/basic-horse-safety",
+    checkedAt: "2026-08-22",
+  },
+  groundSafety: {
+    organisation: "University of Kentucky Equine Programs",
+    title: "Ground Safety Tips",
+    url: "https://equine.mgcafe.uky.edu/saddle-up-safely/ground-safety-tips",
+    checkedAt: "2026-08-22",
+  },
+  fireSafety: {
+    organisation: "Penn State Extension",
+    title: "Fire Safety in Horse Stables",
+    url: "https://extension.psu.edu/fire-safety-in-horse-stables",
+    checkedAt: "2026-08-22",
+  },
+  yardSafety: {
+    organisation: "Blue Cross",
+    title: "Horse yard safety",
+    url: "https://www.bluecross.org.uk/advice/horse/wellbeing-and-care/horse-yard-safety",
+    checkedAt: "2026-08-22",
+  },
+  managingRisk: {
+    organisation: "Health and Safety Executive",
+    title: "Managing risks and risk assessment at work",
+    url: "https://www.hse.gov.uk/simple-health-safety/risk/steps-needed-to-manage-risk.htm",
+    checkedAt: "2026-08-22",
+  },
+  riddorTypes: {
+    organisation: "Health and Safety Executive",
+    title: "Types of reportable incidents",
+    url: "https://www.hse.gov.uk/riddor/types-of-reportable-incidents.htm",
+    checkedAt: "2026-08-22",
+  },
+  loneWork: {
+    organisation: "Health and Safety Executive",
+    title: "Lone working: Protect those working alone",
+    url: "https://www.hse.gov.uk/lone-working/employer/manage-the-risks-of-working-alone.htm",
+    checkedAt: "2026-08-22",
+  },
+  riderIntroduction: {
+    organisation: "British Horse Society",
+    title: "About the Rider Introduction award – coach guidance",
+    url: "https://www.bhs.org.uk/media/5rijjjt5/introduction-about-the-rider-checklist-guidance.pdf",
+    checkedAt: "2026-08-22",
+  },
+  firstLesson: {
+    organisation: "British Equestrian",
+    title: "Your first lesson",
+    url: "https://www.britishequestrian.org.uk/getInvolved/participation/your-first-lesson",
+    checkedAt: "2026-08-22",
+  },
+  stage2Coach: {
+    organisation: "British Horse Society",
+    title: "Stage 2 Coach Syllabus",
+    url: "https://www.bhs.org.uk/bhs-professional-qualifications-and-careers/bhs-qualifications-and-stages/stage-2/stage-2-coach-syllabus/",
+    checkedAt: "2026-08-22",
+  },
+  stage4: {
+    organisation: "British Horse Society",
+    title: "Stage 4",
+    url: "https://www.bhs.org.uk/bhs-professional-qualifications-and-careers/bhs-qualifications-and-stages/stage-4/",
+    checkedAt: "2026-08-22",
+  },
+  practicalCpd: {
+    organisation: "British Horse Society",
+    title: "Practical CPD courses",
+    url: "https://www.bhs.org.uk/events/find-a-cpd-course/practical-cpd-courses/",
+    checkedAt: "2026-08-22",
+  },
+  britishShowjumpingWelfare: {
+    organisation: "British Showjumping",
+    title: "Equine Welfare",
+    url: "https://www.britishshowjumping.co.uk/membership/Equine-Welfare",
+    checkedAt: "2026-08-22",
+  },
+  anxiety: {
+    organisation: "National Health Service",
+    title: "Anxiety, fear and panic",
+    url: "https://www.nhs.uk/mental-health/feelings-symptoms-behaviours/feelings-and-symptoms/anxiety-fear-panic/",
+    checkedAt: "2026-08-22",
+  },
+  breathing: {
+    organisation: "National Health Service",
+    title: "Breathing exercises for stress",
+    url: "https://www.nhs.uk/mental-health/self-help/guides-tools-and-activities/breathing-exercises-for-stress/",
+    checkedAt: "2026-08-22",
+  },
+  equestrianWellbeing: {
+    organisation: "British Equestrian",
+    title: "Introduction to mental wellbeing",
+    url: "https://www.britishequestrian.org.uk/getInvolved/mental-wellbeing/introduction-to-mental-wellbeing",
+    checkedAt: "2026-08-22",
+  },
+  equineSafety: {
+    organisation: "Mississippi State University Extension",
+    title: "Safety Awareness with Equine",
+    url: "https://extension.msstate.edu/programs/safety-awareness-equine",
+    checkedAt: "2026-08-22",
+  },
+  stage3Lunge: {
+    organisation: "British Horse Society",
+    title: "Stage 3 Lunge Syllabus",
+    url: "https://www.bhs.org.uk/bhs-professional-qualifications-and-careers/bhs-qualifications-and-stages/stage-3/stage-3-lunge-syllabus/",
+    checkedAt: "2026-08-22",
+  },
+  groundwork: {
+    organisation: "World Horse Welfare",
+    title: "Building your horse's strength through groundwork",
+    url: "https://www.worldhorsewelfare.org/advice/welfare-wednesdays/building-your-horses-strength-through-groundwork",
+    checkedAt: "2026-08-22",
+  },
+  returnToWork: {
+    organisation: "World Horse Welfare",
+    title: "Bringing horses back into work",
+    url: "https://www.worldhorsewelfare.org/blog/bringing-horses-back-into-work-how-to-restart-youngsters-progress-a-horses-rehabilitation-programme-or-get-an-established-all-rounder-fit-again",
+    checkedAt: "2026-08-22",
+  },
+  horseFitness: {
+    organisation: "British Horse Society",
+    title: "Horse fitness",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/horse-fitness/",
+    checkedAt: "2026-08-22",
+  },
+  bhsEms: {
+    organisation: "British Horse Society",
+    title: "Equine Metabolic Syndrome",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/equine-diseases/equine-metabolic-syndrome/",
+    checkedAt: "2026-08-22",
+  },
+  whwEms: {
+    organisation: "World Horse Welfare",
+    title: "Equine Metabolic Syndrome",
+    url: "https://www.worldhorsewelfare.org/advice/equine-metabolic-syndrome",
+    checkedAt: "2026-08-22",
+  },
+  horseWelfareCode: {
+    organisation: "DEFRA / GOV.UK",
+    title:
+      "Code of practice for the welfare of horses, ponies, donkeys and their hybrids",
+    url: "https://www.gov.uk/government/publications/code-of-practice-for-the-welfare-of-horses-ponies-donkeys-and-their-hybrids",
+    checkedAt: "2026-08-22",
+  },
+  fiveDomains: {
+    organisation: "World Horse Welfare",
+    title: "The Five Domains of animal welfare",
+    url: "https://www.worldhorsewelfare.org/advice/the-five-domains-of-animal-welfare",
+    checkedAt: "2026-08-22",
+  },
+  worriedAboutHorse: {
+    organisation: "World Horse Welfare",
+    title: "Worried about a horse?",
+    url: "https://www.worldhorsewelfare.org/what-we-do/in-the-uk/worried-about-a-horse",
+    checkedAt: "2026-08-22",
+  },
+  animalWelfareAct: {
+    organisation: "UK Legislation",
+    title: "Animal Welfare Act 2006",
+    url: "https://www.legislation.gov.uk/ukpga/2006/45/contents",
+    checkedAt: "2026-08-22",
+  },
+  horsePassport: {
+    organisation: "GOV.UK",
+    title: "Getting and using a horse passport",
+    url: "https://www.gov.uk/horse-passport",
+    checkedAt: "2026-08-22",
+  },
+  horseLearning: {
+    organisation: "World Horse Welfare",
+    title: "Training: how do horses learn?",
+    url: "https://www.worldhorsewelfare.org/advice/training-how-do-horses-learn",
+    checkedAt: "2026-08-22",
+  },
+  behaviourChecklist: {
+    organisation: "World Horse Welfare",
+    title: "Behaviour checklist",
+    url: "https://www.worldhorsewelfare.org/advice/behaviour-checklist-is-your-horse-trying-to-tell-you-something",
+    checkedAt: "2026-08-22",
+  },
+  endOfLife: {
+    organisation: "World Horse Welfare",
+    title: "Equine end of life",
+    url: "https://www.worldhorsewelfare.org/advice/equine-end-of-life",
+    checkedAt: "2026-08-22",
+  },
+  euthanasia: {
+    organisation: "British Horse Society",
+    title: "Euthanasia",
+    url: "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/euthanasia/",
+    checkedAt: "2026-08-22",
+  },
+  rehoming: {
+    organisation: "World Horse Welfare",
+    title: "Responsible rehoming of horses",
+    url: "https://www.worldhorsewelfare.org/advice/responsible-rehoming-of-horses",
+    checkedAt: "2026-08-22",
+  },
+  aaepEuthanasia: {
+    organisation: "American Association of Equine Practitioners",
+    title: "Euthanasia Guidelines",
+    url: "https://aaep.org/resource/euthanasia-guidelines/",
+    checkedAt: "2026-08-22",
+  },
 } satisfies Record<string, Source>;
 
 const TOPIC_RULES: Array<{
@@ -165,6 +448,78 @@ function fullText(lesson: (typeof LESSON_UNITS)[number]): string {
 }
 
 const changedLessons: Record<string, string> = {
+  "parts-of-the-horse":
+    "Replaced every learner-facing factual field with a reviewed external-anatomy and hoof-vocabulary lesson, safe approach, factual non-diagnostic reporting and professional escalation.",
+  "rider-position-basics":
+    "Replaced every learner-facing factual field with individual coach-reviewed alignment, safe stirrup/footwear fit, equipment checks and explicit stop/escalation boundaries.",
+  "warmup-cooldown":
+    "Replaced every learner-facing factual field with individual progressive preparation/recovery, contextual observation, current hot-weather cooling and professional escalation.",
+  "lesson-preparation":
+    "Replaced every learner-facing factual field with fail-closed plan, equipment, tack-fit, rider, horse, environment and supervision checks.",
+  "leading-safely":
+    "Replaced every learner-facing factual field with reviewed position, folded-rope, turn, gate/release and people-first escalation principles.",
+  "yard-hazard-awareness":
+    "Replaced every learner-facing factual field with reviewed prevention, housekeeping, storage, specialist-authority, evacuation and factual-reporting boundaries.",
+  "risk-incident-awareness":
+    "Replaced every learner-facing factual field with a current UK risk-management example, factual records, responsible-person review and bounded RIDDOR explanation.",
+  "advanced-safety-awareness":
+    "Replaced every learner-facing factual field with site-specific lone-work, competence, supervision, monitoring, contact, welfare and safeguarding controls.",
+  "advanced-rider-position-analysis":
+    "Replaced every learner-facing factual field with context-specific observation, safe equipment, one qualified change and professional referral boundaries.",
+  "trot-rhythm-and-balance":
+    "Replaced every learner-facing factual field with suitable-horse, qualified-supervision, position, balance, security and support principles.",
+  "rider-balance-independent-seat":
+    "Replaced every learner-facing factual field with a participant-centred functional coaching aim, appropriate support, consent and neutral observation.",
+  "teaching-the-foundations":
+    "Replaced every learner-facing factual field with qualified-coach scope, individual suitability, safeguards, an observable aim, adaptation and welfare-led progression.",
+  "communication-and-feedback-skills":
+    "Replaced every learner-facing factual field with participant-centred communication, factual feedback, adaptation, consent, privacy and safeguarding.",
+  "understanding-your-learners":
+    "Replaced every learner-facing factual field with authorised relevant information, respectful questions, individual adaptation, consent, privacy and referral.",
+  "structuring-a-beginner-lesson":
+    "Replaced every learner-facing factual field with qualified risk/suitability planning, an observable aim, adaptable activity, conclusion and evaluation.",
+  "building-riding-confidence":
+    "Replaced every learner-facing factual field with participant choice, small coach-approved steps, optional unforced breathing, non-clinical reflection and health referral.",
+  "safe-approach-and-catching":
+    "Replaced every learner-facing factual field with a slow shoulder approach, authorised equipment, supervised release and qualified difficult-horse escalation.",
+  "tying-up-safely":
+    "Replaced every learner-facing factual field with competent site-specific setup, sturdy approved point, supervision, quick-release limitations and emergency response.",
+  "lungeing-basics":
+    "Replaced every learner-facing factual field with professional competency, suitability, equipment, environment, welfare, observation and emergency boundaries.",
+  "long-reining-introduction":
+    "Replaced every learner-facing factual field with an explicit non-procedural professional-scope lesson covering decisions, roles, welfare and line-risk boundaries.",
+  "advanced-groundwork-exercises":
+    "Replaced every learner-facing factual field with an individual expert-led planning, veterinary, observation, welfare and referral framework.",
+  "understanding-equine-digestion":
+    "Replaced every learner-facing factual field with individual forage-led plan, clean feed/water, gradual change, factual record and prompt veterinary boundaries.",
+  "types-of-feed":
+    "Replaced every learner-facing factual field with bounded feed-category, label, batch, quality, water, hygiene and qualified-suitability teaching.",
+  "feeding-routines-and-rules":
+    "Replaced every learner-facing factual field with written-plan authority, identity, measurement, hygiene, water, error and truthful-record controls.",
+  "balancing-a-diet":
+    "Replaced every learner-facing factual field with a qualified whole-ration review using authorised condition, weight, workload, forage, water and health evidence.",
+  "feeding-for-workload":
+    "Replaced every learner-facing factual field with factual work and feeding evidence for qualified whole-plan review and explicit no-formula boundaries.",
+  "supplements-and-special-diets":
+    "Replaced every learner-facing factual field with whole-ration qualified review, label/overlap controls, written electrolyte decisions and veterinary-led special diets.",
+  "five-freedoms-of-animal-welfare":
+    "Replaced every learner-facing factual field with historic welfare prompts, the individual Five Domains lens, factual observation and current local reporting.",
+  "responsible-horse-ownership":
+    "Replaced every learner-facing factual field with individual welfare, professional-care, record, finance, emergency-authority and contingency responsibilities.",
+  "recognising-neglect-and-abuse":
+    "Replaced every learner-facing factual field with first-hand factual observation and current emergency, veterinary, welfare, authority and safeguarding reporting boundaries.",
+  "welfare-legislation-uk":
+    "Replaced every learner-facing factual field with jurisdiction-labelled law/code/policy distinctions and current official passport/document routes.",
+  "ethical-training-methods":
+    "Replaced every learner-facing factual field with high-level learning definitions, compassionate welfare principles, factual observation and qualified referral.",
+  "end-of-life-decisions":
+    "Replaced every learner-facing factual field with advance planning, factual quality-of-life records, veterinarian-led decisions and current authorised routes.",
+  "grooming-basics":
+    "Rewrote the full lesson and checks around reviewed grooming-tool use, supervised safe handling, factual observation and veterinary or farrier escalation.",
+  "mounting-dismounting":
+    "Rewrote the full lesson and checks around reviewed tack and area checks, controlled mounting/dismounting and supervised emergency-practice boundaries.",
+  "common-equine-ailments":
+    "Rewrote the full lesson and checks as non-diagnostic colic and laminitis awareness with factual observation, stop-work and prompt responsible-person or veterinary escalation.",
   "introduction-to-polework":
     "Removed unsupported generic 3.0 m consecutive trot-pole spacing and rewrote the knowledge check around qualified-coach, horse-specific adjustment.",
   "introduction-to-jumping-position":
@@ -218,7 +573,11 @@ const changedLessons: Record<string, string> = {
   "pasture-management-basics":
     "Removed fixed sward heights, pasture percentages, grazing intervals, rotation counts and plant-removal instructions from both base and enhancement text; now requires current local and professional plans.",
   "when-to-call-the-vet":
-    "Retained the reviewed adult-at-rest TPR reference while removing self-triage expectations and requiring prompt veterinary contact without delaying for extra observations.",
+    "Rewrote the complete lesson and checks around early factual veterinary contact, current emergency planning and case-specific direction; removed diagnostic lists, fixed triage thresholds, delayed measurement gathering and generic interim treatment.",
+  "grid-work-and-related-distances":
+    "Rewrote the complete lesson and checks to reserve grid purpose, measurement, construction, adjustment and progression for qualified coaches; removed universal distances, stride tables, heights and learner-led setup.",
+  "course-awareness-and-planning":
+    "Rewrote the complete lesson and checks around current official information, authorised observation, welfare and incident boundaries; removed route, line, stride, course-design and surface-safety instruction.",
   "emergency-first-aid-procedures":
     "Replaced learner-led bleeding, colic and eye-management procedures with safe preparation, veterinary escalation and current yard emergency-procedure guidance.",
   "feeding-for-workload":
@@ -266,15 +625,21 @@ const rows = LESSON_UNITS.map((lesson) => {
     ).values(),
   ];
   const reviewDecision = REVIEWED_LESSON_CLAIMS[lesson.slug];
-  const decisionSource = reviewDecision
-    ? Object.values(SOURCES).find(
-        (source) => source.url === reviewDecision.sourceUrl,
+  const decisionSources = reviewDecision
+    ? Object.values(SOURCES).filter((source) =>
+        [
+          reviewDecision.sourceUrl,
+          ...(reviewDecision.additionalSourceUrls ?? []),
+        ].includes(source.url),
       )
-    : undefined;
-  const reviewedSourceRows = decisionSource
+    : [];
+  const reviewedSourceRows = decisionSources.length
     ? [
         ...new Map(
-          [...sourceRows, decisionSource].map((source) => [source.url, source]),
+          [...sourceRows, ...decisionSources].map((source) => [
+            source.url,
+            source,
+          ]),
         ).values(),
       ]
     : sourceRows;
@@ -294,14 +659,16 @@ const rows = LESSON_UNITS.map((lesson) => {
         : ["General descriptive educational content"],
     riskClass,
     sources: reviewedSourceRows,
-    sourceCheckDate: REVIEW_DATE,
+    sourceCheckDate: reviewDecision?.reviewedAt ?? REVIEW_DATE,
     materialNumberOrRuleMentions: [...new Set(materialClaims)],
     whatWasVerified: reviewDecision
       ? `${reviewDecision.outcome}: ${reviewDecision.claimReviewed}`
       : "This generated register maps lesson topics to reviewed authoritative sources and records material-number/rule candidates. It does not itself establish a specific claim as verified.",
     lessonChangeMade:
       changedLessons[lesson.slug] ??
-      "No source-text change is recorded by this mapping step.",
+      (reviewDecision?.outcome === "REWRITTEN_AS_PRINCIPLE"
+        ? `Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: ${reviewDecision.claimReviewed}`
+        : "No source-text change is recorded by this mapping step."),
     reviewStatus,
     reviewDecision: reviewDecision ?? null,
   };

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   assessReturnPolicy,
+  canRequestReturnInOrderState,
   configuredReturnWindowDays,
   hasDuplicateReturnItems,
   remainingReturnableQuantity,
@@ -76,6 +77,21 @@ describe("Commerce return policy", () => {
     expect(remainingReturnableQuantity(3, 0)).toBe(3);
     expect(remainingReturnableQuantity(3, 2)).toBe(1);
     expect(remainingReturnableQuantity(3, 4)).toBe(0);
+  });
+
+  it("permits later partial-return requests while blocking unpaid and fully refunded orders", () => {
+    for (const state of [
+      "fulfilled",
+      "dispatched",
+      "delivered",
+      "return_requested",
+      "returned",
+      "partially_refunded",
+    ] as const) {
+      expect(canRequestReturnInOrderState(state)).toBe(true);
+    }
+    expect(canRequestReturnInOrderState("payment_pending")).toBe(false);
+    expect(canRequestReturnInOrderState("refunded")).toBe(false);
   });
 
   it("rejects duplicate items inside a single request", () => {

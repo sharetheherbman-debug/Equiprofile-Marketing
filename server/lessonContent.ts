@@ -3,6 +3,10 @@
 // structured learning engine. All material is original EquiProfile educational content.
 // ─────────────────────────────────────────────────────────────────────────────
 import { LESSON_QUALITY_ENHANCEMENTS } from "./academy/lessonQualityEnhancements.generated";
+import {
+  applyFactualLessonRevision,
+  FACTUALLY_REVISED_LESSON_SLUGS,
+} from "./academy/factualLessonRevisions";
 
 export interface LessonPathwayData {
   slug: string;
@@ -1500,7 +1504,8 @@ Emergency dismounting carries significant risk and must not be attempted from wr
           "A mounting aid is appropriate only when it is stable and approved for the rider and horse, the area is clear, and the horse is standing quietly under control.",
       },
       {
-        question: "What should you do if you are unsure whether the girth and saddle are ready for mounting?",
+        question:
+          "What should you do if you are unsure whether the girth and saddle are ready for mounting?",
         options: [
           "Mount quickly before the horse moves",
           "Use a fixed hand-span rule regardless of horse or tack",
@@ -2153,8 +2158,7 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
     ],
     knowledgeCheck: [
       {
-        question:
-          "What should determine the duration and detail of a warm-up?",
+        question: "What should determine the duration and detail of a warm-up?",
         options: [
           "A fixed time copied for every horse",
           "The individual horse, fitness, workload, weather, ground and qualified guidance",
@@ -3264,7 +3268,8 @@ In an unfamiliar or changing situation, pause before acting. Identify immediate 
     ],
     knowledgeCheck: [
       {
-        question: "What should a learner do when a safety decision may exceed their authority or competence?",
+        question:
+          "What should a learner do when a safety decision may exceed their authority or competence?",
         options: [
           "Make the legal and risk decision alone to avoid delay",
           "Follow the designated stop/escalation route and obtain competent help",
@@ -5186,7 +5191,8 @@ Trot schooling should progress only through an individual, welfare-aware coachin
     ],
     knowledgeCheck: [
       {
-        question: "Who should decide whether a developing rider’s trot exercise is suitable and how it progresses?",
+        question:
+          "Who should decide whether a developing rider’s trot exercise is suitable and how it progresses?",
         options: [
           "The rider alone, using a generic online checklist",
           "A qualified coach within the current responsible-person safety arrangements",
@@ -5198,7 +5204,8 @@ Trot schooling should progress only through an individual, welfare-aware coachin
           "The reviewed coach guidance requires ridden work to be on safe horses suitable for the participant level and under coach instruction and supervision. The individual partnership and current conditions determine the suitable exercise.",
       },
       {
-        question: "What does the reviewed introductory coach guidance say about recognising a correct diagonal?",
+        question:
+          "What does the reviewed introductory coach guidance say about recognising a correct diagonal?",
         options: [
           "It must be recognised before any rising trot",
           "It is never used in coaching",
@@ -5210,7 +5217,8 @@ Trot schooling should progress only through an individual, welfare-aware coachin
           "The reviewed introductory coach guidance says the correct diagonal does not have to be recognised at that level, while coach instruction and supervision remain required. A coach decides when diagonal awareness is suitable for the individual rider and task.",
       },
       {
-        question: "What should a rider do if they lose security or notice a horse-comfort, tack, footing, or conditions concern during trot work?",
+        question:
+          "What should a rider do if they lose security or notice a horse-comfort, tack, footing, or conditions concern during trot work?",
         options: [
           "Continue until the planned exercise is complete",
           "Try a faster pace to test the issue",
@@ -5234,7 +5242,8 @@ Trot schooling should progress only through an individual, welfare-aware coachin
           "No-stirrup work is not a universal assessment or progression. It requires coach approval, a suitable horse-and-rider partnership, and current safety controls.",
       },
       {
-        question: "How should a learner use a verbal rhythm cue selected by a coach?",
+        question:
+          "How should a learner use a verbal rhythm cue selected by a coach?",
         options: [
           "As universal proof that the horse’s tempo is correct",
           "Only as coach-directed support in the current safe exercise",
@@ -5529,7 +5538,8 @@ Developing rider balance should follow an individual, welfare-aware coaching pla
           "Independent seat is a coaching term. It does not diagnose a rider or horse, prove horse comfort, or replace qualified assessment and coach-approved progression.",
       },
       {
-        question: "Who should determine whether a position cue is suitable for a rider?",
+        question:
+          "Who should determine whether a position cue is suitable for a rider?",
         options: [
           "The rider alone using a fixed online diagram",
           "A qualified coach considering the rider, horse, saddle, task, discipline, and current conditions",
@@ -5541,7 +5551,8 @@ Developing rider balance should follow an individual, welfare-aware coaching pla
           "A visible position feature does not establish anatomy, saddle fit, horse comfort, or cause. The qualified coach must adapt a cue to the individual partnership and context.",
       },
       {
-        question: "What should a rider do if a position concern is accompanied by pain, persistent limitation, insecurity, horse discomfort, or a tack concern?",
+        question:
+          "What should a rider do if a position concern is accompanied by pain, persistent limitation, insecurity, horse discomfort, or a tack concern?",
         options: [
           "Continue until a generic exercise fixes it",
           "Diagnose the cause from the rider’s position",
@@ -5566,8 +5577,7 @@ Developing rider balance should follow an individual, welfare-aware coaching pla
           "This lesson does not prescribe fitness, rehabilitation, stretching, or treatment. Pain, injury, persistent limitation, and individual exercise planning require an appropriately qualified professional.",
       },
       {
-        question:
-          "When may lunge work or no-stirrup work be considered?",
+        question: "When may lunge work or no-stirrup work be considered?",
         options: [
           "For every rider as a required balance test",
           "Only when a qualified coach explicitly approves it for the individual partnership and current safety conditions",
@@ -6601,7 +6611,8 @@ Use this lesson to ask: who is responsible; what current written plan and veteri
     ],
     knowledgeCheck: [
       {
-        question: "What is the correct scope of World Horse Welfare’s adult-at-rest temperature 37.5–38.5°C, pulse 36–42 bpm, and respiration 8–12 breaths/minute reference?",
+        question:
+          "What is the correct scope of World Horse Welfare’s adult-at-rest temperature 37.5–38.5°C, pulse 36–42 bpm, and respiration 8–12 breaths/minute reference?",
         options: [
           "A universal measurement procedure and self-triage threshold",
           "A diagnosis and treatment trigger for every horse",
@@ -6609,10 +6620,12 @@ Use this lesson to ask: who is responsible; what current written plan and veteri
           "A reason to delay professional contact until more measurements are collected",
         ],
         correctIndex: 2,
-        explanation: "The reference is not a measurement method, universal health profile, diagnosis, self-triage threshold, or substitute for current responsible-person and veterinary direction.",
+        explanation:
+          "The reference is not a measurement method, universal health profile, diagnosis, self-triage threshold, or substitute for current responsible-person and veterinary direction.",
       },
       {
-        question: "What should a learner do when a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear?",
+        question:
+          "What should a learner do when a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear?",
         options: [
           "Use a generic checklist or vital-sign range to decide the diagnosis and correction",
           "Touch, restrain, move, test, measure, inspect, palpate, or treat the horse from this lesson",
@@ -6620,7 +6633,8 @@ Use this lesson to ask: who is responsible; what current written plan and veteri
           "Delay required emergency support while comparing the horse with an online example or another horse",
         ],
         correctIndex: 2,
-        explanation: "A learner may record authorised factual context and observations, but must not independently assess, diagnose, treat, decide fitness/welfare, or decide an emergency status.",
+        explanation:
+          "A learner may record authorised factual context and observations, but must not independently assess, diagnose, treat, decide fitness/welfare, or decide an emergency status.",
       },
     ],
     aiTutorPrompts: [
@@ -6684,7 +6698,8 @@ Use this lesson to ask: who is responsible; what current individual plan and vet
     ],
     knowledgeCheck: [
       {
-        question: "What is the correct scope of a familiar ailment label or an online sign list for an individual horse?",
+        question:
+          "What is the correct scope of a familiar ailment label or an online sign list for an individual horse?",
         options: [
           "It establishes a diagnosis, severity, cause, treatment, prognosis, outcome, and emergency status",
           "It allows a learner to change feed, water, turnout, medication, movement, housing, or treatment before professional contact",
@@ -6692,10 +6707,12 @@ Use this lesson to ask: who is responsible; what current individual plan and vet
           "It replaces the current individual care plan and veterinary direction",
         ],
         correctIndex: 2,
-        explanation: "World Horse Welfare and British Horse Society guidance supports prompt veterinary escalation for relevant concerns, not generic learner diagnosis, treatment, or self-directed management.",
+        explanation:
+          "World Horse Welfare and British Horse Society guidance supports prompt veterinary escalation for relevant concerns, not generic learner diagnosis, treatment, or self-directed management.",
       },
       {
-        question: "What should a learner do if a health, welfare, pain, comfort, behaviour, environment, movement, hoof, skin, wound, breathing, feed/water, handling, safety, incident, emergency, transport, record, procedure, or rule concern is outside the current plan or unclear?",
+        question:
+          "What should a learner do if a health, welfare, pain, comfort, behaviour, environment, movement, hoof, skin, wound, breathing, feed/water, handling, safety, incident, emergency, transport, record, procedure, or rule concern is outside the current plan or unclear?",
         options: [
           "Determine the cause and severity from a generic symptom list before acting",
           "Touch, restrain, move, inspect, test, measure, diagnose, treat, medicate, or change feed/water/turnout from this lesson",
@@ -6703,7 +6720,8 @@ Use this lesson to ask: who is responsible; what current individual plan and vet
           "Delay required professional contact while comparing the horse with another horse, online example, previous episode, or a stated label",
         ],
         correctIndex: 2,
-        explanation: "A learner may record authorised factual context and observations, but must not independently identify a condition, assess severity, decide a cause, treatment, prognosis, outcome, or emergency status.",
+        explanation:
+          "A learner may record authorised factual context and observations, but must not independently identify a condition, assess severity, decide a cause, treatment, prognosis, outcome, or emergency status.",
       },
     ],
     aiTutorPrompts: [
@@ -7734,7 +7752,8 @@ NHS advises obtaining medical help if a person is struggling to cope with anxiet
     ],
     knowledgeCheck: [
       {
-        question: "What should happen if a rider feels unsafe, uncomfortable, unable to continue, or declines an activity—or if current conditions become unsuitable?",
+        question:
+          "What should happen if a rider feels unsafe, uncomfortable, unable to continue, or declines an activity—or if current conditions become unsuitable?",
         options: [
           "Continue to build confidence through repetition",
           "Choose a different activity alone",
@@ -8139,7 +8158,8 @@ Only authorised people should create, access, use, store, or share rider records
           "A generic lesson cannot determine the cause of a concern or the correct support. The current qualified coach and responsible-person procedure determine whether the activity is paused, adapted, stopped, or escalated.",
       },
       {
-        question: "How should a learner handle rider information and observations?",
+        question:
+          "How should a learner handle rider information and observations?",
         options: [
           "Create and share a personal profile with anyone who helps on the yard",
           "Use only the current authorised privacy, safeguarding, organisational, and legal procedure, and report factual observations through the designated route",
@@ -8239,8 +8259,7 @@ Only authorised people may create, access, use, store, or share lesson or rider 
           "A generic lesson cannot determine the cause of a concern or the correct activity. The current qualified coach and responsible-person procedure determine whether the plan is paused, adapted, stopped, or escalated.",
       },
       {
-        question:
-          "How should a learner handle lesson or rider records?",
+        question: "How should a learner handle lesson or rider records?",
         options: [
           "Create a personal record and share it with any yard helper",
           "Use only the current authorised privacy, safeguarding, organisational, and legal procedure",
@@ -8635,7 +8654,8 @@ Within an authorised setting, a learner can practise neutral, factual communicat
     ],
     knowledgeCheck: [
       {
-        question: "Who decides whether a feedback approach, question, or communication cue is suitable for a rider?",
+        question:
+          "Who decides whether a feedback approach, question, or communication cue is suitable for a rider?",
         options: [
           "Any experienced rider using a fixed feedback formula",
           "The qualified coach within the current responsible-person and safeguarding arrangements",
@@ -8647,7 +8667,8 @@ Within an authorised setting, a learner can practise neutral, factual communicat
           "Professional coaching standards require communication, feedback, adaptation, safety, welfare, and safeguarding that meet the individual rider’s needs in the current activity.",
       },
       {
-        question: "What should happen if a rider does not understand, feels unsafe, or if the horse, tack, footing, or conditions become unsuitable?",
+        question:
+          "What should happen if a rider does not understand, feels unsafe, or if the horse, tack, footing, or conditions become unsuitable?",
         options: [
           "Continue the activity while trying a different generic feedback cue",
           "Pause, stop, adapt, or escalate through the current qualified coaching procedure",
@@ -8986,7 +9007,8 @@ A tied horse requires the supervision and safety arrangements set by the respons
     ],
     knowledgeCheck: [
       {
-        question: "Who decides the appropriate tie point, knot, rope handling, breakaway arrangement, supervision, and emergency release for a horse?",
+        question:
+          "Who decides the appropriate tie point, knot, rope handling, breakaway arrangement, supervision, and emergency release for a horse?",
         options: [
           "Any learner using a generic online measurement or knot diagram",
           "The responsible person or qualified handler after assessing the individual horse, equipment, location, risks, and current site procedure",
@@ -8998,7 +9020,8 @@ A tied horse requires the supervision and safety arrangements set by the respons
           "Tying arrangements are context-specific. A generic lesson cannot select a safe knot, tie point, breakaway material, height, length, or supervision plan for every horse and setting.",
       },
       {
-        question: "What should happen if a tied horse becomes tense, pulls back, moves unexpectedly, or entangles equipment?",
+        question:
+          "What should happen if a tied horse becomes tense, pulls back, moves unexpectedly, or entangles equipment?",
         options: [
           "Hold against the horse and add more rope",
           "Punish the horse or begin a training session alone",
@@ -9072,7 +9095,8 @@ Stop, move to safety as directed, and obtain the responsible person or qualified
     ],
     knowledgeCheck: [
       {
-        question: "Who determines whether lungeing is appropriate and how the horse, handler, equipment, protective equipment, space, circle, duration, and emergency arrangements are managed?",
+        question:
+          "Who determines whether lungeing is appropriate and how the horse, handler, equipment, protective equipment, space, circle, duration, and emergency arrangements are managed?",
         options: [
           "Any learner using a generic triangle diagram",
           "The qualified professional and responsible person after individual assessment and current risk review",
@@ -9080,10 +9104,12 @@ Stop, move to safety as directed, and obtain the responsible person or qualified
           "The horse’s previous session alone",
         ],
         correctIndex: 1,
-        explanation: "Professional lungeing standards require individual assessment, welfare, equipment safety and fit, handler position, safe control, space, circle, duration, surroundings, and emergency planning. A generic lesson cannot select a safe protocol.",
+        explanation:
+          "Professional lungeing standards require individual assessment, welfare, equipment safety and fit, handler position, safe control, space, circle, duration, surroundings, and emergency planning. A generic lesson cannot select a safe protocol.",
       },
       {
-        question: "What should happen if a lungeing activity becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, or emergency conditions change?",
+        question:
+          "What should happen if a lungeing activity becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, or emergency conditions change?",
         options: [
           "Continue until the planned duration has finished",
           "Use more force or a larger whip movement",
@@ -9091,7 +9117,8 @@ Stop, move to safety as directed, and obtain the responsible person or qualified
           "Diagnose the horse and adjust the equipment alone",
         ],
         correctIndex: 2,
-        explanation: "A lungeing concern may require qualified or emergency action. Do not use a generic technique; follow the current procedure and obtain appropriate support.",
+        explanation:
+          "A lungeing concern may require qualified or emergency action. Do not use a generic technique; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
@@ -9156,7 +9183,8 @@ Use this lesson to prepare questions for a qualified professional, not to copy a
     ],
     knowledgeCheck: [
       {
-        question: "Who determines whether long-reining is appropriate and how the horse, handler, equipment, protective equipment, space, welfare, supervision, and emergency arrangements are managed?",
+        question:
+          "Who determines whether long-reining is appropriate and how the horse, handler, equipment, protective equipment, space, welfare, supervision, and emergency arrangements are managed?",
         options: [
           "Any learner using a generic online diagram",
           "The qualified professional and responsible person after individual assessment and current risk review",
@@ -9168,7 +9196,8 @@ Use this lesson to prepare questions for a qualified professional, not to copy a
           "The reviewed professional standard supports qualified assessment of suitability, equipment, environment, risk, safety, welfare, safeguarding, and emergencies. It does not provide a generic long-reining protocol.",
       },
       {
-        question: "What should happen if long-reining becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, welfare, or emergency conditions change?",
+        question:
+          "What should happen if long-reining becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, welfare, or emergency conditions change?",
         options: [
           "Continue until the planned exercise is complete",
           "Use a generic correction or change equipment alone",
@@ -9242,7 +9271,8 @@ Stop, move to safety as directed, and obtain the responsible person, qualified p
     ],
     knowledgeCheck: [
       {
-        question: "Who decides whether an advanced groundwork, conditioning, or rehabilitation activity is appropriate and how it is selected, performed, progressed, monitored, or stopped?",
+        question:
+          "Who decides whether an advanced groundwork, conditioning, or rehabilitation activity is appropriate and how it is selected, performed, progressed, monitored, or stopped?",
         options: [
           "Any learner using a generic lesson or copied exercise",
           "The responsible person and appropriate qualified or veterinary professional after individual assessment and current risk review",
@@ -9254,7 +9284,8 @@ Stop, move to safety as directed, and obtain the responsible person, qualified p
           "World Horse Welfare and British Horse Society guidance support tailored, adaptable individual planning and expert help when readiness or health is uncertain. A generic lesson cannot prescribe a rehabilitation or advanced training programme.",
       },
       {
-        question: "What should happen if a horse shows changed behaviour, discomfort, lameness, reduced performance, a tack concern, or an unusual response during or around advanced groundwork?",
+        question:
+          "What should happen if a horse shows changed behaviour, discomfort, lameness, reduced performance, a tack concern, or an unusual response during or around advanced groundwork?",
         options: [
           "Select a harder exercise to improve engagement",
           "Diagnose the cause and adjust the exercise alone",
@@ -9410,7 +9441,8 @@ Stop and use the current responsible-person, veterinary, qualified nutrition, we
     ],
     knowledgeCheck: [
       {
-        question: "What determines whether a particular forage, concentrate, balancer, supplement, or product is suitable for a horse?",
+        question:
+          "What determines whether a particular forage, concentrate, balancer, supplement, or product is suitable for a horse?",
         options: [
           "Its category name or another horse’s diet",
           "The individual horse’s current feeding, welfare, and professional plan after appropriate assessment",
@@ -9418,10 +9450,12 @@ Stop and use the current responsible-person, veterinary, qualified nutrition, we
           "The product’s colour or smell alone",
         ],
         correctIndex: 1,
-        explanation: "Broad feed categories do not select an individual diet. The responsible person and, where needed, qualified nutrition or veterinary professionals must consider the current plan and individual context.",
+        explanation:
+          "Broad feed categories do not select an individual diet. The responsible person and, where needed, qualified nutrition or veterinary professionals must consider the current plan and individual context.",
       },
       {
-        question: "What should happen if feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare is concerning or outside the current plan?",
+        question:
+          "What should happen if feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare is concerning or outside the current plan?",
         options: [
           "Choose a replacement feed from a generic list",
           "Make a rapid change to test whether the concern improves",
@@ -9566,7 +9600,8 @@ Use this lesson to understand why individual planning matters and to prepare que
     ],
     knowledgeCheck: [
       {
-        question: "What determines whether a condition, workload, feed, forage, water, supplement, grazing, turnout, or exercise change is suitable for a horse?",
+        question:
+          "What determines whether a condition, workload, feed, forage, water, supplement, grazing, turnout, or exercise change is suitable for a horse?",
         options: [
           "A generic ideal score or range",
           "The individual horse’s current approved plan after responsible-person and appropriate qualified assessment",
@@ -9574,10 +9609,12 @@ Use this lesson to understand why individual planning matters and to prepare que
           "A coat or body-shape observation alone",
         ],
         correctIndex: 1,
-        explanation: "A generic lesson cannot select a diet or workload change. The individual plan and appropriate assessment determine what is suitable.",
+        explanation:
+          "A generic lesson cannot select a diet or workload change. The individual plan and appropriate assessment determine what is suitable.",
       },
       {
-        question: "What should happen if a change in condition, appetite, water, droppings, coat, hoof, behaviour, comfort, health, welfare, feed, forage, or workload is concerning or outside the current plan?",
+        question:
+          "What should happen if a change in condition, appetite, water, droppings, coat, hoof, behaviour, comfort, health, welfare, feed, forage, or workload is concerning or outside the current plan?",
         options: [
           "Choose a generic diet change or supplement",
           "Diagnose a nutritional deficiency or laminitis from the observation",
@@ -9731,7 +9768,8 @@ An authorised person may use product identity, instructions, storage requirement
     ],
     knowledgeCheck: [
       {
-        question: "Who determines the diagnosis, management plan, diet, product, monitoring, workload, progression, and stop criteria for a horse with suspected or known EMS, PPID, laminitis, metabolic, hydration, or other health concern?",
+        question:
+          "Who determines the diagnosis, management plan, diet, product, monitoring, workload, progression, and stop criteria for a horse with suspected or known EMS, PPID, laminitis, metabolic, hydration, or other health concern?",
         options: [
           "Any learner using a generic lesson or online rule",
           "The responsible person and appropriate veterinary or qualified professional through the individual current plan",
@@ -9743,7 +9781,8 @@ An authorised person may use product identity, instructions, storage requirement
           "The reviewed welfare and professional guidance describes EMS as requiring veterinary assessment and a veterinary-agreed plan. A generic lesson cannot diagnose or prescribe management.",
       },
       {
-        question: "What should happen if a product, water access, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety concern is outside the current plan or unclear?",
+        question:
+          "What should happen if a product, water access, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety concern is outside the current plan or unclear?",
         options: [
           "Choose, dose, mix, or administer a product based on workload or weather",
           "Diagnose dehydration, a deficiency, EMS, PPID, or laminitis from the observation",
@@ -9817,7 +9856,8 @@ Use the Five Freedoms and Five Domains as prompts to ask: what information is kn
     ],
     knowledgeCheck: [
       {
-        question: "What is the appropriate use of the Five Freedoms in this lesson?",
+        question:
+          "What is the appropriate use of the Five Freedoms in this lesson?",
         options: [
           "A complete diagnostic checklist that proves welfare or legal status from one observation",
           "A historical prompt that supports a wider individual welfare assessment alongside current responsible-person and professional procedures",
@@ -9825,10 +9865,12 @@ Use the Five Freedoms and Five Domains as prompts to ask: what information is kn
           "A substitute for veterinary, welfare, emergency, or local-authority advice",
         ],
         correctIndex: 1,
-        explanation: "The Five Freedoms can prompt reflection, but individual welfare assessment also considers nutrition, environment, health, behaviour, mental state, context, and current procedures.",
+        explanation:
+          "The Five Freedoms can prompt reflection, but individual welfare assessment also considers nutrition, environment, health, behaviour, mental state, context, and current procedures.",
       },
       {
-        question: "What should a learner do if factual observations create a welfare concern?",
+        question:
+          "What should a learner do if factual observations create a welfare concern?",
         options: [
           "Diagnose the welfare breach and confront the person responsible",
           "Enter private land and alter the horse’s food, water, shelter, turnout, treatment, or management",
@@ -9984,7 +10026,8 @@ The purpose of this lesson is to help a learner recognise the importance of care
     ],
     knowledgeCheck: [
       {
-        question: "What should a learner do if factual observations create a welfare concern?",
+        question:
+          "What should a learner do if factual observations create a welfare concern?",
         options: [
           "Diagnose neglect or abuse and confront the person responsible",
           "Enter private land and change the horse’s food, water, equipment, treatment, or management",
@@ -9996,7 +10039,8 @@ The purpose of this lesson is to help a learner recognise the importance of care
           "Do not diagnose, confront, trespass, or take unauthorised action. Follow current authorised procedures and use emergency routes when factual observations indicate an urgent condition.",
       },
       {
-        question: "What can a generic Academy lesson determine from a single concerning welfare observation?",
+        question:
+          "What can a generic Academy lesson determine from a single concerning welfare observation?",
         options: [
           "That neglect, abuse, intent, an offence, and the required enforcement action have been proved",
           "That a named person must be confronted or publicly identified",
@@ -10072,7 +10116,8 @@ Use this lesson to prepare appropriate questions: which current jurisdiction and
     ],
     knowledgeCheck: [
       {
-        question: "What can this generic Academy lesson determine from a horse-welfare or legal observation?",
+        question:
+          "What can this generic Academy lesson determine from a horse-welfare or legal observation?",
         options: [
           "That an offence, legal responsibility, enforcement action, penalty, and jurisdiction have been proved",
           "That a court will reach a particular conclusion",
@@ -10080,10 +10125,12 @@ Use this lesson to prepare appropriate questions: which current jurisdiction and
           "That the learner should investigate or intervene directly",
         ],
         correctIndex: 2,
-        explanation: "The lesson provides a legal-information boundary. It does not give legal advice or determine responsibility, offences, enforcement, penalties, jurisdiction, or required action.",
+        explanation:
+          "The lesson provides a legal-information boundary. It does not give legal advice or determine responsibility, offences, enforcement, penalties, jurisdiction, or required action.",
       },
       {
-        question: "What is the appropriate response to a passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record question?",
+        question:
+          "What is the appropriate response to a passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record question?",
         options: [
           "Assume one generic rule applies across every UK jurisdiction and activity",
           "Decide document validity or legal effect from an online lesson",
@@ -10091,7 +10138,8 @@ Use this lesson to prepare appropriate questions: which current jurisdiction and
           "Alter, transfer, retain, submit, or destroy the document without authority",
         ],
         correctIndex: 2,
-        explanation: "Official requirements can vary by jurisdiction, activity, document, and current rule. A generic lesson cannot determine validity or the correct legal or commercial action.",
+        explanation:
+          "Official requirements can vary by jurisdiction, activity, document, and current rule. A generic lesson cannot determine validity or the correct legal or commercial action.",
       },
     ],
     aiTutorPrompts: [
@@ -10156,7 +10204,8 @@ Use this lesson to ask: what factual observation was made; what is unknown; what
     ],
     knowledgeCheck: [
       {
-        question: "In the high-level operant-conditioning vocabulary used in this lesson, what does negative reinforcement describe?",
+        question:
+          "In the high-level operant-conditioning vocabulary used in this lesson, what does negative reinforcement describe?",
         options: [
           "A synonym for punishment",
           "Removing something the horse finds uncomfortable after a desired behaviour, with the aim of making that behaviour more likely",
@@ -10168,7 +10217,8 @@ Use this lesson to ask: what factual observation was made; what is unknown; what
           "This is a technical description, not a technique instruction or a decision that any pressure, timing, method, or context is suitable for an individual horse.",
       },
       {
-        question: "What should a learner conclude from a concerning behavioural or body-language observation?",
+        question:
+          "What should a learner conclude from a concerning behavioural or body-language observation?",
         options: [
           "That pain, fear, stress, learned helplessness, a welfare breach, and a specific intervention have been diagnosed",
           "That the horse is deliberately difficult or dangerous",
@@ -10248,7 +10298,8 @@ Use this lesson to ask: what facts are known; what is unknown; who is responsibl
     ],
     knowledgeCheck: [
       {
-        question: "What can this generic Academy lesson determine about an individual horse’s end-of-life, retirement, rehoming, or euthanasia situation?",
+        question:
+          "What can this generic Academy lesson determine about an individual horse’s end-of-life, retirement, rehoming, or euthanasia situation?",
         options: [
           "That quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, and the required action have been established",
           "That a specific euthanasia method, transport, aftercare, legal, insurance, document, or body-disposal action is appropriate",
@@ -10256,10 +10307,12 @@ Use this lesson to ask: what facts are known; what is unknown; who is responsibl
           "That a learner should decide or act alone",
         ],
         correctIndex: 2,
-        explanation: "Every situation is individual. The lesson supports timely planning and authorised escalation, not learner diagnosis or self-directed decisions.",
+        explanation:
+          "Every situation is individual. The lesson supports timely planning and authorised escalation, not learner diagnosis or self-directed decisions.",
       },
       {
-        question: "What is the appropriate boundary when retirement or rehoming is being considered?",
+        question:
+          "What is the appropriate boundary when retirement or rehoming is being considered?",
         options: [
           "Assume retirement or rehoming is always suitable and select a home from a generic lesson",
           "Choose a loan, transport, workload, turnout, management, treatment, document, contract, or legal outcome without individual review",
@@ -10267,7 +10320,8 @@ Use this lesson to ask: what facts are known; what is unknown; who is responsibl
           "Delay emergency welfare support while searching for a new arrangement",
         ],
         correctIndex: 2,
-        explanation: "Rehoming may not be appropriate in every circumstance. Suitability and welfare require individual, current, authorised review.",
+        explanation:
+          "Rehoming may not be appropriate in every circumstance. Suitability and welfare require individual, current, authorised review.",
       },
     ],
     aiTutorPrompts: [
@@ -10332,7 +10386,8 @@ Use this lesson to ask: who is responsible; what current risk assessment and sup
     ],
     knowledgeCheck: [
       {
-        question: "What determines the appropriate setup, measurement, adjustment, and progression for a gridwork or related-distance activity?",
+        question:
+          "What determines the appropriate setup, measurement, adjustment, and progression for a gridwork or related-distance activity?",
         options: [
           "A universal chart from a generic lesson",
           "Another horse’s setup or an online example",
@@ -10340,10 +10395,12 @@ Use this lesson to ask: who is responsible; what current risk assessment and sup
           "A learner’s preferred height or speed",
         ],
         correctIndex: 2,
-        explanation: "Professional coaching guidance requires individual suitability, risk assessment, welfare, safety, appropriate measurement, adjustment where required, supervision, and escalation rather than a universal distance table.",
+        explanation:
+          "Professional coaching guidance requires individual suitability, risk assessment, welfare, safety, appropriate measurement, adjustment where required, supervision, and escalation rather than a universal distance table.",
       },
       {
-        question: "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear?",
+        question:
+          "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear?",
         options: [
           "Independently change distance, height, speed, equipment, position, or the exercise",
           "Diagnose the cause and continue to test a correction",
@@ -10351,7 +10408,8 @@ Use this lesson to ask: who is responsible; what current risk assessment and sup
           "Use another horse’s setup as a solution",
         ],
         correctIndex: 2,
-        explanation: "Do not self-direct gridwork or diagnose a cause. Follow the current authorised procedure and obtain qualified support.",
+        explanation:
+          "Do not self-direct gridwork or diagnose a cause. Follow the current authorised procedure and obtain qualified support.",
       },
     ],
     aiTutorPrompts: [
@@ -10416,7 +10474,8 @@ Use this lesson to ask: who is responsible; what current venue/official instruct
     ],
     knowledgeCheck: [
       {
-        question: "What determines whether and how course walking, route, line, turn, pace, distance, surface, obstacle, and competition decisions are made?",
+        question:
+          "What determines whether and how course walking, route, line, turn, pace, distance, surface, obstacle, and competition decisions are made?",
         options: [
           "A universal lesson procedure",
           "Another rider’s plan or an online example",
@@ -10424,10 +10483,12 @@ Use this lesson to ask: who is responsible; what current venue/official instruct
           "A learner’s preferred line or performance objective",
         ],
         correctIndex: 2,
-        explanation: "The reviewed sources treat these as expert-led, individual, venue- and welfare-dependent decisions rather than a universal learner procedure.",
+        explanation:
+          "The reviewed sources treat these as expert-led, individual, venue- and welfare-dependent decisions rather than a universal learner procedure.",
       },
       {
-        question: "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear?",
+        question:
+          "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear?",
         options: [
           "Independently change the route, line, turn, pace, stride count, equipment, surface, or course plan",
           "Diagnose the cause and continue to test a correction",
@@ -10435,7 +10496,8 @@ Use this lesson to ask: who is responsible; what current venue/official instruct
           "Allow competitive pressure to override welfare",
         ],
         correctIndex: 2,
-        explanation: "Do not self-direct a competition change or diagnose a cause. Follow the current authorised procedure and obtain appropriate support.",
+        explanation:
+          "Do not self-direct a competition change or diagnose a cause. Follow the current authorised procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
@@ -11280,23 +11342,27 @@ function factualSafetyBoundary(lesson: LessonUnitData): string | null {
 }
 
 /**
- * Applies independently reviewed, additive teaching-depth supplements and
- * lesson-aware professional boundaries by stable lesson slug. No browser data
- * can alter this source or the server-held answer key used for completion scoring.
+ * Applies teaching-depth supplements and lesson-aware professional boundaries
+ * by stable lesson slug. Some source lessons remain under factual review; the
+ * curriculum synchroniser independently withholds every such lesson from all
+ * learner and teacher queries until its binding review is accepted.
  */
 export const LESSON_UNITS: LessonUnitData[] = BASE_LESSON_UNITS.map(
   (lesson) => {
-    const enhancement = LESSON_QUALITY_ENHANCEMENTS[lesson.slug];
+    const factuallyReviewedLesson = applyFactualLessonRevision(lesson);
+    const enhancement = FACTUALLY_REVISED_LESSON_SLUGS.has(lesson.slug)
+      ? undefined
+      : LESSON_QUALITY_ENHANCEMENTS[lesson.slug];
     const expandedLesson: LessonUnitData = enhancement
       ? {
-          ...lesson,
-          content: `${lesson.content}\n\n${enhancement.contentExtension}`,
+          ...factuallyReviewedLesson,
+          content: `${factuallyReviewedLesson.content}\n\n${enhancement.contentExtension}`,
           knowledgeCheck: [
-            ...lesson.knowledgeCheck,
+            ...factuallyReviewedLesson.knowledgeCheck,
             enhancement.knowledgeCheck,
           ],
         }
-      : lesson;
+      : factuallyReviewedLesson;
     const boundary = factualSafetyBoundary(expandedLesson);
     if (!boundary) return expandedLesson;
     return {

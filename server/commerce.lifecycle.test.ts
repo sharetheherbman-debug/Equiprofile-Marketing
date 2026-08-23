@@ -21,21 +21,30 @@ describe("Shop customer lifecycle acceptance contract", () => {
     expect(router).toContain("quantity: z.number().int().min(1).max(20)");
     expect(router).toContain("quantity: z.number().int().min(0).max(20)");
     expect(router).toContain("DELETE FROM commerceCartItems");
-    expect(router).toContain("quantity = LEAST(quantity + VALUES(quantity), 20)");
+    expect(router).toContain(
+      "quantity = LEAST(quantity + VALUES(quantity), 20)",
+    );
   });
 
-  it("creates a durable pending order then returns a truthful setup-needed outcome when Store payment is disabled", () => {
+  it("returns a truthful server-priced preview without reserving stock when Store payment is disabled", () => {
     expect(router).toContain("'checkout_pending'");
     expect(router).toContain("idempotencyKey: z.string().min(12).max(160)");
     expect(router).toContain('process.env.ENABLE_STORE_STRIPE === "true"');
     expect(router).toContain("paymentConfigurationRequired: true");
     expect(router).toContain("checkoutUrl: null");
+    expect(router).toContain("It creates no order and reserves no inventory");
   });
 
   it("keeps order history, detail, returns and refunds scoped to the authenticated customer", () => {
-    expect(router).toContain("commerceOrders WHERE userId = ${ctx.user.id} ORDER BY createdAt DESC");
-    expect(router).toContain("WHERE id = ${input.orderId} AND userId = ${ctx.user.id} LIMIT 1");
-    expect(router).toContain("commerceReturns WHERE orderId = ${order.id} AND userId = ${ctx.user.id}");
+    expect(router).toContain(
+      "commerceOrders WHERE userId = ${ctx.user.id} ORDER BY createdAt DESC",
+    );
+    expect(router).toContain(
+      "WHERE id = ${input.orderId} AND userId = ${ctx.user.id} LIMIT 1",
+    );
+    expect(router).toContain(
+      "commerceReturns WHERE orderId = ${order.id} AND userId = ${ctx.user.id}",
+    );
     expect(router).toContain("JOIN commerceReturns r ON r.id = cr.returnId");
     expect(router).toContain("AND r.userId = ${ctx.user.id}");
   });

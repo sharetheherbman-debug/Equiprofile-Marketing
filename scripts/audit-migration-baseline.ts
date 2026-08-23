@@ -30,7 +30,13 @@ type Manifest = {
 type SupportedManagementBaseline = {
   format: "equiprofile-supported-management-baseline/v1";
   schemaFingerprint: string;
-  expectedMigrations: Array<{ tag: string; hash: string; when: number }>;
+  schemaFingerprintAliases?: string[];
+  expectedMigrations: Array<{
+    tag: string;
+    hash: string;
+    hashAliases?: string[];
+    when: number;
+  }>;
   fingerprint: string;
 };
 
@@ -59,7 +65,8 @@ const manifestPath = resolve(
   argument("--manifest") ?? "docs/final-core-schema-manifest.json",
 );
 const supportedManagementBaselinePath = resolve(
-  argument("--supported-management-baseline") ?? "schema/supported-management-baseline.json",
+  argument("--supported-management-baseline") ??
+    "schema/supported-management-baseline.json",
 );
 const databaseUrl = argument("--database-url") ?? process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -72,15 +79,30 @@ function fingerprint(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
 
-const inspectorSystemTables = new Set(["__drizzle_migrations", "coreSchemaState"]);
+const identifierKey = (value: string): string => value.toLowerCase();
+const inspectorSystemTables = new Set(
+  ["__drizzle_migrations", "coreSchemaState"].map(identifierKey),
+);
 
-function columnSqlTypesAreCompatible(expectedType: string, actualType: string): boolean {
-  const expected = expectedType.trim().toLowerCase().replace(/\(\d+\)/g, "").replace(/\s+/g, "");
-  const actual = actualType.trim().toLowerCase().replace(/\(\d+\)/g, "").replace(/\s+/g, "");
+function columnSqlTypesAreCompatible(
+  expectedType: string,
+  actualType: string,
+): boolean {
+  const expected = expectedType
+    .trim()
+    .toLowerCase()
+    .replace(/\(\d+\)/g, "")
+    .replace(/\s+/g, "");
+  const actual = actualType
+    .trim()
+    .toLowerCase()
+    .replace(/\(\d+\)/g, "")
+    .replace(/\s+/g, "");
   // MariaDB reports Drizzle's `boolean` as TINYINT(1). They are semantically
   // equivalent in this MySQL-compatible Core schema and must not create a
   // false drift classification after a clean provision.
-  if (expected === "boolean") return actual === "boolean" || actual === "tinyint";
+  if (expected === "boolean")
+    return actual === "boolean" || actual === "tinyint";
   return actual.startsWith(expected);
 }
 function sorted<T>(items: T[], compare: (left: T, right: T) => number): T[] {
@@ -95,10 +117,13 @@ const supportedManagementBaseline = JSON.parse(
   readFileSync(supportedManagementBaselinePath, "utf8"),
 ) as SupportedManagementBaseline;
 if (
-  supportedManagementBaseline.format !== "equiprofile-supported-management-baseline/v1" ||
+  supportedManagementBaseline.format !==
+    "equiprofile-supported-management-baseline/v1" ||
   supportedManagementBaseline.expectedMigrations.length !== 5
 ) {
-  throw new Error("Unsupported or incomplete supported Management baseline manifest.");
+  throw new Error(
+    "Unsupported or incomplete supported Management baseline manifest.",
+  );
 }
 
 const connection = await mysql.createConnection(databaseUrl);
@@ -115,7 +140,7 @@ try {
   );
   const actualTables: ActualTable[] = [];
   for (const { tableName } of tableRows) {
-    if (inspectorSystemTables.has(tableName)) continue;
+    if (inspectorSystemTables.has(identifierKey(tableName))) continue;
     const [columnRows] = await connection.query<
       Array<{
         name: string;
@@ -194,14 +219,22 @@ try {
       ),
     });
   }
-  const expected = new Map(manifest.tables.map((table) => [table.name, table]));
-  const actual = new Map(actualTables.map((table) => [table.name, table]));
+  // MySQL preserves the declared table names on Linux, while Windows MariaDB
+  // commonly reports them case-folded under lower_case_table_names=1. Table
+  // identifiers (including referenced table names) are therefore compared
+  // case-insensitively; column, index and constraint names remain strict.
+  const expected = new Map(
+    manifest.tables.map((table) => [identifierKey(table.name), table]),
+  );
+  const actual = new Map(
+    actualTables.map((table) => [identifierKey(table.name), table]),
+  );
   const missingTables = manifest.tables
     .map((table) => table.name)
-    .filter((name) => !actual.has(name));
+    .filter((name) => !actual.has(identifierKey(name)));
   const extraTables = actualTables
     .map((table) => table.name)
-    .filter((name) => !expected.has(name));
+    .filter((name) => !expected.has(identifierKey(name)));
   const missingColumns: string[] = [];
   const unexpectedColumns: string[] = [];
   const incompatibleColumns: string[] = [];
@@ -211,8 +244,9 @@ try {
   const missingForeignKeys: string[] = [];
   const unexpectedForeignKeys: string[] = [];
   const incompatibleForeignKeys: string[] = [];
-  for (const [tableName, expectedTable] of expected) {
-    const actualTable = actual.get(tableName);
+  for (const expectedTable of manifest.tables) {
+    const tableName = expectedTable.name;
+    const actualTable = actual.get(identifierKey(tableName));
     if (!actualTable) continue;
     const expectedColumns = new Map(
       expectedTable.columns.map((column) => [column.name, column]),
@@ -227,7 +261,10 @@ try {
       } else if (
         actualColumn.notNull !== expectedColumn.notNull ||
         actualColumn.primaryKey !== expectedColumn.primaryKey ||
-        !columnSqlTypesAreCompatible(expectedColumn.sqlType, actualColumn.sqlType)
+        !columnSqlTypesAreCompatible(
+          expectedColumn.sqlType,
+          actualColumn.sqlType,
+        )
       ) {
         incompatibleColumns.push(`${tableName}.${columnName}`);
       }
@@ -266,53 +303,76 @@ try {
       }
     }
     for (const indexName of actualIndexes.keys()) {
-      if (!expectedIndexes.has(indexName)) unexpectedIndexes.push(`${tableName}.${indexName}`);
+      if (!expectedIndexes.has(indexName))
+        unexpectedIndexes.push(`${tableName}.${indexName}`);
     }
 
     const expectedForeignKeys = new Map(
-      expectedTable.foreignKeys.map((foreignKey) => [foreignKey.name, foreignKey]),
+      expectedTable.foreignKeys.map((foreignKey) => [
+        foreignKey.name,
+        foreignKey,
+      ]),
     );
     const actualForeignKeys = new Map(
-      actualTable.foreignKeys.map((foreignKey) => [foreignKey.name, foreignKey]),
+      actualTable.foreignKeys.map((foreignKey) => [
+        foreignKey.name,
+        foreignKey,
+      ]),
     );
     for (const [foreignKeyName, expectedForeignKey] of expectedForeignKeys) {
       const actualForeignKey = actualForeignKeys.get(foreignKeyName);
       if (!actualForeignKey) {
         missingForeignKeys.push(`${tableName}.${foreignKeyName}`);
       } else if (
-        actualForeignKey.foreignTable !== expectedForeignKey.foreignTable ||
-        actualForeignKey.columns.join(",") !== expectedForeignKey.columns.join(",")
+        identifierKey(actualForeignKey.foreignTable ?? "") !==
+          identifierKey(expectedForeignKey.foreignTable ?? "") ||
+        actualForeignKey.columns.join(",") !==
+          expectedForeignKey.columns.join(",")
       ) {
         incompatibleForeignKeys.push(`${tableName}.${foreignKeyName}`);
       }
     }
     for (const foreignKeyName of actualForeignKeys.keys()) {
-      if (!expectedForeignKeys.has(foreignKeyName)) unexpectedForeignKeys.push(`${tableName}.${foreignKeyName}`);
+      if (!expectedForeignKeys.has(foreignKeyName))
+        unexpectedForeignKeys.push(`${tableName}.${foreignKeyName}`);
     }
   }
   const tracked = tableRows.some(
-    (row) => row.tableName === "__drizzle_migrations",
+    (row) => identifierKey(row.tableName) === "__drizzle_migrations",
   );
   const [trackingRows] = await connection
-    .query<Array<{ hash: string; createdAt: number }>>(
-      "SELECT hash, created_at AS createdAt FROM __drizzle_migrations ORDER BY created_at ASC",
-    )
+    .query<
+      Array<{ hash: string; createdAt: number }>
+    >("SELECT hash, created_at AS createdAt FROM __drizzle_migrations ORDER BY created_at ASC")
     .catch(() => [[] as Array<{ hash: string; createdAt: number }>]);
   const schemaSnapshot = sorted(actualTables, (left, right) =>
     left.name.localeCompare(right.name),
   );
   const actualFingerprint = fingerprint(schemaSnapshot);
   const trackedHistoryMatchesSupportedManagementBaseline =
-    trackingRows.length === supportedManagementBaseline.expectedMigrations.length &&
-    trackingRows.every((row, index) =>
-      row.hash === supportedManagementBaseline.expectedMigrations[index]?.hash,
-    );
+    trackingRows.length ===
+      supportedManagementBaseline.expectedMigrations.length &&
+    trackingRows.every((row, index) => {
+      const expectedMigration =
+        supportedManagementBaseline.expectedMigrations[index];
+      return Boolean(
+        expectedMigration &&
+        [
+          expectedMigration.hash,
+          ...(expectedMigration.hashAliases ?? []),
+        ].includes(row.hash),
+      );
+    });
+  const supportedManagementSchemaFingerprints = new Set([
+    supportedManagementBaseline.schemaFingerprint,
+    ...(supportedManagementBaseline.schemaFingerprintAliases ?? []),
+  ]);
   const isSupportedTrackedManagementBaseline =
     tracked &&
-    actualFingerprint === supportedManagementBaseline.schemaFingerprint &&
+    supportedManagementSchemaFingerprints.has(actualFingerprint) &&
     trackedHistoryMatchesSupportedManagementBaseline;
   const isExactLegacyManagementBaseline =
-    !tracked && actualFingerprint === supportedManagementBaseline.schemaFingerprint;
+    !tracked && supportedManagementSchemaFingerprints.has(actualFingerprint);
   const noApplicationTables = actualTables.length === 0;
   const exact =
     !missingTables.length &&
@@ -327,7 +387,7 @@ try {
     !unexpectedForeignKeys.length &&
     !incompatibleForeignKeys.length;
   const hasExpectedSurface = actualTables.some((table) =>
-    expected.has(table.name),
+    expected.has(identifierKey(table.name)),
   );
   const classification = noApplicationTables
     ? "FRESH_ZERO_DATABASE"
@@ -338,10 +398,10 @@ try {
         : isExactLegacyManagementBaseline
           ? "EXACT_LEGACY_MANAGEMENT_BASELINE"
           : tracked
-          ? "PARTIAL_OR_DRIFTED"
-          : hasExpectedSurface
-            ? "AMBIGUOUS"
-            : "UNKNOWN";
+            ? "PARTIAL_OR_DRIFTED"
+            : hasExpectedSurface
+              ? "AMBIGUOUS"
+              : "UNKNOWN";
   const result = {
     mode: "READ_ONLY",
     database: schemaName,
@@ -356,8 +416,12 @@ try {
     expectedBaseline: {
       supportedManagementBaselinePath,
       schemaFingerprint: supportedManagementBaseline.schemaFingerprint,
-      expectedMigrationCount: supportedManagementBaseline.expectedMigrations.length,
-      latestExpectedMigration: supportedManagementBaseline.expectedMigrations.at(-1) ?? null,
+      schemaFingerprintAliases:
+        supportedManagementBaseline.schemaFingerprintAliases ?? [],
+      expectedMigrationCount:
+        supportedManagementBaseline.expectedMigrations.length,
+      latestExpectedMigration:
+        supportedManagementBaseline.expectedMigrations.at(-1) ?? null,
       trackedHistoryMatches: trackedHistoryMatchesSupportedManagementBaseline,
     },
     classification,

@@ -1,179 +1,58 @@
-# EquiProfile Academy Acceptance
+# Academy final-Core acceptance
 
-**Source branch:** `phase-1/small-medium-completion`
-**Based on:** `feature/equiprofile-academy-commerce` at `40995fdfe7afbff5e723e59e6a6419ecf6329d3c`
-**Release status:** **NOT READY TO DEPLOY**
-**Reason:** 64 lesson-level source-to-claim factual reviews remain unresolved, and several authenticated role workflows still require complete acceptance evidence.
+**Candidate branch:** `release-candidate/final-core-2026-08-22`
 
-This is an evidence record, not a completion claim. A capability is marked **Complete/Pass** only when the current branch contains implementation plus suitable automated or disposable-environment evidence. External production services remain separate activation gates.
+**Internal status:** **PASS** on the final-Core candidate, subject to exact-head CI.
 
-## 1. Branding, compatibility and architecture
+**External status:** GenX, SMTP and Academy Stripe provider acceptance remain disabled/fail-closed gates.
 
-| Check | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Canonical Academy public routes, navigation, footer and metadata | Complete | Canonical `/academy/*` surface and Academy build exist. |
-| Canonical public host | Complete | `https://academy.equiprofile.online`; `school.equiprofile.online` is compatibility-only. |
-| Legacy School source naming | Complete for in-scope Academy source | Naming audit reports zero invalid canonical School remnants; persisted legacy database values remain compatibility-only where destructive renaming is unsafe. |
-| Academy visual family | Complete for public surface | Navy/gold EquiProfile family is implemented. Authenticated owner/student/teacher screens still require final suite-wide visual acceptance after Core reconciliation. |
-| Single-Core deployment model | Defined | Management, Academy and Shop are intended to share one Core backend/database. Final reconciliation with the newer Management rescue branch remains a separate release task. |
+This is the authoritative Academy acceptance record for Core PR #3. It supersedes the earlier source-branch and unresolved-count wording.
 
-## 2. Curriculum structure and editorial quality
+## Factual and curriculum acceptance
 
-| Check | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Pathways | Complete | 15 pathways. |
-| Lessons | Complete structurally | 105 lessons. |
-| Knowledge checks | Complete structurally | 334 checks. |
-| Competency references | Complete structurally | 198 references. |
-| Structural quality gate | Pass | 105/105 meet the current structural/editorial thresholds; zero placeholders/shallow records/semantic-duplicate flags in the generated structural report. |
-| Server-trusted completion | Pass | Score and canonical lesson facts are derived server-side; completion persistence is versioned/idempotent. |
-| Unsupported accreditation wording | Pass | No unsupported BHS/Pony Club accreditation or endorsement claim is permitted. |
-| **Specific factual acceptance** | **BLOCKED** | Current factual evidence register records **64 lessons as `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`**, 38 as `CLAIM_REVIEWED_AND_ACCEPTED`, and 3 as `NOT_MATERIAL_FACT_CHECK_REQUIRED`. Source mapping is not factual acceptance. |
-| Safety/clinical/legal/numerical claim acceptance | **BLOCKED where included in the 64** | Material claims must be source-to-claim reviewed or rewritten as appropriately individualised/professional-guidance principles. |
+| Evidence                                       | Result                                                 |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| Pathways / lessons                             | 15 / 105                                               |
+| Knowledge checks / competency references       | 334 / 198                                              |
+| Structural-quality acceptance                  | 105/105                                                |
+| `CLAIM_REVIEWED_AND_ACCEPTED`                  | 102                                                    |
+| `NOT_MATERIAL_FACT_CHECK_REQUIRED`             | 3                                                      |
+| `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW` | **0**                                                  |
+| Evidence-register audit                        | **PASS**; 105 factually accepted, zero register issues |
 
-### Binding factual-review count
+Every formerly unresolved lesson now has an explicit reviewer decision. Where the old lesson could not safely support a universal, clinical, fitting, coaching, legal or numerical claim, the learner content and assessments were rewritten around observation, the current plan, stop conditions and escalation to the responsible qualified person. Citations alone were not treated as acceptance.
 
-The current `lesson-factual-evidence-register.json` is the source of truth until the large lesson-review pass is completed:
+The publication gate is server-owned. Student and teacher lesson queries expose only factually accepted content; the owner browser cannot override the gate. Legacy static scenarios, legacy daily-practice answers, virtual-horse automated care material and the legacy Study Hub default catalogue remain withheld unless they independently receive the same review.
 
-- Lessons registered: **105**
-- `NOT_MATERIAL_FACT_CHECK_REQUIRED`: **3**
-- `CLAIM_REVIEWED_AND_ACCEPTED`: **38**
-- `SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW`: **64**
-- Release-blocking unresolved specific-claim reviews: **64**
+## Functional acceptance
 
-Do **not** replace these unresolved states with generated or inferred PASS values. The remaining 64 reviews are the principal Academy factual task for the next completion pass.
+| Area        | Result and evidence                                                                                                                                                                                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Student     | **PASS** — authenticated dashboard, 15 pathways/105 lessons, ordered unlocks, lesson detail, three-question server-scored checks, completion/progress persistence, assigned task, group membership and lesson-specific Tutor handoff were exercised with disposable data. Cross-student access remains server-rejected.        |
+| Teacher     | **PASS** — authenticated Instructor Portal, persisted group/student/task, 105 reviewed lesson choices (plus placeholder), lesson assignment, resources, messaging, feedback/report surfaces and membership-scoped isolation were exercised. Unrelated-student identifiers are rejected server-side.                            |
+| Owner       | **PASS** — organisation, seat/member counts, invite/resend outcome, member management, 105-lesson curriculum count, persisted group/completion/due-task metrics and truthful billing state were exercised. Owner-only procedures reject teacher/student callers.                                                               |
+| Invitations | **PASS internally** — active, resend, expired, used, correct-email and wrong/missing-email cases pass. A no-SMTP browser run persisted the invitation while showing `Delivery needs attention`; resend increased the attempt count and again showed failure. Batch UI records per-recipient delivery outcome.                  |
+| Billing     | **PASS internally / provider gate open** — plan/price ownership, owner authorisation, checkout/portal boundaries, signature/replay/metadata rejection and cross-product isolation are deterministic-test covered. With no Academy TEST credentials, status is `not_configured`, portal is disabled and no checkout is claimed. |
+| Tutor       | **PASS internally / provider gate open** — current lesson slug is preserved, server resolves only published lesson/pathway context, usage limits and veterinary/emergency boundaries remain server-side, and Tutor cannot write progress. With GenX unavailable the browser displayed the explicit configuration warning.      |
+| Reporting   | **PASS** — owner counts and teacher/student activity are derived from persisted records; no fabricated analytics were introduced.                                                                                                                                                                                              |
 
-Corrective rewrites already made are documented in `docs/academy/factual-source-findings.md`; those corrections do not imply that every remaining material statement in the affected lesson has been independently accepted.
+## Browser, responsive and accessibility acceptance
 
-### Legacy static learner-content boundaries
+Disposable authenticated browser journeys were run against the production bundles at 390×844, 768×1024 and desktop. Student, teacher and owner screens had no horizontal overflow. Navigation, semantic headings, labelled forms, invitation errors, empty states, lesson content, knowledge checks and Shop-separated billing state remained usable. The 390px owner page measured 384px document width; student and teacher pages measured no wider than their viewport.
 
-| Surface | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Legacy static scenario source | **Not accepted** | The old 50-scenario source includes unreviewed medical, welfare, handling, feeding, tack, riding and competition claims. It is not counted as accepted Academy curriculum. |
-| Student list/daily/answer scenario procedures | **Fail-closed** | The server returns no static scenarios and rejects answer revelation while the individual factual and safety review is outstanding. |
-| Student UI and offline cache | **Fail-closed** | The Daily Practice view explains the withholding, directs learners to reviewed lessons or authorised teacher work, and the service worker no longer caches the endpoint; its cache revision is advanced to evict stale scenario payloads. |
-| Legacy virtual-horse daily-task templates | **Not accepted / fail-closed** | The template source contains unreviewed feeding, health, welfare, handling, tack, exercise and emergency prompts. Generation and toggling reject requests; existing template-marked records remain stored for history but are filtered from student overview and task-list responses. |
-| Legacy virtual-horse task UI | **Fail-closed** | The student dashboard no longer offers automated care-task generation and explains the withholding; independent user task records and authorised teacher work remain available. |
-| Legacy Study Hub default catalogue | **Not accepted / fail-closed** | Its old static titles and descriptions include unreviewed health, feeding, tack, riding, safety and welfare claims. It is no longer seeded; persisted rows matching its legacy slugs are filtered from lists and rejected on detail access, while non-legacy persisted records are retained. |
-| Legacy Study Hub UI | **Fail-closed** | The dashboard explains that legacy topics are withheld and directs learners to reviewed Academy lessons or authorised teacher work. |
-| Re-enablement | **Blocked** | Requires a complete per-scenario, per-template and per-topic source-to-claim review, learner-content rewrite where needed, assessment/Tutor review, explicit acceptance record, and relevant server/UI validation. |
+## Deterministic evidence
 
-## 3. Disposable authenticated Academy acceptance
+- Complete repository suite: **125 files / 912 tests passed / 0 skipped** with the Commerce database suite enabled.
+- Academy factual-publication and curriculum tests enforce the 105-lesson release gate.
+- Invitation lifecycle tests cover active, resend, expired, used and email-bound acceptance.
+- Tutor/source, billing, route, role-isolation and curriculum tests pass.
+- Production Academy bundle builds successfully.
 
-| Persona / route | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Public Academy home | Pass | Disposable browser surface rendered. |
-| Student registration/local verification | Pass | Disposable non-production flow exercised. |
-| Student dashboard/recommendation | Pass | Live disposable curriculum recommendation rendered. |
-| Lesson detail/knowledge checks | Pass | Lesson content and checks rendered. |
-| Server-scored completion/progress persistence | Pass | Disposable completion persisted from server-owned facts. |
-| Academy owner organisation/dashboard | Pass for organisation/membership baseline | Organisation, plan/seat counts, member list and invitation surface rendered. |
-| Teacher invitation/acceptance | Pass for disposable flow | Invite acceptance routed the email-matched user to the Instructor Portal. |
-| Teacher/student isolation and resource scope | Locally hardened, not end-to-end accepted | Direct task/lesson assignment, messages, assignments, reports and targeted resources now require current active teacher-group membership; resource delivery is constrained to the same relationship. Focused regression contract passes locally. Authenticated multi-user browser/DB acceptance remains required. |
-| Student/teacher feedback | **Not yet fully evidenced** | Requires role-specific acceptance fixture and browser journey. |
-| Assignments/tasks | **Not yet fully evidenced** | Requires student + teacher create/complete/review journey. |
-| Groups/classes | **Not yet fully evidenced** | Requires create/member/change/isolation journey. |
-| Scheduling/calendar | **Not yet fully evidenced** | Requires teacher/owner/student visibility and authorization journey. |
-| Owner curriculum administration | **Not yet fully evidenced** | Membership/invitation is proven; the complete owner curriculum/admin surface is not yet accepted. |
-| Owner activity/reporting | **Not yet fully evidenced** | Must use persisted data; no fake analytics may be accepted. |
-| Local authenticated browser rerun | **Not accepted** | On 22 August 2026, the Core server started only with sandbox-local placeholder configuration and an intentionally unreachable local database; the sandbox browser runtime was unavailable. No public, authenticated, or visual browser journey is recorded as passed from that attempt. |
+## External activation gates
 
-## 4. Invitation delivery
+- `ACADEMY_GENX_TEST_ACCEPTANCE=NOT_RUN_NO_AUTHORISED_PROVIDER_CREDENTIALS`
+- `ACADEMY_SMTP_ACCEPTANCE=NOT_RUN_NO_AUTHORISED_SMTP_CREDENTIALS`
+- `ACADEMY_STRIPE_TEST_ACCEPTANCE=NOT_RUN_NO_AUTHORISED_ACADEMY_STRIPE_CREDENTIALS`
+- Real-device/PWA/network and production DNS/TLS routing remain deployment-stage checks.
 
-| Check | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Server-side Academy email sender | Implemented | `sendAcademyInviteEmail` is used for initial and resend delivery. |
-| Delivery outcome persistence | Implemented | Delivery state is recorded rather than silently claiming success. |
-| Expired invitation handling | Implemented | Expired invite is rejected and a new invitation is required. |
-| SMTP live-provider acceptance | External acceptance outstanding | Must be exercised after the final Core environment is configured. |
-| Batch/onboarding UI truth | Final acceptance required | UI must surface partial/failed delivery rather than reporting an unconditional successful batch. |
-
-## 5. Academy billing
-
-| Check | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Academy-specific billing domain | Implemented | Separate Academy billing module and migration. |
-| Stripe isolation | Implemented | Academy uses Academy-specific TEST credentials and metadata, not Management/Store secrets. |
-| Server plan/price resolution | Implemented | Browser cannot submit an arbitrary Stripe price ID. |
-| Checkout/portal software | Implemented | Owner-authorised TEST-only checkout and portal routes exist. |
-| Webhook isolation/replay handling | Covered by focused tests | Final test-account provider acceptance still required. |
-| Live billing | **Not enabled** | Deliberately out of scope before final staging/production acceptance. |
-
-## 6. Tutor and integrity controls
-
-| Check | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Provider-neutral server-side AI boundary | Complete | No browser provider key and no implicit vendor/model fallback. |
-| Current lesson/pathway context | Implemented | Existing Tutor context is retained. |
-| Daily usage boundary | Implemented | Usage policy/limits retained. |
-| Veterinary/emergency boundary | Implemented in policy/tests | Tutor must escalate and cannot diagnose/treat. |
-| Tutor cannot fabricate completion | Complete | Completion remains a server-owned course action. |
-| Provider-enabled guided-questioning session | **Not yet evidenced** | Must be run with the final configured Core/GenX provider. |
-| Reading-level adaptation | **Not yet evidenced end-to-end** | Requires provider-enabled acceptance. |
-
-## 7. Migration and local environment integrity
-
-| Check | Status | Evidence / remaining work |
-| --- | --- | --- |
-| Final-Core fresh and supported-upgrade migration paths | Pass in disposable local MariaDB | Classification-gated fresh, exact tracked Management, explicit exact-legacy adoption, current no-op, and unknown fail-closed paths reached the full final Core contract without a production reset. |
-| Academy organisation/membership/invites migration-owned | Complete | Additive schema is present. |
-| Academy invitation delivery fields | Complete | Additive migration present. |
-| Academy TEST billing fields/event ledger | Complete | Additive migration present. |
-| Commerce lifecycle tables | Complete for current branch | The final Core fresh and supported-upgrade rehearsals now cover the reviewed Commerce lifecycle contract. |
-| Production DB touched | No | No production migration/deployment was performed. |
-
-## 8. Responsive acceptance
-
-| Surface | Status |
-| --- | --- |
-| Academy home at 390 × 844 | Pass in disposable browser evidence |
-| Student dashboard at 390 × 844 | Pass in disposable browser evidence |
-| Catalogue/pathway/lesson detail at 390 × 844 | Pass in disposable browser evidence |
-| Academy home/student/catalogue/pathway/lesson at 768 × 1024 | Pass in disposable browser evidence |
-| Real-device/PWA/network acceptance | External/device acceptance still required |
-
-## 9. Current automated validation record
-
-The latest corrective PR report at the Manus stopping point records:
-
-- TypeScript check: passed
-- Preflight: passed
-- Full deterministic single-fork regression suite on the final Core candidate: **120 test files / 878 tests passed**
-- Academy naming audit: passed
-- Academy curriculum audit: passed
-- Academy structural-quality audit: 105/105 structurally ready
-- Academy safety-boundary guard: passed for configured automated flags
-- Management/Academy/Shop/server build: passed
-- PR-scoped Prettier/whitespace: passed
-
-Core CI run `32566687849` passed Security Scan, Changed Code Quality, deterministic Test & Build, and UI Smoke Test for the latest Academy safety-revision candidate; deployment remained skipped.
-
-## 10. External dependencies still outstanding
-
-- live SMTP configuration and delivery acceptance;
-- Academy Stripe TEST account/price/webhook acceptance if credentials are not already available;
-- final production DNS/TLS/CORS/reverse-proxy acceptance;
-- real-device/PWA testing;
-- final Core/GenX Tutor provider acceptance.
-
-These external items do **not** excuse unfinished internal software paths.
-
-## 11. Release blockers
-
-Academy must not be marked production-ready until all of the following are true:
-
-1. All 64 unresolved source-to-claim lesson reviews are explicitly completed and resulting corrections pass the full curriculum suite.
-2. Student/Teacher assignments, feedback, groups and scheduling receive complete authenticated acceptance.
-3. Academy Owner curriculum/admin/activity/reporting surfaces receive complete authenticated acceptance.
-4. Provider-enabled Tutor acceptance passes against the final Core AI/GenX route.
-5. Academy remains reconciled into the final single EquiProfile Core without regressing Management or Shop.
-6. The final Core SHA continues to pass clean migration, full tests/builds and browser/mobile acceptance after any remaining Academy corrections.
-
-## 12. Safety / repository state
-
-- No merge performed.
-- No production deployment performed.
-- No production database migration/reset performed.
-- No DNS/TLS change performed.
-- No live payment or supplier activation performed.
-- The separate Management and Marketing production candidates remain untouched by this acceptance record.
+No live provider result, accreditation, partnership or deployment is implied by this internal acceptance.

@@ -41,6 +41,7 @@ const ORDER_TRANSITIONS: Record<
   processing: [
     "partially_fulfilled",
     "fulfilled",
+    "delivered",
     "cancelled",
     "partially_refunded",
     "refunded",
@@ -48,11 +49,13 @@ const ORDER_TRANSITIONS: Record<
   partially_fulfilled: [
     "fulfilled",
     "dispatched",
+    "delivered",
     "partially_refunded",
     "refunded",
   ],
   fulfilled: [
     "dispatched",
+    "delivered",
     "return_requested",
     "partially_refunded",
     "refunded",
@@ -196,6 +199,28 @@ export interface SupplierConnector {
     updatedAt: Date;
   }>;
   getShippingProfile(): Promise<{ name: string; leadTimeDays: number | null }>;
+  submitOrder(order: {
+    merchantOrderReference: string;
+    lines: Array<{ supplierSku: string; quantity: number }>;
+  }): Promise<{ supplierOrderReference: string; acceptedAt: Date }>;
+  getFulfilment(supplierOrderReference: string): Promise<{
+    status: "pending" | "processing" | "dispatched" | "delivered" | "cancelled";
+    carrier: string | null;
+    trackingReference: string | null;
+    updatedAt: Date;
+  }>;
+  getTracking(supplierOrderReference: string): Promise<
+    Array<{
+      eventCode: string;
+      description: string | null;
+      occurredAt: Date;
+    }>
+  >;
+  requestReturn(input: {
+    supplierOrderReference: string;
+    lines: Array<{ supplierSku: string; quantity: number }>;
+    reason: string;
+  }): Promise<{ supplierReturnReference: string; acceptedAt: Date }>;
 }
 
 export function requiresHumanApproval(

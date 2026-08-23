@@ -1,63 +1,47 @@
-# Final-Core Migration Acceptance Matrix
+# Final-Core migration acceptance matrix
 
-**Status:** **Internally accepted on disposable local MariaDB only.** This is **not** deployment authorization. No production database, VPS, DNS configuration, production backup, live payment system, or secret store was accessed.
+**Status:** **PASS on disposable local MariaDB 11.4.** This is not production migration authorisation. No production database, backup, VPS, DNS, TLS, payment system or secret store was accessed.
 
-The supported migration dispatcher is intentionally classification-first. The read-only inspector compares the complete final-Core contract across **162 Management, Academy, and Shop tables**, including table names, columns, nullability, primary keys, types, indexes, unique constraints, and foreign keys. It does not modify a database.
+The classification-first inspector compares the complete **162-table** Management/Academy/Shop contract, including columns, types, nullability, primary keys, indexes, unique constraints and foreign keys. It performs no writes.
 
-| Path | Required starting state | Result | Acceptance evidence and safety boundary |
-| --- | --- | --- | --- |
-| Historical replay diagnostic | Canonical Drizzle files, byte-for-byte | **Expected failure retained** | A local canonical replay stops at `0005_fix_site_settings` after the genuine five tracked rows because the installed runner receives three undelimited statements as one query. Canonical SQL and journal metadata remain unchanged. |
-| Marker-only replay diagnostic | Ignored generated fixture | **Pass — diagnostic only** | The generated `.tmp/migrations-replay-fixed` fixture adds only statement-boundary comments and replayed 14 entries. Its fixture hashes must never be treated as production journal history. |
-| A — Fresh zero database | No application tables | **PASS** | `provision-final-core-schema.ts --mode=fresh` regenerated the semantic-equivalence fixture, applied the verified final-Core Commerce contract, reconciled the typed Core schema, and then passed the strict inspector: 162 tables and zero table/column/index/foreign-key differences. |
-| B — Supported tracked Management baseline | Exact five-entry canonical tracked fingerprint `a933cc79…ca847` and exact canonical hashes | **PASS** | The named dispatcher path ran from the known pre-`0005` baseline through `CURRENT_NO_ACTION_REQUIRED`, with Management user and settings rows preserved. It neither changed historical SQL nor forged `__drizzle_migrations` history. |
-| C — Exact legacy Management baseline | Same exact baseline fingerprint with no migration tracking table | **PASS — explicit adoption only** | Inspector returns `EXACT_LEGACY_MANAGEMENT_BASELINE`, `safeToUpgrade: false`. The automatic dispatcher refuses it. The named command requires `--mode=exact-legacy-adoption` and a non-empty `--owner-backup-reference`; a local rehearsal then reached the final schema with representative data preserved. |
-| D — Partial historical schema | Any tracked state other than the approved five-entry fingerprint/history | **PASS — fail closed** | Inspector reports `PARTIAL_OR_DRIFTED` and the dispatcher does not mutate it. |
-| E — Unknown or drifted schema | An unrecognised application table or schema fingerprint | **PASS — fail closed** | A local `unknown_schema_probe` database reported `UNKNOWN`; dispatcher exited `2` and table count remained one, proving no automatic reconciliation occurred. |
-| F — Current final Core schema | Exact final-Core structure | **PASS** | Inspector reports `CURRENT_NO_ACTION_REQUIRED` with zero table, column, index, or foreign-key differences; dispatcher is a no-op. |
+| Path                                   | Final rehearsal result            | Evidence and safety boundary                                                                                                                                                                                                                                              |
+| -------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Historical canonical replay diagnostic | **Expected failure retained**     | The real canonical replay stopped at `0005_fix_site_settings` after the genuine five tracked entries because undelimited statements reached the installed runner as one query. Historical SQL/journal files were not edited.                                              |
+| Marker-only replay fixture             | **PASS — diagnostic only**        | The ignored `.tmp/migrations-replay-fixed` fixture added statement-boundary comments only; semantic equivalence and canonical hashes were checked before use. It is not production history.                                                                               |
+| Fresh zero database                    | **PASS**                          | `--mode=fresh` produced schema fingerprint `87d5a30e0b27fe38ec786954b704032fc6127a715419423e837564ecbb9dc922`; the strict audit reported `CURRENT_NO_ACTION_REQUIRED`, 162 tables and zero table/column/index/foreign-key differences.                                    |
+| Supported tracked Management baseline  | **PASS**                          | Canonical five-entry replay classified `SUPPORTED_TRACKED_MANAGEMENT_BASELINE`, upgraded to `CURRENT_NO_ACTION_REQUIRED`, and preserved representative user/settings rows. Historical files and tracking were not forged.                                                 |
+| Exact untracked legacy baseline        | **PASS — explicit adoption only** | Inspector returned `EXACT_LEGACY_MANAGEMENT_BASELINE`, `safeToUpgrade: false`. A real disposable logical backup was created and identified by SHA-256 before the named `--mode=exact-legacy-adoption` command. It reached current Core and preserved representative rows. |
+| Partial/drifted baseline               | **PASS — fail closed**            | An exact baseline with one unexpected column classified `PARTIAL_OR_DRIFTED`; dispatcher exited 2 and left the drift column untouched.                                                                                                                                    |
+| Unknown schema                         | **PASS — fail closed**            | A one-table unknown database classified `UNKNOWN`; dispatcher exited 2 and table count remained one.                                                                                                                                                                      |
+| Current final Core                     | **PASS — no-op**                  | Normal dispatcher reported `CURRENT_NO_ACTION_REQUIRED` and performed no migration action.                                                                                                                                                                                |
+
+## Portability correction from this rehearsal
+
+Windows MariaDB reports table identifiers case-folded with `lower_case_table_names=1`, and a Windows checkout may hash canonical migrations with CRLF bytes. The inspector now compares table/referenced-table identifiers case-insensitively while keeping columns, indexes and constraints strict. The supported-baseline manifest records explicit, reviewed CRLF/lower-case aliases for the same canonical five files and schema; no broad or unrecognised fingerprint is accepted. The named upgrader now launches its inspector through the current Node runtime, avoiding Windows `npx` executable resolution failures.
 
 ## Supported commands
 
-> **The normal command is intentionally conservative.** It only provisions a verified zero database, upgrades the exact tracked Management baseline, or returns a no-op for an already current schema.
-
 ```bash
-# Read-only classification, never mutates
+# Read-only classification
 npm run db:inspect
 
-# Normal classification-first dispatcher
+# Conservative classification-first dispatcher
 npm run db:migrate
 
-# Verify routing without mutation
-DRY_RUN=1 npm run db:migrate
-
-# Fresh zero database only; the dispatcher invokes this only after inspection
+# Fresh zero database only
 npm run db:provision-fresh
-```
 
-An exact untracked legacy baseline is **not** an automatic path. After an owner-controlled backup exists and its identifier has been recorded outside the repository, use the separately named command under controlled deployment supervision:
-
-```bash
+# Explicit legacy path: owner-controlled backup reference required
 npx tsx scripts/upgrade-supported-management-baseline.ts \
   --mode=exact-legacy-adoption \
   --owner-backup-reference=<owner-controlled-backup-identifier>
 ```
 
-The backup reference is a human-control gate, not a backup implementation. The repository does not create, upload, or expose production backups.
+## Source contracts
 
-## Final-Core source contract
+- Final manifest: `docs/final-core-schema-manifest.json`, fingerprint `87d5a30e0b27fe38ec786954b704032fc6127a715419423e837564ecbb9dc922`.
+- Commerce contract: `schema/final-core-commerce.sql`, SHA-256 `674f2226bf9006ed9bede4cd3a4338cb605045c9e797a7364c72890ce63e78c2`, 46 statements.
+- Strict index/FK contract: `schema/final-core-structural-contract.json`, SHA-256 `ab5e71712e3f838e7fd6c627666bed58fd247b48aafb9357e644c04025d3718d`.
+- Supported Management baseline: `schema/supported-management-baseline.json`; exact primary and platform-alias fingerprints only.
 
-| Contract | Purpose | Integrity boundary |
-| --- | --- | --- |
-| `docs/final-core-schema-manifest.json` | Complete final-Core table, column, index, and foreign-key contract | Deterministically generated; current expected fingerprint `87d5a30e0b27fe38ec786954b704032fc6127a715419423e837564ecbb9dc922`. |
-| `schema/final-core-commerce.sql` | Recovered authorized Shop foundation/lifecycle contract used only in explicit migration commands | SHA-256 `674f2226bf9006ed9bede4cd3a4338cb605045c9e797a7364c72890ce63e78c2`; never invoked on ordinary server startup. |
-| `schema/final-core-structural-contract.json` | Reviewed strict index and foreign-key contract derived from a successful disposable fresh install | SHA-256 `ab5e71712e3f838e7fd6c627666bed58fd247b48aafb9357e644c04025d3718d`. |
-| `schema/supported-management-baseline.json` | Exact genuine five-entry canonical Management baseline accepted for named upgrade | Fingerprint `a933cc79c0c9624505e287cefcda973e464c62419216daad51140707411ca847`; no marker-only fixture history is accepted. |
-
-## Non-negotiable safety conditions
-
-- Historical journalled migrations remain immutable, including `0002`, `0005`, `0008`, `0012`, and `0013`.
-- Orphaned `0014`–`0024` files are neither executed automatically nor retroactively marked as applied.
-- The ignored marker-only fixture remains diagnostic evidence only and cannot establish production migration history.
-- `coreSchemaState` is final-Core state bookkeeping only; it does not modify or forge `__drizzle_migrations`.
-- The explicit Commerce and Management forward contracts run only through named migration commands. Ordinary application startup does not invoke broad reconciliation.
-- SMTP, GenX, Stripe, supplier, connector, and other deployment credentials remain deferred to the approved secret store. They are not embedded in this repository or needed for these schema rehearsals.
-- This matrix does not authorize merge, deployment, production migration, live Stripe, supplier activation, paid advertising, or any production-side action.
+Historical migrations remain immutable. Orphaned `0014`–`0024` files are not automatically executed or retroactively marked. `coreSchemaState` is final-Core bookkeeping only. Production migration still requires an owner-controlled read-only inspection, verified backup and deployment approval.

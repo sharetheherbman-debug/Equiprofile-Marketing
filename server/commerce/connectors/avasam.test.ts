@@ -24,5 +24,24 @@ describe("AvasamSupplierConnector", () => {
     await expect(connector.getProduct("ANY-SKU")).rejects.toBeInstanceOf(
       AvasamConnectorNotConfiguredError,
     );
+    await expect(
+      connector.submitOrder({
+        merchantOrderReference: "TEST-ORDER",
+        lines: [{ supplierSku: "ANY-SKU", quantity: 1 }],
+      }),
+    ).rejects.toBeInstanceOf(AvasamConnectorNotConfiguredError);
+    await expect(connector.getFulfilment("TEST-ORDER")).rejects.toBeInstanceOf(
+      AvasamConnectorNotConfiguredError,
+    );
+    await expect(connector.getTracking("TEST-ORDER")).rejects.toBeInstanceOf(
+      AvasamConnectorNotConfiguredError,
+    );
+    await expect(
+      connector.requestReturn({
+        supplierOrderReference: "TEST-ORDER",
+        lines: [{ supplierSku: "ANY-SKU", quantity: 1 }],
+        reason: "Deterministic contract test",
+      }),
+    ).rejects.toBeInstanceOf(AvasamConnectorNotConfiguredError);
   });
 });

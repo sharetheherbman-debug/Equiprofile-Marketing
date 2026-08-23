@@ -26,6 +26,9 @@ import {
   LogOut,
   Check,
   RefreshCw,
+  CalendarClock,
+  Activity,
+  CreditCard,
 } from "lucide-react";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
@@ -59,6 +62,9 @@ function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
     "teacher",
   );
   const [orgCreated, setOrgCreated] = useState(false);
+  const [batchResults, setBatchResults] = useState<
+    Array<{ email: string; status: "DELIVERED" | "FAILED"; message: string }>
+  >([]);
 
   const createOrgMutation = trpc.academy.createOrganization.useMutation({
     onSuccess: () => {
@@ -81,16 +87,35 @@ function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
   };
 
   const sendAllInvites = async () => {
+    const results: Array<{
+      email: string;
+      status: "DELIVERED" | "FAILED";
+      message: string;
+    }> = [];
     for (const invite of invites) {
       try {
-        await inviteMutation.mutateAsync({
+        const result = await inviteMutation.mutateAsync({
           email: invite.email,
           role: invite.role,
         });
-      } catch {
-        // Continue with remaining invites
+        results.push({
+          email: invite.email,
+          status:
+            result.deliveryStatus === "DELIVERED" ? "DELIVERED" : "FAILED",
+          message: result.deliveryMessage,
+        });
+      } catch (error) {
+        results.push({
+          email: invite.email,
+          status: "FAILED",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Invitation could not be saved or sent.",
+        });
       }
     }
+    setBatchResults(results);
     setStep("done");
   };
 
@@ -390,6 +415,22 @@ function OnboardingWizard({ onComplete }: { onComplete: () => void }) {
             Your Academy organisation is ready. You can manage members, track
             student progress, and assign learning content from your dashboard.
           </p>
+          {batchResults.length > 0 && (
+            <div className="mb-6 space-y-2 text-left" aria-live="polite">
+              {batchResults.map((result) => (
+                <div
+                  key={result.email}
+                  className={`rounded-lg border px-3 py-2 text-xs ${
+                    result.status === "DELIVERED"
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                      : "border-amber-500/30 bg-amber-500/10 text-amber-200"
+                  }`}
+                >
+                  <strong>{result.email}</strong>: {result.message}
+                </div>
+              ))}
+            </div>
+          )}
           <button
             onClick={onComplete}
             className="px-8 py-3 rounded-xl bg-gradient-to-r from-[#2e86ab] to-[#5b8def] text-white font-semibold hover:from-[#1a5276] hover:to-[#4a7dd4] transition-all inline-flex items-center gap-2"
@@ -417,6 +458,17 @@ export default function AcademyDashboard() {
   } = trpc.academy.listMembers.useQuery();
   const { data: pendingInvites, refetch: refetchInvites } =
     trpc.academy.listInvites.useQuery();
+  const { data: ownerOperations } = trpc.academy.ownerOperations.useQuery(
+    undefined,
+    { enabled: Boolean(stats?.organization) },
+  );
+  const { data: billingStatus } = trpc.academy.billingStatus.useQuery(
+    undefined,
+    { enabled: Boolean(stats?.organization) },
+  );
+  const billingPortal = trpc.academy.createBillingPortal.useMutation({
+    onSuccess: ({ portalUrl }) => window.location.assign(portalUrl),
+  });
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -524,6 +576,80 @@ export default function AcademyDashboard() {
                 label="Pending Invites"
                 value={String(stats?.pendingInviteCount ?? 0)}
               />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+                  <BookOpen className="h-4 w-4 text-indigo-400" /> Curriculum
+                </h2>
+                <p className="text-2xl font-bold text-white">
+                  {ownerOperations?.publishedLessons ?? "—"}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  source-reviewed lessons currently published
+                </p>
+                <p className="mt-3 text-xs text-gray-500">
+                  Publication is controlled by the factual evidence gate; owners
+                  cannot expose withheld material from the browser.
+                </p>
+              </Card>
+              <Card>
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+                  <Activity className="h-4 w-4 text-amber-400" /> Persisted
+                  activity
+                </h2>
+                <p className="text-sm text-gray-300">
+                  {ownerOperations?.activeGroups ?? 0} active groups ·{" "}
+                  {ownerOperations?.recordedLessonCompletions ?? 0} recorded
+                  lesson completions
+                </p>
+                <p className="mt-3 flex items-center gap-1 text-xs text-gray-400">
+                  <CalendarClock className="h-3.5 w-3.5" />
+                  {ownerOperations?.scheduledOpenTasks ?? 0} open tasks with a
+                  due date
+                </p>
+              </Card>
+              <Card>
+                <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+                  <CreditCard className="h-4 w-4 text-emerald-400" /> Academy
+                  billing
+                </h2>
+                <p className="text-sm text-white">
+                  Status: {billingStatus?.academyBillingStatus ?? "not started"}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  TEST mode only ·{" "}
+                  {billingStatus?.billingConfigured
+                    ? "configured"
+                    : "disabled until TEST credentials are configured"}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setLocation("/academy/pricing")}
+                    className="rounded-lg border border-indigo-400/30 px-3 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/10"
+                  >
+                    Plans
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => billingPortal.mutate()}
+                    disabled={
+                      !billingStatus?.billingConfigured ||
+                      billingPortal.isPending
+                    }
+                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Billing portal
+                  </button>
+                </div>
+                {billingPortal.isError && (
+                  <p className="mt-2 text-xs text-amber-300" role="alert">
+                    {billingPortal.error.message}
+                  </p>
+                )}
+              </Card>
             </div>
 
             {/* Invite button */}

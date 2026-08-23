@@ -4,13 +4,17 @@ import { protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, inArray, sql } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   organizations,
   organizationMembers,
   organizationInvites,
   users,
+  lessonUnits,
+  studentGroups,
+  teacherAssignedTasks,
+  lessonCompletion,
 } from "../drizzle/schema";
 import { nanoid } from "nanoid";
 import { FREE_TRIAL_DAYS, INVITE_EXPIRY_DAYS } from "@shared/pricing";
@@ -23,6 +27,7 @@ import {
   type AcademyBillingInterval,
   type AcademyPlanTier,
 } from "./academy/billing";
+import { ensureAcademyCurriculum } from "./academy/curriculumPipeline";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -31,6 +36,49 @@ function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
     return JSON.parse(raw);
   } catch {
     return {};
+  }
+}
+
+type AcademyInviteState = {
+  acceptedAt: Date | string | null;
+  expiresAt: Date | string;
+  invitedEmail: string;
+};
+
+/** Deterministic invitation lifecycle boundary shared by resend and accept. */
+export function validateAcademyInviteState(
+  invite: AcademyInviteState,
+  action: "resend" | "accept",
+  options: { now?: Date; accountEmail?: string | null } = {},
+) {
+  if (invite.acceptedAt) {
+    throw new TRPCError({
+      code: action === "accept" ? "CONFLICT" : "PRECONDITION_FAILED",
+      message:
+        action === "accept"
+          ? "Invite already accepted"
+          : "Accepted invitations cannot be resent.",
+    });
+  }
+  if (new Date(invite.expiresAt) <= (options.now ?? new Date())) {
+    throw new TRPCError({
+      code: "PRECONDITION_FAILED",
+      message:
+        action === "accept"
+          ? "Invite has expired"
+          : "This invitation has expired. Create a new invitation instead.",
+    });
+  }
+  if (
+    action === "accept" &&
+    options.accountEmail?.trim().toLowerCase() !==
+      invite.invitedEmail.trim().toLowerCase()
+  ) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message:
+        "Sign in with the email address that received this Academy invitation.",
+    });
   }
 }
 
@@ -556,19 +604,7 @@ export const academyRouter = router({
           message: "Invitation not found.",
         });
       }
-      if (invite.acceptedAt) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "Accepted invitations cannot be resent.",
-        });
-      }
-      if (new Date(invite.expiresAt) <= new Date()) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message:
-            "This invitation has expired. Create a new invitation instead.",
-        });
-      }
+      validateAcademyInviteState(invite, "resend");
       const delivery = await sendAcademyInviteEmail({
         recipientEmail: invite.invitedEmail,
         inviterName: ctx.user.name ?? "An Academy owner",
@@ -615,32 +651,15 @@ export const academyRouter = router({
           code: "NOT_FOUND",
           message: "Invite not found or expired",
         });
-      if (invite.acceptedAt)
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Invite already accepted",
-        });
-      if (new Date(invite.expiresAt) < new Date()) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "Invite has expired",
-        });
-      }
-
       // The invite token is not sufficient authorization on its own. The current
       // verified account must match the invited address before any Academy role is granted.
       const user = await db.getUserById(ctx.user.id);
-      if (
-        !user?.email ||
-        user.email.trim().toLowerCase() !==
-          invite.invitedEmail.trim().toLowerCase()
-      ) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message:
-            "Sign in with the email address that received this Academy invitation.",
-        });
+      if (!user) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       }
+      validateAcademyInviteState(invite, "accept", {
+        accountEmail: user.email,
+      });
 
       const [existingMember] = await dbConn
         .select({ id: organizationMembers.id })
@@ -826,6 +845,74 @@ export const academyRouter = router({
       pendingInviteCount: pendingInvites[0]?.count ?? 0,
       maxStudents: org.maxStudents,
       maxTeachers: org.maxTeachers,
+    };
+  }),
+
+  /** Persisted owner visibility for curriculum, activity and scheduled work. */
+  ownerOperations: academyOwnerProcedure.query(async ({ ctx }) => {
+    const dbConn = await getDb();
+    if (!dbConn) throw new TRPCError({ code: "SERVICE_UNAVAILABLE" });
+    const [org] = await dbConn
+      .select({ id: organizations.id })
+      .from(organizations)
+      .where(eq(organizations.ownerId, ctx.user.id))
+      .limit(1);
+    if (!org) return null;
+
+    await ensureAcademyCurriculum();
+    const [curriculum] = await dbConn
+      .select({ count: sql<number>`count(*)` })
+      .from(lessonUnits)
+      .where(eq(lessonUnits.isPublished, true));
+    const memberRows = await dbConn
+      .select({
+        userId: organizationMembers.userId,
+        role: organizationMembers.role,
+      })
+      .from(organizationMembers)
+      .where(eq(organizationMembers.organizationId, org.id));
+    const teacherIds = memberRows
+      .filter((member) => member.role === "teacher")
+      .map((member) => member.userId);
+    const studentIds = memberRows
+      .filter((member) => member.role === "student")
+      .map((member) => member.userId);
+
+    const [groups] = teacherIds.length
+      ? await dbConn
+          .select({ count: sql<number>`count(*)` })
+          .from(studentGroups)
+          .where(
+            and(
+              inArray(studentGroups.teacherId, teacherIds),
+              eq(studentGroups.isActive, true),
+            ),
+          )
+      : [{ count: 0 }];
+    const [scheduled] = teacherIds.length
+      ? await dbConn
+          .select({ count: sql<number>`count(*)` })
+          .from(teacherAssignedTasks)
+          .where(
+            and(
+              inArray(teacherAssignedTasks.teacherId, teacherIds),
+              eq(teacherAssignedTasks.isCompleted, false),
+              sql`${teacherAssignedTasks.dueDate} IS NOT NULL`,
+            ),
+          )
+      : [{ count: 0 }];
+    const [completions] = studentIds.length
+      ? await dbConn
+          .select({ count: sql<number>`count(*)` })
+          .from(lessonCompletion)
+          .where(inArray(lessonCompletion.studentUserId, studentIds))
+      : [{ count: 0 }];
+
+    return {
+      publishedLessons: curriculum?.count ?? 0,
+      activeGroups: groups?.count ?? 0,
+      scheduledOpenTasks: scheduled?.count ?? 0,
+      recordedLessonCompletions: completions?.count ?? 0,
     };
   }),
 });
