@@ -1,109 +1,57 @@
-# EquiProfile — Professional Horse Management Platform
+# EquiProfile Core
 
-![EquiProfile](https://img.shields.io/badge/status-production-green)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Node](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+This repository is the authoritative **EquiProfile Core** application. Its GitHub repository name, `Equiprofile-Marketing`, is historical and misleading; it is intentionally not being renamed during the handover because existing remotes and deployment automation may depend on it.
 
-> A comprehensive, modern web application for equestrian professionals to manage horses' health records, training schedules, feeding plans, and more.
+## Products in this repository
 
----
+- **Management** — horse, stable, health, training, scheduling, documents, billing, and governed AI-assisted management.
+- **Academy** — the EquiProfile learning product, including 15 pathways, 105 reviewed lessons, student/teacher/owner workflows, invitations, assessments, and Academy billing boundaries.
+- **Shop** — catalogue, cart, checkout, orders, inventory, suppliers, fulfilment, returns/refunds, Commerce Admin, and Store payment boundaries.
+- **Core-side Marketing Connector** — the signed, failure-isolated server integration to the standalone Marketing platform.
 
-## 📚 Documentation
+The standalone white-label Marketing operating system is not implemented here. It lives in [`sharetheherbman-debug/Amarktai-MarketingV21`](https://github.com/sharetheherbman-debug/Amarktai-MarketingV21). EquiProfile is its first configured customer deployment.
 
-**Full project documentation lives in one place:**
+## Runtime architecture
 
-👉 **[docs/PROJECT_DOCUMENTATION.md](./docs/PROJECT_DOCUMENTATION.md)**
+Core is a TypeScript/Node application with a shared server and database plus separate production frontend targets for Management, Academy, and Shop. The Marketing Connector sends only approved, consented, allow-listed data to Marketing over its signed Application Connector. Marketing outages must not block Core transactions.
 
-It covers:
+## Development
 
-- Architecture overview
-- Frontend & backend structure
-- Database models
-- API routes (REST + tRPC)
-- Environment variables
-- Feature flags (Stripe, Uploads)
-- Deployment instructions
-- Testing instructions
-- Troubleshooting
-- Security
-- Performance optimization
-
----
-
-## ⚡ Quick Start
+Requirements: Node.js 22+, npm, and the configured MariaDB/MySQL runtime.
 
 ```bash
-# 1. Clone
-git clone https://github.com/amarktainetwork-blip/Equiprofile.online.git
-cd Equiprofile.online
-
-# 2. Install
-npm install
-
-# 3. Configure
+npm ci
 cp .env.example .env
-# Edit .env — set DATABASE_URL, JWT_SECRET, ADMIN_UNLOCK_PASSWORD at minimum
-
-# 4. Database
-npm run db:push
-
-# 5. Develop
+npm run check
+npm run test
 npm run dev
 ```
 
-Visit **http://localhost:3000**
+Never commit real `.env` files or production/provider/payment/connector credentials.
 
----
-
-## 🚀 Production Deployment
+## Quality gates
 
 ```bash
+npm run preflight
+npm run check
+npm run academy:factual:audit
+npm run test
 npm run build
-# Then start with systemd / PM2 — see docs/PROJECT_DOCUMENTATION.md#9-deployment-instructions
+npm run acceptance:management
 ```
 
----
+Database-backed Shop concurrency tests require the documented disposable Commerce database URL. Migration classification is fail-closed; production migration requires a verified owner-controlled backup and a separately authorised deployment task.
 
-## 🧪 Tests
+## Production builds
 
-```bash
-npm run test       # Run all tests (Vitest)
-npm run preflight  # Validate routes and dependencies
-```
+`npm run build` produces Management, Academy, Shop, and server targets. PWA output remains controlled by deployment configuration. Advisory chunk-size warnings are not a substitute for a failed build, and provider-dependent behaviour must remain disabled when not configured.
 
----
+## Marketing boundary
 
-## 🔑 Key Environment Variables
+Core does not embed Marketing UI, Marketing provider credentials, or Marketing database state. The connector uses server-side signing, one-use SSO, product/service scopes, approved business snapshots, idempotent conversion/events, and failure isolation. Browser code never receives the shared connector secret.
 
-| Variable                | Required | Description                         |
-| ----------------------- | -------- | ----------------------------------- |
-| `DATABASE_URL`          | ✅       | MySQL connection string             |
-| `JWT_SECRET`            | ✅       | Min 32-char random string           |
-| `ADMIN_UNLOCK_PASSWORD` | ✅       | Admin section password              |
-| `ENABLE_STRIPE`         | Optional | Set `true` to activate billing      |
-| `ENABLE_UPLOADS`        | Optional | Set `true` to activate file uploads |
-| `GENX_API_KEY`          | Optional | Primary AI orchestration features   |
+## Release status and documentation
 
-See [docs/PROJECT_DOCUMENTATION.md](./docs/PROJECT_DOCUMENTATION.md#7-environment-variables) for the complete list.
+[docs/INDEX.md](docs/INDEX.md) identifies the canonical active documents. The final-Core release candidate and its evidence are recorded in [Final Core reconciliation status](docs/FINAL_CORE_RECONCILIATION_STATUS.md).
 
----
-
-## 🐴 Features
-
-- **Horse Management** — profiles, photos, pedigree
-- **Health Records** — vaccinations, vet visits, treatments, X-rays
-- **Training Log** — sessions, templates, competition results
-- **Calendar & Appointments** — fully connected scheduling
-- **Stable Management** — multi-user stables (up to 5 members)
-- **Messages** — stable member messaging threads
-- **Nutrition** — feeding plans and cost tracking
-- **Documents** — secure document vault
-- **AI Assistant** — GenX-orchestrated equestrian advisor
-- **Weather** — location-based riding conditions
-- **Billing** — Stripe subscription management
-- **Admin Panel** — user management, analytics, settings
-
----
-
-© 2026 [EquiProfile.online](https://equiprofile.online) · Part of [AmarktAI Network](https://amarktai.com)
+Production deployment, DNS/TLS changes, provider activation, live payments, supplier activation, and production migration are separate controlled operations and are not authorised by repository readiness.
