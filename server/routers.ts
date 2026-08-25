@@ -1131,8 +1131,8 @@ export const appRouter = router({
         if (!(await isAIConfigured())) {
           return {
             role: "assistant" as const,
-            content:
-              "⚠️ AI assistant is not yet configured. Please set GENX_API_KEY (or a Hugging Face key) in the server environment to enable AI features.",
+            status: "unavailable" as const,
+            content: "The AI assistant is currently unavailable while its service configuration is completed. Your horses, tasks and records have not been changed.",
           };
         }
 
@@ -1159,17 +1159,24 @@ export const appRouter = router({
             ],
           });
 
+          const content = response.choices[0]?.message?.content;
+          if (typeof content !== "string" || !content.trim()) {
+            return {
+              role: "assistant" as const,
+              status: "unavailable" as const,
+              content: "The AI service returned an incomplete response. Please try again shortly; no records or reminders were changed.",
+            };
+          }
+          return { role: "assistant" as const, status: "available" as const, content: content.trim() };
+        } catch (err: any) {
+          // Provider configuration, timeouts and response-shape failures are not
+          // successful answers. Return a safe client state without leaking runtime
+          // configuration, model details or internal error payloads.
           return {
             role: "assistant" as const,
-            content: response.choices[0]?.message?.content || "No response",
+            status: "unavailable" as const,
+            content: "The AI assistant could not be reached just now. Please try again shortly; no records or reminders were changed.",
           };
-        } catch (err: any) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message:
-              err?.message ||
-              "The AI service encountered an error. Please try again.",
-          });
         }
       }),
   }),

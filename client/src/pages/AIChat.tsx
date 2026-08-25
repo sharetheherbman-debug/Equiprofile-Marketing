@@ -419,11 +419,18 @@ export default function AIChat() {
 
   const chatMutation = trpc.ai.chat.useMutation({
     onSuccess: (response: any) => {
+      const message: Message = {
+        role: response?.role === "assistant" ? "assistant" : "assistant",
+        content: typeof response?.content === "string" ? response.content : "The AI assistant returned an unreadable response. No records were changed.",
+      };
       setMessages((prev) => {
-        const next = [...prev, response];
+        const next = [...prev, message];
         persistMessages(next);
         return next;
       });
+      if (response?.status === "unavailable") {
+        toast.error("AI assistant unavailable — no records were changed.");
+      }
 
       // Check if this is an admin challenge
       if (response.metadata?.adminChallenge) {
