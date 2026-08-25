@@ -1136,11 +1136,27 @@ export const appRouter = router({
         }
 
         try {
+          const [horsesForAssistant, dueCare, dueTasks, recentTraining] = await Promise.all([
+            db.getHorsesByUserId(ctx.user.id),
+            db.getUpcomingReminders(ctx.user.id, 14),
+            db.getUpcomingTasks(ctx.user.id, 14),
+            db.getTrainingSessionsByUserId(ctx.user.id),
+          ]);
+          const compact = (value: unknown, limit = 180) => String(value ?? "").replace(/\s+/g, " ").trim().slice(0, limit);
+          const workspaceContext = {
+            horses: horsesForAssistant.slice(0, 30).map((horse: any) => ({ name: compact(horse.name, 80), breed: compact(horse.breed, 60), status: compact(horse.status, 40) })),
+            care_due_next_14_days: dueCare.slice(0, 30).map((record: any) => ({ horse_id: record.horseId, type: compact(record.recordType || record.type, 60), due: record.nextDueDate ? new Date(record.nextDueDate).toISOString().slice(0, 10) : null })),
+            tasks_due_next_14_days: dueTasks.slice(0, 30).map((task: any) => ({ title: compact(task.title, 120), due: task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 10) : null, priority: compact(task.priority, 30), status: compact(task.status, 30) })),
+            recent_training: recentTraining.slice(0, 20).map((session: any) => ({ horse_id: session.horseId, date: session.sessionDate ? new Date(session.sessionDate).toISOString().slice(0, 10) : null, type: compact(session.sessionType || session.type, 60), notes: compact(session.notes, 180) })),
+          };
           const response = await invokeLLM({
-            messages: input.messages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
+            messages: [
+              ...input.messages.map((m) => ({ role: m.role, content: m.content })),
+              {
+                role: "system" as const,
+                content: `LIVE MANAGEMENT WORKSPACE SNAPSHOT (owned by the signed-in user; use only this data for factual workspace claims):\n${JSON.stringify(workspaceContext)}\n\nWhen asked about upcoming care, due work, horses or training, answer from this snapshot and state clearly if the relevant data is absent. Do not diagnose health conditions, invent a record, or claim that an action was completed. You may suggest the existing task/calendar controls for the user to confirm and save.`,
+              },
+            ],
           });
 
           return {

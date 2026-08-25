@@ -600,9 +600,10 @@ export default function AIChat() {
                 placeholder="Ask about horse care, training, or management..."
                 height="calc(100dvh - 280px)"
                 suggestedPrompts={[
-                  "What can you help me with?",
-                  "Show me horse care tips",
-                  "How do I track vaccinations?",
+                  "Which horses have upcoming care tasks?",
+                  "What is due this week?",
+                  "Summarise my horses’ recent training.",
+                  "Help me prepare a reminder or task.",
                 ]}
               />
 
