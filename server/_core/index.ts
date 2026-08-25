@@ -46,7 +46,6 @@ import { getRuntimeConfig } from "../dynamicConfig";
 import { resolve } from "path";
 import path from "path";
 import fs from "fs";
-import { resolveMarketingAttributionClick } from "../modules/marketing/results-conversion";
 import {
   decodeUploadFileKey,
   findServableUploadFile,
@@ -966,29 +965,13 @@ async function startServer() {
     res.json(cachedBuildInfo);
   });
 
-  // Attribution redirect (truthful click tracking)
-  app.get("/m/:code", async (req, res) => {
-    const code = String(req.params.code ?? "").trim();
-    if (!code) {
-      return res.status(404).json({ error: "Attribution code not found" });
-    }
-
-    const result = await resolveMarketingAttributionClick({
-      code,
-      userAgent:
-        typeof req.headers["user-agent"] === "string"
-          ? req.headers["user-agent"]
-          : null,
-      referrer:
-        typeof req.headers.referer === "string" ? req.headers.referer : null,
-      ip: req.ip ?? null,
+  // Marketing attribution is owned by the standalone Marketing service. Core
+  // deliberately does not resolve, record, or proxy marketing links so an
+  // unavailable Marketing service cannot affect ordinary Core operations.
+  app.get("/m/:code", (_req, res) => {
+    res.status(410).json({
+      error: "Marketing links are served by the standalone Marketing application.",
     });
-
-    if (result.status !== "ok" || !result.destinationUrl) {
-      return res.status(404).json({ error: "Attribution code not found" });
-    }
-
-    return res.redirect(302, result.destinationUrl);
   });
 
   // Health check endpoint (detailed)

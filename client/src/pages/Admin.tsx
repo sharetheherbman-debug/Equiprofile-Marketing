@@ -101,8 +101,6 @@ import {
 } from "@/contexts/AdminViewContext";
 import { getActivityStatus, ACTIVITY_DOT } from "@/hooks/useOnlineStatus";
 
-const AdminAnalytics = lazy(() => import("./AdminAnalytics"));
-
 /* ──────────────────────────────────────────────────────────────────────────
    Admin-visible HORSE TRAINING template catalogue (READ-ONLY view)
    ─────────────────────────────────────────────────────────────────────────
@@ -149,11 +147,9 @@ type AdminSection =
   | "users"
   | "overdue"
   | "churn"
-  | "leads"
   | "whatsapp"
   | "system"
   | "settings"
-  | "analytics"
   | "deleted"
   | "portals";
 
@@ -167,12 +163,6 @@ const adminSections: {
   { value: "overdue", label: "Overdue", icon: AlertCircle, group: "People" },
   { value: "churn", label: "Churn", icon: Activity, group: "People" },
   {
-    value: "leads",
-    label: "Leads",
-    icon: MessageSquare,
-    group: "Communications",
-  },
-  {
     value: "whatsapp",
     label: "WhatsApp",
     icon: Smartphone,
@@ -180,12 +170,6 @@ const adminSections: {
   },
   { value: "system", label: "System", icon: Server, group: "System" },
   { value: "settings", label: "Settings", icon: Settings, group: "System" },
-  {
-    value: "analytics",
-    label: "Analytics",
-    icon: BarChart3,
-    group: "Insights",
-  },
   { value: "deleted", label: "Deleted", icon: Trash2, group: "Other" },
   { value: "portals", label: "Portals", icon: Eye, group: "Other" },
 ];
@@ -280,9 +264,6 @@ export function AdminContent({ clientSafe = true }: { clientSafe?: boolean }) {
   const aiDiagnosticsQuery = trpc.admin.getAIDiagnostics.useQuery(undefined, {
     enabled: isUnlocked && !clientSafe,
     refetchInterval: isUnlocked && !clientSafe ? 30000 : false,
-  });
-  const leadsQuery = trpc.admin.getLeads.useQuery(undefined, {
-    enabled: isUnlocked,
   });
   const whatsappConfigQuery = trpc.admin.getWhatsAppConfig.useQuery(undefined, {
     enabled: isUnlocked && !clientSafe,
@@ -2150,63 +2131,7 @@ export function AdminContent({ clientSafe = true }: { clientSafe?: boolean }) {
           </>
         )}
 
-        {activeSection === "leads" && (
-          <>
-            <Card>
-              <CardHeader>
-                <CardTitle>Chat Leads</CardTitle>
-                <CardDescription>
-                  Visitors who submitted their details via the sales chat widget
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {leadsQuery.isLoading ? (
-                  <div className="space-y-2">
-                    {[...Array(4)].map((_, i) => (
-                      <Skeleton key={i} className="h-10 w-full" />
-                    ))}
-                  </div>
-                ) : leadsQuery.data && leadsQuery.data.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Source</TableHead>
-                        <TableHead>Date</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {leadsQuery.data.map((lead) => (
-                        <TableRow key={lead.id}>
-                          <TableCell className="font-medium">
-                            {lead.name}
-                          </TableCell>
-                          <TableCell>{lead.email}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary">
-                              {lead.source ?? "chat"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground text-sm">
-                            {formatDistanceToNow(new Date(lead.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <MessageSquare className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                    <p>No leads captured yet</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </>
-        )}
+
 
         {!clientSafe && activeSection === "whatsapp" && (
           <>
@@ -2561,19 +2486,7 @@ export function AdminContent({ clientSafe = true }: { clientSafe?: boolean }) {
           </>
         )}
 
-        {activeSection === "analytics" && (
-          <>
-            <Suspense
-              fallback={
-                <div className="flex justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-                </div>
-              }
-            >
-              <AdminAnalytics />
-            </Suspense>
-          </>
-        )}
+
 
         {activeSection === "churn" && (
           <>

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { createServer } from "vite";
@@ -8,6 +9,10 @@ import { chromium } from "playwright";
 
 const port = Number(process.env.MANAGEMENT_ACCEPTANCE_PORT || 4173);
 const baseUrl = `http://127.0.0.1:${port}`;
+const systemChromiumPath = process.env.MANAGEMENT_ACCEPTANCE_CHROMIUM_PATH || "/usr/bin/chromium";
+const browserLaunchOptions = existsSync(systemChromiumPath)
+  ? { headless: true, executablePath: systemChromiumPath }
+  : { headless: true };
 process.env.VITE_SITE = "management";
 process.env.VITE_UI_VERSION = "v2";
 process.env.VITE_PWA_ENABLED = "false";
@@ -418,7 +423,7 @@ async function runCase(name, fn) {
 
 try {
   await server.listen();
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch(browserLaunchOptions);
   console.log(`Management browser acceptance — ${baseUrl}`);
 
   await runCase(
