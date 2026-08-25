@@ -14,6 +14,8 @@ import { z } from "zod";
 import * as db from "./db";
 import { invokeLLM, isAIConfigured } from "./_core/llm";
 import { buildSignedInManagementWorkspaceSnapshot } from "./managementAiContext";
+import { executeManagementAiAction } from "./managementAiActions";
+import { normalizeManagementAiProviderResponse, unavailableManagementAiResponse } from "./managementAiChatResponse";
 import {
   invalidateConfigCache,
   getRuntimeConfig,
@@ -1159,24 +1161,24 @@ export const appRouter = router({
             ],
           });
 
-          const content = response.choices[0]?.message?.content;
-          if (typeof content !== "string" || !content.trim()) {
-            return {
-              role: "assistant" as const,
-              status: "unavailable" as const,
-              content: "The AI service returned an incomplete response. Please try again shortly; no records or reminders were changed.",
-            };
-          }
-          return { role: "assistant" as const, status: "available" as const, content: content.trim() };
-        } catch (err: any) {
+          return normalizeManagementAiProviderResponse(response);
+        } catch {
           // Provider configuration, timeouts and response-shape failures are not
           // successful answers. Return a safe client state without leaking runtime
           // configuration, model details or internal error payloads.
-          return {
-            role: "assistant" as const,
-            status: "unavailable" as const,
-            content: "The AI assistant could not be reached just now. Please try again shortly; no records or reminders were changed.",
-          };
+          return unavailableManagementAiResponse();
+        }
+      }),
+    executeManagementAction: subscribedProcedure
+      .input(z.object({ action: z.unknown(), confirmed: z.boolean() }))
+      .mutation(async ({ ctx, input }) => {
+        try {
+          return await executeManagementAiAction({ userId: ctx.user.id, confirmed: input.confirmed, action: input.action });
+        } catch (error) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: error instanceof Error ? error.message : "The proposed Management action could not be validated.",
+          });
         }
       }),
   }),
