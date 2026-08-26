@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop, phase-1/small-medium-completion]
+    branches: [main, develop, phase-1/small-medium-completion, release-candidate/final-core-2026-08-22]
   pull_request:
-    branches: [main, develop, phase-1/small-medium-completion]
+    branches: [main, develop, phase-1/small-medium-completion, release-candidate/final-core-2026-08-22]
 
 jobs:
   test:

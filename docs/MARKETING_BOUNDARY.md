@@ -45,7 +45,7 @@ Core onboarding was extracted from the deleted Growth Engine into `server/onboar
 | Core preflight, type check, Management and Academy builds | Passed before client acceptance | `audit/core-management-academy-verification.log` (handover workspace) |
 | Full Core automated suite | Passed: **77 files, 428 tests, 11 explicit skips** | `audit/core-full-test-suite-final-2.log` (handover workspace) |
 | Connector owner boundary | Passed: **7 tests** | `audit/core-marketing-owner-boundary-test.log` (handover workspace) |
-| Management client browser acceptance | Passed: **8 scenarios, 0 failures** | `audit/management-browser-acceptance.log` (handover workspace) |
+| Management client browser acceptance | Passed: **9 scenarios, 0 failures** | Authenticated deterministic-provider suite, including governed action confirmation and reload persistence |
 | Academy factual evidence | Passed: **105 registered lessons, 0 unresolved specific claim reviews** | `audit/academy-factual-evidence.log` (handover workspace) |
 | Patch integrity | Passed | `git diff --check` on the release branch |
 | Public endpoint, read-only | Reachable public landing page with Management positioning; no Marketing workspace exposed publicly | `audit/production-endpoint-readonly-checks.md` (handover workspace) |

@@ -94,6 +94,8 @@ const scenarios = {
 let scenarioName = "paid_pro";
 let signedIn = true;
 const requestLog = [];
+const managementTasks = [];
+const managementActivity = [];
 
 function currentScenario() {
   return scenarios[scenarioName];
@@ -167,6 +169,52 @@ function mockProcedure(name) {
     signedIn = false;
     return { success: true };
   }
+  if (name === "ai.chat") {
+    return {
+      role: "assistant",
+      status: "available",
+      content: "Willow is in your current workspace. I can prepare a farrier reminder for Friday; nothing will be saved until you confirm it.",
+      proposedAction: {
+        type: "CREATE_REMINDER",
+        title: "Book Willow's farrier",
+        description: "Arrange Willow's next farrier visit.",
+        horseId: horse.id,
+        dueDate: future,
+        reminderDays: 1,
+      },
+    };
+  }
+  if (name === "ai.confirmAction") {
+    if (managementTasks.length === 0) {
+      managementTasks.push({
+        id: 901,
+        userId: 1,
+        horseId: horse.id,
+        title: "Book Willow's farrier",
+        description: "Arrange Willow's next farrier visit.",
+        taskType: "general_care",
+        priority: "medium",
+        status: "pending",
+        dueDate: future,
+        assignedTo: null,
+        notes: null,
+        reminderDays: 1,
+        isRecurring: false,
+        recurringInterval: null,
+        completedAt: null,
+        createdAt: iso(now),
+        updatedAt: iso(now),
+      });
+      managementActivity.push({
+        id: 902,
+        userId: 1,
+        action: "ai_action_confirmed",
+        entityType: "task",
+        entityId: 901,
+      });
+    }
+    return { status: "completed", entityType: "task", entityId: 901, message: "Reminder created." };
+  }
 
   const values = {
     "adminUnlock.getStatus": {
@@ -205,6 +253,7 @@ function mockProcedure(name) {
     },
     "horses.list": [horse],
     "horses.get": horse,
+    "tasks.list": managementTasks,
     "stables.list": [stable],
     "billing.getStatus": {
       status: scenario.status,
@@ -294,6 +343,10 @@ const acceptanceApi = {
         sendJson(res, 200, requestLog);
         return;
       }
+      if (url.pathname === "/__acceptance__/management-state") {
+        sendJson(res, 200, { tasks: managementTasks, activity: managementActivity });
+        return;
+      }
       if (url.pathname === "/__acceptance__/scenario") {
         const requested = url.searchParams.get("name") || "";
         if (!Object.prototype.hasOwnProperty.call(scenarios, requested)) {
@@ -303,6 +356,8 @@ const acceptanceApi = {
         scenarioName = requested;
         signedIn = true;
         requestLog.length = 0;
+        managementTasks.length = 0;
+        managementActivity.length = 0;
         sendJson(res, 200, { success: true, scenario: scenarioName });
         return;
       }
@@ -566,6 +621,41 @@ try {
           await expectVisible(page, "Billing & Subscription");
           await expectVisible(page, "Current Plan");
           assert(page.url().endsWith("/billing"));
+        },
+      );
+    },
+  );
+
+  await runCase(
+    "AI action is previewed, explicitly confirmed, audited and survives reload",
+    async () => {
+      await withPage(
+        { scenario: "paid_pro", path: "/ai-chat" },
+        async (page) => {
+          const disclaimer = page.getByRole("button", { name: "I understand — continue to AI Chat" });
+          if (await disclaimer.isVisible().catch(() => false)) await disclaimer.click();
+
+          const input = page.getByPlaceholder("Ask about horse care, training, or management...");
+          await input.fill("Remind me Friday to book Willow's farrier.");
+          await input.press("Enter");
+          await expectVisible(page, "Action preview");
+          await expectVisible(page, "Nothing saved yet");
+          await expectVisible(page, "Book Willow's farrier");
+          await expectVisible(page, "Willow");
+
+          const before = await (await page.request.get(`${baseUrl}/__acceptance__/management-state`)).json();
+          assert.equal(before.tasks.length, 0, "proposal mutated task state before confirmation");
+          assert.equal(before.activity.length, 0, "proposal wrote an audit record before confirmation");
+
+          await page.getByRole("button", { name: "Confirm & save" }).click();
+          await expectVisible(page, "✅ Reminder created.");
+          const after = await (await page.request.get(`${baseUrl}/__acceptance__/management-state`)).json();
+          assert.equal(after.tasks.length, 1, "confirmed reminder was not persisted");
+          assert.equal(after.activity.length, 1, "confirmed reminder was not audited");
+
+          await page.reload({ waitUntil: "domcontentloaded", timeout: 180000 });
+          await page.goto(`${baseUrl}/tasks`, { waitUntil: "domcontentloaded", timeout: 180000 });
+          await expectVisible(page, "Book Willow's farrier");
         },
       );
     },
