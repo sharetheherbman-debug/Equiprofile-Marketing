@@ -1,13 +1,14 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-const { createTask, getHorseById, logActivity, getDb } = vi.hoisted(() => ({
+const { createTask, getHorseById, logActivity, getDb, getUserActivityLogs } = vi.hoisted(() => ({
   createTask: vi.fn(),
   getHorseById: vi.fn(),
   logActivity: vi.fn(),
   getDb: vi.fn(),
+  getUserActivityLogs: vi.fn(),
 }));
 
-vi.mock("./db", () => ({ createTask, getHorseById, logActivity, getDb }));
+vi.mock("./db", () => ({ createTask, getHorseById, logActivity, getDb, getUserActivityLogs }));
 
 import { executeManagementAiAction } from "./managementAiActions";
 
@@ -17,6 +18,7 @@ describe("governed Management AI actions", () => {
     getHorseById.mockResolvedValue({ id: 5, userId: 44 });
     createTask.mockResolvedValue(101);
     logActivity.mockResolvedValue(undefined);
+    getUserActivityLogs.mockResolvedValue([]);
   });
 
   test("returns a proposal without mutating data until the user confirms", async () => {
@@ -51,6 +53,13 @@ describe("governed Management AI actions", () => {
   test("rejects an unowned horse and makes no mutation", async () => {
     getHorseById.mockResolvedValue(undefined);
     await expect(executeManagementAiAction({ userId: 44, confirmed: true, action: { type: "CREATE_TASK", title: "Forbidden", horseId: 99 } })).rejects.toThrow("not available in your workspace");
+    expect(createTask).not.toHaveBeenCalled();
+  });
+
+  test("treats a repeated confirmation key as the same completed action", async () => {
+    getUserActivityLogs.mockResolvedValue([{ action: "ai_task_created", entityId: 101, details: JSON.stringify({ idempotencyKey: "proposal-123456789" }) }]);
+    const result = await executeManagementAiAction({ userId: 44, confirmed: true, idempotencyKey: "proposal-123456789", action: { type: "CREATE_TASK", title: "Farrier booking" } });
+    expect(result).toMatchObject({ status: "completed", id: 101, message: expect.stringContaining("already saved") });
     expect(createTask).not.toHaveBeenCalled();
   });
 });

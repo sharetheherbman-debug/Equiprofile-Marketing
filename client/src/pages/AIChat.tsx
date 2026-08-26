@@ -47,6 +47,22 @@ import { PageHeader } from "@/components/PageHeader";
 const CHAT_SESSION_KEY = "equiprofile_ai_chat_session";
 const AI_DISCLAIMER_KEY = "equiprofile_ai_disclaimer_accepted";
 
+type ProposedManagementAction = {
+  type: "CREATE_TASK" | "CREATE_REMINDER" | "CREATE_CALENDAR_ITEM";
+  title: string;
+  description?: string;
+  horseId?: number;
+  dueDate?: string;
+  startDate?: string;
+  endDate?: string;
+  taskType?: string;
+  priority?: string;
+  eventType?: string;
+  reminderDays?: number;
+  location?: string;
+  isAllDay?: boolean;
+};
+
 /**
  * Maps Web Speech API SpeechRecognitionErrorCode values to user-friendly messages.
  * https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognitionErrorEvent/error
@@ -136,6 +152,8 @@ export default function AIChat() {
     isUnlocked: boolean;
     expiresAt?: Date;
   }>({ isUnlocked: false });
+  const [proposedAction, setProposedAction] = useState<ProposedManagementAction | null>(null);
+  const [proposalKey, setProposalKey] = useState<string | null>(null);
 
   // AI disclaimer — shown once per browser; remembered in localStorage
   const [showDisclaimer, setShowDisclaimer] = useState(() => {
@@ -170,6 +188,24 @@ export default function AIChat() {
   });
 
   const utils = trpc.useUtils();
+  const horsesQuery = trpc.horses.list.useQuery();
+
+  const confirmActionMutation = trpc.ai.confirmAction.useMutation({
+    onSuccess: (result) => {
+      const successMessage: Message = { role: "assistant", content: `✅ ${result.message}` };
+      setMessages((previous) => {
+        const next = [...previous, successMessage];
+        persistMessages(next);
+        return next;
+      });
+      setProposedAction(null);
+      setProposalKey(null);
+      void utils.tasks.list.invalidate();
+      void utils.calendar.getEvents.invalidate();
+      toast.success(result.message);
+    },
+    onError: (error) => toast.error(error.message || "The proposed action could not be saved."),
+  });
 
   // Quick task creation from AI context
   const createTaskMutation = trpc.tasks.create.useMutation({
@@ -431,6 +467,13 @@ export default function AIChat() {
       if (response?.status === "unavailable") {
         toast.error("AI assistant unavailable — no records were changed.");
       }
+      if (response?.proposedAction) {
+        setProposedAction(response.proposedAction as ProposedManagementAction);
+        setProposalKey(`management-proposal-${crypto.randomUUID()}`);
+      } else {
+        setProposedAction(null);
+        setProposalKey(null);
+      }
 
       // Check if this is an admin challenge
       if (response.metadata?.adminChallenge) {
@@ -507,6 +550,8 @@ export default function AIChat() {
       return;
     }
     const newMessage: Message = { role: "user", content };
+    setProposedAction(null);
+    setProposalKey(null);
     setMessages((prev) => {
       const next = [...prev, newMessage];
       persistMessages(next);
@@ -613,6 +658,29 @@ export default function AIChat() {
                   "Help me prepare a reminder or task.",
                 ]}
               />
+
+              {proposedAction && proposalKey && (
+                <section aria-label="Proposed Management action" className="m-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2"><Badge variant="secondary">Action preview</Badge><Badge variant="outline">Nothing saved yet</Badge></div>
+                      <h3 className="mt-3 font-semibold">{proposedAction.title}</h3>
+                      {proposedAction.description && <p className="mt-1 text-sm text-muted-foreground">{proposedAction.description}</p>}
+                      <dl className="mt-3 grid gap-1 text-xs text-muted-foreground">
+                        <div><dt className="inline font-semibold text-foreground">Action: </dt><dd className="inline">{proposedAction.type.replaceAll("_", " ").toLowerCase()}</dd></div>
+                        {proposedAction.horseId && <div><dt className="inline font-semibold text-foreground">Horse: </dt><dd className="inline">{horsesQuery.data?.find((horse) => horse.id === proposedAction.horseId)?.name || `Horse ${proposedAction.horseId}`}</dd></div>}
+                        {(proposedAction.dueDate || proposedAction.startDate) && <div><dt className="inline font-semibold text-foreground">Date: </dt><dd className="inline">{new Date(proposedAction.dueDate || proposedAction.startDate!).toLocaleString("en-GB")}</dd></div>}
+                      </dl>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <Button variant="outline" onClick={() => { setProposedAction(null); setProposalKey(null); }} disabled={confirmActionMutation.isPending}>Cancel</Button>
+                      <Button onClick={() => confirmActionMutation.mutate({ action: proposedAction as any, confirmed: true, idempotencyKey: proposalKey })} disabled={confirmActionMutation.isPending}>
+                        <CheckCircle2 className="mr-2 h-4 w-4"/>{confirmActionMutation.isPending ? "Saving…" : "Confirm & save"}
+                      </Button>
+                    </div>
+                  </div>
+                </section>
+              )}
 
               {showPasswordInput && (
                 <div className="mt-4 p-4 border rounded-lg bg-muted">

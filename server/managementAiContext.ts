@@ -17,6 +17,7 @@ function compact(value: unknown, limit = 180): string {
 export function buildSignedInManagementWorkspaceSnapshot(input: ManagementWorkspaceSnapshotInput) {
   return {
     horses: input.horses.slice(0, 30).map((horse) => ({
+      id: horse.id,
       name: compact(horse.name, 80),
       breed: compact(horse.breed, 60),
       status: compact(horse.status, 40),

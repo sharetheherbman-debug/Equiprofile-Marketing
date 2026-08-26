@@ -1085,6 +1085,10 @@ export const appRouter = router({
 
   // AI chat
   ai: router({
+    confirmAction: subscribedProcedure
+      .input(z.object({ action: z.unknown(), confirmed: z.literal(true), idempotencyKey: z.string().min(16).max(200) }))
+      .mutation(async ({ ctx, input }) => executeManagementAiAction({ userId: ctx.user.id, confirmed: input.confirmed, action: input.action, idempotencyKey: input.idempotencyKey })),
+
     chat: subscribedProcedure
       .input(
         z.object({
@@ -1156,7 +1160,7 @@ export const appRouter = router({
               ...input.messages.map((m) => ({ role: m.role, content: m.content })),
               {
                 role: "system" as const,
-                content: `LIVE MANAGEMENT WORKSPACE SNAPSHOT (owned by the signed-in user; use only this data for factual workspace claims):\n${JSON.stringify(workspaceContext)}\n\nWhen asked about upcoming care, due work, horses or training, answer from this snapshot and state clearly if the relevant data is absent. Do not diagnose health conditions, invent a record, or claim that an action was completed. You may suggest the existing task/calendar controls for the user to confirm and save.`,
+                content: `LIVE MANAGEMENT WORKSPACE SNAPSHOT (owned by the signed-in user; use only this data for factual workspace claims):\n${JSON.stringify(workspaceContext)}\n\nWhen asked about upcoming care, due work, horses or training, answer from this snapshot and state clearly if the relevant data is absent. Do not diagnose health conditions, invent a record, or claim that an action was completed.\n\nFor an explicit request to create a task, reminder, or calendar item, return ONLY strict JSON in this shape: {"assistant_text":"Explain the proposed action and that confirmation is required.","proposed_action":{"type":"CREATE_TASK|CREATE_REMINDER|CREATE_CALENDAR_ITEM",...}}. The proposed_action must match the exact governed schema, use an owned horse id from the snapshot when a named horse is involved, and use ISO-8601 dates. Never claim it was saved. For all other questions return normal prose.`,
               },
             ],
           });
