@@ -4,7 +4,7 @@
 // Version automatically synced from package.json via scripts/update-sw-version.js
 // Runs as part of the build process (npm run build:sw)
 const CACHE_VERSION = '1.0.0';
-const CACHE_REVISION = "update-2-3";
+const CACHE_REVISION = "academy-scenarios-withheld-20260822";
 const CACHE_NAME = `equiprofile-v${CACHE_VERSION}-${CACHE_REVISION}`;
 const DATA_CACHE_NAME = `equiprofile-data-v${CACHE_VERSION}-${CACHE_REVISION}`;
 const SYNC_QUEUE_KEY = "equiprofile-sync-queue";
@@ -24,7 +24,6 @@ const CACHEABLE_API_PATHS = [
   "/api/trpc/student.listLessons",
   "/api/trpc/student.getLesson",
   "/api/trpc/student.getLessonProgress",
-  "/api/trpc/student.getDailyScenarios",
   "/api/trpc/student.getAssignedLessons",
 ];
 

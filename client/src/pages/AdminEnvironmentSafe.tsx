@@ -12,8 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdminViewMode } from "@/contexts/AdminViewContext";
 import { trpc } from "@/lib/trpc";
 
-const AdminAnalytics = lazy(() => import("./AdminAnalytics"));
-
 /**
  * Dedicated client-safe Administration route. It intentionally does not
  * import the legacy operator console, so provider credentials, environment
@@ -97,7 +95,7 @@ export default function AdminEnvironmentSafe() {
         <Tabs defaultValue="customers" className="space-y-4">
           <TabsList className="h-auto flex-wrap justify-start bg-[#eef5fb] p-1">
             <TabsTrigger value="customers" className="gap-2"><Users className="h-4 w-4" />Customers</TabsTrigger>
-            <TabsTrigger value="insights" className="gap-2"><BarChart3 className="h-4 w-4" />Insights</TabsTrigger>
+
             <TabsTrigger value="portals" className="gap-2"><Eye className="h-4 w-4" />Portals</TabsTrigger>
           </TabsList>
 
@@ -142,11 +140,7 @@ export default function AdminEnvironmentSafe() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="insights">
-            <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="h-7 w-7 animate-spin text-[#2e6da4]" /></div>}>
-              <AdminAnalytics />
-            </Suspense>
-          </TabsContent>
+
 
           <TabsContent value="portals">
             <Card className="border-gray-200 shadow-sm">

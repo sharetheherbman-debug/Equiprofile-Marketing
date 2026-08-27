@@ -1,67 +1,27 @@
-export type ManagementPlanTier = "pro" | "stable";
-export type ComplimentaryTier = ManagementPlanTier | "management_full";
+import {
+  parseManagementPreferences,
+  resolveEffectiveManagementEntitlement,
+  type ComplimentaryPreferences,
+  type ComplimentaryTier,
+  type ManagementAccessSubject,
+  type ManagementPlanTier,
+} from "../shared/managementEntitlement";
 
-export type BaseSubscriptionState = {
-  subscriptionStatus: string;
-  planTier: ManagementPlanTier;
-  bothDashboardsUnlocked?: boolean;
-};
-
-export type ComplimentaryAccessGrant = {
-  version: 1;
-  tier: ComplimentaryTier;
-  startsAt: string;
-  endsAt: string | null;
-  grantedByUserId?: number;
-  reason?: string;
-  note?: string;
-};
-
-export type ComplimentaryPreferences = Record<string, unknown> & {
-  complimentaryAccess?: ComplimentaryAccessGrant | null;
-};
-
-export type EffectiveManagementEntitlement = BaseSubscriptionState & {
-  effectivePlanTier: ManagementPlanTier;
-  effectiveBothDashboardsUnlocked: boolean;
-  complimentaryAccessState: "none" | "active" | "expired";
-  complimentaryAccessUntil: string | null;
-};
-
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
-
-function validDate(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    ISO_DATE.test(value) &&
-    Number.isFinite(new Date(value).getTime())
-  );
-}
-
-export function readComplimentaryAccess(
-  preferences: Record<string, unknown> | null | undefined,
-): ComplimentaryAccessGrant | null {
-  const raw = preferences?.complimentaryAccess;
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
-  const candidate = raw as Partial<ComplimentaryAccessGrant>;
-  if (candidate.version !== 1) return null;
-  if (!candidate.tier || !["pro", "stable", "management_full"].includes(candidate.tier)) {
-    return null;
-  }
-  if (!validDate(candidate.startsAt)) return null;
-  if (candidate.endsAt !== null && !validDate(candidate.endsAt)) return null;
-  return candidate as ComplimentaryAccessGrant;
-}
-
-export function isComplimentaryAccessActive(
-  grant: ComplimentaryAccessGrant | null,
-  now: Date = new Date(),
-): boolean {
-  if (!grant) return false;
-  const startsAt = new Date(grant.startsAt).getTime();
-  if (startsAt > now.getTime()) return false;
-  return grant.endsAt === null || new Date(grant.endsAt).getTime() > now.getTime();
-}
+export {
+  isComplimentaryAccessActive,
+  parseManagementPreferences,
+  readComplimentaryAccess,
+  resolveEffectiveManagementEntitlement,
+} from "../shared/managementEntitlement";
+export type {
+  BaseSubscriptionState,
+  ComplimentaryAccessGrant,
+  ComplimentaryPreferences,
+  ComplimentaryTier,
+  EffectiveManagementEntitlement,
+  ManagementAccessSubject,
+  ManagementPlanTier,
+} from "../shared/managementEntitlement";
 
 /**
  * Create a complimentary-access overlay without mutating the user's underlying
@@ -115,50 +75,38 @@ export function revokeComplimentaryAccess(
   return {
     ...(preferences ?? {}),
     complimentaryAccess: null,
+    // Prevent a retained historical preference from re-enabling the overlay.
+    freeAccess: false,
+    freeAccessUntil: null,
+    freeAccessDays: null,
   };
 }
 
 /**
- * Resolve the effective Management capability. An expired complimentary grant
- * falls back to the base subscription; it never blocks an otherwise-valid paid
- * subscription and never rewrites plan/billing state.
+ * Canonical access predicate for Management-protected surfaces. It preserves
+ * billing-owned paid/trial status and treats complimentary access only as a
+ * separate overlay; it never mutates stored subscription data.
  */
-export function resolveEffectiveManagementEntitlement(
-  base: BaseSubscriptionState,
-  preferences: Record<string, unknown> | null | undefined,
+export function hasEffectiveManagementAccess(
+  subject: ManagementAccessSubject | null | undefined,
   now: Date = new Date(),
-): EffectiveManagementEntitlement {
-  const grant = readComplimentaryAccess(preferences);
-  if (!grant) {
-    return {
-      ...base,
-      effectivePlanTier: base.planTier,
-      effectiveBothDashboardsUnlocked: Boolean(base.bothDashboardsUnlocked),
-      complimentaryAccessState: "none",
-      complimentaryAccessUntil: null,
-    };
-  }
-
-  if (!isComplimentaryAccessActive(grant, now)) {
-    return {
-      ...base,
-      effectivePlanTier: base.planTier,
-      effectiveBothDashboardsUnlocked: Boolean(base.bothDashboardsUnlocked),
-      complimentaryAccessState: "expired",
-      complimentaryAccessUntil: grant.endsAt,
-    };
-  }
-
-  const full = grant.tier === "management_full";
-  const effectivePlanTier: ManagementPlanTier =
-    grant.tier === "stable" || full ? "stable" : "pro";
-
-  return {
-    ...base,
-    effectivePlanTier,
-    effectiveBothDashboardsUnlocked:
-      full || Boolean(base.bothDashboardsUnlocked),
-    complimentaryAccessState: "active",
-    complimentaryAccessUntil: grant.endsAt,
-  };
+): boolean {
+  if (!subject) return false;
+  if (subject.role === "admin") return true;
+  const preferences = parseManagementPreferences(subject.preferences);
+  const planTier: ManagementPlanTier = preferences.planTier === "stable" ? "stable" : "pro";
+  const entitlement = resolveEffectiveManagementEntitlement(
+    {
+      subscriptionStatus: subject.subscriptionStatus,
+      planTier,
+      bothDashboardsUnlocked: Boolean(preferences.bothDashboardsUnlocked),
+    },
+    preferences,
+    now,
+  );
+  if (entitlement.complimentaryAccessState === "active") return true;
+  if (subject.subscriptionStatus === "active") return true;
+  if (subject.subscriptionStatus !== "trial" || !subject.trialEndsAt) return false;
+  const trialEndsAt = new Date(subject.trialEndsAt);
+  return Number.isFinite(trialEndsAt.getTime()) && trialEndsAt > now;
 }

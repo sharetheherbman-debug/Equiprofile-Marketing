@@ -47,7 +47,8 @@ writeFileSync(
 );
 
 injectMeta(resolve(publicDir, "management", "index.html"), buildSha);
-injectMeta(resolve(publicDir, "school", "index.html"), buildSha);
+injectMeta(resolve(publicDir, "academy", "index.html"), buildSha);
+injectMeta(resolve(publicDir, "shop", "index.html"), buildSha);
 
 console.log("Build fingerprinting complete");
 console.log(`SHA: ${buildSha}`);

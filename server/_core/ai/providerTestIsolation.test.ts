@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   getDbMock: vi.fn(),
@@ -11,7 +11,29 @@ vi.mock("../../db", () => ({
 import { getRuntimeConfig, getRuntimeConfigMode } from "../../dynamicConfig";
 import { getProviderTelemetrySummary, recordProviderTelemetry } from "./providerTelemetry";
 
+const originalRuntimeConfigMode = process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE;
+const originalGenXApiKey = process.env.GENX_API_KEY;
+
 describe("provider unit-test isolation", () => {
+  beforeEach(() => {
+    process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE = "unit_test_mock";
+    mocks.getDbMock.mockReset();
+  });
+
+  afterEach(() => {
+    if (originalRuntimeConfigMode === undefined) {
+      delete process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE;
+    } else {
+      process.env.EQUIPROFILE_RUNTIME_CONFIG_MODE = originalRuntimeConfigMode;
+    }
+
+    if (originalGenXApiKey === undefined) {
+      delete process.env.GENX_API_KEY;
+    } else {
+      process.env.GENX_API_KEY = originalGenXApiKey;
+    }
+  });
+
   it("keeps runtime config in unit_test_mock mode and avoids DB lookup", async () => {
     process.env.GENX_API_KEY = "env-only-key";
     const value = await getRuntimeConfig("genx_api_key", "GENX_API_KEY");

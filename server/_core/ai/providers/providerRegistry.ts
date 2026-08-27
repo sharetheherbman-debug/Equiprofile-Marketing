@@ -120,7 +120,14 @@ export class ProviderSelectionError extends Error {
   }
 }
 
+export function isCoreProductionProvider(provider: AIProviderName): boolean {
+  return provider === "genx";
+}
+
 export async function isConfigured(provider: AIProviderName): Promise<boolean> {
+  // Core production permits GenX only. Legacy modules may remain temporarily
+  // for compatibility work, but are unreachable through this registry.
+  if (!isCoreProductionProvider(provider)) return false;
   if (provider === "genx") {
     return !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"));
   }
@@ -131,6 +138,7 @@ export async function isConfigured(provider: AIProviderName): Promise<boolean> {
 }
 
 export async function isProviderAvailableForTask(provider: AIProviderName, task: AITask): Promise<boolean> {
+  if (!isCoreProductionProvider(provider)) return false;
   if (!(await isConfigured(provider))) return false;
   if (provider === "genx" && !(await resolveGenXConfig()).endpoint) return false;
   const candidates = (await resolveModelCandidatesForTask(task)).filter((candidate) => candidate.provider === provider);
@@ -272,6 +280,12 @@ export async function executeWithProvider(
   timeoutMs: number,
   candidate?: ProviderModelCandidate,
 ): Promise<TaskExecutionResult> {
+  if (!isCoreProductionProvider(provider)) {
+    throw new ProviderSelectionError(
+      "provider_unavailable",
+      `Core production permits GenX only; provider "${provider}" is disabled for task "${task}"`,
+    );
+  }
   try {
     const result = await executors[provider](
       task,
@@ -342,7 +356,9 @@ export async function executeWithFallback(
   const availableProviders: AIProviderName[] = [];
   const candidateMap = new Map<AIProviderName, ProviderModelCandidate[]>();
   const allCandidates = await resolveModelCandidatesForTask(task);
-  for (const provider of providers) {
+  // Ignore non-GenX input deterministically, including legacy callers that
+  // still pass an old fallback array during the transition period.
+  for (const provider of providers.filter(isCoreProductionProvider)) {
     const providerCandidates = allCandidates.filter((candidate) => candidate.provider === provider);
     candidateMap.set(provider, providerCandidates);
     if (providerCandidates.length > 0 && await isProviderAvailableForTask(provider, task)) {

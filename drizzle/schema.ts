@@ -2559,6 +2559,9 @@ export const lessonPathways = mysqlTable("lessonPathways", {
   sortOrder: int("sortOrder").default(0).notNull(),
   iconName: varchar("iconName", { length: 50 }),
   isPublished: boolean("isPublished").default(true).notNull(),
+  curriculumVersion: varchar("curriculumVersion", { length: 40 })
+    .default("2026.1")
+    .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -2585,6 +2588,12 @@ export const lessonUnits = mysqlTable("lessonUnits", {
   commonMistakes: text("commonMistakes").notNull(),
   knowledgeCheck: text("knowledgeCheck").notNull(),
   aiTutorPrompts: text("aiTutorPrompts").notNull(),
+  linkedCompetencies: text("linkedCompetencies").notNull(),
+  nextLessonSlug: varchar("nextLessonSlug", { length: 150 }),
+  estimatedMinutes: int("estimatedMinutes").default(15).notNull(),
+  curriculumVersion: varchar("curriculumVersion", { length: 40 })
+    .default("2026.1")
+    .notNull(),
   isPublished: boolean("isPublished").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
@@ -2604,8 +2613,27 @@ export const lessonCompletion = mysqlTable("lessonCompletion", {
   pathwaySlug: varchar("pathwaySlug", { length: 100 }).notNull(),
   level: varchar("level", { length: 30 }).notNull(),
   score: int("score"),
+  completionKey: varchar("completionKey", { length: 220 }).unique(),
+  curriculumVersion: varchar("curriculumVersion", { length: 40 }),
+  quizCorrect: int("quizCorrect"),
+  quizTotal: int("quizTotal"),
   completedAt: timestamp("completedAt").defaultNow().notNull(),
 });
+
+/** Additive audit record for idempotent Academy curriculum imports. */
+export const academyCurriculumSyncRuns = mysqlTable(
+  "academyCurriculumSyncRuns",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    curriculumVersion: varchar("curriculumVersion", { length: 40 }).notNull(),
+    pathwaysProcessed: int("pathwaysProcessed").default(0).notNull(),
+    lessonsProcessed: int("lessonsProcessed").default(0).notNull(),
+    validationErrors: int("validationErrors").default(0).notNull(),
+    validationWarnings: int("validationWarnings").default(0).notNull(),
+    summaryJson: text("summaryJson").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Phase 2 — Competency System + Teacher Lesson Assignment + Lesson Reviews
@@ -2697,6 +2725,21 @@ export const organizations = mysqlTable("organizations", {
   maxTeachers: int("maxTeachers").notNull().default(3),
   isActive: boolean("isActive").default(true).notNull(),
   trialEndsAt: timestamp("trialEndsAt"),
+  academyBillingStatus: varchar("academyBillingStatus", { length: 32 })
+    .notNull()
+    .default("not_configured"),
+  academyBillingInterval: varchar("academyBillingInterval", { length: 16 }),
+  academyBillingPriceId: varchar("academyBillingPriceId", { length: 255 }),
+  academyStripeCustomerId: varchar("academyStripeCustomerId", { length: 255 }),
+  academyStripeSubscriptionId: varchar("academyStripeSubscriptionId", {
+    length: 255,
+  }),
+  academyStripeCheckoutSessionId: varchar("academyStripeCheckoutSessionId", {
+    length: 255,
+  }),
+  academyBillingCurrentPeriodEndsAt: timestamp(
+    "academyBillingCurrentPeriodEndsAt",
+  ),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -2731,6 +2774,15 @@ export const organizationInvites = mysqlTable("organizationInvites", {
   token: varchar("token", { length: 64 }).notNull().unique(),
   expiresAt: timestamp("expiresAt").notNull(),
   acceptedAt: timestamp("acceptedAt"),
+  /** PENDING | DELIVERED | FAILED; acceptance remains a separate state. */
+  deliveryStatus: varchar("deliveryStatus", { length: 32 })
+    .notNull()
+    .default("PENDING"),
+  deliveryAttemptCount: int("deliveryAttemptCount").notNull().default(0),
+  lastDeliveryAttemptAt: timestamp("lastDeliveryAttemptAt"),
+  deliveredAt: timestamp("deliveredAt"),
+  /** Sanitised and bounded failure text; never store an invitation token. */
+  lastDeliveryError: varchar("lastDeliveryError", { length: 500 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

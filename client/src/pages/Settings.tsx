@@ -125,6 +125,7 @@ export default function Settings() {
     weatherAlerts: true,
     weeklyDigest: true,
     trainingCalendarIntegration: false,
+    marketingAnalyticsConsent: false,
   });
 
   const [whatsappPhone, setWhatsappPhone] = useState<string>("");
@@ -548,6 +549,12 @@ export default function Settings() {
                         label: "Training → Calendar Auto-Events",
                         description:
                           "When you apply a training template to a horse, automatically create calendar events for each training session in the plan.",
+                      },
+                      {
+                        key: "marketingAnalyticsConsent",
+                        label: "Marketing Analytics",
+                        description:
+                          "Allow consented, non-identifying product conversion events to be shared with the separate marketing service. This does not affect essential account, payment, or safety notifications.",
                       },
                     ].map((item) => (
                       <div

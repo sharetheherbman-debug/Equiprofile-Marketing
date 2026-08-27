@@ -1,6 +1,7 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
 import { eq, and, desc, sql, gte, lte, isNull, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { finalCoreAdditiveSchemaStatements } from "./finalCoreAdditiveSchema";
 import type { ResultSetHeader } from "mysql2";
 import bcrypt from "bcrypt";
 import { nanoid } from "nanoid";
@@ -141,7 +142,12 @@ function fixDatabaseUrl(url: string): string {
  * when the drizzle-kit migration step was skipped or baseline mode marked
  * migration 0008 as applied on an existing DB that was actually missing tables.
  */
-async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
+/**
+ * Applies the historical idempotent schema-reconciliation surface only when a
+ * controlled migration command explicitly enables it. Application startup must
+ * never use this as a substitute for a reviewed database migration.
+ */
+export async function reconcileCoreSchema(db: ReturnType<typeof drizzle>): Promise<void> {
   if (_tablesEnsured) return;
 
   const statements: string[] = [
@@ -2113,6 +2119,10 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     )`,
   ];
 
+  // The historical reconciliation list predates these canonical typed tables.
+  // Add them only for the explicit controlled reconciliation command.
+  statements.push(...finalCoreAdditiveSchemaStatements);
+
   try {
     for (const stmt of statements) {
       // Extract table name for error reporting
@@ -2136,6 +2146,30 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     // On MySQL 8.0 these are caught and ignored; the Drizzle migration file handles MySQL 8.0.
     const columnMigrations: string[] = [
       `ALTER TABLE \`users\` ADD COLUMN IF NOT EXISTS \`passwordChangedAt\` timestamp NULL`,
+      // Canonical Academy curriculum metadata.
+      `ALTER TABLE \`lessonPathways\` ADD COLUMN IF NOT EXISTS \`curriculumVersion\` varchar(40) NOT NULL DEFAULT '2026.1'`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`linkedCompetencies\` text NOT NULL`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`nextLessonSlug\` varchar(150) NULL`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`estimatedMinutes\` int NOT NULL DEFAULT 15`,
+      `ALTER TABLE \`lessonUnits\` ADD COLUMN IF NOT EXISTS \`curriculumVersion\` varchar(40) NOT NULL DEFAULT '2026.1'`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`completionKey\` varchar(220) NULL`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`curriculumVersion\` varchar(40) NULL`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`quizCorrect\` int NULL`,
+      `ALTER TABLE \`lessonCompletion\` ADD COLUMN IF NOT EXISTS \`quizTotal\` int NULL`,
+      // Academy invitation delivery is persisted per recipient and never inferred from UI completion.
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`deliveryStatus\` varchar(32) NOT NULL DEFAULT 'PENDING'`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`deliveryAttemptCount\` int NOT NULL DEFAULT 0`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`lastDeliveryAttemptAt\` timestamp NULL`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`deliveredAt\` timestamp NULL`,
+      `ALTER TABLE \`organizationInvites\` ADD COLUMN IF NOT EXISTS \`lastDeliveryError\` varchar(500) NULL`,
+      // Academy billing is product-scoped and remains independent of Management and Store Stripe state.
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingStatus\` varchar(32) NOT NULL DEFAULT 'not_configured'`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingInterval\` varchar(16) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingPriceId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyStripeCustomerId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyStripeSubscriptionId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyStripeCheckoutSessionId\` varchar(255) NULL`,
+      `ALTER TABLE \`organizations\` ADD COLUMN IF NOT EXISTS \`academyBillingCurrentPeriodEndsAt\` timestamp NULL`,
       // Email-verification columns (migration 0013) — added here as a runtime safety-net
       // so that production databases that have not had the formal Drizzle migration applied
       // do not throw "Unknown column 'verificationToken'" on every users SELECT query and
@@ -2161,7 +2195,7 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
       `ALTER TABLE \`campaignSequences\` ADD COLUMN IF NOT EXISTS \`scheduledDate\` varchar(10) DEFAULT NULL`,
       // Duplicate-person detection (migration 0020) — add fuzzy-dup columns to marketingContacts
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`suspectedDuplicateOf\` int DEFAULT NULL`,
-      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`dupRiskScore\` tinyint unsigned DEFAULT NULL`,
+      `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`dupRiskScore\` int DEFAULT NULL`,
       // Growth Engine CRM extension (phase 4)
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`tenantId\` varchar(100) NOT NULL DEFAULT 'global'`,
       `ALTER TABLE \`marketingContacts\` ADD COLUMN IF NOT EXISTS \`tenantType\` varchar(50) NOT NULL DEFAULT 'individual'`,
@@ -2638,9 +2672,12 @@ async function ensureTables(db: ReturnType<typeof drizzle>): Promise<void> {
     _tablesEnsured = true;
   } catch (error) {
     if (!shouldSuppressTestDbNoise()) {
-      console.error("[Database] Failed to ensure tables:", error);
+      console.error("[Database] Controlled schema reconciliation failed:", error);
     }
-    // Don't set _tablesEnsured so it retries next time
+    _ensureTablesPromise = null;
+    // Controlled migration callers must fail loudly rather than leaving a
+    // partially reconciled database eligible for application startup.
+    throw error;
   }
 }
 
@@ -2682,19 +2719,27 @@ export async function getDb() {
       }
 
       _db = drizzle(fixedUrl);
+      // mysql2 establishes a pool lazily. Verify the connection now so callers
+      // receive either a usable database or the documented null fallback rather
+      // than a deferred connection failure during unrelated feature discovery.
+      await _db.execute(sql`SELECT 1`);
       if (!shouldSuppressTestDbNoise()) {
         console.log("[Database] Connection established");
       }
 
-      // Ensure all required tables exist on first connection.
-      // Use a shared promise so concurrent callers don't run ensureTables twice.
-      if (!_ensureTablesPromise) {
-        _ensureTablesPromise = ensureTables(_db);
-      }
-      await _ensureTablesPromise;
-      if (!_tablesEnsured) {
-        _ensureTablesPromise = null;
-        throw new Error("database_table_ensure_failed");
+      // Schema mutation is migration-command-only. This prevents a production
+      // app process from silently creating or altering tables on an unknown or
+      // drifted database. The controlled reconciler must be deliberately
+      // enabled by the migration workflow after inspection and backup checks.
+      if (process.env.CORE_SCHEMA_RECONCILIATION_MODE === "explicit") {
+        if (!_ensureTablesPromise) {
+          _ensureTablesPromise = reconcileCoreSchema(_db);
+        }
+        await _ensureTablesPromise;
+        if (!_tablesEnsured) {
+          _ensureTablesPromise = null;
+          throw new Error("database_schema_reconciliation_failed");
+        }
       }
       await runStartupMediaTruthRepairOnce();
     } catch (error) {

@@ -532,18 +532,18 @@ export async function discoverProviderModels(forceRefresh = false): Promise<Prov
     return cachedDiscovery.value;
   }
 
-  const [genx, huggingface, qwen] = await Promise.all([
-    discoverGenXModels(),
-    discoverHuggingFaceTaskModels(),
-    discoverQwenModels(),
-  ]);
+  // Core execution is GenX-only. Keep legacy provider keys in the snapshot for
+  // compatibility with diagnostics, but do not discover or configure them: eager
+  // fallback discovery would reintroduce disabled provider paths and can trigger
+  // unrelated runtime-config/database reads during startup and unit tests.
+  const genx = await discoverGenXModels();
 
   const snapshot: ProviderModelDiscoverySnapshot = {
     discoveredAt: new Date().toISOString(),
     providers: {
       genx,
-      huggingface,
-      qwen,
+      huggingface: [],
+      qwen: [],
     },
   };
 

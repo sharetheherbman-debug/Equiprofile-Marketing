@@ -25,28 +25,44 @@ import { getGeneratedStorageRoot } from "./storage/runtimeFileStorage";
 
 // ── Hostname detection ─────────────────────────────────────────────────────
 
-/** Patterns that identify the school subdomain */
-const SCHOOL_HOSTNAME_PATTERNS = [
-  "school.equiprofile.online",
-  "school.localhost",
-  "school.127.0.0.1",
-];
+export type CoreSiteMode = "management" | "academy" | "shop" | "school";
+type CanonicalFrontendMode = Exclude<CoreSiteMode, "school">;
 
 /**
- * Determine which frontend to serve based on the request hostname.
- * Returns "school" for school.equiprofile.online, "management" for everything else.
+ * Resolve a requested host to exactly one Core product. Legacy School is kept
+ * as a compatibility mode only; production redirects it to Academy rather than
+ * serving a separate frontend. The prefix matching intentionally supports
+ * local development hosts such as academy.localhost and shop.localhost.
  */
-function getSiteModeFromRequest(hostname: string): "management" | "school" {
-  const lower = hostname.toLowerCase().split(":")[0]; // strip port
-  if (
-    lower.startsWith("school.") ||
-    SCHOOL_HOSTNAME_PATTERNS.some(
-      (p) => lower === p || lower.startsWith(p + ":"),
-    )
-  ) {
+export function getSiteModeFromRequest(hostname: string): CoreSiteMode {
+  const lower = hostname.toLowerCase().split(":")[0].replace(/\.$/, "");
+  if (lower === "academy.equiprofile.online" || lower.startsWith("academy.")) {
+    return "academy";
+  }
+  if (lower === "shop.equiprofile.online" || lower.startsWith("shop.")) {
+    return "shop";
+  }
+  if (lower === "school.equiprofile.online" || lower.startsWith("school.")) {
     return "school";
   }
   return "management";
+}
+
+/**
+ * Vite uses one configured client root in development. This helper makes the
+ * requested host mode observable in tests while preserving an explicit
+ * VITE_SITE override for local development of a chosen product.
+ */
+export function getDevelopmentFrontendMode(
+  hostname: string,
+  configuredSite = process.env.VITE_SITE,
+): CanonicalFrontendMode {
+  const explicit = configuredSite?.trim().toLowerCase();
+  if (explicit === "management" || explicit === "academy" || explicit === "shop") {
+    return explicit;
+  }
+  const detected = getSiteModeFromRequest(hostname);
+  return detected === "school" ? "academy" : detected;
 }
 
 // ── Development (Vite dev server) ──────────────────────────────────────────
@@ -136,8 +152,10 @@ export async function setupVite(app: Express, server: Server) {
 
     const url = req.originalUrl;
 
-    // In dev, serve the site matching VITE_SITE (defaults to management)
-    const devSite = process.env.VITE_SITE || "management";
+    // Vite is configured for one client root at a time. VITE_SITE explicitly
+    // selects that root; without it, host detection makes local product modes
+    // observable and testable. Legacy School maps to Academy compatibility.
+    const devSite = getDevelopmentFrontendMode(req.hostname || "");
     const clientTemplate = path.resolve(
       import.meta.dirname,
       "../..",
@@ -166,14 +184,30 @@ export async function setupVite(app: Express, server: Server) {
 
 // ── Production (static files) ──────────────────────────────────────────────
 
-export function serveStatic(app: Express) {
-  const baseDist =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(import.meta.dirname, "../..", "dist", "public")
-      : path.resolve(import.meta.dirname, "public");
+export interface StaticServingOptions {
+  /** Test-only fixture root. Production callers intentionally omit this. */
+  baseDist?: string;
+  /** Test-only canonical Academy origin for legacy School redirects. */
+  academyPublicOrigin?: string;
+}
 
-  const mgmtDist = path.resolve(baseDist, "management");
-  const schoolDist = path.resolve(baseDist, "school");
+export function serveStatic(app: Express, options: StaticServingOptions = {}) {
+  const baseDist =
+    options.baseDist ||
+    (process.env.NODE_ENV === "development"
+      ? path.resolve(import.meta.dirname, "../..", "dist", "public")
+      : path.resolve(import.meta.dirname, "public"));
+
+  const siteBuildDirectories: Record<CanonicalFrontendMode, string> = {
+    management: path.resolve(baseDist, "management"),
+    academy: path.resolve(baseDist, "academy"),
+    shop: path.resolve(baseDist, "shop"),
+  };
+  const academyPublicOrigin = (
+    options.academyPublicOrigin ||
+    process.env.ACADEMY_PUBLIC_ORIGIN ||
+    "https://academy.equiprofile.online"
+  ).replace(/\/$/, "");
 
   // Serve generated media assets at /media/generated/*
   // STORAGE_ROOT defaults to /var/equiprofile/storage (override: EQUIPROFILE_STORAGE_ROOT)
@@ -195,11 +229,9 @@ export function serveStatic(app: Express) {
     app.use("/media/generated", (_req, res) => res.status(404).end());
   }
 
-  // Verify both frontend builds exist
-  for (const [name, dir] of [
-    ["management", mgmtDist],
-    ["school", schoolDist],
-  ] as const) {
+  // Verify all canonical product builds exist. School is a redirect-only
+  // compatibility host and deliberately has no independent build output.
+  for (const [name, dir] of Object.entries(siteBuildDirectories)) {
     if (!fs.existsSync(dir)) {
       console.warn(
         `⚠️  ${name} frontend build not found at ${dir} — run "npm run build:${name}"`,
@@ -247,7 +279,8 @@ export function serveStatic(app: Express) {
       res.setHeader("Service-Worker-Allowed", "/");
     } else if (
       filePath.includes("/management-assets/") ||
-      filePath.includes("/school-assets/")
+      filePath.includes("/academy-assets/") ||
+      filePath.includes("/shop-assets/")
     ) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     }
@@ -268,16 +301,21 @@ export function serveStatic(app: Express) {
     next();
   });
 
-  // Serve static assets from BOTH frontend builds.
-  // Assets live in distinct URL namespaces (/management-assets/ and
-  // /school-assets/) so express.static serving from both dirs is safe —
-  // the paths are orthogonal and cannot collide.
-  app.use(
-    express.static(mgmtDist, { index: false, setHeaders: setStaticHeaders }),
-  );
-  app.use(
-    express.static(schoolDist, { index: false, setHeaders: setStaticHeaders }),
-  );
+  const staticFrontends: Record<CanonicalFrontendMode, express.RequestHandler> = {
+    management: express.static(siteBuildDirectories.management, { index: false, setHeaders: setStaticHeaders }),
+    academy: express.static(siteBuildDirectories.academy, { index: false, setHeaders: setStaticHeaders }),
+    shop: express.static(siteBuildDirectories.shop, { index: false, setHeaders: setStaticHeaders }),
+  };
+
+  // Select exactly one product build per host. This prevents Academy or Shop
+  // asset paths from resolving from Management (or any other product build).
+  app.use((req, res, next) => {
+    const siteMode = getSiteModeFromRequest(req.hostname || "");
+    if (siteMode === "school") {
+      return res.redirect(308, `${academyPublicOrigin}${req.originalUrl || "/"}`);
+    }
+    return staticFrontends[siteMode](req, res, next);
+  });
 
   // Known scanner / exploit probe paths — 404 immediately
   // SPA fallback — hostname-aware: serves the correct index.html per domain
@@ -302,16 +340,20 @@ export function serveStatic(app: Express) {
     // Don't serve index.html for real asset requests
     const isStaticFile =
       req.originalUrl.startsWith("/management-assets/") ||
-      req.originalUrl.startsWith("/school-assets/") ||
+      req.originalUrl.startsWith("/academy-assets/") ||
+      req.originalUrl.startsWith("/shop-assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
     if (isStaticFile) {
       return res.status(404).send("Not Found");
     }
 
-    // Determine which frontend to serve based on hostname
+    // Determine which canonical frontend to serve based on hostname. School
+    // was already redirected above, so it can never become a fourth SPA shell.
     const siteMode = getSiteModeFromRequest(req.hostname || "");
-    const siteDistPath = siteMode === "school" ? schoolDist : mgmtDist;
-    const indexPath = path.resolve(siteDistPath, "index.html");
+    if (siteMode === "school") {
+      return res.redirect(308, `${academyPublicOrigin}${req.originalUrl || "/"}`);
+    }
+    const indexPath = path.resolve(siteBuildDirectories[siteMode], "index.html");
 
     // No-cache for HTML shell (users always get latest)
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");

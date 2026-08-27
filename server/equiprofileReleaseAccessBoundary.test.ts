@@ -70,9 +70,12 @@ describe("EquiProfile release access boundary", () => {
     }
   });
 
-  it("enforces Stable entitlement in both the client wrapper and legacy server namespaces", () => {
+  it("enforces effective Stable entitlement in both the client wrapper and legacy server namespaces", () => {
     expect(protectedRoute).toContain("return <ProtectedRoute stableOnly>{children}</ProtectedRoute>");
-    expect(protectedRoute).toContain('prefs.planTier === "stable" || !!prefs.bothDashboardsUnlocked');
+    expect(protectedRoute).toContain('from "@shared/managementEntitlement"');
+    expect(protectedRoute).toContain("resolveEffectiveManagementEntitlement(");
+    expect(protectedRoute).toContain('managementEntitlement.effectivePlanTier === "stable"');
+    expect(protectedRoute).toContain('managementEntitlement.complimentaryAccessState === "active"');
     expect(trpc).toContain('"lessonBookings."');
     expect(trpc).toContain('"trainerAvailability."');
     expect(trpc).toContain("This feature requires the Stable plan. Please upgrade to continue.");

@@ -38,7 +38,7 @@ describe("chatOrchestrator", () => {
     const result = await executeChatTask([{ role: "user", content: "Hello" }]);
     expect(isChatSetupNeeded(result)).toBe(true);
     if (isChatSetupNeeded(result)) {
-      expect(result.message).toContain("No text provider");
+      expect(result.message).toContain("GenX is not configured");
     }
   });
 
@@ -87,22 +87,20 @@ describe("chatOrchestrator", () => {
     expect(url).not.toContain("mediaResolver");
   });
 
-  it("falls back to Qwen when GenX key is absent", async () => {
+  it("does not fall back to Qwen when GenX is absent", async () => {
     mocks.getRuntimeConfig.mockImplementation(async (_key: string, envVar: string) => {
       if (envVar === "QWEN_API_KEY") return "test-qwen-key";
       if (envVar === "GENX_API_KEY") return "";
       return "";
     });
-    mocks.fetch.mockResolvedValue(
-      makeJsonResponse({ choices: [{ message: { content: "Qwen says hi." } }] }),
-    );
 
     const result = await executeChatTask([{ role: "user", content: "Hey" }]);
 
-    expect(isChatSetupNeeded(result)).toBe(false);
-    if (!isChatSetupNeeded(result)) {
-      expect(result.provider).toBe("qwen");
+    expect(isChatSetupNeeded(result)).toBe(true);
+    if (isChatSetupNeeded(result)) {
+      expect(result.message).toContain("GENX_API_KEY");
     }
+    expect(mocks.fetch).not.toHaveBeenCalled();
   });
 
   it("isChatProviderConfigured returns false when no env key set in unit_test_mock", async () => {

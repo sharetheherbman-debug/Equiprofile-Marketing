@@ -1,7 +1,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Lesson Content Data — complete educational content for the EquiProfile
-// structured learning engine. All content based on BHS / Pony Club standards.
+// structured learning engine. All material is original EquiProfile educational content.
 // ─────────────────────────────────────────────────────────────────────────────
+import { LESSON_QUALITY_ENHANCEMENTS } from "./academy/lessonQualityEnhancements.generated";
+import {
+  applyFactualLessonRevision,
+  FACTUALLY_REVISED_LESSON_SLUGS,
+} from "./academy/factualLessonRevisions";
 
 export interface LessonPathwayData {
   slug: string;
@@ -141,21 +146,24 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
   {
     slug: "handling-groundwork",
     title: "Handling & Groundwork",
-    description: "Master the essential skills of handling horses safely on the ground, including leading, tying up, turning out, and lungeing techniques.",
+    description:
+      "Master the essential skills of handling horses safely on the ground, including leading, tying up, turning out, and lungeing techniques.",
     sortOrder: 13,
     iconName: "Hand",
   },
   {
     slug: "nutrition-feeding",
     title: "Nutrition & Feeding",
-    description: "Understand equine nutrition principles, feed types, feeding routines, and how to create balanced diets for different horses and workloads.",
+    description:
+      "Understand equine nutrition principles, feed types, feeding routines, and how to create balanced diets for different horses and workloads.",
     sortOrder: 14,
     iconName: "Apple",
   },
   {
     slug: "equine-welfare-ethics",
     title: "Equine Welfare & Ethics",
-    description: "Explore the ethical responsibilities of horse ownership and care, including the Five Freedoms, welfare legislation, and responsible horsemanship.",
+    description:
+      "Explore the ethical responsibilities of horse ownership and care, including the Five Freedoms, welfare legislation, and responsible horsemanship.",
     sortOrder: 15,
     iconName: "Heart",
   },
@@ -165,7 +173,7 @@ export const LESSON_PATHWAYS: LessonPathwayData[] = [
 // LESSON UNITS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const LESSON_UNITS: LessonUnitData[] = [
+const BASE_LESSON_UNITS: LessonUnitData[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 1 — Horse Care Foundations
   // ═══════════════════════════════════════════════════════════════════════════
@@ -184,7 +192,7 @@ export const LESSON_UNITS: LessonUnitData[] = [
       "Describe the basic function of key anatomical areas",
       "Use correct terminology when discussing a horse's conformation",
     ],
-    content: `Understanding the external anatomy of the horse — commonly referred to as the "points of the horse" — is one of the most fundamental skills in equestrian education. Whether you are describing a horse's conformation to a vet, reporting an injury, or discussing suitability for a discipline, you need precise vocabulary.
+    content: `Understanding external anatomy — commonly called the "points of the horse" — helps learners use clear, shared terminology. This lesson introduces the visible terms shown in the University of Kentucky anatomy reference. It does not teach diagnosis, conformation assessment, passport completion, or veterinary decision-making.
 
 ## The Head
 
@@ -198,23 +206,23 @@ Moving along the body, the **back** runs from the withers to the **loins**, whic
 
 ## The Forelegs
 
-The **elbow** is the joint at the top of the foreleg, close to the body. Below it is the **forearm**, a muscular section leading to the **knee** (technically the carpus). Below the knee is the **cannon bone**, a long, straight bone. At the back of the cannon bone runs the **tendons**, which are vital structures that must be regularly checked for heat or swelling. The **fetlock** joint sits at the bottom of the cannon bone, and below it the **pastern** slopes down to the **coronet band**, the ring of tissue at the top of the hoof. The **hoof** itself is the hard, keratinous capsule that protects the internal structures of the foot. On the back of the fetlock is a small tuft of hair called the **ergot**.
+The **elbow** is the joint at the top of the foreleg, close to the body. Below it is the **forearm**, a muscular section leading to the **knee** (technically the carpus). Below the knee is the **cannon bone**. The **tendons** run at the back of this area. The **fetlock** joint sits below the cannon bone, followed by the **pastern** and the **coronet band** at the top of the hoof. British Horse Society guidance describes the coronary band as the strip where skin meets the hoof wall and where new hoof growth begins. The hoof contains several external structures, including wall, sole and frog. On the back of the fetlock is a small tuft of hair called the **ergot**.
 
 ## The Hind Legs
 
-The hindquarters provide the horse's power. The **hip** joint is deep within the body. The visible bony prominences are the **point of hip** at the side and the **point of buttock** at the rear. The **stifle** is the equivalent of the human knee and sits high on the hind leg. Below the stifle is the **gaskin** (or second thigh), leading to the **hock**, one of the hardest-working joints in the horse. Below the hock, the structure mirrors the foreleg: cannon bone, fetlock, pastern, coronet band and hoof. The **chestnut** is a small, flat, horny growth found on the inside of each leg — on the forelegs above the knee and on the hind legs below the hock.
+The hindquarters include the **hip**, **point of hip**, **point of buttock**, **stifle**, **gaskin**, and **hock**. The stifle sits high on the hind leg. Below the hock, the visible lower-limb terms include cannon bone, fetlock, pastern, coronet band and hoof. The **chestnut** is a small, flat, horny growth found on the inside of each leg — on the forelegs above the knee and on the hind legs below the hock.
 
 ## Markings and Colours
 
-It is important to distinguish between anatomical points and **markings**. Markings are the white patches on the face (star, stripe, snip, blaze, white face) and legs (sock, stocking, ermine marks). These are used for identification purposes and are recorded on a horse's passport alongside **whorls** — small spiral patterns in the coat.
+It is important to distinguish between anatomical points and **markings**. Markings are coat-pattern terms that can be distinguished from anatomical points. This lesson uses the descriptive examples star, stripe, snip, blaze, sock and stocking. Requirements for identification records and passports vary by jurisdiction and must be checked with the relevant current authority.
 
-Knowing these terms allows you to communicate clearly with instructors, vets, and farriers. For example, saying "there is heat in the near-fore tendon below the knee" is far more useful than "his front leg feels warm somewhere."`,
+Knowing these terms helps learners follow teaching and discuss locations clearly. If a horse appears uncomfortable or a learner notices a concerning change, they should stop and report it to the responsible yard person, veterinarian, or farrier rather than attempting a diagnosis.`,
     keyPoints: [
       "The poll is the highest point of the skull; the withers is where height is measured",
-      "The cannon bone, tendons, fetlock and pastern are key lower-leg structures to check daily",
+      "The cannon bone, tendons, fetlock and pastern are lower-leg terms learners should be able to identify",
       "Markings (star, stripe, blaze, sock, stocking) are used for identification, not anatomy",
-      "The hock is one of the hardest-working joints and is prone to strain",
-      "The coronet band is the growth ring of the hoof and should be checked for injury",
+      "The hock is a named joint on the hind leg; use qualified guidance for concerns about movement or comfort",
+      "The coronary band is where skin meets the hoof wall and contributes to new hoof growth",
     ],
     safetyNote:
       "When examining or pointing out parts of the horse, always approach calmly and avoid sudden movements. Stand to the side of the horse — never directly behind — and let the horse know you are there by speaking quietly. Be especially careful when handling the lower legs, as some horses are sensitive and may kick or stamp.",
@@ -256,8 +264,7 @@ Knowing these terms allows you to communicate clearly with instructors, vets, an
           "The coronet band is the ring of soft tissue at the top of the hoof wall from which the hoof grows. Injury to the coronet band can cause permanent hoof defects.",
       },
       {
-        question:
-          "Where would you find the 'dock' on a horse?",
+        question: "Where would you find the 'dock' on a horse?",
         options: [
           "Under the chin",
           "At the point where the tail begins",
@@ -269,7 +276,8 @@ Knowing these terms allows you to communicate clearly with instructors, vets, an
           "The dock is the muscular root of the tail, where the tail hair grows from the end of the spine.",
       },
       {
-        question: "What term describes the soft, flexible end of a horse's nose including the nostrils and lips?",
+        question:
+          "What term describes the soft, flexible end of a horse's nose including the nostrils and lips?",
         options: ["The jowl", "The crest", "The muzzle", "The gullet"],
         correctIndex: 2,
         explanation:
@@ -298,16 +306,16 @@ Knowing these terms allows you to communicate clearly with instructors, vets, an
       "Demonstrate the correct order of a grooming routine",
       "Recognise signs of skin problems or injury during grooming",
     ],
-    content: `Grooming is one of the most important daily tasks in horse care. It is not just about making the horse look tidy — grooming serves essential health, welfare and bonding purposes. A thorough grooming session allows you to check the horse's entire body for cuts, lumps, swelling, heat, skin conditions and parasites. It also stimulates blood circulation, distributes natural oils through the coat, and provides an opportunity to build trust and a working relationship with the horse.
+    content: `Grooming is a routine part of horse care, not only a way to make a horse look tidy. Cooperative Extension guidance describes grooming as supporting skin care and horse–handler bonding. Work calmly, use suitable tools gently, and use the routine to notice changes that should be reported through the yard's current care process.
 
 ## Why We Groom
 
 There are four main reasons for grooming:
 
-1. **Health monitoring** — Running your hands and brushes over every part of the horse means you will notice injuries, swellings, ticks, rain scald, mud fever or other issues early. Early detection leads to faster treatment.
-2. **Comfort** — Removing dried mud, sweat and loose hair prevents rubbing and skin irritation, particularly under the saddle and girth area.
-3. **Circulation** — Vigorous brushing with a body brush or curry comb stimulates blood flow to the skin and helps distribute the natural oils (sebum) that keep the coat healthy and waterproof.
-4. **Bonding** — Horses groom each other (mutual grooming) as a social behaviour. Grooming your horse calmly and consistently helps build trust and establishes you as a safe, reliable handler.
+1. **Safe observation** — Working over the horse can help a handler notice visible changes, lodged debris, or signs of discomfort. Do not diagnose or treat; pause and tell the responsible yard person, veterinarian, or farrier when something is concerning.
+2. **Comfort and cleanliness** — Suitable grooming tools remove loose dirt, old hair, and debris. Take particular care around sensitive or bony areas.
+3. **Coat care** — A body brush removes fine dust and can bring out natural oils in the hair coat.
+4. **Calm handling** — Grooming should be slow, predictable, and appropriate to the horse and the handler's experience. Ask an experienced person for help with an anxious, unfamiliar, or unsafe horse.
 
 ## The Grooming Kit
 
@@ -327,8 +335,8 @@ A standard grooming kit should contain the following items:
 
 A systematic approach ensures nothing is missed:
 
-1. **Tie up safely** — Use a quick-release knot to a secure tie ring, or have someone hold the horse.
-2. **Pick out feet** — Start with the near (left) fore, then near hind, off (right) fore, off hind. Check each hoof for stones, cracks, thrush (a foul-smelling black discharge) and shoe condition.
+1. **Tie up safely** — With a solid fixture and active supervision, use a quick-release knot; alternatively, have an experienced handler hold the horse. Do not leave a tied horse unattended.
+2. **Pick out feet** — Follow the safe method you have been taught, using the hoof pick downward toward the toe. Remove visible dirt, rocks and debris; if something is concerning, stop and consult the responsible yard person, veterinarian, or farrier.
 3. **Curry comb** — Use the rubber curry comb in circular motions over the muscular areas of the body: neck, shoulder, barrel and hindquarters. Avoid bony prominences.
 4. **Dandy brush** — Flick away loosened dirt with short strokes, working from the neck backwards. Skip sensitive or clipped areas.
 5. **Body brush** — Use long, smooth strokes over the whole body, cleaning the brush on the metal curry comb regularly.
@@ -338,31 +346,32 @@ A systematic approach ensures nothing is missed:
 9. **Stable rubber** — Give the coat a final wipe-down to polish.
 10. **Final check** — Stand back and look over the horse for anything you may have missed.
 
-## Grooming a Grass-Kept Horse
+## Adjusting the Routine
 
-Horses living out at grass should not be groomed as thoroughly as stabled horses. The natural grease in their coat provides waterproofing and insulation. For grass-kept horses, pick out feet, remove heavy mud, check for injuries and sponge the eyes and dock. Avoid excessive body brushing that strips the coat oils.`,
+The appropriate grooming routine depends on the individual horse, weather, turnout, coat condition, work, current care plan, and the handler's competence. Do not copy another horse's routine or use grooming as a substitute for veterinary, farriery, or qualified yard guidance. When a horse is anxious, unfamiliar, or difficult to handle safely, stop and ask an experienced person for help.`,
     keyPoints: [
-      "Grooming is a health check — always look for cuts, swelling, heat, skin conditions and parasites",
+      "Grooming supports safe observation; report concerning changes rather than diagnosing or treating them",
       "Use the rubber curry comb in circles on muscular areas only; never on bony legs, spine or face",
       "Always pick out hooves from heel to toe to protect the frog",
-      "Use separate sponges for the face and dock — never mix them",
-      "Grass-kept horses should not be over-groomed, as natural coat oils provide vital weatherproofing",
+      "Use clean, separate equipment as required by the current yard hygiene process",
+      "Use the current individual care plan and ask for experienced help when a horse is anxious or unsafe to handle",
       "Clean the body brush regularly on the metal curry comb during use",
     ],
     safetyNote:
-      "Always tie the horse with a quick-release knot before grooming. Stand to the side of the horse, not directly behind. When picking out hind feet, stay close to the horse's body so that if it kicks, you are pushed away rather than struck at full force. If the horse is fidgety or anxious, ask an experienced person for help rather than continuing alone.",
+      "With a solid fixture and active supervision, use a quick-release knot or an experienced handler. Work calmly, stay aware of the horse's position, and do not stand directly behind it. When picking up feet, use the safe close-working position you have been taught. If the horse is fidgety, anxious, unfamiliar, or unsafe, stop and ask an experienced person for help rather than continuing alone.",
     practicalApplication:
-      "Before every ride, at minimum pick out the hooves and brush the saddle and girth areas to remove mud and debris that could cause rubs or sores. After riding, groom to remove sweat marks, check for any new injuries and ensure the horse is comfortable before returning it to the stable or field. Establish a consistent routine so the horse learns what to expect and stands quietly.",
+      "Under appropriate supervision, use the routine your yard or care plan requires. Remove visible debris with suitable tools, use the safe hoof-cleaning method you have been taught, and report concerning changes rather than attempting to diagnose or treat them. Keep the routine calm and predictable, but do not continue when the horse or situation is unsafe.",
     commonMistakes: [
       "Using the dandy brush on a clipped or thin-skinned horse, causing discomfort",
       "Picking out feet from toe to heel, which can push stones into the frog",
       "Using the same sponge for the face and dock, spreading bacteria",
       "Forgetting to check the legs and hooves because you focused only on the body",
-      "Over-grooming a grass-kept horse, removing essential waterproofing oils",
+      "Continuing alone when a horse is anxious, unfamiliar, or unsafe to handle",
     ],
     knowledgeCheck: [
       {
-        question: "Which grooming tool should be used in circular motions on muscular areas to loosen mud?",
+        question:
+          "Which grooming tool should be used in circular motions on muscular areas to loosen mud?",
         options: [
           "The dandy brush",
           "The body brush",
@@ -385,18 +394,7 @@ Horses living out at grass should not be groomed as thoroughly as stabled horses
         explanation:
           "Always pick out from heel to toe to avoid pushing stones or debris into the sensitive frog and sulci of the hoof.",
       },
-      {
-        question: "Why should a grass-kept horse not be groomed as thoroughly as a stabled horse?",
-        options: [
-          "They do not get as dirty",
-          "Their natural coat oils provide waterproofing and insulation",
-          "They are harder to catch",
-          "Grooming tools do not work on long coats",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Grass-kept horses rely on natural grease in their coat for waterproofing and insulation against cold and rain. Excessive brushing strips these oils away.",
-      },
+
       {
         question: "What is the metal curry comb used for?",
         options: [
@@ -432,15 +430,15 @@ Horses living out at grass should not be groomed as thoroughly as stabled horses
       "List the golden rules of feeding",
       "Understand how a horse's digestive system influences feeding management",
     ],
-    content: `Correct feeding is essential for maintaining a horse's health, energy, temperament and body condition. The horse evolved as a trickle-feeder, spending up to 18 hours a day grazing. Their digestive system is designed for a continuous intake of small amounts of high-fibre food. Understanding this fundamental fact underpins every feeding decision you will make.
+    content: `Correct feeding supports a horse’s health, energy, behaviour and body condition. World Horse Welfare describes horses as predominantly grazing animals designed to eat small amounts frequently, with forage-based diets for approximately 16–18 hours a day. Feeding decisions must still be individual: age, body condition, dental health, medical history, pasture, climate and workload all matter.
 
 ## The Digestive System in Brief
 
-The horse has a relatively small stomach for its body size — approximately the size of a rugby ball in a 500 kg horse. This means the stomach can only process small amounts of food at a time and should never be overloaded. Food passes through the stomach quickly and into the small intestine, where sugars, starches, proteins, fats and some vitamins are absorbed. It then enters the **hindgut** (caecum and large colon), where billions of microorganisms ferment fibre and extract energy from it. This microbial population is delicate and takes time to adjust to dietary changes — which is why sudden feed changes can cause colic or laminitis.
+The horse’s digestive system is adapted to frequent forage intake rather than large, infrequent meals. Feed passes through the stomach and small intestine before reaching the **hindgut** (caecum and large colon), where microorganisms ferment fibre. Sudden dietary change can disrupt this system. Learners should not calculate or alter a ration alone; follow the written feed plan and ask the yard manager, vet or qualified nutrition adviser before changing it.
 
 ## Fibre First
 
-The single most important principle in equine nutrition is **fibre first**. Forage — hay, haylage or grass — should always make up the bulk of the diet. As a general guideline, a horse needs a minimum of 1.5% to 2% of its body weight in dry matter forage per day. For a 500 kg horse, that is approximately 7.5 to 10 kg of hay daily.
+The core principle in equine nutrition is **fibre first**. Forage — grass, hay, haylage and suitable fibre feeds — forms the basis of the diet, supports chewing and provides fibre for hindgut function. The British Horse Society states that a daily ration should be no less than 1.5% of bodyweight and notes that the appropriate amount and calorie density depend on the individual horse. Use an accurate weight estimate, monitor body condition and follow the plan set with a vet or nutrition professional rather than copying another horse’s quantity.
 
 Forage provides:
 - A constant supply of fibre for the hindgut microbes
@@ -470,27 +468,27 @@ Forage provides:
 
 These rules have been taught in equestrian education for generations and are based on the horse's digestive physiology:
 
-1. **Feed little and often** — Mimics natural grazing and prevents stomach overload.
-2. **Feed plenty of forage** — At least 1.5% of body weight in forage daily.
-3. **Make changes gradually** — Any alteration to the diet should be introduced over 7 to 14 days to allow the hindgut microbes to adapt.
-4. **Feed according to work done** — A horse in light work needs far less concentrate feed than one in hard work. Overfeeding causes obesity, excitability and metabolic problems.
-5. **Feed at the same times each day** — Horses are creatures of routine and become stressed if meal times are unpredictable.
-6. **Do not ride immediately after a full feed** — Allow at least one hour after a concentrate feed before exercise. A full stomach restricts the lungs and diverts blood to digestion.
-7. **Always provide access to clean, fresh water** — Water is essential for digestion; dehydration increases the risk of impaction colic.
-8. **Feed good-quality, clean feed** — Never feed mouldy, dusty or contaminated hay or feed. Mould spores cause respiratory disease.
-9. **Feed by weight, not volume** — A scoop of oats weighs differently to a scoop of cubes. Always weigh feed to ensure accuracy.
-10. **Treat each horse as an individual** — Age, breed, temperament, workload, health status and body condition all influence dietary requirements.
+1. **Feed little and often** — This reflects the horse’s natural feeding pattern.
+2. **Make suitable forage the foundation** — Provide forage and foraging opportunities in the way set out in the individual horse’s plan.
+3. **Make changes gradually** — The British Horse Society advises introducing feed changes gradually, ideally over 10–14 days; ask a professional to set a different plan if the horse’s health requires it.
+4. **Feed according to body condition and workload** — Review weight and condition regularly. More energy-dense feed is not automatically the right response to low energy or workload change.
+5. **Keep a consistent routine** — Record any changes and make sure every carer follows the written plan.
+6. **Plan exercise and meals safely** — Follow the yard, veterinary or nutrition guidance about timing exercise around meals; do not improvise a fast-work routine after a large meal.
+7. **Provide a constant supply of clean, fresh water** — Check access, cleanliness and intake, especially when grazing is restricted or forage is conserved.
+8. **Use hygienic feed and utensils** — Do not feed mouldy or contaminated forage; clean containers and prevent cross-contamination.
+9. **Use the written feed plan and accurate measuring method it specifies** — Never guess quantities or substitute products.
+10. **Treat each horse as an individual** — Age, breed, temperament, workload, health status, weight and body condition all influence nutritional requirements.
 
 ## Body Condition Scoring
 
-Regularly assess your horse's body condition using a scoring system (typically 0 to 5 in the UK). Feel over the ribs, crest, shoulder, back and hindquarters. A score of 2.5 to 3 is ideal for most horses. Adjust feed and forage quantities accordingly.`,
+Regularly assess body condition using the recognised system and method agreed by the yard, vet or nutrition professional. Observe the ribs, crest, shoulder, back and hindquarters consistently, record the trend, and ask for professional advice before changing a ration in response to a score.`,
     keyPoints: [
-      "Fibre (forage) must always form the foundation of a horse's diet — minimum 1.5% of body weight daily",
-      "The horse's small stomach means it must be fed little and often",
-      "Changes to the diet must be introduced gradually over 7–14 days to protect the hindgut microbiome",
-      "Feed according to the work the horse is doing — overfeeding causes obesity, excitability and metabolic disease",
-      "Always feed by weight, not by volume, as different feeds have different densities",
-      "Never feed mouldy or dusty forage — it can cause serious respiratory illness",
+      "Forage forms the foundation of the diet; use the individual written plan and monitor condition rather than copying another horse’s ration",
+      "Horses are adapted to frequent, forage-based feeding and benefit from suitable foraging opportunities",
+      "The British Horse Society advises gradual feed changes, ideally over 10–14 days, unless a professional sets a different health plan",
+      "Review workload, weight and condition with a qualified adviser before changing energy-dense feed",
+      "Follow the written plan’s quantity and measuring instructions; do not guess or substitute feed",
+      "Clean, hygienic forage, water and utensils are part of safe feeding management",
     ],
     safetyNote:
       "Never enter a stable or field with a bucket of feed if multiple horses are loose together — this can trigger aggression and kicking. Always feed horses in separate areas or tie them up to prevent resource guarding. Store feed securely in vermin-proof bins, as a horse that breaks into a feed room and gorges on concentrates is at high risk of colic and laminitis, both of which can be fatal.",
@@ -505,11 +503,17 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     ],
     knowledgeCheck: [
       {
-        question: "What percentage of body weight should a horse receive in forage daily as a minimum?",
-        options: ["0.5%", "1.0%", "1.5%", "3.0%"],
+        question:
+          "What is the safest response when you think a horse’s forage ration needs changing?",
+        options: [
+          "Copy the quantity fed to the nearest horse",
+          "Remove forage immediately so the horse eats less",
+          "Record the concern and ask the yard manager, vet or qualified nutrition adviser to review the individual plan",
+          "Add concentrate feed without changing the written chart",
+        ],
         correctIndex: 2,
         explanation:
-          "A horse should receive a minimum of 1.5% of its body weight in dry matter forage each day. For a 500 kg horse, that is at least 7.5 kg of hay.",
+          "Rations depend on the individual horse’s weight, condition, health, workload and forage. World Horse Welfare and the British Horse Society both emphasise individual needs and condition monitoring rather than using another horse’s quantity as a prescription.",
       },
       {
         question: "Why must dietary changes be introduced gradually?",
@@ -521,22 +525,18 @@ Regularly assess your horse's body condition using a scoring system (typically 0
         ],
         correctIndex: 1,
         explanation:
-          "The billions of microorganisms in the hindgut that ferment fibre need 7–14 days to adjust to changes in diet. Sudden changes can cause colic or laminitis.",
+          "Diet changes should be gradual because the hindgut microbial population needs time to adapt. The British Horse Society advises changes ideally over 10–14 days; use professional advice where a horse’s health needs a different plan.",
       },
       {
         question: "Which of the following is a 'straight' feed?",
-        options: [
-          "A competition cube",
-          "A coarse mix",
-          "Oats",
-          "A balancer",
-        ],
+        options: ["A competition cube", "A coarse mix", "Oats", "A balancer"],
         correctIndex: 2,
         explanation:
           "Straights are single, unprocessed ingredients such as oats, barley or sugar beet pulp. They are not pre-balanced and require nutritional knowledge to feed correctly.",
       },
       {
-        question: "Why is it important to feed by weight rather than by volume?",
+        question:
+          "Why is it important to feed by weight rather than by volume?",
         options: [
           "Horses prefer weighed feeds",
           "Different feeds have different densities, so a scoop of oats weighs less than a scoop of cubes",
@@ -551,7 +551,7 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     aiTutorPrompts: [
       "Can you explain the golden rules of feeding and why each one matters?",
       "What would happen if I suddenly changed my horse's feed without a transition period?",
-      "Help me plan a basic diet for a 500 kg horse in light work.",
+      "What information should a vet or qualified nutrition adviser review before changing a horse’s diet?",
     ],
     linkedCompetencies: ["feeding_awareness"],
   },
@@ -565,35 +565,34 @@ Regularly assess your horse's body condition using a scoring system (typically 0
     category: "Horse Care Foundations",
     sortOrder: 4,
     objectives: [
-      "State the approximate daily water intake for a horse at rest and in work",
+      "Explain why water intake and access must be monitored for the individual horse",
       "Explain why clean water access is critical for digestive health",
-      "Identify signs of dehydration in a horse",
+      "Recognise potentially concerning changes in drinking or wellbeing and escalate them safely",
       "Describe best practice for providing water in the stable and field",
     ],
-    content: `Water is the single most important nutrient in a horse's diet. A horse can survive for weeks without food but only a few days without water. Adequate hydration is essential for digestion, temperature regulation, joint lubrication, nutrient transport and waste removal. Understanding water requirements and knowing how to check for dehydration are core skills for every horse carer.
+    content: `Water is essential to digestion, temperature regulation, transport of nutrients and waste removal. World Horse Welfare and the British Horse Society both state that horses need a constant supply of clean, fresh water. The amount an individual horse drinks varies with body size, forage and grass intake, weather, work, lactation, health and travel. The learner’s role is to make sure water is accessible and clean, notice a meaningful change from that horse’s normal intake or behaviour, and report it promptly.
 
-## How Much Water Does a Horse Need?
+## Monitoring water access and intake
 
-A horse at rest in a temperate climate typically drinks between **25 and 55 litres of water per day**, depending on its size, diet and the ambient temperature. Several factors increase water demand:
+Do not use a generic litre figure to decide whether a horse is adequately hydrated. Instead, check the specific horse’s normal pattern and the written care plan. Water demand may change with:
 
-- **Exercise** — A horse in moderate to hard work may drink 50 to 80 litres per day due to fluid loss through sweat.
-- **Hot weather** — High temperatures increase sweating and respiratory water loss.
-- **Lactation** — A broodmare producing milk can require up to 75 litres daily.
-- **Dry forage diet** — Hay contains around 10–15% moisture, compared to grass at 60–80%. Horses on a hay-only diet need to drink more to compensate.
-- **Haylage** — Contains more moisture than hay, so horses eating haylage may drink slightly less.
+- **Exercise, sweating and hot weather** — monitor access and recovery closely under the yard’s exercise and veterinary plan.
+- **Forage and grazing** — grass and conserved forage provide different amounts of moisture; World Horse Welfare specifically notes closer water-intake monitoring where grazing is restricted or conserved forage is fed.
+- **Lactation, illness, travel and medication** — these situations need an individual plan from the responsible professional.
+- **Environment and group access** — a trough or bucket must be accessible, clean and large enough for every horse in the group to drink safely.
 
 ## Why Water Matters for Digestion
 
 The horse's large intestine acts as a reservoir of water. If the horse becomes dehydrated, water is reabsorbed from the gut contents, causing them to become dry and compacted. This is a major cause of **impaction colic**, a painful and potentially life-threatening condition. Consistent access to clean water is one of the simplest ways to reduce the risk of colic.
 
-Water also plays a vital role in saliva production. Horses produce up to 40 litres of saliva per day when eating forage. Saliva buffers stomach acid and protects the stomach lining from ulceration. Without adequate water, saliva production drops, increasing the risk of **gastric ulcers**.
+Water also supports saliva production and normal digestive function. A carer should not diagnose the cause of a change in drinking, gut function or appetite; record the observation and follow the yard’s veterinary-escalation procedure.
 
 ## Providing Water in the Stable
 
 In the stable, water can be provided via:
 
-- **Buckets** — Sturdy rubber or plastic buckets placed on the floor or in bucket holders. Buckets allow you to monitor intake accurately. They should be scrubbed and refilled with fresh water at least twice daily. Position buckets away from the hay net to prevent contamination with hay seeds.
-- **Automatic drinkers** — Convenient as they refill automatically, but they make it impossible to monitor how much the horse is drinking. Check daily that the drinker is working, clean and not blocked. Some horses are reluctant to use unfamiliar automatic drinkers.
+- **Buckets** — Use sturdy containers positioned and secured so they are safe for the horse and accessible for cleaning. Buckets can help carers observe changes in intake. Clean and refresh them as the written yard routine requires.
+- **Automatic drinkers** — These require regular checking to confirm they are clean, working and not blocked. Because individual intake can be harder to observe, record concerns and use the yard’s monitoring method. Some horses may need time and supervision when introduced to an unfamiliar system.
 
 Whichever method is used, water should be **clean, fresh and available at all times**. Horses are naturally cautious drinkers and may refuse water that smells or tastes different from what they are used to.
 
@@ -601,36 +600,27 @@ Whichever method is used, water should be **clean, fresh and available at all ti
 
 In the field, water sources include:
 
-- **Troughs** — Self-filling troughs connected to mains water are ideal. Check daily that the ballcock is working and the water level is adequate. In winter, break any ice at least twice daily — a horse cannot drink through ice. Clean troughs regularly to prevent algae build-up.
-- **Natural water sources** — Streams or ponds can provide water, but only if the water is clean, the bed is firm (not boggy), the access is safe, and there is no risk of contamination from run-off, chemicals or stagnant water. Many yards prefer purpose-built troughs for reliability.
+- **Troughs** — Check that the source is functioning, the water remains clean and every horse can access it safely. In freezing conditions, use the yard’s safe winter-water procedure so ice does not prevent access. Clean troughs regularly and maintain the system.
+- **Natural water sources** — The British Horse Society cautions that streams, rivers and ponds can present contamination, drying, sand-ingestion and unsafe-access risks. Assess these risks with a competent person and provide a safe alternative where necessary.
 
-## Signs of Dehydration
+## When to escalate a concern
 
-Knowing how to recognise dehydration is critical:
+A change in drinking, appetite, demeanour, urine, gums, comfort or gut signs can be clinically important, but no single lay observation confirms dehydration or identifies its cause. Do not force water, diagnose dehydration from one test, or use an unapproved supplement. Record what you observed, make clean water available, contact the instructor or yard manager, and seek veterinary advice promptly if the horse is unwell, does not drink, shows colic signs or the responsible person is concerned.
 
-1. **Skin pinch test (skin turgor)** — Pinch a fold of skin on the horse's neck or shoulder. In a well-hydrated horse, the skin snaps back within 1–2 seconds. If it stays tented for longer, the horse may be dehydrated.
-2. **Capillary refill time** — Press a fingertip firmly on the horse's gum above the teeth, then release. The area will blanch white; it should return to pink within 2 seconds. A delay indicates dehydration or poor circulation.
-3. **Dry or tacky gums** — Well-hydrated gums feel moist and slippery. Dry or sticky gums suggest dehydration.
-4. **Reduced appetite or dullness** — A dehydrated horse may lose interest in food and appear lethargic.
-5. **Dark, concentrated urine** — Normal horse urine ranges from pale yellow to amber, but very dark or scanty urine may suggest insufficient water intake.
-6. **Sunken eyes** — In severe dehydration, the eyes may appear recessed in the sockets.
+## Electrolytes and supplements
 
-If you suspect dehydration, offer water immediately, contact your instructor or yard manager, and if the horse does not drink or shows signs of colic, call the vet.
-
-## Electrolytes
-
-Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) through sweat. After heavy exercise or prolonged sweating, electrolyte supplementation may be needed to encourage drinking and restore mineral balance. Electrolytes should always be offered alongside plain water — never as the only water source — so the horse can choose.`,
+Sweating and work can change electrolyte needs. Only use an electrolyte or other supplement under the individual horse’s veterinary, nutrition or written yard plan. Plain clean water must remain available; a supplement must not become the only drinking option.`,
     keyPoints: [
-      "A horse at rest needs 25–55 litres of water per day; working horses may need up to 80 litres",
-      "Dehydration is a leading cause of impaction colic — always ensure constant water access",
-      "The skin pinch test and capillary refill time are practical dehydration checks",
-      "Automatic drinkers must be checked daily; they prevent you from monitoring intake",
-      "In winter, break ice on troughs at least twice daily — horses cannot drink through ice",
+      "Provide a constant supply of clean, fresh water and check that every horse can access it safely",
+      "Monitor the individual horse’s usual intake, behaviour and written care plan rather than using a generic litre target",
+      "Report a meaningful change in drinking or signs of illness; do not self-diagnose dehydration from one observation",
+      "Buckets, drinkers and troughs must be clean, functioning and checked according to the yard routine",
+      "Use the yard’s safe winter-water procedure so freezing conditions do not prevent access",
     ],
     safetyNote:
-      "When breaking ice on water troughs, use a purpose-built tool and take care on slippery ground. Never use boiling water or salt to melt ice in drinking troughs, as residues can be harmful. If a horse has not been drinking for several hours and appears dull or uncomfortable, treat this as an urgent situation and seek veterinary advice, as dehydration can lead rapidly to impaction colic.",
+      "Follow the yard’s safe winter-water procedure and take care on slippery ground. Do not add unapproved substances to drinking water. If water access is interrupted, a horse’s drinking pattern changes or the horse seems unwell, make clean water available, tell the responsible person and seek veterinary advice according to the yard’s escalation procedure.",
     practicalApplication:
-      "Every morning and evening, check all water sources. In stables, scrub and refill water buckets and ensure automatic drinkers are functioning. In fields, check trough levels and water cleanliness. After exercise, offer water in small amounts and monitor the horse's drinking. Learn to perform the skin pinch test and capillary refill check as part of your daily routine — these take seconds and can save a horse's life.",
+      "Check water sources according to the written yard routine. In stables, confirm buckets or drinkers are clean and functioning. In fields, confirm troughs are clean, working and accessible. After exercise, follow the individual recovery and hydration plan, record any concern about access, intake, appetite, comfort or behaviour, and report it through the yard’s escalation procedure rather than relying on one lay test.",
     commonMistakes: [
       "Assuming a horse will drink when it is thirsty — some horses are reluctant drinkers, especially in new environments",
       "Not cleaning water buckets or troughs regularly, allowing algae and bacteria to build up",
@@ -640,28 +630,30 @@ Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) throu
     ],
     knowledgeCheck: [
       {
-        question: "How much water does an average 500 kg horse at rest typically drink per day?",
+        question:
+          "What is the most reliable daily approach to water management?",
         options: [
-          "5–10 litres",
-          "10–20 litres",
-          "25–55 litres",
-          "100–120 litres",
-        ],
-        correctIndex: 2,
-        explanation:
-          "An average horse at rest in a temperate climate drinks approximately 25–55 litres of water per day, depending on diet, weather and individual variation.",
-      },
-      {
-        question: "What does a slow skin pinch test result indicate?",
-        options: [
-          "The horse is overweight",
-          "The horse may be dehydrated",
-          "The horse has a skin condition",
-          "The horse is cold",
+          "Use one litre target for every horse",
+          "Ensure constant clean-water access, observe the individual horse’s normal pattern and report a meaningful change",
+          "Offer water only after exercise",
+          "Assume a horse will drink enough without checking the supply",
         ],
         correctIndex: 1,
         explanation:
-          "If the skin takes longer than 2 seconds to flatten after being pinched, the horse may be dehydrated. This test checks skin turgor, which decreases with dehydration.",
+          "Water intake varies with the individual horse, diet, weather, work and health. World Horse Welfare and the British Horse Society emphasise constant clean-water access and individual monitoring rather than one universal daily volume.",
+      },
+      {
+        question:
+          "What should you do if a horse’s drinking pattern changes and it also seems unwell?",
+        options: [
+          "Diagnose dehydration from one home test",
+          "Withhold water until the next feed",
+          "Record the observations, ensure clean water is available and follow the yard’s veterinary-escalation procedure",
+          "Give an electrolyte without checking the plan",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A drinking change can have different causes. The safe action is to record it, keep water accessible and obtain appropriate responsible-person or veterinary advice rather than self-diagnosing or improvising treatment.",
       },
       {
         question: "Why is dehydration a risk factor for colic?",
@@ -675,22 +667,10 @@ Horses lose electrolytes (sodium, chloride, potassium, calcium, magnesium) throu
         explanation:
           "When a horse is dehydrated, the body reabsorbs water from the large intestine, causing the gut contents to become dry and compacted, leading to impaction colic.",
       },
-      {
-        question: "What is the ideal capillary refill time for a healthy horse?",
-        options: [
-          "Less than 2 seconds",
-          "3–5 seconds",
-          "5–8 seconds",
-          "It varies too much to be useful",
-        ],
-        correctIndex: 0,
-        explanation:
-          "In a healthy, well-hydrated horse, the gum colour should return to pink within 2 seconds after being pressed. A delay suggests dehydration or circulatory compromise.",
-      },
     ],
     aiTutorPrompts: [
-      "Can you explain how to perform a skin pinch test and capillary refill time check?",
-      "What factors increase a horse's daily water requirement?",
+      "What observations should I record if a horse’s drinking pattern changes?",
+      "Why can a horse’s water needs vary between days?",
       "How should I manage water provision differently in winter versus summer?",
     ],
     linkedCompetencies: ["feeding_awareness"],
@@ -723,7 +703,7 @@ When you arrive at the yard, the first priority is to check on every horse. Befo
 Once you have confirmed all horses are well, the morning routine typically follows this order:
 
 1. **Check water** — Refill or scrub and replace water buckets. Check automatic drinkers are working.
-2. **Check rugs** — If the horse is wearing a rug, ensure it has not slipped, twisted or rubbed. Adjust or change as needed for the day's weather.
+2. **Check rugs** — If the horse is wearing a rug, check for slipping, twisting, rubbing, heat or damage. Follow the individual written rugging plan and report a concern rather than making a generic weather-based change.
 3. **Hay** — Provide fresh hay or haylage. Remove any leftover, soiled forage from the previous day.
 4. **Mucking out** — Remove all droppings and wet bedding from the stable. This keeps the environment hygienic, reduces ammonia levels that damage the horse's respiratory system, and allows you to check the droppings for abnormalities (loose, very hard, mucus-covered or discoloured droppings can all indicate health issues).
 5. **Bed down** — Replace clean bedding. The bed should be deep enough to cushion the horse when it lies down, banked up at the walls to prevent the horse getting cast (stuck against the wall when lying down).
@@ -739,7 +719,7 @@ The evening check mirrors the morning, with some additions:
 2. **Check water and hay** — Refill water, provide hay for the night.
 3. **Skip out** — Remove droppings and any wet patches. A full muck-out may not be needed if done thoroughly in the morning, but the bed must be tidy and comfortable.
 4. **Evening feed** — Deliver according to the feed chart.
-5. **Rug up** — Put on the appropriate night rug if needed.
+5. **Rug check** — Follow the individual written rugging plan if a night rug is used, and report a comfort or fit concern.
 6. **Final health check** — Look at each horse one last time: are they eating, drinking, moving comfortably? Are there any signs of distress?
 7. **Secure the yard** — Check that stable doors are properly bolted (top and bottom bolts), lights are off or on a timer, taps are turned off, and the yard is tidy. Remove any hazards.
 
@@ -747,9 +727,9 @@ The evening check mirrors the morning, with some additions:
 
 The stable itself must be safe and suitable:
 
-- **Ventilation** — Good airflow is essential to prevent respiratory disease. The top stable door should always be open. Ridge vents and louvred windows help, but avoid draughts at horse height.
-- **Light** — Horses benefit from natural light. Dark, enclosed stables increase stress.
-- **Size** — A stable should be at least 3.6 m × 3.6 m (12 ft × 12 ft) for a horse; larger for bigger breeds.
+- **Ventilation** — Good airflow and dust/ammonia control are essential. Use the yard’s ventilation and stable-door procedure, taking account of the horse, weather, safe supervision and avoidance of draughts at horse height.
+- **Light** — Horses benefit from a suitable, safe environment with appropriate light and observation.
+- **Size and layout** — The stable must provide safe, suitable space for the individual horse to stand, lie down, turn, eat, drink and be managed without unnecessary injury or distress. Confirm the applicable welfare-code, planning and yard requirements rather than applying one lesson measurement to every horse.
 - **Bedding** — Should be deep, clean and absorbent. Common types include straw, shavings, paper and rubber matting with a shavings top layer.
 - **Sharp edges or protrusions** — Check for exposed nails, broken fittings, or sharp edges on automatic drinkers or hay racks.
 - **Drainage** — The floor should slope slightly towards a drain to prevent urine pooling.
@@ -760,13 +740,13 @@ Healthy horse droppings are formed into soft balls that break on hitting the gro
 - Very loose or watery droppings (may indicate infection, stress or dietary issues)
 - Very hard, dry balls (possible dehydration or insufficient forage)
 - Mucus-covered droppings (may indicate irritation in the gut)
-- Worms visible in droppings (immediate worming advice needed)
+- Worms visible in droppings (record the observation and seek veterinary/SQP/RAMA advice; do not select medicine from a generic rule)
 - Reduced or absent droppings (may be an early sign of colic)`,
     keyPoints: [
       "Always check every horse first thing in the morning before starting other tasks",
       "Mucking out daily reduces ammonia levels and protects the horse's respiratory system",
       "Check droppings for consistency, colour and quantity — they reveal digestive health",
-      "Good ventilation is essential; the top stable door should always remain open",
+      "Good ventilation, low dust and ammonia control are essential; follow the yard’s safe ventilation procedure for the individual stable",
       "The evening check should include a final visual assessment of every horse before leaving the yard",
       "Banks of bedding around stable walls help prevent the horse from becoming cast",
     ],
@@ -792,10 +772,11 @@ Healthy horse droppings are formed into soft balls that break on hitting the gro
         ],
         correctIndex: 1,
         explanation:
-          "Good airflow is critical for respiratory health. Horses are very susceptible to airway disease caused by inhaling dust, mould spores and ammonia in poorly ventilated stables.",
+          "Good airflow, low dust and ammonia control support respiratory health. Follow the yard’s safe ventilation procedure rather than relying on one fixed door position in every condition.",
       },
       {
-        question: "What might it indicate if a horse's water bucket is completely full in the morning?",
+        question:
+          "What might it indicate if a horse's water bucket is completely full in the morning?",
         options: [
           "The water was topped up overnight automatically",
           "The horse may not have been drinking, which could signal illness",
@@ -869,8 +850,8 @@ Horses have evolved excellent thermoregulation. A healthy, unclipped horse with 
 
 ### Types of Rugs
 
-- **Turnout rug** — Waterproof, breathable outer layer with varying levels of fill (insulation). Available in lightweight (0 g fill — just waterproof), medium-weight (150–250 g) and heavyweight (300–400 g). Used in the field to keep rain and wind off.
-- **Stable rug** — Not waterproof. Provides warmth in the stable. Available in various weights.
+- **Turnout rug** — A waterproof, breathable outer layer with an insulation level selected for the individual horse and conditions. It is used in the field only when the horse’s competent carer has decided it is appropriate.
+- **Stable rug** — A non-waterproof rug used indoors when the individual horse’s management plan calls for it. It must not be substituted for a turnout rug in wet weather.
 - **Cooler/fleece rug** — A moisture-wicking rug used to dry a wet or sweating horse. Place over the horse after exercise to draw moisture away from the coat.
 - **Fly rug** — A lightweight mesh rug used in summer to protect from flies and UV rays. Some include a neck cover and belly flap.
 - **Exercise sheet** — A rug worn over the hindquarters during ridden exercise in cold weather, especially on clipped horses.
@@ -878,12 +859,13 @@ Horses have evolved excellent thermoregulation. A healthy, unclipped horse with 
 ### When to Rug
 
 There is no single answer, as it depends on:
-- Whether the horse is clipped (clipped horses lose their natural insulation and usually need a rug)
-- The horse's age, health and body condition
-- Weather conditions (temperature, wind, rain)
-- Whether the horse has access to shelter
+- Whether and how the horse is clipped
+- The horse’s age, health, coat, body condition and previous rugging response
+- Weather conditions, including wind, rain, temperature and rapid changes
+- Access to effective shelter and the horse’s turnout/work plan
+- Observed comfort: sweating, shivering, altered behaviour, rubbing or a changed body temperature should be reported rather than managed by guessing
 
-**Over-rugging is a common problem**. A horse that is too warm cannot remove its own rug. Over-rugging causes sweating, discomfort, skin issues and weight problems. If in doubt, it is better to under-rug slightly, as a horse can keep warm through movement, but cannot cool itself when over-rugged.
+**Over-rugging is a welfare risk** because a horse cannot remove its own rug. Under-rugging can also be harmful for some individuals. Do not use a generic temperature chart or rug-fill weight as a prescription. Follow the individual horse’s written plan and seek advice from the yard manager, vet or other competent professional if the decision is unclear.
 
 ### Fitting a Rug
 
@@ -894,19 +876,19 @@ A well-fitting rug should:
 - Have leg straps (on turnout rugs) that loop through each other and sit around the inner thigh without rubbing
 - Cover the whole body without pulling at the shoulders or riding back
 
-Check rugs at least twice daily for slipping, rubbing or damage. Repair or replace damaged rugs promptly — a torn turnout rug will let in rain and make the horse colder and wetter than wearing no rug at all.`,
+Check rugs at the frequency set in the written care plan and whenever conditions or the horse’s behaviour change. Remove, repair or replace a damaged rug promptly and report rubbing, slipping, heat, sweating or a change in comfort.`,
     keyPoints: [
       "Turnout provides essential physical exercise, mental stimulation and socialisation for horses",
       "Check fields regularly for poisonous plants, especially ragwort, yew and sycamore seeds",
       "Over-rugging is a common welfare issue — horses can generate warmth through movement but cannot cool themselves under an excessive rug",
-      "A clipped horse needs a rug to replace the insulation lost through clipping",
-      "Turnout rugs must be waterproof and breathable; stable rugs provide warmth but are not waterproof",
-      "Check rug fit at least twice daily for slipping, rubbing or damage",
+      "Clipping can change rugging needs, but the decision must account for the individual horse, weather, shelter, health and observed comfort",
+      "A turnout rug is intended for field conditions; a stable rug is not a waterproof replacement",
+      "Check rug fit and condition under the written care plan and whenever the horse or conditions change",
     ],
     safetyNote:
       "When turning horses out together, introduce new horses gradually under supervision to avoid aggressive encounters. Always lead a horse to and from the field in a headcollar with a lead rope — never by the rug or mane. When removing rugs in the field, be aware that the horse may become excited and try to move away. Release the horse only once you are safely positioned and the field gate is securely fastened.",
     practicalApplication:
-      "Each morning, assess the weather forecast and the horse's condition to decide whether a rug change is needed. Keep a rugging chart on the yard that guides staff on which rug to use at different temperature ranges for each horse. When collecting droppings from the field, take the opportunity to walk the fence line and check for hazards, broken rails or poisonous plants. Log any concerns in the yard diary and report them to the manager.",
+      "Follow each horse’s written turnout and rugging plan. Check the horse’s comfort, rug fit and field conditions, then report any change rather than selecting a rug from a generic temperature chart. When collecting droppings from the field, also walk the fence line, check for hazards, broken rails or poisonous plants, record concerns and report them to the manager.",
     commonMistakes: [
       "Over-rugging horses that still have a full winter coat, causing them to sweat and lose condition",
       "Not checking rug fit regularly, leading to rubs on the shoulders, withers and chest",
@@ -925,16 +907,12 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
         ],
         correctIndex: 1,
         explanation:
-          "A horse cannot remove its own rug. Over-rugging causes overheating, sweating, discomfort, skin irritation and weight issues. If in doubt, it is better to slightly under-rug.",
+          "A horse cannot remove its own rug. Over-rugging can cause overheating, sweating, discomfort and skin irritation. Rugging decisions must follow the individual horse’s plan rather than a generic rule.",
       },
       {
-        question: "Which plant is the most common cause of equine poisoning in the UK?",
-        options: [
-          "Buttercups",
-          "Ragwort",
-          "Clover",
-          "Dandelions",
-        ],
+        question:
+          "Which plant is the most common cause of equine poisoning in the UK?",
+        options: ["Buttercups", "Ragwort", "Clover", "Dandelions"],
         correctIndex: 1,
         explanation:
           "Ragwort is the most common cause of equine poisoning in the UK. It causes cumulative, irreversible liver damage and is particularly dangerous when dried in hay, as horses lose their ability to detect and avoid it.",
@@ -965,9 +943,9 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
       },
     ],
     aiTutorPrompts: [
-      "How do I decide which rug my horse needs based on the weather and whether it is clipped?",
+      "What observations should I record before asking a competent person to review a horse’s rugging plan?",
       "What poisonous plants should I look for when checking a horse's field?",
-      "Can you explain the different types of turnout rug and when to use each weight?",
+      "Why is a generic rug-fill or temperature chart not enough to make a safe rugging decision?",
     ],
     linkedCompetencies: ["stable_checks", "welfare_awareness"],
   },
@@ -983,7 +961,7 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
     objectives: [
       "Describe the basic external and internal structure of the hoof",
       "Demonstrate how to safely pick out a horse's feet",
-      "Explain the farrier's role and the typical shoeing cycle",
+      "Explain the farrier's role and why hoof-care intervals must be set for the individual horse",
       "Identify common hoof problems and when to seek professional help",
     ],
     content: `"No foot, no horse" is one of the oldest and most important sayings in horsemanship. The health of the hoof directly determines the horse's soundness, comfort and ability to work. Every person who handles horses must understand basic hoof anatomy, be able to pick out feet safely and recognise when something is wrong.
@@ -992,7 +970,7 @@ Check rugs at least twice daily for slipping, rubbing or damage. Repair or repla
 
 The hoof is a complex structure made primarily of **keratin** — the same protein that forms human fingernails, but much thicker and stronger.
 
-- **Hoof wall** — The hard, visible outer shell. It grows downward from the **coronet band** at a rate of approximately 6–10 mm per month. The wall bears the horse's weight and, in a shod horse, is where the nails are driven. It has no nerve endings or blood supply, which is why the farrier can trim and nail into it without causing pain.
+- **Hoof wall** — The hard, visible outer shell. It grows downward from the **coronet band**. Growth, wear and trimming needs vary between horses, work, footing, season and health. In a shod horse, the wall is where a qualified farrier places nails; learners should not attempt trimming or shoeing.
 - **Sole** — The concave underside of the hoof, providing protection to the internal structures. It should be slightly concave (arched inward), not flat. A flat sole provides less shock absorption and increases the risk of bruising.
 - **Frog** — The triangular, rubbery structure on the underside of the hoof. It acts as a shock absorber, aids blood circulation through the foot (the "frog pump"), and provides grip on the ground. The frog should be firm but slightly yielding, with a central groove (cleft) that should be clean and dry.
 - **Bars** — The inward folds of the hoof wall at the heel, which provide structural support.
@@ -1010,7 +988,7 @@ Beneath the hoof capsule are vital living structures:
 
 ## Picking Out Feet
 
-Picking out feet should be done at least twice daily — before and after exercise. The procedure:
+Picking out feet is part of daily hoof care and may also be appropriate before or after exercise, provided the horse can be handled safely and the yard’s competent person has shown the learner the procedure. The procedure:
 
 1. Stand beside the horse's shoulder (for a front foot) or hip (for a hind foot), facing the tail.
 2. Run your nearest hand down the leg from the shoulder or hip to the fetlock.
@@ -1028,7 +1006,7 @@ Picking out feet should be done at least twice daily — before and after exerci
 
 ## The Farrier and Shoeing Cycle
 
-A farrier should visit every **4 to 8 weeks**, whether the horse is shod or unshod. Even barefoot horses need regular trimming to maintain correct hoof balance and prevent cracks or flares.
+World Horse Welfare advises that hooves should be trimmed and/or shod by a **qualified, registered farrier on average every 6–8 weeks**, while noting that some horses need more regular care. The individual interval depends on the horse’s hoof growth, conformation, health, work, footing and whether remedial support is needed. Keep the farrier’s recommended appointment schedule in the horse’s record; do not apply an interval from a lesson as a universal rule.
 
 During a farrier visit, the farrier will:
 - Remove the old shoes (if shod)
@@ -1036,20 +1014,20 @@ During a farrier visit, the farrier will:
 - Rebalance the foot
 - Fit new or reset shoes, ensuring correct fit
 
-Shoes protect the hoof from excessive wear on hard surfaces and can be modified for therapeutic or performance purposes. Types include plain steel shoes, aluminium racing plates, heart-bar shoes (for laminitis support), and remedial shoes for specific conditions.
+Shoeing and trimming decisions are individual professional decisions. A farrier may discuss protection, traction, wear, conformation or a veterinary-led therapeutic plan, but the learner’s role is to maintain daily observation, report changes and follow the plan set by the horse’s farrier and veterinary team.
 
 ## Common Hoof Problems
 
 - **Thrush** — Bacterial infection of the frog. Prevention: keep stables clean and dry, pick out feet regularly.
 - **Laminitis** — Inflammation of the sensitive laminae. Causes include overfeeding, obesity, hormonal disorders (Cushing's disease, EMS), and excessive concussion. Signs: rocking back on the heels, reluctance to walk, heat in the hoof, bounding digital pulse. This is a veterinary emergency.
-- **Abscess** — A pocket of infection within the hoof causing sudden, severe lameness. The horse may be non-weight-bearing on the affected leg. Treatment involves poulticing to draw the abscess to the surface.
-- **Cracked hooves** — Can result from poor hoof balance, dry conditions, or nutrient deficiency. Regular farrier visits and hoof oil or conditioner can help.
-- **Lost shoe** — If a horse loses a shoe, call the farrier promptly. Do not ride the horse on hard ground on the unshod foot.`,
+- **Possible abscess or sudden severe lameness** — A horse may become acutely lame or unwilling to bear weight. Stop work, keep handling safe and seek prompt veterinary/farrier advice rather than attempting invasive treatment.
+- **Cracks or abnormal wear** — Report cracks, chips, flares or a changed hoof shape to the farrier. Do not self-diagnose the cause or use a product as a substitute for assessment.
+- **Lost or loose shoe** — Inform the yard manager and contact the farrier promptly. Follow their advice about turnout, protection and whether the horse should be worked.`,
     keyPoints: [
-      "The hoof grows from the coronet band at roughly 6–10 mm per month",
-      "The frog acts as a shock absorber and aids blood circulation through the foot",
-      "Always pick out hooves from heel to toe, twice daily at minimum",
-      "The farrier should visit every 4–8 weeks for trimming or reshoeing",
+      "Hoof growth, wear and trimming needs vary; a learner should observe and report rather than attempt trimming or shoeing",
+      "The frog contributes to the foot’s function and should be checked as part of safe daily hoof care",
+      "Use the safe picking-out procedure shown by a competent person and stop if the horse becomes unsafe to handle",
+      "World Horse Welfare gives an average qualified-farrier interval of 6–8 weeks, while some horses need more frequent individual care",
       "Laminitis is a veterinary emergency — signs include heat in the hoof, reluctance to walk and rocking back on the heels",
       "Thrush is prevented by clean, dry conditions and regular hoof picking",
     ],
@@ -1078,16 +1056,16 @@ Shoes protect the hoof from excessive wear on hard surfaces and can be modified 
           "The frog is a vital structure that absorbs concussion, provides grip and helps pump blood through the foot via the digital cushion above it.",
       },
       {
-        question: "How often should a farrier visit?",
+        question: "Which statement best reflects routine farrier planning?",
         options: [
-          "Every 12 weeks",
-          "Once a year",
-          "Every 4 to 8 weeks",
-          "Only when a shoe is lost",
+          "Every horse must follow the same four-week interval",
+          "Only shod horses need professional hoof care",
+          "World Horse Welfare gives an average 6–8-week interval, but the qualified farrier sets the individual horse’s schedule",
+          "Wait until a shoe is lost before arranging a visit",
         ],
         correctIndex: 2,
         explanation:
-          "Whether shod or barefoot, horses need farrier attention every 4–8 weeks to maintain hoof balance, trim excess growth and check for problems.",
+          "World Horse Welfare advises qualified, registered farrier trimming and/or shoeing on average every 6–8 weeks, with some horses needing more regular care. Follow the individual professional plan.",
       },
       {
         question: "What are the signs of laminitis?",
@@ -1142,7 +1120,7 @@ Shoes protect the hoof from excessive wear on hard surfaces and can be modified 
 Summer brings warmth, longer days, and increased fly activity. While many horses thrive in summer, the season presents its own management challenges.
 
 **Heat management** is a priority. Horses regulate their body temperature primarily through sweating, but in extreme heat or humidity, they can overheat. Key measures include:
-- Providing constant access to fresh, clean water. Horses may drink 40–50 litres per day in hot weather — significantly more if working.
+- Providing constant access to fresh, clean water. Monitor the individual horse’s normal intake, access and behaviour closely in hot weather or after work; water needs vary with the horse, forage, workload, climate and health.
 - Offering shade in the field, whether natural (trees and hedgerows) or man-made (field shelters).
 - Avoiding hard work during the hottest part of the day. Ride early in the morning or in the evening.
 - Hosing down the horse after exercise, particularly the large blood vessels on the inside of the hind legs, to aid cooling.
@@ -1236,7 +1214,8 @@ Always clip in a well-lit, dry area using sharp, well-maintained clippers. Clip 
           "Spring grass grows rapidly and contains high levels of fructans (sugars). For horses prone to laminitis — particularly native breeds, overweight horses, and those with EMS or PPID — this poses a serious risk. Grazing management is essential during spring.",
       },
       {
-        question: "Which clip type is most suitable for a horse in light to moderate work?",
+        question:
+          "Which clip type is most suitable for a horse in light to moderate work?",
         options: [
           "Full clip",
           "Hunter clip",
@@ -1281,7 +1260,7 @@ Always clip in a well-lit, dry area using sharp, well-maintained clippers. Clip 
       "Identify and manage common skin conditions affecting coat health",
       "Understand the role of nutrition and supplements in maintaining coat quality",
     ],
-    content: `Advanced grooming goes far beyond keeping a horse clean. It encompasses competition preparation, coat health management, and the specialist skills of trimming, plaiting, and quartering that present a horse to the highest standard. Whether you are preparing for a dressage test, a showing class, or a Pony Club inspection, the ability to turn a horse out immaculately demonstrates horsemanship, attention to detail, and pride in your animal.
+    content: `Advanced grooming goes far beyond keeping a horse clean. It encompasses competition preparation, coat health management, and the specialist skills of trimming, plaiting, and quartering that present a horse to the highest standard. Whether you are preparing for a dressage test, a showing class, or an organised yard assessment, the ability to turn a horse out immaculately demonstrates horsemanship, attention to detail, and pride in your animal.
 
 ## Competition Preparation Grooming
 
@@ -1314,7 +1293,7 @@ Trimming neatens the horse's appearance and is expected in most competitive disc
 
 **Fetlocks and heels:** Remove excess feather from the fetlock area using scissors or clippers, following the line of the tendon. For native breeds shown in their natural state, this trimming is not appropriate — feather is part of breed character.
 
-**Bridle path:** A small section of mane behind the ears may be clipped to allow the headpiece of the bridle to sit neatly. Clip approximately 2–5 cm (1–2 inches) depending on the discipline.
+**Bridle path:** Some disciplines or yards choose to tidy a small section of mane behind the ears so a headpiece sits neatly. This is a cosmetic decision, not a universal requirement; use the current discipline rules and the horse’s comfort as the guide.
 
 **Whiskers:** Note that trimming or removing a horse's whiskers (vibrissae) is banned under FEI rules and many national governing body regulations, as whiskers serve a sensory function. Always check current regulations before trimming.
 
@@ -1334,7 +1313,7 @@ Plaiting (braiding) the mane and tail is a skill that improves with practice. It
 
 ## Quartering
 
-Quartering is a quick, efficient grooming session performed before exercise or competition. It takes 10–15 minutes and focuses on:
+Quartering is a short, efficient grooming session performed before exercise or competition. Its purpose is a safe, calm tidy-up and observation check; its duration depends on the horse, conditions and task.
 - Sponging the eyes, nostrils, and dock.
 - Picking out the feet.
 - Brushing over the coat with a body brush to remove surface dust and stable stains without removing the natural oils.
@@ -1347,28 +1326,27 @@ Quartering is not a full groom — it is a rapid tidy-up that ensures the horse 
 
 A healthy coat starts from the inside. Nutrition plays a vital role:
 - **Omega-3 and omega-6 fatty acids** (found in linseed, fish oil, and specific supplements) promote a glossy coat and healthy skin.
-- **Biotin** supports hoof and coat quality, though results take 6–9 months to become visible.
+- **Supplements** should only be considered after reviewing the horse’s whole diet and health needs with a vet or qualified nutrition adviser. Do not promise a cosmetic outcome or use one product as a substitute for assessment.
 - **Zinc and copper** are essential trace minerals for skin health and pigmentation.
 - A balanced diet with adequate protein provides the building blocks for hair growth.
 
 **Common skin conditions:**
-- **Rain scald** (*Dermatophilus congolensis*) — Caused by prolonged wet conditions. Presents as raised, crusty scabs along the back and quarters. Treatment involves keeping the area clean and dry, gently removing scabs (soak first), and applying antiseptic wash.
-- **Sweet itch** — An allergic reaction to *Culicoides* midge bites. Causes intense itching, hair loss, and thickened skin, particularly along the mane and tail. Management includes fly rugs, insect repellent, and avoiding turnout at dawn and dusk.
-- **Ringworm** — A highly contagious fungal infection presenting as circular patches of hair loss with grey, scaly skin. Requires veterinary treatment and strict biosecurity (isolate the horse, disinfect all equipment).
+- **Possible rain scald, sweet itch, ringworm or other skin problem** — Crusts, hair loss, itching, circular lesions or skin change can have different causes. Record what you observe, use clean separate equipment where infection is a concern, follow the yard’s hygiene procedure and seek veterinary advice. Do not diagnose, remove scabs, isolate or apply treatment solely from this lesson.
+- **Skin and coat changes** — A changed coat, hair loss, soreness or persistent itching should be reported promptly so the responsible professional can decide the appropriate examination, biosecurity and treatment plan.
 - **Mud fever** — Bacterial infection of the lower legs caused by wet, muddy conditions. Prevention and management were covered in the seasonal care lesson.
 
 Always consult a vet if you are unsure about a skin condition. Early treatment prevents spread and long-term damage to the coat.`,
     keyPoints: [
       "Competition preparation begins days before the event — bathing, trimming, and plaiting cannot be rushed",
-      "Quartering is a quick pre-exercise groom focusing on eyes, nostrils, dock, feet, and a light brush over",
+      "Quartering is a short pre-exercise groom focused on safe observation, eyes, nostrils, dock, feet and a light brush over",
       "Whisker trimming is banned under FEI and many national rules — always check current regulations",
-      "Coat health is supported by omega fatty acids, biotin, zinc, copper, and a balanced diet",
-      "Skin conditions such as rain scald, sweet itch, and ringworm require prompt identification and appropriate treatment",
+      "Coat condition should be considered through the whole diet and health history with qualified nutrition or veterinary advice before adding a supplement",
+      "Skin or coat changes require prompt observation, hygienic equipment practices and veterinary advice rather than self-diagnosis or treatment",
     ],
     safetyNote:
-      "When using electric clippers for trimming, always use a residual current device (RCD) and ensure the horse is calm and securely tied. Keep clippers well-maintained and sharp — blunt blades pull the hair and cause distress. When plaiting, do not pull the mane too tightly, as this can cause discomfort and head-shaking. If you discover ringworm, isolate the horse immediately and disinfect all grooming equipment, rugs, and tack that have been in contact with the affected animal.",
+      "When using electric clippers, follow the yard’s electrical-safety procedure and ensure the horse is calm and safely managed by a competent person. Keep clippers maintained so they do not pull hair. When plaiting, avoid pulling the mane too tightly. If you observe a possible infectious skin condition, stop sharing equipment, record the concern and follow the yard’s veterinary and biosecurity procedure rather than diagnosing or initiating treatment alone.",
     practicalApplication:
-      "Practise your plaiting technique on a willing horse during a quiet yard session. Time yourself and aim to produce seven even, secure plaits within 30 minutes. Create a competition preparation timeline for an event three days away, listing every grooming task with the day and time it should be completed. Assess your horse's coat condition and research whether a dietary supplement might improve it — discuss with your vet or a qualified equine nutritionist before making changes.",
+      "Practise plaiting only on a willing horse under competent supervision. Create a competition-preparation timeline using the current organiser rules, the horse’s comfort and the available preparation time. If you are concerned about coat condition or considering a supplement, discuss the complete diet and health history with a vet or qualified equine nutrition adviser before making changes.",
     commonMistakes: [
       "Leaving competition grooming until the morning of the event, resulting in a rushed and untidy turnout",
       "Trimming whiskers without checking current regulations, risking elimination from competition",
@@ -1385,10 +1363,11 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
         ],
         correctIndex: 1,
         explanation:
-          "Quartering is a rapid 10–15 minute grooming session designed to make the horse presentable before exercise or competition. It focuses on sponging the eyes, nostrils, and dock, picking out feet, and a light brush to remove surface dust.",
+          "Quartering is a short grooming and observation session before exercise or competition. It focuses on eyes, nostrils, dock, feet and a light brush to remove surface dust without replacing a full health check.",
       },
       {
-        question: "Why is trimming a horse's whiskers now restricted or banned in many competitions?",
+        question:
+          "Why is trimming a horse's whiskers now restricted or banned in many competitions?",
         options: [
           "Whiskers grow back too quickly to be worth trimming",
           "Whiskers are a vital sensory organ (vibrissae) and their removal affects the horse's welfare",
@@ -1400,7 +1379,8 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
           "Whiskers (vibrissae) serve an important sensory function, helping the horse detect objects close to its muzzle. The FEI and many national governing bodies have banned their removal on welfare grounds.",
       },
       {
-        question: "Which nutrient is particularly associated with promoting a glossy coat?",
+        question:
+          "Which nutrient is particularly associated with promoting a glossy coat?",
         options: [
           "Vitamin C",
           "Calcium",
@@ -1414,12 +1394,11 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
     ],
     aiTutorPrompts: [
       "Can you walk me through how to plait a mane for a dressage competition step by step?",
-      "What is the best approach to treating rain scald on a horse that lives out?",
+      "What observations and hygiene steps should I take before seeking advice about a possible skin condition?",
       "How do I assess whether my horse's diet is supporting good coat and skin health?",
     ],
     linkedCompetencies: ["grooming_safely", "welfare_awareness"],
   },
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 2 — Rider Foundations
@@ -1439,24 +1418,20 @@ Always consult a vet if you are unsure about a skin condition. Early treatment p
       "Demonstrate a safe dismounting technique",
       "Understand when a mounting block should be used and why",
     ],
-    content: `Mounting and dismounting are the first practical skills any rider learns. Done correctly, they are safe and comfortable for both rider and horse. Done incorrectly, they risk injury to the rider and discomfort — even back damage — to the horse. This lesson covers the complete mounting and dismounting procedure, including essential pre-mount checks.
+    content: `Mounting and dismounting are practical skills that must be learned with a qualified instructor on a suitable, quiet horse in a safe setting. Before riding, check the horse, tack, girth, stirrups, and surroundings using the current yard procedure. Stop and seek instruction if the horse is not standing quietly or the equipment is not ready.
 
 ## Pre-Mount Checks
 
 Before you mount, carry out these checks every single time:
 
-1. **Girth check** — The girth (the broad strap that holds the saddle in place under the horse's belly) must be sufficiently tight. You should be able to slide two fingers flat between the girth and the horse's body, but no more. A loose girth allows the saddle to slip when you mount, which is dangerous. Tighten the girth from the ground, lifting the saddle flap and pulling the girth straps up one hole at a time on both sides. Always recheck the girth after walking for a few minutes, as the horse may have been holding its breath.
-2. **Stirrup length** — Before mounting, estimate your stirrup length. Stand beside the saddle, place your fingertips on the stirrup bar and stretch the stirrup leather along your arm. The stirrup iron should reach approximately to your armpit. This gives a reasonable starting length that can be adjusted once you are mounted.
+1. **Girth check** — Check that the girth is snug but not overtight and that the saddle is secure. Follow your instructor's and saddle manufacturer's fitting guidance. Walk the horse briefly and recheck before mounting if your current procedure requires it.
+2. **Stirrup length** — Adjust stirrups roughly before mounting and refine them only when mounted safely. Correct length depends on the rider, saddle, discipline, and physical needs; ask an instructor for help rather than relying on a universal body measurement.
 3. **Tack check** — Ensure the bridle is correctly fitted, the noseband and throatlash are fastened properly, and the reins are not twisted. Check that the saddle is sitting correctly on the horse's back with the numnah smooth underneath.
 4. **Surroundings** — Make sure you have enough space to mount safely, away from walls, other horses and obstacles.
 
 ## Mounting from a Mounting Block
 
-Using a mounting block is the preferred method because it:
-- Reduces strain on the horse's back and saddle
-- Reduces the pull on the saddle tree, preventing it from twisting over time
-- Is safer for the rider, especially for shorter riders or those with limited flexibility
-- Keeps the rider close to the horse rather than having to spring up from a distance
+A mounting block or an instructor-approved leg-up can assist a rider where appropriate. The horse must be prepared to stand quietly, the area must be clear, and the mounting aid must be stable and suitable for the rider and horse.
 
 **Procedure from a mounting block:**
 1. Position the horse parallel to the mounting block on the horse's **near (left) side**.
@@ -1477,7 +1452,7 @@ If no mounting block is available:
 5. Spring up from your right foot, straighten your left leg and swing your right leg smoothly over the hindquarters.
 6. Lower yourself gently into the saddle.
 
-This method puts more strain on the horse's back and saddle and should be avoided regularly, especially with horses that have back issues.
+Use this method only as taught and approved by a qualified instructor. If a mounting block, leg-up, or other assistance is appropriate for the rider or horse, use the approved option rather than improvising.
 
 ## Dismounting
 
@@ -1490,60 +1465,56 @@ The standard dismounting procedure is:
 5. Slide down the near side, landing lightly on both feet with your knees slightly bent to absorb the impact.
 6. Keep hold of the reins as you land so you maintain control of the horse.
 
-**Never dismount by swinging your leg over the front of the saddle** — this is dangerous because you have no control if the horse moves. Never leave your left foot in the stirrup while dismounting, as being dragged is one of the most dangerous riding accidents.
+Keep control of the horse through the reins while dismounting. Do not put a foot on the ground while the other is still in a stirrup: both Rutgers and Missouri Extension direct riders to release their feet from the stirrups before reaching the ground.
 
 ## Emergency Dismount
 
-An emergency dismount is used when you need to get off quickly (for example, if the horse is about to bolt or buck and you are losing control):
-1. Kick both feet free of the stirrups.
-2. Drop the reins.
-3. Push yourself away from the horse, trying to land to one side, not in front of or behind the horse.
-4. Bend your knees on landing and try to roll to absorb the impact.
-
-This should only be taught under direct supervision.`,
+Emergency dismounting carries significant risk and must not be attempted from written instructions alone. Missouri Extension describes progressive practice only with a quiet, well-trained horse and qualified supervision. Follow the instructor's, facility's, and emergency-service directions; prioritise getting both feet free of the stirrups when safe to do so.`,
     keyPoints: [
-      "Always check the girth before mounting — a loose girth can cause the saddle to slip dangerously",
-      "Use a mounting block whenever possible to reduce strain on the horse's back",
+      "Check the girth and saddle under the current instructor and yard procedure before mounting",
+      "Use an instructor-approved mounting aid when it is appropriate for the rider, horse, and setting",
       "When mounting from the ground, face the tail and spring up from the right foot",
       "When dismounting, always remove both feet from the stirrups before sliding down",
-      "Never dismount by swinging your leg over the front of the saddle",
-      "Recheck the girth after a few minutes of walking, as horses often relax and the girth loosens",
+      "Remove both feet from the stirrups before ground contact and maintain control through the reins",
+      "Follow the current yard and instructor procedure for girth rechecking before riding",
     ],
     safetyNote:
-      "The greatest risk during mounting and dismounting is the saddle slipping due to a loose girth. Always check the girth is snug before you mount. Have someone hold the horse if it is known to fidget during mounting. Never put only one foot in a stirrup and hop alongside the horse — if it walks off, you can be dragged. If you are learning, always mount and dismount under the supervision of a qualified instructor.",
+      "Before mounting or dismounting, work in a clear safe area with a horse that is standing quietly, check tack under the current procedure, and keep control through the reins. Beginning riders should use qualified instruction and appropriate assistance. Never improvise a mounting or emergency-dismount technique from written guidance alone.",
     practicalApplication:
-      "Before every lesson or ride, make girth checking and stirrup adjustment your automatic first actions. Practise estimating your stirrup length by the arm-length method so you can do it quickly. If you ride different horses, be aware that each may behave differently during mounting — some may walk off, others may swing their hindquarters away. Always use a mounting block when one is available, and encourage your yard to provide them in both the stable area and the arena.",
+      "Before every lesson or ride, use the yard's documented tack, girth, stirrup, horse-readiness, and area checks. Practise mounting and dismounting only with qualified instruction and a suitable quiet horse. Ask for appropriate assistance or an approved mounting aid rather than improvising when a rider, horse, or setting needs it.",
     commonMistakes: [
       "Forgetting to check the girth before mounting, risking the saddle slipping",
       "Digging the left toe into the horse's side when mounting, causing discomfort or the horse to walk off",
-      "Thumping heavily into the saddle instead of lowering gently, which jars the horse's back",
+      "Landing abruptly in the saddle rather than mounting smoothly and sitting gently",
       "Leaving the left foot in the stirrup while dismounting, creating a dragging risk",
-      "Mounting from the ground regularly instead of using a mounting block, straining the horse's back",
+      "Improvising a mounting method instead of using the instructor-approved aid or procedure",
     ],
     knowledgeCheck: [
       {
-        question: "Why should you use a mounting block rather than mounting from the ground?",
+        question:
+          "What must be true before using a mounting block or other mounting aid?",
         options: [
-          "It is quicker",
-          "It reduces strain on the horse's back and the saddle",
-          "It looks more professional",
-          "Horses are trained to stand only at mounting blocks",
+          "The horse can move around while the rider mounts",
+          "The aid is stable, the area is clear, and the horse is prepared to stand quietly",
+          "The rider can skip the tack and girth check",
+          "The aid is used without any instruction",
         ],
         correctIndex: 1,
         explanation:
-          "Mounting from the ground puts significant sideways and downward force on the saddle and horse's back. A mounting block reduces this strain, protecting the horse's spine and the saddle tree from twisting.",
+          "A mounting aid is appropriate only when it is stable and approved for the rider and horse, the area is clear, and the horse is standing quietly under control.",
       },
       {
-        question: "How tight should the girth be before you mount?",
+        question:
+          "What should you do if you are unsure whether the girth and saddle are ready for mounting?",
         options: [
-          "As tight as it will go",
-          "Loose enough to slide your whole hand underneath",
-          "Snug enough that you can slide two flat fingers between the girth and the horse",
-          "It does not matter as long as the saddle looks level",
+          "Mount quickly before the horse moves",
+          "Use a fixed hand-span rule regardless of horse or tack",
+          "Stop and ask a qualified instructor to check the fit and current procedure",
+          "Ignore it if the saddle appears level",
         ],
         correctIndex: 2,
         explanation:
-          "The girth should be snug but not overtight. Two flat fingers should fit between the girth and the horse's body. Too loose risks the saddle slipping; too tight causes discomfort.",
+          "The girth should be snug but not overtight, and tack checks must follow the current instruction and equipment guidance. Do not use a universal measurement in place of a qualified fit check.",
       },
       {
         question: "When dismounting, what should you do with your feet?",
@@ -1580,15 +1551,15 @@ This should only be taught under direct supervision.`,
       "Identify common position faults and their effects",
       "Understand how correct position helps the horse move freely",
     ],
-    content: `A correct, balanced riding position is the foundation of all good riding. Without it, the rider cannot communicate clearly with the horse, cannot stay balanced through transitions and movements, and cannot allow the horse to move freely and comfortably beneath them. Position is not about looking elegant — it is functional. Every aspect of the rider's position has a purpose.
+    content: `Rider position should be developed with a qualified instructor for the individual rider, horse, saddle, activity, and current safety setting. The aim is a balanced, comfortable, effective position rather than a copied pose or a fixed measurement. Stop and seek coaching when a position is uncomfortable, unsafe, or requires the rider to use the reins for balance.
 
 ## The Classical Alignment
 
-When viewed from the side, the correctly positioned rider should have a straight vertical line that passes through four key points: **ear — shoulder — hip — heel**. This alignment places the rider's centre of gravity directly over the horse's centre of gravity, creating a balanced, stable partnership.
+A commonly taught visual check is **ear — shoulder — hip — heel** alignment when viewed from the side. AQHA guidance uses this as a balance reference, but position and stirrup length vary with the rider, horse, saddle, discipline, and activity. Use an instructor's observation rather than forcing a fixed geometry.
 
 ## Head and Eyes
 
-The head is the heaviest part of the body relative to the neck that supports it. Where the head goes, the body follows. Look up and ahead — not down at the horse's neck. Looking down shifts your weight forward, rounds your shoulders and collapses your core. Develop the habit of looking where you are going: through the horse's ears in a straight line, toward the next marker in a school figure, and around the turn when changing direction. This also gives the horse subtle weight cues through your seat.
+Keep attention on the riding environment and use an instructor's feedback to develop an appropriate head, eye, and upper-body position. Do not rely on the reins or the horse's mouth for balance. Position should be adjusted for the individual rider and activity rather than prescribed from a written cue alone.
 
 ## Shoulders and Upper Body
 
@@ -1596,9 +1567,9 @@ The shoulders should be **relaxed and level**, drawn gently back and down. Hunch
 
 ## Arms and Hands
 
-The arms hang naturally from the shoulders, bending at the elbow to create a soft, straight line from the rider's elbow through the wrist and rein to the horse's mouth. This is called the **elbow–hand–bit line**. The angle at the elbow should be roughly 90 degrees at the halt.
+The arms hang naturally from the shoulders, bending at the elbow to create a soft, straight line from the rider's elbow through the wrist and rein to the horse's mouth. This is called the **elbow–hand–bit line**. The elbow should remain comfortably soft and allow a straight, elastic connection without forcing a fixed angle.
 
-The hands should be carried just above and slightly in front of the withers, about 10 cm (4 inches) apart, with the thumbs on top and the knuckles facing forward. The fingers close softly around the rein — not gripping tightly, not holding loosely. Imagine holding a small bird: firmly enough that it cannot escape, gently enough that you do not hurt it.
+The hands should be carried just above and slightly in front of the withers, with the thumbs on top and the knuckles facing forward. Their position and separation should allow a quiet, even contact and be reviewed with a qualified instructor rather than set by a fixed measurement. The fingers close softly around the rein — not gripping tightly, not holding loosely. Imagine holding a small bird: firmly enough that it cannot escape, gently enough that you do not hurt it.
 
 The wrists should remain straight and supple, not bent upward, downward or sideways. Stiff, rigid hands transmit every movement of the rider's body down the rein to the horse's mouth, causing discomfort and confusion.
 
@@ -1639,7 +1610,7 @@ Good position is not something you achieve once and forget — it requires const
       "The elbow–hand–bit line should be a straight, soft connection from elbow to horse's mouth",
     ],
     safetyNote:
-      "The most dangerous position fault is allowing the foot to slide through the stirrup. If the rider falls, they can be dragged by the horse. Always ride with the stirrup iron on the ball of the foot and maintain a deep, pushed-down heel. Safety stirrups with a rubber release mechanism can provide additional protection for beginners. Always wear a correctly fitted riding hat that meets current safety standards.",
+      "Use riding boots, stirrups, and saddle safety features appropriate to the rider and discipline. Missouri Extension advises that the ball of the foot rests over the stirrup tread with heel lower than toe for most riding, and warns against equipment that secures a rider to the saddle. Ask a qualified instructor to check fit, equipment condition, and helmet selection before riding.",
     practicalApplication:
       "At the start of every lesson, spend a few minutes in the halt checking your position: are your shoulders level and relaxed? Is your weight even on both seat bones? Are your heels down? Is there a straight line from your ear to your heel? Ask your instructor for feedback, or have someone take a photograph from the side so you can see your alignment. Over time, correct position becomes muscle memory, but it takes consistent practice.",
     commonMistakes: [
@@ -1725,7 +1696,7 @@ Good position is not something you achieve once and forget — it requires const
 
 ## Arena Markers
 
-A standard dressage arena (20 m × 40 m) is marked with letters placed at specific points around the arena. These letters are used to describe movements, positions and exercises. The letters in a standard arena are:
+A **20 m × 40 m small arena** is commonly used for introductory schooling and some national tests. Arena dimensions and letter layouts vary by test level, organiser and jurisdiction; always use the current schedule or organiser’s diagram for competition. In this small-arena example, the letters are:
 
 - **A** — The entrance end, centre of the short side
 - **C** — The far end, centre of the opposite short side
@@ -1800,7 +1771,8 @@ These conventions exist to prevent accidents. Horses are flight animals and can 
     ],
     knowledgeCheck: [
       {
-        question: "When two riders approach each other from opposite directions, how should they pass?",
+        question:
+          "When two riders approach each other from opposite directions, how should they pass?",
         options: [
           "Right hand to right hand",
           "Left hand to left hand",
@@ -1926,7 +1898,8 @@ The quality of a transition depends on the preparation:
           "The trot is a two-beat gait in which the horse moves its legs in diagonal pairs, with a moment of suspension between each beat.",
       },
       {
-        question: "What is the primary aid for asking a horse to move from walk to trot?",
+        question:
+          "What is the primary aid for asking a horse to move from walk to trot?",
         options: [
           "Pulling the reins forward",
           "Leaning forward",
@@ -1938,7 +1911,8 @@ The quality of a transition depends on the preparation:
           "The primary driving aid is a squeeze of both legs against the horse's sides just behind the girth. Voice and seat aids support the leg, but the leg is the main signal.",
       },
       {
-        question: "What should you do with your hands once the horse has responded to a downward transition aid?",
+        question:
+          "What should you do with your hands once the horse has responded to a downward transition aid?",
         options: [
           "Keep pulling to make sure the horse stays in walk",
           "Drop the reins completely",
@@ -1976,7 +1950,7 @@ The quality of a transition depends on the preparation:
 
 ## The 20-Metre Circle
 
-The 20-metre circle is the most commonly ridden school figure and one of the first a rider learns. In a 20 m × 40 m arena, a 20-metre circle fits exactly across the width of the arena. Key circles are:
+The 20-metre circle is a common school figure and one of the first a rider learns. In any arena that is 20 m wide, including a 20 m × 40 m small arena, a 20-metre circle spans the arena’s width. Check the current arena diagram and test instructions before practising for a competition. Key circles are:
 
 - **At A or C** — The circle touches the short side at A or C, reaches E or B on the long side, and returns to A or C. It passes through the centre line at X.
 - **At B or E** — The circle touches the two long sides and crosses the centre line at two points.
@@ -2019,7 +1993,7 @@ The **three-quarter line** runs parallel to the long sides, approximately 5 metr
 
 School figures should be ridden with purpose and precision. A rider who rides accurate figures at walk demonstrates more skill than one who canters inaccurately around the arena.`,
     keyPoints: [
-      "A 20-metre circle fits exactly across the width of a standard 20 m × 40 m arena",
+      "In a 20 m-wide arena, a 20-metre circle spans the arena width; use the current organiser’s diagram for any competition layout",
       "On a circle: inside leg at the girth for bend, outside leg behind the girth to control the hindquarters",
       "The outside rein is the controlling rein — it limits bend and regulates speed",
       "When changing rein across the diagonal, change your rising trot diagonal as you cross",
@@ -2047,10 +2021,11 @@ School figures should be ridden with purpose and precision. A rider who rides ac
         ],
         correctIndex: 1,
         explanation:
-          "A 20-metre circle spans the full 20-metre width of a standard arena, touching each long side or the short side and the centre line.",
+          "In an arena that is 20 metres wide, a 20-metre circle spans that width. The exact markers and layout depend on the arena and current organiser instructions.",
       },
       {
-        question: "Which rein controls the speed and limits the bend on a circle?",
+        question:
+          "Which rein controls the speed and limits the bend on a circle?",
         options: [
           "The inside rein",
           "The outside rein",
@@ -2062,7 +2037,8 @@ School figures should be ridden with purpose and precision. A rider who rides ac
           "The outside rein is the controlling rein. It limits the degree of bend, prevents the horse from falling out through the shoulder, and regulates the tempo.",
       },
       {
-        question: "What should you do with your rising trot when you change rein?",
+        question:
+          "What should you do with your rising trot when you change rein?",
         options: [
           "Continue on the same diagonal",
           "Change diagonal by sitting for two beats and rising on the other diagonal",
@@ -2082,7 +2058,6 @@ School figures should be ridden with purpose and precision. A rider who rides ac
     linkedCompetencies: ["control_at_walk", "balance_and_coordination"],
   },
 
-
   // ── Lesson 13 ─────────────────────────────────────────────────────────────
   {
     slug: "warmup-cooldown",
@@ -2097,7 +2072,7 @@ School figures should be ridden with purpose and precision. A rider who rides ac
       "Outline a correct cool-down procedure after exercise",
       "Understand the physiological reasons behind warming up muscles and joints",
     ],
-    content: `Every ridden session should begin with a structured warm-up and end with a proper cool-down. These are not optional extras — they are fundamental to the horse's physical welfare, soundness and long-term health. Just as a human athlete would never sprint without warming up, a horse should never be asked to work intensively without proper preparation.
+    content: `Plan exercise with an individual, progressive warm-up and cool-down that reflects the horse's current fitness, health, workload, weather, ground, temperament, and qualified guidance. Current welfare guidance recognises that there are no rigid rules; do not copy a fixed routine or continue when the horse appears unable to cope.
 
 ## Why Warm Up?
 
@@ -2111,20 +2086,20 @@ The warm-up serves several critical physiological purposes:
 
 ## A Standard Warm-Up Routine
 
-A typical warm-up for a flatwork session lasts **10 to 15 minutes** and follows this structure:
+A warm-up can progress from easy movement to more dynamic work, but its duration and detail must be adjusted for the individual horse and conditions:
 
-**Phase 1 — Walk (5 minutes minimum):**
+**Phase 1 — Easy movement:**
 - Begin with free walk on a long rein, allowing the horse to stretch its head and neck forward and down.
 - Walk on both reins, using large shapes (20-metre circles, changes of rein) to loosen the horse evenly on both sides.
 - This phase allows the horse to warm the muscles, loosen the joints and mentally settle.
 
-**Phase 2 — Trot (5–7 minutes):**
+**Phase 2 — Progressive movement:**
 - Move into a working trot, starting with rising trot to ease the horse's back.
 - Ride large circles, serpentines and changes of rein to encourage the horse to use both sides of its body equally.
 - Gradually take up more contact as the horse begins to soften and engage.
 - Include some transitions within trot (lengthening and shortening the stride) to develop responsiveness.
 
-**Phase 3 — Short canter (if appropriate):**
+**Phase 3 — Further work (if appropriate):**
 - A brief canter on each rein further warms the muscles and prepares the horse for the main session.
 - Keep the canter steady and balanced; this is not the time for collection or extension.
 
@@ -2142,10 +2117,10 @@ The cool-down is just as important as the warm-up:
 - Drop from canter to trot, then from trot to walk over several minutes. Do not go from hard work directly to halt.
 - Include some stretchy trot (allowing the horse to lower its head and stretch over the back) to help the muscles begin to relax.
 
-**Phase 2 — Walk on a long rein (minimum 5–10 minutes):**
+**Phase 2 — Walk and recover:**
 - Walk the horse on a loose rein, allowing it to stretch its neck fully forward and down.
-- This phase allows the heart rate to return to resting level, flushes metabolic waste products (such as lactic acid) from the muscles, and prevents stiffness.
-- In hot weather, this walk phase may need to be extended to allow the horse to cool down fully before returning to the stable.
+- Gradually walk until respiration has recovered, encourage comfortable stretching, and monitor energy and movement quality.
+- In hot weather, reduce intensity and duration, allow extra recovery time, offer water, use shade where available, and apply cool water over the body when active cooling is needed.
 
 **Phase 3 — Post-ride checks:**
 - Once dismounted, check the horse's legs for heat or swelling.
@@ -2155,45 +2130,48 @@ The cool-down is just as important as the warm-up:
 
 ## Signs of a Horse That Has Not Been Cooled Down Properly
 
-- Continued sweating after returning to the stable
-- Elevated breathing rate that does not return to normal within 10–15 minutes
-- Stiffness or reluctance to move the next day
-- Muscle soreness or sensitivity to touch over the back and hindquarters
+- Heavy or excessive sweating
+- Fast or laboured breathing
+- Feeling hot to the touch
+- Lethargy, a drop in performance, tiredness, or declining movement quality
+
+If these concerns occur, stop exercise, begin the appropriate cooling measures, and seek responsible professional guidance rather than self-diagnosing.
 
 A consistent warm-up and cool-down routine protects the horse's body, improves performance over time and demonstrates responsible horsemanship.`,
     keyPoints: [
-      "A warm-up of at least 10–15 minutes prepares muscles, joints and the respiratory system for work",
-      "Always begin with at least 5 minutes of free walk on a long rein",
-      "The cool-down should include 5–10 minutes of walk on a loose rein to return heart rate to resting level",
-      "Warming up also serves as a soundness check — if the horse feels unlevel, investigate before working harder",
-      "In hot weather, extend the cool-down to prevent overheating; in cold weather, use a cooler rug",
+      "Warm-up and cool-down plans are individualised for the horse, conditions, workload, and qualified guidance",
+      "Start with easy movement and progress only as the individual horse is ready",
+      "Gradually reduce work and walk until respiration has recovered, monitoring the horse's energy and movement quality",
+      "If movement quality declines or the horse appears unable to cope, stop exercise and seek responsible qualified guidance",
+      "In hot weather, adapt workload and recovery, offer water and shade, and use active cooling when needed",
     ],
     safetyNote:
-      "If a horse feels uneven, short-striding or reluctant to move forward during the warm-up, do not ignore this and push on. Stop, dismount if necessary, and check the horse's legs and feet for problems. Report any concerns to your instructor or yard manager. Working a lame horse causes further injury and is a welfare issue. Never hose cold water onto a hot, sweating horse's large muscle groups suddenly, as this can cause muscle cramping — cool gradually.",
+      "If movement quality declines, the horse appears unable to cope, or you are concerned about heat or comfort, stop exercise and report it to the responsible yard person, instructor, veterinarian, or other appropriate professional. In hot conditions, recognised welfare guidance supports active cooling with cool water over the body alongside recovery walking, shade where available, and access to water.",
     practicalApplication:
-      "Plan your warm-up routine before you mount. Know how long you have for your session and allocate at least 10 minutes at the start and 10 minutes at the end for warming up and cooling down. If you only have 30 minutes, it is better to have a short but well-structured session with proper warm-up and cool-down than to skip these and ride hard for the full 30 minutes. Record your horse's resting breathing rate so you know when it has returned to normal after exercise.",
+      "Plan the session around the individual horse, current fitness, weather, ground and recovery. Begin with easy movement, progress only as appropriate, and reduce work gradually afterwards. Observe behaviour, breathing, energy and movement quality; if concerns arise, stop and seek qualified guidance rather than applying a copied timing or self-diagnostic rule.",
     commonMistakes: [
       "Skipping the walk phase and going straight into trot or canter",
-      "Warming up for too short a time, especially in cold weather when muscles take longer to prepare",
-      "Failing to cool down properly, leading to stiffness and soreness the next day",
+      "Using a copied warm-up duration instead of adapting the session to the horse, conditions, and current fitness",
+      "Stopping hard work abruptly instead of reducing work gradually and monitoring recovery",
       "Not checking for lameness during the warm-up trot",
       "Dismounting immediately after hard work instead of walking on a long rein first",
     ],
     knowledgeCheck: [
       {
-        question: "How long should the walk phase of a warm-up last as a minimum?",
+        question: "What should determine the duration and detail of a warm-up?",
         options: [
-          "1 minute",
-          "2 minutes",
-          "5 minutes",
-          "15 minutes",
+          "A fixed time copied for every horse",
+          "The individual horse, fitness, workload, weather, ground and qualified guidance",
+          "The rider's preference alone",
+          "Whether the horse is already sweating",
         ],
-        correctIndex: 2,
+        correctIndex: 1,
         explanation:
-          "The initial walk phase should last at least 5 minutes to allow blood flow to increase, joints to lubricate and the horse to settle mentally.",
+          "There are no rigid warm-up rules. Use easy movement and progress according to the individual horse, conditions, workload and qualified advice.",
       },
       {
-        question: "What is the purpose of walking on a long rein during the cool-down?",
+        question:
+          "What is the purpose of walking on a long rein during the cool-down?",
         options: [
           "To reward the horse for working hard",
           "To allow the heart rate to return to normal and flush waste products from the muscles",
@@ -2202,10 +2180,11 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
         ],
         correctIndex: 1,
         explanation:
-          "Walking on a long rein allows the heart rate to drop gradually, blood to flush lactic acid from the muscles, and the horse to stretch and relax, preventing stiffness.",
+          "Gradually reducing work and walking supports recovery. Monitor respiration, energy and movement quality, and adjust recovery to the horse, workload and conditions.",
       },
       {
-        question: "What should you do if the horse feels unlevel during the warm-up?",
+        question:
+          "What should you do if the horse feels unlevel during the warm-up?",
         options: [
           "Push on — the horse will warm out of it",
           "Trot faster to loosen up the stiffness",
@@ -2214,7 +2193,7 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
         ],
         correctIndex: 2,
         explanation:
-          "An unlevel feel during the warm-up may indicate lameness, soreness or a foot problem. Stop, check the horse thoroughly and do not continue working until the cause has been identified.",
+          "A change in movement quality or a horse that appears unable to cope is a reason to stop exercise and seek responsible qualified guidance rather than pushing on or attempting a diagnosis.",
       },
     ],
     aiTutorPrompts: [
@@ -2239,33 +2218,33 @@ A consistent warm-up and cool-down routine protects the horse's body, improves p
       "Understand how to assess arena conditions and set up equipment",
       "Explain the importance of mental readiness and goal-setting before riding",
     ],
-    content: `Preparing for a riding lesson or schooling session involves more than just arriving and getting on the horse. Good preparation ensures the horse is comfortable, the tack fits correctly, the arena is safe, and the rider has a clear plan for what they want to achieve. This lesson brings together the practical and mental aspects of lesson preparation.
+    content: `Preparing for a riding lesson or schooling session includes responsible pre-ride checks, a realistic plan, and a decision not to ride when horse, tack, rider, ground, or facility conditions are not safe. Saddle, bridle, bit, and noseband fit are individual matters requiring qualified assessment; do not treat this lesson as a substitute for a qualified fitter, instructor, veterinarian, or manufacturer guidance.
 
 ## Tacking Up
 
-Tacking up is the process of fitting the saddle and bridle to the horse. It must be done carefully and correctly every time:
+Tacking up requires careful handling and individual fit assessment. Follow the current qualified instruction, equipment guidance, and yard procedure for the horse rather than applying copied measurements or a universal sequence:
 
 **Putting on the saddle:**
 1. Place the numnah (saddle cloth) on the horse's back, slightly forward of where the saddle will sit, then slide it back into position so the hair lies flat underneath.
-2. Lift the saddle and place it gently on the numnah, slightly forward of the withers, then slide it back into the correct position. The saddle should sit behind the shoulder blade so it does not restrict the horse's movement.
-3. Let the girth down on the off (right) side. Move to the near (left) side, reach under the belly and buckle the girth. Tighten gradually — do not yank it tight in one go, as this is uncomfortable and some horses will react by biting, kicking or inflating their belly.
+2. Place the saddle only as instructed for the individual horse and saddle. If fit, placement, balance, or comfort is uncertain, stop and obtain a qualified saddle-fitting assessment.
+3. Secure the girth in accordance with the current instruction for the horse and equipment. A girth should be snug but not overtight; recheck it before mounting under the current procedure and seek help where fit is uncertain.
 4. Pull the numnah up into the gullet of the saddle so it is not pressing down on the withers.
 5. Check that the saddle is level and balanced when viewed from behind.
 
 **Putting on the bridle:**
 1. Stand at the horse's near side, facing the same direction as the horse.
 2. Undo the headcollar and refasten it around the neck so you maintain control.
-3. Hold the bridle by the headpiece in your right hand and guide the bit into the horse's mouth with your left hand. If the horse is reluctant, gently press your thumb into the corner of the mouth (the bars), where there are no teeth, to encourage it to open.
+3. Fit the bridle only by the safe method you have been taught. Do not force the bit, and stop for qualified advice if the horse resists, appears distressed, or has oral-health concerns.
 4. Lift the headpiece over the ears, one at a time, being gentle with each ear.
-5. Fasten the throatlash — you should be able to fit a fist's width between the throatlash and the horse's jaw.
-6. Fasten the noseband — you should be able to fit two fingers between the noseband and the horse's face.
-7. Check the bit is at the correct height — it should create one to two wrinkles at the corner of the mouth.
+5. Fasten the throatlash, noseband and bit only in accordance with qualified tack-fitting, oral-health and manufacturer guidance for the individual horse.
+6. Check for signs of restriction, discomfort, rubbing or altered behaviour and stop if the horse becomes distressed.
+7. Do not rely on a copied finger-width, wrinkle or measurement rule to determine fit; obtain qualified assessment when there is any doubt.
 8. Ensure the browband is not pinching the ears and the forelock is pulled free.
 
 ## Arena Assessment
 
 Before you ride, check the arena:
-- **Surface** — Is it too deep, too hard, too wet or too dusty? Poor surfaces cause injury.
+- **Surface** — Consider whether the surface is level, excessively hard, deep, slippery, wet, or dusty. Adapt or cancel the session if conditions are unsuitable for the horse, activity, and qualified guidance.
 - **Obstacles** — Are there poles, jumps or equipment left out that need to be moved?
 - **Fencing** — Is the fence intact? Are gates secure?
 - **Other users** — Who else will be riding? Adjust your plan to share space safely.
@@ -2274,10 +2253,10 @@ Before you ride, check the arena:
 
 An effective lesson has three phases:
 1. **Warm-up** — Gradual preparation of horse and rider (covered in the previous lesson).
-2. **Main work** — The productive phase focused on a specific goal. Choose one or two objectives per session rather than trying to improve everything at once. Examples: "Today I will focus on accurate 20-metre circles" or "Today I will work on smooth trot-canter transitions."
+2. **Main work** — The productive phase focused on a specific goal. Choose a small number of objectives appropriate to the current horse, rider, facility and qualified coach guidance rather than trying to improve everything at once. For example, focus on a coach-selected figure or a smooth trot-canter transition.
 3. **Cool-down** — Gradual return to resting state.
 
-Set goals that are **specific**, **measurable** and **achievable** within the session. "Ride better" is too vague; "Ride three accurate 20-metre circles on each rein at trot" is specific and measurable.
+Set goals that are **specific**, **measurable** and **achievable** within the session. “Ride better” is too vague; “practise the coach-selected figure with even bend and rhythm, then record the agreed observation” is specific and measurable.
 
 ## Mental Readiness
 
@@ -2290,17 +2269,17 @@ Riding is as much a mental skill as a physical one. Before mounting:
 ## Equipment Check
 
 Before every ride, verify:
-- Riding hat is correctly fitted and meets current safety standards (PAS 015, SNELL, ASTM/SEI)
-- Boots or jodhpur boots have a smooth sole and a small heel (at least 1 cm)
+- Riding helmet is correctly fitted, in sound condition, and suitable for the activity and applicable current safety requirements
+- Boots or jodhpur boots have a suitable sole and heel for the current stirrup, riding activity and applicable safety guidance
 - Gloves provide grip on the reins
 - Body protector if required by the yard or activity
 - Whip and spurs are only carried if appropriate for the rider's level and the horse's needs`,
     keyPoints: [
-      "Always slide the saddle back into position — never forward — to keep the hair lying flat",
-      "The throatlash should allow a fist's width; the noseband should allow two fingers' width",
+      "Use only the individual horse's qualified saddle-placement and fitting guidance; stop if fit or comfort is uncertain",
+      "Bridle and bit fit require individual qualified assessment; do not use copied finger-width or wrinkle rules as a substitute",
       "Check the arena surface, fencing and any obstacles before riding",
-      "Set one or two specific, measurable goals for each session",
-      "Mental readiness affects the horse — approach every ride with calm focus",
+      "Set a small number of specific, measurable goals appropriate to the current horse, rider and qualified coach guidance",
+      "Plan calmly, set realistic goals, and stop rather than ride when the rider or setting is not ready",
     ],
     safetyNote:
       "Never ride in footwear without a heel, such as trainers or wellies, as your foot can slide through the stirrup. Always wear a correctly fitted, current-standard riding hat — even for a short session. Check all tack for wear and damage before every ride: stitching on stirrup leathers, girth straps and reins should be strong and intact. If any piece of tack is damaged, do not use it.",
@@ -2315,7 +2294,8 @@ Before every ride, verify:
     ],
     knowledgeCheck: [
       {
-        question: "How much space should there be between the throatlash and the horse's jaw?",
+        question:
+          "How much space should there be between the throatlash and the horse's jaw?",
         options: [
           "Two fingers' width",
           "One finger's width",
@@ -2327,7 +2307,8 @@ Before every ride, verify:
           "The throatlash should be loose enough to fit a fist's width between the strap and the horse's jaw. This allows the horse to flex at the poll without restriction.",
       },
       {
-        question: "Why should the saddle be slid back into position rather than forward?",
+        question:
+          "Why should the saddle be slid back into position rather than forward?",
         options: [
           "Forward movement damages the saddle",
           "Sliding back ensures the hair lies flat underneath, preventing rubs",
@@ -2367,80 +2348,59 @@ Before every ride, verify:
     category: "Rider Foundations",
     sortOrder: 8,
     objectives: [
-      "Understand the biomechanics of the rider's position and how it influences the horse",
-      "Identify and correct common rider asymmetries",
-      "Develop an effective, independent seat at walk, trot, and canter",
-      "Assess and improve riding without stirrups as a diagnostic tool",
+      "Use qualified coaching observation to reflect on rider position and comfort",
+      "Recognise when a position concern needs qualified coaching or health-professional input",
+      "Work toward an individual, coach-approved balanced seat at suitable paces",
+      "Understand that any no-stirrup exercise requires individual coach approval and safety controls",
     ],
-    content: `An advanced understanding of rider position goes far beyond "heels down, shoulders back." At this level, you need to understand the biomechanics of how your body interacts with the horse's movement, recognise and correct your own asymmetries, and develop the kind of independent, following seat that allows you to influence the horse with subtlety and precision. This lesson examines position from a biomechanical perspective and provides the tools for ongoing self-analysis.
+    content: `Rider position is individual to the rider, horse, saddle, activity, pace, experience, health, comfort, and current coaching plan. This lesson offers a vocabulary for reflection; it does not diagnose a rider or horse, prescribe exercise, prove the cause of a movement concern, or replace a qualified coach, medical professional, physiotherapist, saddle fitter, or veterinarian. Any mounted exercise must be approved for the individual partnership and current conditions by the responsible qualified person.
 
 ## Biomechanics of the Rider
 
-The rider's body is a dynamic system that must constantly adapt to the horse's movement. At walk, the horse's back swings in a figure-of-eight pattern. At trot, the movement is vertical and diagonal. At canter, it is a rolling, rocking motion. An effective rider absorbs and follows all of these movements without stiffening, gripping, or falling behind or ahead of the motion.
+Rider and horse movement are dynamic and vary between individual partnerships, paces, footing, tack, fatigue, training, and the task. A qualified coach can observe whether a rider appears balanced, comfortable, and able to respond safely without excessive tension. Learners should not use a generic description to diagnose a horse’s back movement, a rider’s body, saddle fit, or the cause of a performance issue.
 
-**The pelvis** is the foundation of the rider's seat. It must be level, centred, and able to move freely with the horse. A tilted pelvis — whether tipping forward (anterior tilt) or backward (posterior tilt) — affects the entire kinetic chain above and below. An anterior tilt hollows the lower back and pushes the seat out of the saddle. A posterior tilt rounds the back and causes the rider to sit heavily on the horse's back.
+A coach may use neutral terms such as **pelvis**, **upper body**, **shoulders**, **hands**, **legs**, **feet**, and **stirrups** when describing what they observe. The coach should adapt any position cue to the individual rider, horse, saddle, task, and discipline. Avoid treating a cue, posture, or apparent asymmetry as a medical finding, a guarantee of horse comfort, or a universal correction.
 
-**The core muscles** — not just the abdominals, but the deep stabilisers including the pelvic floor and multifidus — provide the stability that allows the limbs to move independently. A rider with a strong core can give refined leg and hand aids without losing their balance or disturbing the horse.
-
-**The shoulder girdle** must be relaxed and level. Tension in the shoulders transmits through the arms to the hands, creating a rigid, unforgiving contact. The elbows should hang naturally at the rider's sides, with a soft bend and a straight line from elbow to bit.
-
-**The leg** should drape around the horse with weight dropping through a long, soft thigh into a deep heel. The knee acts as a hinge, not a clamp. Gripping with the knee lifts the seat and pushes the lower leg away, reducing its effectiveness.
+University of Missouri Extension advises riders to use tack that fits both horse and rider, footwear and stirrups that fit safely, and—when appropriate for the riding context—place the ball of the foot over the stirrup tread with the heel lower than the toe. It also recognises rider and discipline variation. A qualified coach should decide whether any additional position cue is suitable.
 
 ## Asymmetry Correction
 
-Every rider has asymmetries. You may collapse one hip, weight one stirrup more heavily, or carry one hand higher than the other. These asymmetries affect the horse — a rider who consistently sits heavier on the left will cause the horse to drift left, and a rider with one stiff hip will block the horse's movement on that rein.
+A rider or coach may notice that the two sides of a rider’s position do not look or feel identical. Observation alone cannot establish the cause, whether it affects the horse, or what intervention is appropriate. A qualified coach should assess the riding context; persistent pain, limitation, or a health concern requires an appropriately qualified health professional.
 
-**Identifying asymmetry:**
-- Have someone photograph or video you from behind at halt, walk, trot, and canter. Look for differences between left and right.
-- Notice which rein feels easier. The "better" rein is often the one where your asymmetry helps the horse; the "worse" rein is where it hinders.
-- Use a physiotherapist or sports therapist who understands equestrian biomechanics to assess your body off the horse.
+**Observing with qualified help:**
+- A qualified coach may use live observation or, where appropriate and consented to, video to discuss a position cue in the actual riding context.
+- Treat a difference between reins, paces, or days as information to discuss—not proof of its cause or a reason to blame the rider or horse.
+- Seek an appropriately qualified health professional for pain, injury, persistent limitation, or questions outside coaching scope.
 
-**Correcting asymmetry:**
-- Targeted exercises off the horse — yoga, Pilates, and specific rider fitness programmes — address muscular imbalances.
-- On the horse, exercises such as riding with one hand on the pommel, or placing a hand on the hip that drops, can increase awareness.
-- Regularly change the rein you work on first to avoid always schooling the "easy" rein.
-- Be patient — asymmetry develops over years and takes time to correct.
+**Responding safely:**
+- Follow the individual coach-approved plan; do not self-prescribe a fitness, rehabilitation, or mounted correction programme from a lesson.
+- Stop an exercise that causes pain, loss of balance, horse discomfort, or an unsafe change in conditions, and obtain qualified advice.
+- Review tack, horse, rider, and environment with the relevant qualified professional rather than assuming a single cause.
 
 ## The Effective Seat at All Paces
 
-An effective seat is one that follows the horse's movement without disturbing it, while remaining ready to influence the horse at any moment.
+A coach may describe an effective seat as balanced, comfortable, responsive, and suitable for the individual partnership’s current task. The coach decides which pace, exercise, cue, and duration are appropriate. Do not treat a generic description of walk, trot, or canter as a universal prescription; stop and seek coaching if the rider feels unsafe or the horse appears uncomfortable or difficult to control.
 
-**At walk:** The pelvis follows the horse's back in a gentle figure-of-eight. The upper body remains quiet and tall. The legs hang softly, ready to apply aids.
+## Any No-Stirrup Exercise Requires Individual Approval
 
-**At sitting trot:** The pelvis absorbs the vertical movement of the trot by allowing a subtle opening and closing of the hip angle. The lower back must be supple — bracing against the movement causes bouncing. Think of your seat bones drawing small circles on the saddle.
+Riding without stirrups is not a universal diagnostic tool, progression test, fitness intervention, or indicator that a rider’s position is “sound.” It may be an appropriate coach-supervised exercise for some horse-and-rider partnerships in a suitable setting, but it can increase risk or discomfort for others.
 
-**At canter:** The pelvis follows the rolling motion of the canter by allowing the hips to swing forward and back. The shoulders remain still and upright. The common fault of "pumping" with the upper body actually disrupts the horse's canter rather than helping it.
-
-## Riding Without Stirrups — Assessment Tool
-
-Riding without stirrups is one of the most effective diagnostic tools for assessing rider position. Without the support of stirrups, any reliance on the knee or stirrup for balance becomes immediately apparent.
-
-**Benefits:**
-- Deepens the seat and develops a longer, more secure leg.
-- Reveals grip patterns and tension that stirrups mask.
-- Improves core stability and balance.
-
-**How to assess:**
-- Cross your stirrups and ride at walk for five minutes. Notice where you feel tension or insecurity.
-- Progress to sitting trot without stirrups. Can you maintain a soft, following seat, or do you grip and bounce?
-- At canter, without stirrups, the quality of your seat is fully exposed. If you can sit the canter softly without stirrups, your position is fundamentally sound.
-
-Incorporate regular no-stirrup work into your training, but build up gradually. Overdoing it when your muscles are not conditioned can cause soreness and tension, which is counterproductive.`,
+Before any no-stirrup exercise, the qualified coach and responsible person must consider the rider, horse, tack, setting, pace, supervision, current conditions, and emergency arrangements. The coach decides whether the exercise is suitable, how it is set up, whether stirrups are moved or retained, and when it stops. Do not use a fixed duration, progress alone to a faster pace, or continue if balance, comfort, horse behaviour, tack, or conditions are unsuitable.`,
     keyPoints: [
-      "The pelvis is the foundation of the seat — its position affects the entire kinetic chain",
-      "Core stability allows independent use of the aids without disturbing the horse's balance",
-      "Every rider has asymmetries that affect the horse, and targeted exercises can correct them",
-      "An effective seat follows the horse's movement at each pace without stiffening or pumping",
-      "Riding without stirrups is a powerful diagnostic tool that reveals hidden grip patterns and tension",
+      "Position cues must be adapted by a qualified coach to the individual rider, horse, saddle, activity, and current conditions",
+      "A position concern is not a diagnosis; persistent pain, limitation, or comfort concern needs the appropriate qualified professional",
+      "Observation can inform a coach-led discussion but does not establish the cause of an apparent asymmetry or its effect on the horse",
+      "The coach determines which pace and exercise are appropriate; stop if the rider feels unsafe or the horse appears uncomfortable or difficult to control",
+      "No-stirrup work is not a universal test and requires coach approval, a suitable partnership, and current safety controls",
     ],
     safetyNote:
-      "When riding without stirrups, always work in an enclosed arena on a calm, steady horse. Build up gradually — do not attempt extended periods of no-stirrup canter until you are comfortable at walk and trot. If you feel yourself becoming tense or unbalanced, take the stirrups back and regroup. Never cross your stirrups over the withers on a horse that is likely to spook, as the buckles can dig into the horse and provoke a reaction.",
+      "Do not start or progress any no-stirrup exercise without coach approval and the responsible person’s current safety arrangements. Stop if balance, rider comfort, horse behaviour, tack, footing, weather, supervision, or emergency arrangements become unsuitable; obtain qualified advice before resuming.",
     practicalApplication:
-      "Ask someone to video you from behind at walk, trot, and canter. Analyse the footage for asymmetries — hip collapse, uneven stirrup pressure, one hand higher than the other. Choose one asymmetry to work on and research two off-horse exercises to address it. Incorporate five minutes of no-stirrup walk and trot at the start of each schooling session for the next four weeks and note any changes in your balance and feel.",
+      "Ask a qualified coach which current position and safety observations are appropriate for your horse-and-rider partnership. With consent, the coach may use observation or video as part of an individual coaching discussion. Do not prescribe a no-stirrup, fitness, rehabilitation, or position-correction programme from this lesson; discuss pain, persistent limitation, tack, or horse-comfort concerns with the appropriate qualified professional.",
     commonMistakes: [
-      "Gripping with the knee to compensate for a weak core, which lifts the seat out of the saddle and reduces leg effectiveness",
-      "Bracing the lower back against the sitting trot instead of allowing the hips to absorb the movement",
-      "Ignoring rider asymmetry and blaming the horse for being one-sided when the issue originates from the rider",
+      "Assuming a position cue proves a rider’s strength, injury status, horse comfort, saddle fit, or cause of a performance concern",
+      "Continuing a mounted exercise despite pain, loss of balance, horse discomfort, unsafe conditions, or a qualified instruction to stop",
+      "Blaming either rider or horse without a qualified assessment of the individual partnership and current context",
     ],
     knowledgeCheck: [
       {
@@ -2496,119 +2456,97 @@ Incorporate regular no-stirrup work into your training, but build up gradually. 
     category: "Rider Foundations",
     sortOrder: 9,
     objectives: [
-      "Break down fundamental riding skills into clear, teachable components",
-      "Identify common beginner rider faults and understand their root causes",
-      "Apply effective correction strategies for foundational position and aid problems",
-      "Structure a progressive beginner lesson plan using sound pedagogical principles",
+      "Recognise that teaching riding requires appropriate qualification, authorisation, safeguarding, and current site procedures",
+      "Use factual observation and qualified-coach escalation rather than diagnosing a learner, horse, or cause",
+      "Understand that a qualified coach adapts communication, support, progression, and feedback to the individual",
+      "Prepare appropriate questions for a qualified coach about lesson planning, risk, welfare, safeguarding, and progression",
     ],
-    content: `Being an accomplished rider is not the same as being able to teach riding. Teaching the foundations requires you to break down skills you perform instinctively into their component parts, understand why beginners make the mistakes they do, and communicate corrections in a way that is clear, encouraging, and effective. This lesson bridges the gap between advanced riding ability and the capacity to pass that knowledge on to others.
+    content: `Riding well does not by itself authorise someone to teach. Coaching adults or children requires the appropriate qualification, authority, safeguarding, insurance, current legal and site requirements, horse-and-rider suitability, risk assessment, and responsible-person procedures. This lesson helps learners recognise those boundaries and prepare questions for a qualified coach; it does not qualify the learner to teach, select horses, plan an activity, supervise a rider, or make welfare, medical, safeguarding, or emergency decisions.
 
-## Breaking Down the Basics
+## Preparing for Qualified Coaching
 
-When you learned to ride, you went through a process of acquiring skills that have since become automatic. Rising trot, applying a leg aid, and maintaining your position are things you now do without conscious thought. To teach these skills, you must reverse-engineer them.
+Official beginner-riding guidance describes a coach taking a new rider step-by-step through mounting, basic controls, and position, with leader support where appropriate. Professional coach standards include participant-centred planning, horse welfare, safety, safeguarding, risk awareness, suitable equipment and environment, communication, feedback, adaptation, and evaluation. The qualified coach and responsible person decide whether the rider, horse, lesson environment, support, and task are suitable.
 
-**The process of skill decomposition:**
-1. **Identify the skill** — For example, "performing a balanced halt from walk."
-2. **List the component actions** — Sit tall, close the fingers on the reins, apply a gentle squeeze with both legs to keep the horse straight, soften the hand the moment the horse halts, praise the horse.
-3. **Sequence the actions** — What comes first? What happens simultaneously?
-4. **Identify the feel** — What should the rider feel when it is done correctly? "You should feel the horse step underneath you and stop squarely. Your weight should be evenly distributed through both seat bones."
-5. **Prepare for common errors** — What will beginners typically get wrong? Too much hand, not enough leg, leaning forward, looking down.
+A learner can prepare by asking the qualified coach what the current plan covers: the lesson aim, participant needs, safety arrangements, horse and equipment suitability, supervision, safeguarding, communication, stop/escalation route, welfare checks, and how the activity will be reviewed. Do not create or alter those arrangements independently from a generic lesson.
 
-This process applies to every foundational skill: mounting, dismounting, steering, transitions, rising trot, and the basic position itself. Write out decompositions for each and practise explaining them in simple language.
+## Observing Without Diagnosing
 
-## Common Rider Faults and Their Root Causes
+A coach may observe a rider’s position, confidence, communication, attention, balance, or response to an instruction. An observation does not prove a psychological, medical, biomechanical, tack, welfare, or behavioural cause. Do not label a rider’s “fault,” attribute it to anxiety, weakness, tiredness, or confidence, or prescribe an exercise or correction from this lesson.
 
-Understanding *why* a fault occurs is far more useful than simply identifying *what* is wrong. Here are the most common beginner faults and their typical root causes:
+If a learner appears uncomfortable, nervous, unable to understand, unsafe, tired, or distressed—or if the horse, tack, footing, weather, or environment becomes unsuitable—the activity must be paused, adapted, stopped, or escalated through the qualified coach and current site procedure. The rider should be encouraged to ask questions and communicate discomfort or concern to the coach.
 
-**Looking down:** Beginners look down because they are anxious and want to see the horse. The root cause is usually a lack of confidence. The correction is to build confidence gradually — once the rider trusts the horse, they naturally look up. In the meantime, give them focal points: "Look at the letter C" or "Look between the horse's ears and out to the fence."
+## Communication and Adaptation
 
-**Gripping with the knees:** This is almost always a balance issue. The rider feels insecure and clamps on with the strongest part of their leg. Paradoxically, this makes them *less* secure by lifting them out of the saddle. The correction is to address balance — exercises without stirrups, holding the pommel, and riding on the lunge all help. Telling the rider to "relax your knee" without addressing the underlying balance problem rarely works.
+Professional coach standards require communication and feedback that meet the rider’s needs. A qualified coach decides what language, demonstration, support, visual cue, progression, repetition, or adaptation is appropriate for the individual. Generic imagery, position cues, mounted exercises, no-stirrup work, lunge work, poles, reins, whips, or transitions are not automatically safe or suitable. Use only the current coach-approved activity and support.
 
-**Round shoulders and collapsed core:** Beginners often slouch because they are tense, tired, or trying to absorb the movement by rounding their back. The correction involves building core strength and giving imagery: "Imagine a string attached to the crown of your head pulling you towards the sky" or "Pretend you have a headlight on your chest — shine it straight ahead."
+A learner may practise neutral, factual communication within their authority: report what was observed, say when they do not understand, and ask what the current qualified plan requires. Do not promise confidentiality where safeguarding requires reporting, investigate an incident, or give a rider medical, legal, welfare, or technical instruction beyond the approved role.
 
-**Hands too high, too wide, or too busy:** This usually stems from using the hands for balance rather than communication. The correction is to develop an independent seat so the hands are freed from a balance role. Exercises such as riding with one hand on the thigh or carrying a whip horizontally between both hands can help stabilise the arm position.
+## Understanding Qualified Lesson Planning
 
-**Stiff, non-following elbows:** If the elbows are locked, the contact becomes rigid and the horse cannot move freely. This is often caused by tension in the shoulders. Encourage the rider to let their arms feel heavy and think of their elbows as hinges that open and close with the horse's head movement.
+Professional coaching qualifications use plans that can include risk assessment, aims, rider and horse suitability, equipment, timings, preparation, activity, cool-down, conclusion, feedback, progression, adaptation, and evaluation. The exact content and duration vary by qualification, rider, horse, discipline, environment, local requirements, and current conditions. Assessment-specific timings are not a universal lesson template.
 
-## Correction Strategies
-
-Effective correction requires timing, tact, and variety. Not every rider responds to the same approach, so you need a toolkit of strategies:
-
-- **Imagery and analogy** — "Imagine your legs are made of lead" is more effective for many riders than "Push your heels down." Imagery bypasses conscious overthinking and speaks directly to the body.
-- **Exaggeration exercises** — Ask the rider to exaggerate the correct position. If they tend to lean forward, ask them to lean so far back they feel they might fall off (within safe limits). This recalibrates their sense of "centre."
-- **Progressive exercises** — Build the skill in stages. Do not ask a beginner to rise to the trot on the open track until they can do it on the lunge with a neck strap for security.
-- **Positive framing** — Instead of "Stop gripping with your knees," say "Think about letting your legs hang long and heavy." The brain responds better to positive instructions than negative ones.
-- **Repetition with variation** — Repeat the same skill but in different contexts — on a circle, on a straight line, with poles, on a different rein. This builds the skill without tedious repetition of the identical exercise.
-
-## Structuring a Lesson Plan
-
-A well-structured beginner lesson plan follows a logical progression:
-
-1. **Introduction (2–3 minutes)** — Greet the rider, ask how they are feeling, recap the previous session, and state today's objective.
-2. **Warm-up (8–10 minutes)** — Mounted exercises at halt and walk to loosen up, followed by walk work on both reins.
-3. **Main work (15–20 minutes)** — Two or three exercises that build towards the session objective. Use progressive difficulty.
-4. **Cool-down (5 minutes)** — Walk on a long rein, praise the horse, recap the session with the rider.
-5. **Review (2 minutes)** — What went well? What will we work on next time?
-
-Always have a **Plan B**. If the planned exercise is too difficult, have a simpler version ready. If the rider achieves the objective quickly, have a progression prepared. Flexibility within a clear structure is the hallmark of good teaching.`,
+A qualified coach should adapt or stop a plan when it is no longer suitable. A learner should report the changed condition, follow the designated stop/escalation route, and obtain qualified direction rather than selecting a “Plan B” or progression alone.`,
     keyPoints: [
-      "Decompose automatic riding skills into their component parts before attempting to teach them",
-      "Understand the root cause of each beginner fault — addressing the cause is more effective than correcting the symptom",
-      "Use a variety of correction strategies: imagery, exaggeration, progressive exercises, and positive framing",
-      "Structure every lesson with a clear warm-up, main work, and cool-down, with Plan B alternatives ready",
-      "Effective teaching requires patience, empathy, and the ability to communicate complex movements in simple language",
+      "Riding ability does not by itself authorise teaching; coaching requires appropriate qualification, authority, safeguarding, and current site procedures",
+      "An observation does not establish a rider’s or horse’s medical, psychological, biomechanical, welfare, tack, or behavioural cause",
+      "A qualified coach adapts communication, support, feedback, and progression to the individual rider, horse, activity, and conditions",
+      "Professional lesson plans may include risk, suitability, aims, equipment, preparation, activity, review, adaptation, and evaluation; no fixed template applies to every context",
+      "Report changed conditions and follow the qualified coach’s designated stop/escalation route rather than selecting an activity or progression alone",
     ],
     safetyNote:
-      "When teaching beginners, always use a calm, reliable horse and work in an enclosed arena. Have a helper on the ground if needed, especially for first-time riders. Never ask a beginner to attempt an exercise without first demonstrating or explaining it clearly. Keep sessions short enough that the rider does not become fatigued, as tiredness leads to poor position and increased risk of falls.",
+      "Do not teach, supervise, select a horse, choose equipment, set a duration, or progress a beginner activity unless you are authorised, competent, and following the current qualified coaching and responsible-person procedures. Pause, stop, or escalate if rider security, understanding, consent, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "Choose one foundational skill — such as rising trot — and write a full decomposition: list every component action, the correct sequence, the desired feel, and the three most common errors with their root causes. Then write a 30-minute lesson plan centred on teaching this skill to a complete beginner, including warm-up, two progressive exercises, and a cool-down. Practise delivering the lesson to a friend or colleague before using it with a real beginner.",
+      "Ask a qualified coach how their current lesson plan addresses rider and horse suitability, risk, welfare, safeguarding, communication, support, progression, adaptation, and review. Practise reporting factual observations and asking clarifying questions within an authorised setting. Do not design, rehearse, or deliver a lesson to a real beginner from this lesson alone.",
     commonMistakes: [
       "Assuming that because you can ride a skill well, you can automatically explain it clearly to someone else",
-      "Correcting the symptom of a fault (e.g., 'Relax your knee') without addressing the root cause (e.g., poor balance)",
-      "Overloading the beginner with too many corrections in one session instead of focusing on one key improvement area",
+      "Diagnosing a rider’s or horse’s “root cause,” health, confidence, biomechanics, welfare, tack fit, or behaviour from a generic observation",
+      "Giving instruction, selecting a horse or activity, or changing a progression outside an authorised qualified-coaching role",
     ],
     knowledgeCheck: [
       {
-        question: "What is the first step in teaching a foundational riding skill?",
+        question:
+          "What must a learner establish before teaching or supervising a beginner rider?",
         options: [
-          "Tell the rider to copy what you do",
-          "Decompose the skill into its component actions and sequence them logically",
-          "Ask the rider to read a textbook about it",
-          "Let the rider figure it out through trial and error",
+          "That they can ride the skill themselves",
+          "The appropriate qualification, authority, safeguarding, current site procedure, and qualified coaching responsibility",
+          "That the beginner has watched an online lesson",
+          "That the learner has a generic fixed lesson plan",
         ],
         correctIndex: 1,
         explanation:
-          "Skill decomposition — breaking a complex movement into its individual parts, sequencing them, and identifying the desired feel — is essential before you can teach it clearly to someone else.",
+          "Riding ability alone does not authorise coaching. Professional standards require safety, welfare, safeguarding, suitability, communication, risk management, and qualified responsibility.",
       },
       {
-        question: "What is the most common root cause of a beginner rider gripping with their knees?",
+        question:
+          "How should a learner respond to an observed rider-position concern?",
         options: [
-          "They are deliberately trying to grip",
-          "Their stirrups are too long",
-          "They feel unbalanced and are using the knee for security",
-          "They are too relaxed in the saddle",
+          "Diagnose the rider’s root cause and prescribe an exercise",
+          "Assume the horse or saddle is responsible",
+          "Report factual observations and follow the qualified coach’s current instruction and escalation route",
+          "Continue the activity without mentioning it",
         ],
         correctIndex: 2,
         explanation:
-          "Knee gripping is almost always a balance issue. The rider instinctively clamps on with the strongest part of their leg because they feel insecure. Addressing the underlying balance problem is more effective than simply telling them to relax their knee.",
+          "A generic observation does not establish a medical, psychological, biomechanical, welfare, tack, or behavioural cause. A learner should report factual observations and follow the authorised coaching procedure.",
       },
       {
-        question: "Why is imagery often more effective than direct instruction for correcting rider position?",
+        question:
+          "Who decides whether a communication cue, demonstration, support, or progression is suitable for a beginner rider?",
         options: [
-          "Riders prefer creative language to technical terms",
-          "Imagery bypasses conscious overthinking and speaks directly to the body's movement patterns",
-          "Direct instruction is always too complicated for riders to understand",
-          "Imagery is only useful for children, not adult riders",
+          "Any experienced rider using a generic lesson",
+          "The qualified coach within the current responsible-person and safeguarding arrangements",
+          "The rider alone before mounting",
+          "A fixed time-based lesson template",
         ],
         correctIndex: 1,
         explanation:
-          "Imagery and analogy bypass the conscious, analytical mind and create a physical response. 'Imagine your legs are made of lead' often produces a better result than 'Push your weight down into your heels' because it evokes a whole-body sensation rather than a mechanical action.",
+          "Professional coaching standards require communication, feedback, support, adaptation, and progressive activity to meet the individual rider’s needs while maintaining safety, welfare, and safeguarding.",
       },
     ],
     aiTutorPrompts: [
-      "Can you help me decompose the skill of a walk-to-trot transition into teachable components?",
-      "What are the best imagery cues for helping a beginner rider develop a deeper seat?",
-      "How should I structure a progressive series of lessons for a complete beginner over six weeks?",
+      "What qualification, authority, safeguarding, and current site procedure are required before I teach or supervise a beginner rider?",
+      "How should I report a factual rider, horse, tack, footing, or safety observation to the qualified coach?",
+      "Which current planning, risk, welfare, safeguarding, support, adaptation, and evaluation questions should I discuss with a qualified coach?",
     ],
     linkedCompetencies: ["rider_position", "coaching_fundamentals"],
   },
@@ -2631,20 +2569,20 @@ Always have a **Plan B**. If the planned exercise is too difficult, have a simpl
       "Demonstrate safe positioning when working around a horse",
       "Understand why horses may react defensively and how to prevent it",
     ],
-    content: `Horses are large, powerful flight animals. An average riding horse weighs around 500 kg and can react with incredible speed when startled. The majority of accidents around horses happen on the ground, not while riding. Learning to approach, handle and work around horses safely is therefore one of the most important skills in equestrianism. This lesson covers the principles of safe approach and handling.
+    content: `Horses are large, powerful flight animals and can react with great speed when startled. The majority of accidents around horses happen on the ground, not while riding. Learning to approach, handle and work around horses safely is therefore one of the most important skills in equestrianism. This lesson covers the principles of safe approach and handling.
 
 ## Understanding the Horse's Perspective
 
 Horses are **prey animals** with a highly developed flight response. Their survival instincts tell them to flee first and investigate later. Key points:
 
-- **Vision** — Horses have almost 360-degree vision, but they have blind spots directly in front of their forehead and directly behind their tail. Never approach from these blind spots, as the horse cannot see you and may react with fear.
+- **Vision** — Horses have side vision but may not see a person directly in front of the forehead or directly behind the tail. Do not surprise a horse from an area where it may not see you; use voice, safe visibility and a competent person’s handling procedure.
 - **Hearing** — Horses have excellent hearing and are sensitive to sudden or loud noises. Always speak to a horse before approaching so it knows you are there.
 - **Sensitivity** — Horses can feel a fly landing on their skin. They are extremely responsive to touch, which means rough or sudden handling can provoke a defensive reaction (kicking, biting, barging).
 
 ## How to Approach Safely
 
 1. **Speak first** — Call the horse's name or speak in a calm, low voice as you approach. This alerts the horse to your presence.
-2. **Approach the shoulder** — Walk toward the horse's shoulder at an angle (roughly 45 degrees from the front). This places you in the horse's field of vision without being directly in front (blind spot) or directly behind (kick zone).
+2. **Approach the shoulder** — Move calmly toward the shoulder on a visible diagonal, without stepping into the horse’s direct front or directly behind it. A competent instructor should show the learner the position appropriate to that horse and setting.
 3. **Extend your hand** — Allow the horse to see and smell your hand. Let the horse come to you rather than grabbing at it.
 4. **Move calmly** — No sudden movements, no running, no shouting. Fast or erratic behaviour triggers the flight response.
 5. **Read the horse** — Before touching, observe the horse's body language. Ears forward usually indicates curiosity or friendliness. Ears flat back indicates aggression or irritation. A raised head, wide eyes and flared nostrils indicate fear or alarm.
@@ -2654,7 +2592,7 @@ Horses are **prey animals** with a highly developed flight response. Their survi
 When working around a horse on the ground:
 
 - **Stand to the side**, never directly in front or behind.
-- When moving around the hindquarters, either stay very close to the horse (so a kick pushes you away rather than striking at full force) and keep a hand on the horse's body so it knows where you are, or walk well out of kicking range (at least 3 metres behind).
+- Avoid moving directly behind the hindquarters. If it is necessary to change sides, follow the yard’s taught route with the horse under suitable control, maintain awareness of its body language and preserve an escape route. Ask for help rather than attempting this alone with an unfamiliar, unsettled or reactive horse.
 - When working on the near side, position your feet so you can step away quickly.
 - **Never kneel or sit beside a horse** — always bend from the waist so you can move away quickly.
 - **Never wrap lead ropes, lunge lines or reins around your hand or body** — if the horse pulls away, you will be dragged.
@@ -2687,10 +2625,10 @@ Approaching a horse in the field requires patience:
 Horses are extremely perceptive of human body language and emotional state. A nervous handler creates a nervous horse. Develop calm confidence through practice and knowledge. If you are unsure about handling a particular horse, ask for help — there is no shame in admitting uncertainty, and it is far safer than pretending confidence you do not have.`,
     keyPoints: [
       "Always speak to a horse before approaching — never surprise it",
-      "Approach at the shoulder from a 45-degree angle, within the horse's field of vision",
+      "Approach calmly toward the visible shoulder area using the supervised position taught for that horse and setting",
       "Never stand directly behind a horse or in its forehead blind spot",
       "Never wrap ropes, reins or lines around your hand — you risk being dragged",
-      "When passing behind a horse, stay either very close with a hand on its body, or well clear (3+ metres)",
+      "Avoid moving directly behind the hindquarters; use the yard’s taught route, preserve an escape path and ask for help with an unfamiliar or unsettled horse",
       "Horses read human body language — calm, confident handling produces calm, confident horses",
     ],
     safetyNote:
@@ -2715,7 +2653,7 @@ Horses are extremely perceptive of human body language and emotional state. A ne
         ],
         correctIndex: 1,
         explanation:
-          "Horses have almost 360-degree vision but cannot see directly in front of their forehead or directly behind their tail. Approaching from these areas can startle the horse.",
+          "A horse may not see a person directly in front of its forehead or directly behind its tail. Approaching from these areas can startle the horse, so use voice, safe visibility and the handling route taught by a competent person.",
       },
       {
         question: "Why should you never wrap a lead rope around your hand?",
@@ -2733,13 +2671,13 @@ Horses are extremely perceptive of human body language and emotional state. A ne
         question: "What is the safest way to move past a horse's hindquarters?",
         options: [
           "Run past quickly",
-          "Walk slowly about 1 metre behind",
-          "Stay very close with a hand on the horse's body, or walk well clear at 3+ metres",
+          "Walk directly behind while looking at the ground",
+          "Avoid the hindquarters, follow the supervised route taught at the yard and ask for help if the horse is unfamiliar or unsettled",
           "Crawl underneath the horse",
         ],
         correctIndex: 2,
         explanation:
-          "Stay either very close to the horse (so a kick pushes you away rather than striking at full force) with your hand on its body so it knows where you are, or walk well out of kicking range at least 3 metres behind.",
+          "Directly behind the hindquarters is a higher-risk area. Use the yard’s supervised handling procedure, observe the horse and preserve an escape route rather than relying on a universal distance rule.",
       },
     ],
     aiTutorPrompts: [
@@ -2749,7 +2687,6 @@ Horses are extremely perceptive of human body language and emotional state. A ne
     ],
     linkedCompetencies: ["horse_behaviour_awareness", "yard_safety_awareness"],
   },
-
 
   // ── Lesson 16 ─────────────────────────────────────────────────────────────
   {
@@ -2765,15 +2702,15 @@ Horses are extremely perceptive of human body language and emotional state. A ne
       "Explain how to turn a horse safely when leading",
       "Understand the risks associated with poor leading technique",
     ],
-    content: `Leading a horse is one of the most frequent tasks on any yard, yet it is often done casually, leading to accidents that could easily be prevented. A horse can weigh ten times as much as its handler — you cannot out-muscle a horse. Good leading technique relies on positioning, communication and anticipation rather than brute strength.
+    content: `Leading requires deliberate handling, suitable equipment, an appropriate setting, and supervision or qualified help when the horse, handler, or situation is unfamiliar. Do not try to out-pull a horse; use a safe position, a lead rope handled without wrapping, and a plan to step away if safety is compromised.
 
 ## Basic Leading Position
 
 When leading a horse:
 1. **Walk beside the horse**, level with its shoulder on the near (left) side. Do not walk in front of the horse (you cannot see it and it may walk over you) or behind it (you have no control and risk being kicked).
-2. **Hold the lead rope** correctly: the right hand holds the rope approximately 15–20 cm from the headcollar clip, providing direct control. The left hand holds the excess rope folded — never coiled around the hand. The loose end should never trail on the ground where it can be stepped on.
+2. **Hold the lead rope** correctly: keep a safe, manageable amount of rope between your hand and the headcollar clip, as demonstrated by a competent person for the individual horse and setting. Hold excess rope folded—never coiled around the hand—and keep the loose end clear of the ground.
 3. **Walk purposefully** at the horse's pace. Look ahead to where you are going, not back at the horse. Your body language and direction of travel guide the horse.
-4. **Keep the horse at arm's length** — close enough to maintain control but far enough that it cannot tread on your feet.
+4. **Maintain a safe working space** that permits control without standing directly in front of or behind the horse. The suitable distance varies with the horse, lead, environment, and competent instruction.
 
 ## Turning
 
@@ -2785,44 +2722,38 @@ When turning a horse while leading:
 ## Leading Through Doorways and Gateways
 
 This is one of the most hazardous activities on the yard:
-1. **Open the door or gate fully** before leading the horse through. A half-open door is a pinch point where the horse can catch its hip or the handler can be crushed.
-2. **Walk through with the horse**, side by side. Do not go through first and pull the horse behind you — if it rushes, it will barge into you.
-3. **Ensure the gap is wide enough.** Horses have wide hips and may try to rush through a narrow space.
-4. **Close and secure the gate immediately** after passing through.
+1. **Check the route and opening first.** Use a gate or doorway only when it is wide enough, the footing is suitable, and the handler has a clear route away from the horse.
+2. **Use the safe doorway method taught for the individual horse and facility.** Missouri and Mississippi Extension guidance both emphasise avoiding crowding, maintaining control, and moving clear of the horse’s path.
+3. **Close or secure the gate when it is safe to do so.** Do not place yourself in a pinch point or try to manage a rushing horse alone.
 
 ## Leading on Roads and Public Areas
 
-If you must lead a horse on a road:
-- Wear a hi-vis vest and ensure the horse has hi-vis equipment.
-- Walk on the left side of the road (in the UK), with yourself between the horse and the traffic.
-- Keep the horse as close to the edge as safely possible.
-- Use hand signals to communicate with drivers.
-- Never lead two horses simultaneously on a road.
+Leading a horse on a road creates additional risk. Follow the current law and official road-safety guidance for the jurisdiction, use appropriate visibility and protective equipment, and do not proceed unless the responsible qualified person has assessed the route, horse, handler, traffic conditions, and supervision.
 
 ## Leading Difficult Horses
 
 Some horses are reluctant to lead (they plant their feet and refuse to move) or are too enthusiastic (they jog, push forward or try to overtake the handler). Strategies include:
-- For a reluctant horse, do not stand in front and pull. Stand at the shoulder and ask the horse forward with a vocal command and a tap on the hindquarters with the free end of the rope or a schooling whip.
-- For a forward horse, use a chain lead or a bridle for additional control. Make frequent transitions (halt, walk, halt) to regain the horse's attention.
-- If a horse rears or becomes dangerous while being led, let go of the rope. Your safety is more important than keeping hold of the horse.
+- Do not pull against a reluctant horse or attempt to overpower a forward horse.
+- Do not introduce chain leads, bridles, whips, or other control equipment without qualified instruction for the individual horse.
+- If the horse becomes dangerous, prioritise the handler’s safe exit. Do not risk being dragged; alert the responsible person and obtain qualified help before trying again.
 
 ## Leading to and from the Field
 
 Leading to and from turnout is one of the highest-risk times on the yard:
 - The horse may be excited to go out or reluctant to leave its companions.
 - Always use a headcollar and lead rope — never lead by the mane or forelock.
-- Walk through the field gate, turn the horse to face the gate, then remove the headcollar.
-- Never release a horse facing the open field, as it may gallop off and kick out in excitement, striking you.
+- Lead completely through the gate, turn the horse back toward the entry direction, use the facility’s safe gate-closing procedure, then release only when the handler has an escape route.
+- Step clear after release. If the horse is excited, unfamiliar, or likely to rush, do not manage the turnout alone; obtain qualified help.
 - When catching, approach calmly, put the headcollar on, and lead the horse sensibly to the gate.`,
     keyPoints: [
       "Walk level with the horse's shoulder — never in front or behind",
-      "Hold the lead rope with the right hand near the clip and the excess folded in the left hand — never coiled around the hand",
+      "Keep a lead rope at a safe manageable length with excess folded rather than wrapped around the hand, wrist, or body",
       "Push the horse's head away from you when turning — never pull it toward you",
-      "Open gates and doors fully before leading a horse through to prevent crushing",
-      "When releasing into a field, turn the horse to face the gate before removing the headcollar",
+      "Use a route and opening that are suitable for the horse, footing, and handler’s safe escape path",
+      "Lead through the gate, turn the horse back toward the entry direction, and release only with a clear safe exit",
     ],
     safetyNote:
-      "If a horse bolts while you are leading it, let go of the lead rope immediately. Being dragged by a bolting horse can cause catastrophic injuries. A loose horse can be caught; a dragged handler needs an ambulance. Always wear sturdy footwear with a hard toe cap — never lead horses in sandals, trainers or open-toed shoes.",
+      "Do not wrap lead equipment around the body. If a horse becomes unsafe to handle, prioritise a safe exit rather than risking being dragged, alert the responsible person, and obtain qualified help. Wear suitable closed, protective footwear for the current handling task.",
     practicalApplication:
       "Practise leading on both sides of the horse (near and off side) so you are confident on either side when needed. Lead through gateways and doorways regularly, focusing on opening the door or gate wide and walking through calmly alongside the horse. If you are leading a horse that is new to you, ask about its behaviour when being led — does it rush? Is it nervous in certain areas? Knowledge prevents accidents.",
     commonMistakes: [
@@ -2846,7 +2777,8 @@ Leading to and from turnout is one of the highest-risk times on the yard:
           "Walking level with the horse's shoulder gives you the best control and visibility. You can see where you are going and the horse can see you.",
       },
       {
-        question: "When turning a horse while leading, which direction should the horse's head go?",
+        question:
+          "When turning a horse while leading, which direction should the horse's head go?",
         options: [
           "Toward you",
           "Away from you",
@@ -2858,7 +2790,8 @@ Leading to and from turnout is one of the highest-risk times on the yard:
           "The horse's head should be pushed away from you so the horse walks around you, keeping its body and feet out of your personal space.",
       },
       {
-        question: "What should you do if a horse bolts while you are leading it?",
+        question:
+          "What should you do if a horse bolts while you are leading it?",
         options: [
           "Hold on as tightly as possible",
           "Let go of the lead rope immediately",
@@ -2912,7 +2845,7 @@ The **quick-release knot** (also called a "slip knot" or "safety knot") is the o
 
 - **Tie to a fixed, solid tie ring** that is bolted to a wall or post. The ring should be at approximately the horse's **eye height or above** — never below chest height, as a low tie point increases the risk of the horse getting a leg over the rope.
 - **Use a loop of baler twine** tied to the ring, and tie the lead rope to the twine. The baler twine acts as a breakaway — if the horse panics and pulls back with its full weight, the twine breaks before the horse injures itself. This is much safer than tying directly to a solid metal ring, which will not give at all.
-- **Tie the rope short enough** that the horse cannot get a leg over it, but long enough to allow the horse to hold its head at a natural height. Approximately 60–75 cm of rope between the headcollar and the tie point is a good guide.
+- **Set the rope length with a competent person** so the individual horse can stand naturally but cannot step over, become entangled in or pull against excess rope. Attachment height, rope length, horse size, equipment and setting all affect the safe setup; check it continuously rather than copying a single measurement.
 - **Never tie to a moveable object** — a gate, a jump wing, a wheelbarrow, or a loose rail. If the horse pulls back, the object will follow, terrifying the horse further and causing chaos.
 - **Never tie to a bridle.** Tie only to a headcollar and lead rope. A bridle is not designed to withstand the force of a pulling horse and the bit can injure the horse's mouth.
 
@@ -3012,23 +2945,23 @@ In some yards, horses are cross-tied using two ropes attached to opposite walls.
       "Describe safe storage and handling of chemicals and equipment",
       "Understand the importance of a tidy, well-maintained yard for accident prevention",
     ],
-    content: `An equestrian yard is a working environment with many potential hazards. Horses, heavy equipment, vehicles, chemicals, electrical systems and variable weather all create risks. Awareness of these hazards — and knowing how to mitigate them — is essential for everyone who works on or visits a yard. Many accidents are preventable through good housekeeping, routine maintenance and sensible working practices.
+    content: `An equestrian yard is a working environment with many potential hazards. Horses, heavy equipment, vehicles, chemicals, electrical systems and variable weather all create risks. Awareness of hazards, local procedures, and appropriate escalation can reduce risk for everyone who works on or visits a yard. Housekeeping, maintenance, supervision, and current site-specific procedures should be reviewed by the responsible person.
 
 ## Common Yard Hazards
 
 ### Slips, Trips and Falls
-The most frequent type of yard accident. Causes include:
+Common yard hazards can include:
 - Wet concrete or cobblestones, especially in winter
 - Loose bedding, straw or muck on walkways
 - Hose pipes left across paths
 - Uneven surfaces, potholes or damaged drain covers
-- Icy conditions — grit or salt should be applied to walkways and parking areas
+- Icy, muddy, or otherwise unsafe conditions — use the responsible yard’s current access-control and surface-safety procedure
 
 ### Equipment Hazards
 - **Pitchforks** left prongs-up or propped against walls
 - **Wheelbarrows** blocking doorways or paths
 - **Ladders** not secured or stored properly
-- **Machinery** (tractors, ATVs) operated without proper training or when people and horses are nearby
+- **Machinery** (tractors, ATVs) used without the required training, suitable controls, or separation from people and horses
 - **Riding equipment** left on the ground (whips, poles, jump cups)
 
 ### Animal-Related Hazards
@@ -3038,28 +2971,26 @@ The most frequent type of yard accident. Causes include:
 
 ## Fire Safety
 
-Fire is one of the most catastrophic events that can occur on a yard. Hay, straw, shavings and wooden stables provide abundant fuel.
+Fire can spread rapidly in stables because hay, straw, shavings, wood, dust, and other materials may be combustible. Prevention and a current, rehearsed site-specific emergency plan are essential.
 
 **Prevention:**
 - No smoking anywhere on the yard
-- Store hay and straw separately from stables if possible, or at least at a safe distance
-- Ensure electrical wiring is inspected regularly by a qualified electrician — rodent damage to cables is a common cause of electrical fires on yards
-- Disconnect electrical appliances (kettles, heaters, clippers) when not in use
-- Never use portable heaters near hay, straw or bedding
-- Store flammable liquids (fuel, solvents, spirits) in labelled, sealed containers in a locked, ventilated store
+- Manage hay, bedding, fuels, rags, equipment, dust, and other combustible materials in accordance with the site fire-risk assessment and current local requirements
+- Arrange inspection, maintenance, and repair of electrical systems by a competent qualified person; remove damaged equipment from use
+- Use electrical and heating equipment only in accordance with the manufacturer instructions, the site procedure, and current fire-safety requirements
+- Store fuels, solvents, chemicals, and other hazardous materials in their original labelled containers and in accordance with their label, safety data sheet (SDS), applicable law, and the responsible person’s procedure
 
 **Preparedness:**
-- Know the location of all fire extinguishers and ensure they are serviced annually
-- Know the yard's fire evacuation plan — which way do horses go? Where is the assembly point for people?
-- Keep all exits and doorways clear at all times — a blocked exit during a fire can be fatal
-- Have a system for releasing horses quickly — headcollars on stable doors, clearly labelled stables
-- Post emergency contact numbers (fire brigade, vet, yard owner) prominently in the tack room and office
+- Know the location of fire equipment, emergency contacts, alarms, exits, and the site evacuation plan; the responsible person must maintain these in accordance with current requirements
+- Keep designated emergency routes and access for responders clear
+- Make sure the plan identifies the people responsible for emergency decisions, the safe assembly area for people, and any horse-evacuation arrangements that trained staff can carry out safely
+- Display or make available the current site emergency contacts and procedures
 
 **In a Fire:**
-1. Raise the alarm immediately — call 999.
-2. Evacuate people first, then horses if it is safe to do so.
-3. Lead horses away from the fire and secure them — panicking horses may try to run back into a burning stable.
-4. Never re-enter a burning building.
+1. Raise the alarm, call the applicable emergency service, provide the site information requested, and keep safe access clear for responders.
+2. Prioritise human safety, follow the current site evacuation plan, and do not enter a hazardous area or re-enter a burning building.
+3. Only trained, capable people should move horses, and only when the incident lead and conditions make it safe to do so; use the pre-identified safe area and follow emergency-service instructions.
+4. Do not attempt to fight a fire unless it is immediately containable, suitable equipment is available, you have been trained, and you have a safe escape route.
 
 ## Chemical Safety
 
@@ -3069,37 +3000,36 @@ Yards commonly use:
 - Cleaning products, disinfectants
 - Fuel for vehicles and machinery
 
-All chemicals should be stored in a locked cupboard or store, clearly labelled, and kept out of reach of children. Follow manufacturers' instructions for use, storage and disposal. Wear appropriate PPE (gloves, masks, goggles) when handling chemicals.
+Keep chemicals and veterinary products secure and accessible only to authorised people. Retain original labels, follow the current product label and SDS for use, storage, disposal, and required protective equipment, and seek competent advice when the product, task, or legal requirement is unclear.
 
 ## Electrical Safety
 
-- All electrical installations should be inspected by a qualified electrician at regular intervals
-- Use circuit breakers (RCDs) on all outdoor sockets and any sockets near water
-- Keep electrical cables away from horses — chewed cables cause electric shock and fire
-- Protect light bulbs in stables with wire guards
-- Never use damaged or frayed cables or plugs
+- Use electrical installations and equipment only in accordance with current legal, manufacturer, and site requirements; arrange competent inspection and repair where required
+- Use appropriate residual-current protection where specified for the equipment and setting
+- Keep cables away from horses, water, traffic routes, and damage; remove damaged or frayed cables and plugs from use and report them
+- Use protective fittings or guards where required by the current electrical and fire-safety assessment
 
 ## Yard Maintenance and Tidiness
 
-A tidy yard is a safe yard. The discipline of putting things away, keeping paths clear, repairing broken fittings and maintaining good drainage prevents the majority of yard accidents.
+Good housekeeping, clear routes, timely reporting of damaged fittings, and suitable drainage can reduce hazards. The responsible person should set and maintain the current inspection, reporting, and repair procedure for the site.
 
 - Sweep the yard regularly
 - Repair broken door bolts, latches and hinges promptly
 - Fill potholes in the yard surface
 - Ensure adequate lighting in all working areas, especially during winter when work is done in the dark
-- Keep first aid kits (human and equine) stocked and accessible`,
+- Know the location of the current first-aid provisions and follow the responsible person’s restocking, training, and emergency procedure`,
     keyPoints: [
-      "Slips, trips and falls are the most common yard accident — keep paths clear, grit icy surfaces and tidy equipment away",
-      "Fire is the most dangerous yard hazard — never smoke on the yard, store hay away from stables and check electrical wiring regularly",
-      "Know the location of fire extinguishers and the yard's fire evacuation plan",
-      "Store all chemicals in locked, labelled containers away from animals and children",
-      "A tidy, well-maintained yard prevents the majority of accidents",
-      "In a fire: call 999, evacuate people first, then horses if safe",
+      "Keep walkways, exits, and emergency access clear; report unsafe surfaces, fittings, and equipment through the yard’s current procedure",
+      "Reduce fire risk through a no-smoking control, management of combustible materials, competent electrical maintenance, and the current site fire-risk procedure",
+      "Know the location of the site’s fire equipment, alarm, exits, emergency contacts, and current evacuation plan",
+      "Keep chemicals and veterinary products secure in their original labelled containers and follow the current label, SDS, and site procedure",
+      "Good housekeeping, clear routes, maintenance, and reporting can reduce hazards but do not remove the need for supervision and site-specific controls",
+      "In an emergency: raise the alarm, call the applicable emergency service, prioritise people, and follow the trained site evacuation plan",
     ],
     safetyNote:
-      "Never attempt to fight a fire that is beyond the capacity of a single fire extinguisher. Your life is more important than property. If you must evacuate horses during a fire, lead them firmly and quickly to a secure area well away from the fire. Cover their eyes with a damp cloth if they are panicking, but only if this can be done quickly and safely. Panicking horses may rear, kick or try to run back toward the fire.",
+      "Do not enter a hazardous area, re-enter a burning building, or improvise a horse-handling technique during a fire. Prioritise people, raise the alarm, follow the current trained site plan, and act only within your competence and a safe escape route while following emergency-service instructions.",
     practicalApplication:
-      "Walk around your yard and identify every hazard you can see. Write them down and discuss with the yard manager. Check that fire extinguishers are in date, exits are clear, and chemicals are stored correctly. Ask about the yard's fire evacuation plan — if one does not exist, suggest that one is created. Good safety awareness is a shared responsibility, and every person on the yard should be part of it.",
+      "With the responsible person’s permission, walk around the yard to identify observable hazards and report them through the current procedure. Confirm how to locate the emergency plan, exits, contacts, and fire equipment. Do not inspect, service, move, or handle fire equipment, chemicals, electrical systems, or horse-evacuation arrangements unless authorised and competent to do so. Good safety awareness includes timely reporting and following the site plan.",
     commonMistakes: [
       "Leaving tools and equipment out where they can be tripped over or stepped on by horses",
       "Assuming fire safety is someone else's responsibility",
@@ -3118,22 +3048,18 @@ A tidy yard is a safe yard. The discipline of putting things away, keeping paths
         ],
         correctIndex: 1,
         explanation:
-          "Slips, trips and falls are the most common yard accident, caused by wet surfaces, loose bedding on paths, hose pipes, uneven ground and icy conditions.",
+          "Wet or uneven surfaces, loose bedding, hoses, and unsafe weather conditions can create slip, trip, and fall hazards. The responsible yard procedure should control, report, and address them.",
       },
       {
         question: "In a fire on the yard, who should be evacuated first?",
-        options: [
-          "Horses",
-          "Equipment and tack",
-          "People",
-          "Feed and hay",
-        ],
+        options: ["Horses", "Equipment and tack", "People", "Feed and hay"],
         correctIndex: 2,
         explanation:
-          "People are always evacuated first. Horses are evacuated next, only if it is safe to do so. Equipment and property are never prioritised over life.",
+          "Human safety is the priority. Follow the current site emergency plan and emergency-service instructions; horses are moved only when trained capable people can do so safely.",
       },
       {
-        question: "Why is rodent damage to electrical cables a concern on yards?",
+        question:
+          "Why is rodent damage to electrical cables a concern on yards?",
         options: [
           "It is unsightly",
           "Rodents may chew through insulation, exposing live wires and causing fire or electrocution",
@@ -3142,7 +3068,7 @@ A tidy yard is a safe yard. The discipline of putting things away, keeping paths
         ],
         correctIndex: 1,
         explanation:
-          "Rodents frequently chew through the plastic insulation on cables, exposing live wires. This can cause electric shock to humans or horses, or start fires in hay and bedding.",
+          "Damaged electrical cables can create a shock or fire hazard. Remove damaged equipment from use, report it, and arrange competent inspection or repair under the current site procedure.",
       },
     ],
     aiTutorPrompts: [
@@ -3164,22 +3090,22 @@ A tidy yard is a safe yard. The discipline of putting things away, keeping paths
     objectives: [
       "Explain the purpose of risk assessments in an equestrian setting",
       "Describe how to report an incident or near-miss",
-      "Understand the importance of recording incidents for learning and liability",
+      "Understand why the responsible person may record incidents and near misses for learning and current procedures",
       "Identify the key elements of a basic risk assessment",
     ],
-    content: `Risk assessment and incident reporting are not just bureaucratic exercises — they are practical tools that save lives and prevent injuries. In an equestrian environment, where large animals, heavy equipment and outdoor conditions combine, the potential for serious accidents is ever-present. Understanding how to identify risks, assess their severity and record incidents is an essential skill for anyone working on a yard.
+    content: `Risk management and incident reporting are practical parts of a responsible yard’s current safety procedure. In an equestrian environment, horses, equipment, vehicles, chemicals, weather, and people can create hazards. Learners should identify observable hazards, follow the responsible person’s procedure, and obtain competent help rather than attempting to set legal, insurance, safeguarding, or emergency controls independently.
 
 ## What Is a Risk Assessment?
 
-A risk assessment is a systematic process of identifying hazards, evaluating the likelihood and severity of harm, and implementing measures to reduce the risk. It is not about eliminating all risk — that is impossible in any equestrian setting — but about making risks as low as reasonably practicable.
+A risk assessment is a structured process for identifying hazards, assessing risk, deciding and implementing controls, recording significant findings where required, and reviewing whether controls work. The Health and Safety Executive (HSE) describes this framework for UK workplaces; the applicable process, responsible person, and legal duties vary by jurisdiction, work arrangement, insurer, and site.
 
-**The five steps of a basic risk assessment:**
+**A UK HSE workplace example has five linked stages:**
 
-1. **Identify the hazards** — Walk around the area and list anything that could cause harm. Examples: loose fencing, slippery surfaces, a horse known to kick, children near horses, broken equipment.
-2. **Decide who might be harmed and how** — Consider all the people who use the yard: staff, riders, children, visitors, farriers, vets. How might each person be affected by each hazard?
-3. **Evaluate the risk and decide on precautions** — For each hazard, consider: How likely is it to cause harm? How severe could the harm be? What can be done to reduce the risk? Precautions might include fixing broken fencing, providing training, requiring hard hats in certain areas, or banning unsupervised access.
-4. **Record your findings and implement them** — Write the assessment down. Assign responsibility for each action and set deadlines.
-5. **Review and update regularly** — Risk assessments are living documents. Review them whenever the situation changes (new horses arrive, a building is modified, staff change) and at least annually.
+1. **Identify hazards** — consider work, equipment, substances, premises, non-routine tasks, and observable unsafe conditions.
+2. **Assess the risks** — consider who may be harmed, how, existing controls, and whether further action is needed.
+3. **Control the risks** — use controls determined by the responsible person and current requirements; do not attempt technical, legal, or safeguarding decisions outside your competence.
+4. **Record significant findings where required** — the responsible person decides the authorised record, access, personal-data handling, and actions; in the UK HSE example, significant findings must be recorded when five or more people are employed.
+5. **Review the controls** — report changes, worker concerns, accidents, near misses, or ineffective controls through the current procedure so the responsible person can review and update the assessment.
 
 ## Types of Hazards in an Equestrian Setting
 
@@ -3192,53 +3118,40 @@ A risk assessment is a systematic process of identifying hazards, evaluating the
 
 ## Incident Reporting
 
-An **incident** is any event that causes injury, ill health, damage to property, or a near-miss. Reporting incidents is essential because:
+An **incident** or **near miss** is an event that the yard’s current procedure identifies for reporting or review. Timely factual reporting can help the responsible person address hazards, recognise patterns, preserve required information, and meet current legal, insurer, safeguarding, employment, and organisational requirements.
 
-1. **Learning** — Understanding what happened and why prevents recurrence. Patterns may emerge (e.g., most accidents happen at feeding time, or in a particular area of the yard).
-2. **Legal requirement** — Under the Reporting of Injuries, Diseases and Dangerous Occurrences Regulations (RIDDOR), certain serious incidents must be reported to the Health and Safety Executive (HSE).
-3. **Insurance** — Accurate incident records are needed to support insurance claims.
-4. **Duty of care** — If someone is injured and there is no record of the incident or the risk assessment that should have prevented it, the yard owner may face legal liability.
+In the UK, **RIDDOR** is not a report for every accident or near miss. HSE says reportability depends on a work-related event and the current listed reportable injury, disease, dangerous-occurrence, or other criteria. The responsible person must assess and make any report under the current rule; learners must not make legal conclusions from this lesson.
 
 ## What to Record
 
-An incident report should include:
-- **Date, time and location** of the incident
-- **Names and contact details** of those involved and any witnesses
-- **Description** of what happened, step by step
-- **Injuries** sustained, if any, and first aid given
-- **Immediate actions taken** (e.g., horse secured, area cordoned off)
-- **Root cause** — what went wrong and why
-- **Recommendations** — what should be done to prevent recurrence
+The responsible person’s approved report process determines what information is recorded, who may access it, and how personal information is handled. A learner should report factual observations promptly through that process, such as the time and location, what was observed, immediate safe actions taken within their competence, and who has been informed. Do not diagnose injuries, assign blame, conduct an investigation, collect unnecessary personal data, or make legal conclusions unless authorised and competent.
 
 ## Near-Miss Recording
 
-A **near-miss** is an event that could have resulted in injury but did not, by luck or quick action. Near-misses are often more valuable than actual incidents for learning purposes because they provide warnings before someone is hurt. Examples:
-- A loose horse in the car park that was caught before reaching the road
-- A child running behind a horse that did not kick
-- A fire extinguisher found to be out of date during a routine check
+A **near miss** is an event that could have led to harm but did not. It can identify a hazard before an injury occurs. Examples include a loose horse contained before it reaches a public area, an unsafe route reported before someone trips, or damaged safety equipment found and removed from use.
 
-Every near-miss should be recorded and investigated with the same seriousness as an actual incident.
+Report near misses through the yard’s current procedure. The responsible person decides whether and how an event is recorded, investigated, escalated, or reported externally under current requirements.
 
 ## Creating a Safety Culture
 
 Risk assessment and incident reporting work best when everyone on the yard takes them seriously. This means:
-- Encouraging people to report near-misses without blame or punishment
-- Acting on reports promptly and visibly
-- Making safety a regular topic of discussion, not just a response to accidents
-- Providing training and refreshing skills regularly
-- Leading by example — if the yard manager cuts corners on safety, everyone else will too`,
+- Providing a clear, accessible route to report hazards and near misses
+- Acting on reports within the site’s current responsibilities and procedure
+- Discussing safety in an appropriate, respectful way and protecting confidentiality where required
+- Providing competent training, supervision, and refreshers appropriate to each role
+- Modelling the current safe procedures and escalating concerns through the designated route`,
     keyPoints: [
-      "A risk assessment identifies hazards, evaluates risk and implements precautions to reduce harm",
-      "The five steps are: identify hazards, decide who is at risk, evaluate and act, record findings, review regularly",
-      "Incident reports must include date, time, location, people involved, description, injuries, actions and recommendations",
-      "Near-misses should be recorded and investigated as seriously as actual incidents",
-      "Under RIDDOR, certain serious incidents must be reported to the HSE",
+      "A risk-management process identifies hazards, assesses risk, implements controls, records significant findings where required, and reviews controls",
+      "The HSE UK workplace example is: identify hazards, assess risks, control risks, record findings, and review controls",
+      "Use the responsible person’s approved reporting process and provide factual observations only within your competence",
+      "Report near misses through the current site procedure so the responsible person can decide the required action",
+      "In the UK, the responsible person must assess current RIDDOR criteria; not every accident or near miss is RIDDOR-reportable",
       "A positive safety culture encourages reporting and acts on findings promptly",
     ],
     safetyNote:
-      "If an accident results in a serious injury (broken bone, hospitalisation, loss of consciousness), call emergency services immediately (999). Do not move the injured person unless they are in immediate danger. Provide first aid if you are trained to do so. Preserve the scene for investigation if possible, and record everything you can remember as soon as practicable.",
+      "If there is an immediate risk to life or safety, raise the alarm and contact the applicable emergency service. Do not enter danger, attempt a medical assessment, move an injured person, or provide care beyond your training and current emergency procedure. Once safe, report factual observations to the responsible person and follow emergency-service instructions.",
     practicalApplication:
-      "Ask to see the yard's risk assessments and incident book. If they do not exist, offer to help create them. Start by conducting a simple walk-around risk assessment of the yard, listing every hazard you can identify and suggesting practical precautions. Record any near-misses you witness and discuss them with the yard manager. Over time, this practice becomes second nature and makes the yard safer for everyone.",
+      "Ask the responsible person how hazards, incidents, and near misses are reported at the yard. With permission, identify observable hazards and report them through the designated route. Do not create, alter, access, or share risk or incident records unless authorised; do not investigate, collect personal information, or determine legal reporting requirements yourself.",
     commonMistakes: [
       "Treating risk assessment as a paper exercise rather than a practical safety tool",
       "Not recording near-misses because 'nothing happened'",
@@ -3257,7 +3170,7 @@ Risk assessment and incident reporting work best when everyone on the yard takes
         ],
         correctIndex: 1,
         explanation:
-          "A risk assessment identifies hazards, evaluates how likely they are to cause harm and how severe that harm could be, then implements practical precautions to reduce the risk to an acceptable level.",
+          "A risk-management process identifies hazards, assesses who may be harmed and how, implements controls through the responsible person, records significant findings where required, and reviews whether controls work.",
       },
       {
         question: "Why should near-misses be recorded?",
@@ -3269,19 +3182,19 @@ Risk assessment and incident reporting work best when everyone on the yard takes
         ],
         correctIndex: 1,
         explanation:
-          "Near-misses are valuable learning opportunities. They highlight risks that exist before an actual injury occurs, allowing corrective action to be taken proactively.",
+          "Near misses can reveal hazards before injury occurs. They should be reported through the current yard procedure so the responsible person can decide the appropriate action.",
       },
       {
         question: "How often should risk assessments be reviewed?",
         options: [
           "Only when an accident occurs",
-          "Every 5 years",
-          "Whenever circumstances change, and at least annually",
+          "At a fixed interval regardless of whether circumstances change",
+          "Whenever circumstances change and in accordance with the current employer, insurer and legal requirements",
           "They only need to be done once",
         ],
         correctIndex: 2,
         explanation:
-          "Risk assessments should be reviewed whenever the situation changes (new horses, new staff, building modifications) and at least once a year as a minimum, to ensure they remain relevant and effective.",
+          "Risk assessments should be reviewed whenever circumstances change and according to current employer, insurer and legal requirements. A fixed lesson timetable must not replace an active review of the actual risk.",
       },
     ],
     aiTutorPrompts: [
@@ -3306,124 +3219,101 @@ Risk assessment and incident reporting work best when everyone on the yard takes
       "Understand the safety considerations for lone working on a yard",
       "Apply risk management principles to complex real-world scenarios",
     ],
-    content: `As your experience and responsibility increase, your understanding of safety must deepen beyond personal awareness to encompass the safety of others. Advanced safety awareness covers duty of care, supervision responsibilities, lone working procedures and the ability to apply risk management thinking to novel situations.
+    content: `As experience and responsibility increase, safety decisions must remain within the learner’s competence, authority, current site procedure, and applicable law. Advanced safety awareness means recognising a hazard, stopping when needed, reporting it through the designated route, and obtaining competent help rather than making legal, safeguarding, medical, welfare, or horse-management decisions alone.
 
 ## Duty of Care
 
-In law, a **duty of care** means a legal obligation to ensure the safety of others who may be affected by your actions or omissions. On an equestrian yard, this applies to:
+The legal meaning and allocation of **duty of care** varies by jurisdiction, employment/volunteer arrangement, contract, safeguarding role, insurance, and the facts of an incident. This lesson is not legal advice and does not allocate legal liability.
 
-- **Yard owners and managers** — Have a duty of care to staff, clients, visitors and contractors. This includes providing a safe working environment, maintaining equipment, providing training and supervision, and carrying adequate insurance.
-- **Instructors and coaches** — Have a duty of care to their pupils. This includes assessing the rider's ability, matching the horse to the rider, checking tack and equipment, managing the lesson environment and responding appropriately to incidents.
-- **Staff and volunteers** — Have a duty to work safely, follow procedures and report hazards. Even without formal authority, anyone who sees a danger has a responsibility to act — by reporting it, warning others or fixing it if they can do so safely.
-- **Horse owners** — Have a duty to disclose known behavioural issues (e.g., a horse that kicks, bolts or is difficult to handle) to anyone who may work with their horse.
-
-Failing in a duty of care can result in legal action, compensation claims, criminal prosecution and reputational damage. More importantly, it can result in someone being seriously hurt.
+At a yard, learners should follow the current designated roles and procedures. A responsible person should arrange competent risk management, supervision, equipment and premises controls, emergency arrangements, and any required disclosures. Staff, volunteers, owners, instructors, and visitors should report observable hazards and follow the site procedure; no one should repair equipment, supervise others, handle a difficult horse, or make formal safety, welfare, or safeguarding decisions unless authorised and competent.
 
 ## Supervision Responsibilities
 
-If you are asked to supervise less experienced handlers, volunteers or younger riders:
+Supervision arrangements must be set by the responsible person and reflect the activity, horse, person’s capability, safeguarding requirements, local law, and current risk assessment. If you are not authorised and competent to supervise, do not take on that role.
 
-1. **Assess their competence** — What can they do safely? What do they need help with? Never assume someone knows more than they do.
-2. **Brief them clearly** — Before any task, explain what needs to be done, how to do it safely, and what to do if something goes wrong.
-3. **Stay present and attentive** — Supervision means being there, watching and ready to intervene. It does not mean giving instructions and walking away.
-4. **Match tasks to ability** — Do not ask a novice to handle a difficult horse or operate machinery. Stretch their skills gradually, with support.
-5. **Correct unsafe behaviour immediately** — If you see someone doing something dangerous, stop them calmly and explain why it is unsafe. Do not wait for an accident to teach the lesson.
+When acting within an approved role, follow the documented plan, verify that the activity is authorised and appropriately supervised, explain the stop/escalation route, and stop or report an activity that becomes unsafe. Do not teach handling, riding, machinery, child-contact, or safeguarding techniques from this lesson alone; obtain qualified instruction and use the current site policy.
 
 ## Lone Working
 
-Working alone on a yard carries specific risks:
-- If you are injured, there is no one to call for help
-- Tasks that require two people (e.g., handling a difficult horse, moving heavy equipment) should never be attempted alone
-- If a horse escapes, you cannot pursue it and call for help simultaneously
+Working alone may add risks because assistance, communication, emergency response, supervision, access, and the worker’s circumstances can differ from a staffed setting. HSE requires UK employers to assess, control, train, supervise, monitor, keep in contact with, and respond to incidents involving lone workers; applicable duties and arrangements vary elsewhere.
 
-**Precautions for lone working:**
-- Tell someone where you are and when you expect to finish. Check in at agreed times.
-- Carry a charged mobile phone at all times.
-- Avoid high-risk tasks (e.g., lungeing difficult horses, riding in remote areas, working with young or unpredictable horses).
-- Ensure you know the location of first aid kits and emergency equipment.
-- If something feels unsafe, do not do it. Wait until another person is available.
+**Before working alone:**
+- Follow the written lone-working assessment and authorisation for the actual activity, location, horse, equipment, and conditions.
+- Use the authorised contact, monitoring, emergency, access, and escalation arrangements; do not assume a personal phone or a generic check-in plan is sufficient.
+- Do not begin or continue a task where the assessment, competence, equipment, conditions, support, or emergency arrangements are inadequate.
+- Stop, move to a safe position if possible, and contact the designated responsible person or applicable emergency service if circumstances become unsafe.
 
 ## Applying Risk Management to Complex Scenarios
 
-Advanced safety awareness means being able to think through unfamiliar situations and make sound decisions. Consider:
+Advanced safety awareness means recognising when a situation exceeds a learner’s authority or competence. For example, a new horse, changing weather, a child visitor, unfamiliar equipment, a behavioural concern, or a welfare/safeguarding issue must be referred to the responsible person and managed under the current written site policy and qualified guidance.
 
-**Scenario: A new horse arrives at the yard. It is described as 'a bit sharp.' You are asked to turn it out in the field with the other horses.**
-- Risk: The new horse may fight with the established herd, causing injuries to horses or the handler.
-- Precautions: Turn the new horse out in an adjacent paddock first so horses can meet over the fence. If introducing directly, have experienced handlers present, remove hind shoes to reduce kick injuries, choose a large field with plenty of space, and be ready to separate the horses if aggression occurs.
-
-**Scenario: A thunderstorm is approaching while you are riding in an outdoor arena.**
-- Risk: Lightning strike, horse panic from thunder, slippery surfaces.
-- Precautions: Dismount and return to the stable before the storm arrives. Do not shelter under isolated trees. Stay away from metal fences and gates.
-
-**Scenario: A child visitor wants to stroke a horse over the stable door.**
-- Risk: The horse may bite or the child may startle the horse.
-- Precautions: Assess the horse's temperament. Supervise the child directly. Teach them to offer a flat hand. Do not leave them unsupervised.
-
-The ability to think through these scenarios — identifying the hazard, assessing the risk and deciding on precautions — is the mark of an advanced, safety-conscious equestrian.`,
+In an unfamiliar or changing situation, pause before acting. Identify immediate danger, move to a safe position without creating further risk, raise the appropriate alarm, and report factual observations through the designated route. Do not improvise turnout, weather, riding, child-contact, safeguarding, medical, or horse-handling procedures from a generic scenario. Ask the responsible person or an appropriate qualified professional which current procedure applies before any further action.`,
     keyPoints: [
-      "Duty of care is a legal obligation to ensure the safety of others affected by your actions",
-      "Supervision means being present, attentive and ready to intervene — not just giving instructions",
-      "When lone working, always tell someone where you are and carry a charged mobile phone",
-      "Match tasks to the ability of the person — never ask a novice to handle a high-risk situation alone",
-      "Advanced safety awareness means thinking through unfamiliar scenarios to identify and mitigate risks before they materialise",
+      "Legal duties and responsibilities depend on the jurisdiction, role, site, and facts; follow the responsible person’s current procedure",
+      "Supervision must be authorised, competent, activity-specific, and consistent with current safeguarding and site requirements",
+      "Lone-working controls must come from the current risk assessment, authorised contact and emergency arrangements, not a generic checklist",
+      "Do not undertake or supervise a task beyond your authority or competence; stop and obtain qualified help when risk changes",
+      "In an unfamiliar situation, identify immediate danger, use the designated stop/escalation route, and follow the responsible person’s current plan",
     ],
     safetyNote:
-      "If you are working alone and feel unsafe at any point, stop immediately. No task is worth risking a serious injury when there is no one available to help. If you are supervising others and an emergency occurs, prioritise human safety above all else. Evacuate people first, secure horses second and deal with property last. Always know where the nearest telephone and first aid kit are located.",
+      "Do not begin or continue lone work, supervision, horse handling, or an emergency action outside the current authorised assessment, your competence, and a safe escalation route. In immediate danger, raise the alarm and contact the applicable emergency service; then follow the current site plan and emergency-service instructions.",
     practicalApplication:
-      "Think about the scenarios described in this lesson and consider how you would handle each one. Discuss them with your instructor or yard manager. If you are asked to supervise novice handlers, plan a brief safety talk covering the key points: how to approach, how to handle, what to do if something goes wrong. If you work alone regularly, establish a buddy system with someone who can check on you at agreed intervals.",
+      "Ask the responsible person how the yard authorises supervision, lone work, adverse-weather decisions, visitor access, and emergency escalation. Review the current procedure with a qualified person and report any gap or changed condition. Do not create a supervision, child-contact, horse-introduction, or lone-working plan independently from this lesson.",
     commonMistakes: [
       "Assuming novice handlers understand basic safety without being told",
-      "Failing to disclose known behavioural issues about a horse to others who will handle it",
-      "Lone working without telling anyone where you are or when you expect to finish",
-      "Attempting tasks alone that require two or more people",
+      "Failing to report an observable hazard or changed condition through the designated responsible-person route",
+      "Working alone without the current authorised risk assessment, contact, monitoring, and emergency arrangements",
+      "Attempting a task alone when the current assessment, conditions, competence, or support make it unsafe",
       "Waiting for accidents to happen before addressing unsafe behaviour",
     ],
     knowledgeCheck: [
       {
-        question: "What does 'duty of care' mean in an equestrian context?",
+        question:
+          "What should a learner do when a safety decision may exceed their authority or competence?",
         options: [
-          "A voluntary code of conduct with no legal standing",
-          "A legal obligation to ensure the safety of others who may be affected by your actions",
-          "An insurance term that only applies to yard owners",
-          "A moral guideline that applies only to instructors",
+          "Make the legal and risk decision alone to avoid delay",
+          "Follow the designated stop/escalation route and obtain competent help",
+          "Ignore the concern if no incident has occurred yet",
+          "Apply a generic online scenario as the site procedure",
         ],
         correctIndex: 1,
         explanation:
-          "Duty of care is a legal obligation, not just a moral one. Yard owners, instructors, staff and horse owners all have a duty to ensure the safety of others affected by their actions or omissions.",
+          "Legal duties and risk controls depend on the jurisdiction, role, site, and facts. A learner should stop or move to safety where necessary, report factual observations through the designated route, and obtain competent help.",
       },
       {
-        question: "What is the most important precaution when working alone on a yard?",
+        question:
+          "What should determine whether and how someone works alone at a yard?",
         options: [
-          "Lock all the gates",
-          "Work faster to finish quickly",
-          "Tell someone where you are and when you expect to finish, and carry a charged phone",
-          "Only work with calm horses",
+          "A generic lesson checklist",
+          "Whether the horse seems calm that day",
+          "The current authorised risk assessment, competence, contact, monitoring, and emergency arrangements",
+          "Finishing the job as quickly as possible",
         ],
         correctIndex: 2,
         explanation:
-          "When working alone, someone must know where you are and when to expect you. If you are injured and cannot call for help, this check-in system is your safety net. Always carry a charged mobile phone.",
+          "HSE requires UK employers to manage lone-worker risks through assessment, training, supervision, monitoring, contact, and incident response. The site’s current authorised arrangements—not a generic checklist—must govern the work.",
       },
       {
-        question: "How should a new horse be introduced to an existing herd in a field?",
+        question:
+          "What should happen when a new-horse turnout or group-management decision is outside the learner’s authority or competence?",
         options: [
-          "Turn it straight out and let them sort it out",
-          "Introduce it gradually — first over a fence, then with supervised direct contact",
-          "Remove all other horses first and let the new horse settle alone",
-          "Only introduce it at night when horses are calmer",
+          "Use the first generic method they remember",
+          "Refer the decision to the responsible person and follow the current written site policy",
+          "Proceed alone if the field appears large enough",
+          "Ask a child visitor to help observe",
         ],
         correctIndex: 1,
         explanation:
-          "Gradual introduction reduces the risk of aggressive encounters. Allowing horses to meet over a fence first lets them establish a relationship without the risk of kicks and bites.",
+          "Turnout and group-management decisions depend on the individual horses, facilities, supervision, welfare needs, and site procedure. A learner should not improvise a generic introduction method.",
       },
     ],
     aiTutorPrompts: [
       "Can you give me a scenario-based safety question and talk me through how to assess the risk?",
-      "What are the legal implications of duty of care for a riding school owner?",
-      "How should I brief a novice handler before asking them to lead a horse?",
+      "How can I identify when a safety decision should be escalated to the responsible person or a qualified professional?",
+      "What information should I obtain from the responsible person before an authorised supervised handling activity?",
     ],
     linkedCompetencies: ["risk_awareness", "welfare_awareness"],
   },
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PATHWAY 4 — Horse Behaviour & Welfare
@@ -3519,7 +3409,8 @@ Understanding natural behaviour helps us make better management decisions:
     ],
     knowledgeCheck: [
       {
-        question: "Why do horses spook at sudden movements or unfamiliar objects?",
+        question:
+          "Why do horses spook at sudden movements or unfamiliar objects?",
         options: [
           "They are poorly trained",
           "They are being deliberately difficult",
@@ -3572,7 +3463,7 @@ Understanding natural behaviour helps us make better management decisions:
     category: "Horse Behaviour & Welfare",
     sortOrder: 2,
     objectives: [
-      "List the normal ranges for temperature, pulse and respiration in horses",
+      "Use the World Horse Welfare adult-at-rest TPR reference alongside each horse’s individual baseline",
       "Describe what a healthy horse looks and behaves like",
       "Explain how to take a horse's temperature, pulse and respiration rate",
       "Recognise early signs that a horse may be unwell",
@@ -3588,7 +3479,7 @@ A healthy horse should display the following characteristics:
 - **Good coat condition** — The coat should be smooth, shiny and lie flat (in an unclipped horse in summer). A dull, staring (standing up) coat can indicate illness, worm burden or poor nutrition.
 - **Good body condition** — Neither too thin nor too fat. You should be able to feel (but not see) the ribs. The spine, hip bones and shoulder blades should not be prominently visible.
 - **Normal appetite** — The horse should eat its forage and hard feed readily. Loss of appetite is often one of the first signs of illness.
-- **Normal droppings** — Soft balls that break on impact, greenish-brown in colour, with a mild smell. Produced 6–10 times per day.
+- **Normal droppings** — Observe the horse’s normal pattern, consistency and appearance. A material change in droppings, appetite or behaviour should be recorded and reported through the yard’s health procedure.
 - **Normal urine** — Pale yellow to amber, produced several times a day. Should not be dark, bloody or excessively cloudy.
 - **Active and interested** — A healthy horse is alert to its surroundings, interested in other horses and its environment, and moves willingly.
 - **Even weight-bearing** — Standing squarely on all four legs, with weight distributed evenly. Resting a hind leg occasionally is normal; pointing a foreleg (stretching it forward) is not.
@@ -3600,23 +3491,22 @@ A healthy horse should display the following characteristics:
 Knowing a horse's TPR is essential for assessing health. You should learn each horse's individual resting TPR, as there is natural variation between animals.
 
 ### Temperature
-- **Normal range:** 37.0°C to 38.5°C (average 38°C)
-- **How to take:** Use a digital thermometer. Apply a small amount of lubricant. Stand to the side of the horse (never directly behind). Gently insert the thermometer into the rectum, angled slightly toward the gut wall, and hold it there until it beeps (usually 60 seconds). Clean and disinfect the thermometer after each use.
-- **Elevated temperature** (above 38.5°C) may indicate infection, pain or heat stress.
+- **World Horse Welfare adult-at-rest reference:** 37.5°C to 38.5°C for a healthy adult horse calmly at rest.
+- **How to take:** Only take a temperature if you have been shown the safe technique by a competent person. Use a suitable digital thermometer, stand to the side rather than directly behind, and stop if the horse becomes unsafe to handle. Clean equipment according to the yard procedure.
+- **Interpretation:** A reading must be considered with the individual horse’s usual baseline, recent exercise, weather, behaviour and other signs. Report a concerning change rather than self-diagnosing the cause.
 
 ### Pulse (Heart Rate)
-- **Normal resting range:** 28 to 44 beats per minute (bpm)
-- **How to take:** The easiest place to feel the pulse is the **facial artery**, which runs under the jaw where it crosses the mandible (jawbone). Place two or three fingers gently against the artery and count the beats for 15 seconds, then multiply by 4. You can also use a stethoscope placed behind the left elbow.
-- **Elevated pulse** at rest may indicate pain, fever, dehydration, shock or excitement. A resting heart rate above 60 bpm in a horse that has not been exercised is cause for concern.
+- **World Horse Welfare adult-at-rest reference:** 36 to 42 beats per minute for a healthy adult horse calmly at rest.
+- **How to take:** The **facial artery** runs under the jaw where it crosses the mandible. A competent person can show the learner how to locate it and obtain a reliable reading without restricting the horse’s movement.
+- **Interpretation:** A material change from the individual baseline, especially with illness signs, needs responsible-person or veterinary advice.
 
 ### Respiration (Breathing Rate)
-- **Normal resting range:** 8 to 16 breaths per minute
-- **How to take:** Watch the horse's flanks or nostrils. One rise and fall of the flank equals one breath. Count for 30 seconds and multiply by 2. Alternatively, hold a hand in front of the nostril and feel each exhalation.
-- **Elevated breathing** at rest may indicate pain, respiratory disease, heat stress or anxiety. Laboured breathing, coughing or noisy breathing are all abnormal.
+- **World Horse Welfare adult-at-rest reference:** 8 to 12 breaths per minute for a healthy adult horse calmly at rest.
+- **How to take:** Observe the horse at rest from a safe position and follow the competent person’s method for recording a reliable rate.
+- **Interpretation:** Laboured, noisy or unusually rapid breathing at rest requires prompt escalation; do not rely on a number alone.
 
-### Capillary Refill Time (CRT)
-- **Normal:** Less than 2 seconds
-- **How to check:** Press a thumb firmly on the horse's gum (above the front teeth) for 2 seconds. Release and count how long it takes for the colour to return from white to pink. A delay indicates dehydration, shock or circulatory compromise.
+### Mucous membranes and circulation observations
+- A change in gum appearance, behaviour, appetite, comfort or breathing can be relevant, but a learner should not use one home observation to diagnose dehydration, shock or circulation problems. Record what is seen and follow the yard’s veterinary-escalation procedure.
 
 ### Gut Sounds
 - Listen to the horse's flank with your ear or a stethoscope. You should hear regular gurgling and rumbling sounds, indicating healthy gut motility. **Absent gut sounds** can indicate a serious problem, such as colic.
@@ -3624,9 +3514,8 @@ Knowing a horse's TPR is essential for assessing health. You should learn each h
 ## When to Call the Vet
 
 While not every change in TPR requires an emergency call, the following signs warrant immediate veterinary attention:
-- Temperature above 39°C or below 36.5°C
-- Resting heart rate above 60 bpm (without recent exercise)
-- Laboured or very rapid breathing at rest
+- A persistent material departure from the horse’s known calm-at-rest baseline, especially alongside illness signs
+- Laboured or unusually rapid breathing at rest
 - Absent gut sounds
 - Signs of colic (rolling, pawing, looking at flanks, sweating without exercise)
 - Severe lameness (non-weight-bearing)
@@ -3634,10 +3523,10 @@ While not every change in TPR requires an emergency call, the following signs wa
 - Difficulty breathing, coughing repeatedly or nasal discharge that is thick or discoloured
 - Sudden loss of appetite or refusal to drink`,
     keyPoints: [
-      "Normal temperature: 37.0–38.5°C; normal pulse: 28–44 bpm; normal respiration: 8–16 breaths per minute",
+      "For a healthy adult horse calmly at rest, World Horse Welfare lists temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths per minute; record the individual horse’s baseline and seek veterinary advice for concerning changes.",
       "A bright eye, shiny coat, good appetite and normal droppings are key indicators of good health",
       "The pulse is most easily felt at the facial artery under the jawbone",
-      "Capillary refill time should be less than 2 seconds — a delay indicates a problem",
+      "Record concerning changes in gums, appetite, comfort or breathing and follow the yard’s veterinary-escalation procedure rather than diagnosing from a single test",
       "Absent gut sounds can indicate colic and require urgent veterinary attention",
       "Learn each horse's individual resting TPR, as normal ranges vary between animals",
     ],
@@ -3655,15 +3544,10 @@ While not every change in TPR requires an emergency call, the following signs wa
     knowledgeCheck: [
       {
         question: "What is the normal resting heart rate range for a horse?",
-        options: [
-          "10–20 bpm",
-          "28–44 bpm",
-          "60–80 bpm",
-          "80–120 bpm",
-        ],
+        options: ["10–20 bpm", "36–42 bpm", "60–80 bpm", "80–120 bpm"],
         correctIndex: 1,
         explanation:
-          "A horse's normal resting heart rate is 28–44 beats per minute. A resting rate above 60 bpm (without recent exercise) is a cause for concern.",
+          "World Horse Welfare lists 36–42 beats per minute as the usual pulse range for a healthy adult horse calmly at rest. Use the individual horse’s recorded baseline and the wider clinical picture; seek veterinary advice for a concerning change.",
       },
       {
         question: "Where is the easiest place to feel a horse's pulse?",
@@ -3790,7 +3674,8 @@ Management strategies include:
     ],
     knowledgeCheck: [
       {
-        question: "What is the first step when introducing a new horse to a group?",
+        question:
+          "What is the first step when introducing a new horse to a group?",
         options: [
           "Turn it out directly with the group",
           "Keep it separate for a quarantine period and then introduce over a fence",
@@ -3802,7 +3687,8 @@ Management strategies include:
           "New horses should first be quarantined to check for infectious diseases, then introduced over a safe fence so horses can interact without physical contact before meeting face to face.",
       },
       {
-        question: "Why should hind shoes be removed before a field introduction?",
+        question:
+          "Why should hind shoes be removed before a field introduction?",
         options: [
           "To make the horses run slower",
           "To reduce the severity of kick injuries if the horses fight",
@@ -3967,7 +3853,6 @@ Dismissing behavioural changes as "attitude" or "laziness" without considering p
     linkedCompetencies: ["welfare_awareness", "horse_behaviour_awareness"],
   },
 
-
   // ── Lesson 25 ─────────────────────────────────────────────────────────────
   {
     slug: "horse-welfare-under-workload",
@@ -3995,7 +3880,7 @@ A fit, well-prepared horse in moderate work should maintain a steady rhythm, res
 - **Loss of impulsion** — The horse becomes reluctant to move forward, needing increasing amounts of leg to maintain the pace.
 - **Leaning on the reins** — A tired horse may begin to lean on the rider's hands for support, indicating loss of self-carriage.
 - **Tail swishing and ear-pinning** — Irritability during work that was previously comfortable can indicate muscular discomfort.
-- **Delayed recovery** — After work, the heart rate should return to below 60 bpm within 10 minutes and to resting rate within 30 minutes. If it takes longer, the horse was worked beyond its fitness level.
+- **Recovery that is not returning toward the horse’s normal baseline** — Record the horse’s response to work and compare it with its known individual pattern. If breathing, demeanour, gait or recovery concerns persist, stop work and seek veterinary advice rather than relying on one generic cut-off.
 
 ## Overtraining
 
@@ -4013,36 +3898,29 @@ Overtraining is a significant welfare issue. A horse cannot tell you it needs a 
 
 ## Recovery and Rest
 
-Different levels of work require different recovery periods:
+Recovery needs depend on the individual horse, the work completed, fitness, age, previous condition, footing, travel, heat, hydration and veterinary advice. Build an individual plan with a qualified coach and, where health or conditioning is involved, a veterinary professional. Do not apply a generic calendar rule for rest after hacking, schooling, jumping or competition.
 
-- **Light hack or flatwork** (30–45 minutes, walk and trot) — The horse can work again the next day.
-- **Moderate schooling** (45–60 minutes, including canter, transitions, school figures) — One to two rest days per week.
-- **Intense schooling or competition** (hard collected work, jumping, cross-country) — At least 48 hours of reduced work or turnout between sessions.
-- **After a competition** — Allow 1–3 days of rest or light hacking, depending on the intensity. A three-day event horse may need a full week of walking and turnout.
-
-Rest does not necessarily mean confinement in a stable. Turnout in a field, light hacking or in-hand walking are all beneficial forms of active recovery.
+Rest does not automatically mean confinement in a stable. Discuss safe turnout, light activity or in-hand work with the people responsible for the horse, taking account of the horse’s condition and any veterinary restriction.
 
 ## Fitness and Conditioning
 
 A horse must be conditioned gradually for the work it is expected to do, just like a human athlete:
 
-1. **Base fitness** — Build cardiovascular fitness through steady hacking and trotting over 4–8 weeks.
-2. **Strengthening** — Introduce more demanding work (hill work, school figures, canter) gradually.
-3. **Skill work** — Add discipline-specific training (jumping, lateral work) once the base fitness is established.
-4. **Maintain and vary** — Avoid monotonous training. Vary the work to keep the horse mentally engaged and physically balanced.
+1. **Establish a baseline** — Discuss the horse’s current condition, history and intended work with qualified professionals.
+2. **Increase demands gradually** — Add duration, intensity, terrain or discipline-specific exercises one change at a time, observing the horse’s response.
+3. **Review continuously** — Adapt or stop the plan when the horse shows fatigue, discomfort, illness, altered movement or behavioural concern.
+4. **Vary responsibly** — Use appropriate variety and recovery rather than monotonous loading, while remaining within the horse’s current capacity.
 
-A horse that is brought into work after a period of rest (holiday, illness, time off) must be reintroduced to work slowly. Expecting a horse that has been off for six weeks to resume its previous workload immediately is a common cause of injury.
+A horse returning after time off, illness or injury needs an individual reconditioning plan. Do not resume a previous workload until a qualified professional has assessed readiness.
 
-## Age Considerations
+## Age and Individual Considerations
 
-- **Young horses** (4–6 years) — Are still physically developing. Work should be short, varied and not demanding. Jumping and collected work should be limited.
-- **Mature horses** (7–15 years) — Can handle a full training programme if fit and sound.
-- **Senior horses** (16+ years) — May need reduced workload, more warm-up time, and careful monitoring for arthritis and stiffness. Many older horses remain willing to work but need thoughtful management.`,
+Young, mature and older horses can have very different developmental, health and conditioning needs. Workload decisions must account for the individual horse’s maturity, soundness, health history, training, management and veterinary advice; chronological age alone does not prescribe a safe programme.`,
     keyPoints: [
       "Fatigue signs include stumbling, heavy breathing, loss of impulsion and breaking gait — stop and rest if you see these",
-      "A horse's heart rate should return to below 60 bpm within 10 minutes of stopping work",
+      "Compare recovery with the horse’s individual baseline and seek veterinary advice if breathing, gait, demeanour or recovery concerns persist",
       "Overtraining is cumulative — declining performance, weight loss and behavioural changes are warning signs",
-      "Build rest days into every training programme; intense work requires at least 48 hours recovery",
+      "Set recovery and workload with qualified professionals; do not use a generic rest calendar for every horse",
       "Condition horses gradually for the level of work expected, especially after time off",
     ],
     safetyNote:
@@ -4058,16 +3936,17 @@ A horse that is brought into work after a period of rest (holiday, illness, time
     ],
     knowledgeCheck: [
       {
-        question: "What is a key indicator that a horse has been worked beyond its fitness level?",
+        question:
+          "What is a key indicator that a horse has been worked beyond its fitness level?",
         options: [
           "The horse sweats during exercise",
-          "The heart rate does not return to below 60 bpm within 10 minutes of stopping",
+          "Recovery, breathing, gait or demeanour remains concerning when compared with the horse’s normal baseline",
           "The horse wants to canter",
           "The horse is hungry after exercise",
         ],
         correctIndex: 1,
         explanation:
-          "A horse's heart rate should recover to below 60 bpm within 10 minutes of stopping exercise. A delayed recovery indicates the work was too intense for the horse's current fitness level.",
+          "Use the horse’s own documented baseline and the full clinical picture rather than a single generic number. Stop work and seek veterinary advice when recovery, breathing, gait or demeanour remains concerning.",
       },
       {
         question: "What is overtraining?",
@@ -4082,21 +3961,22 @@ A horse that is brought into work after a period of rest (holiday, illness, time
           "Overtraining is a cumulative condition resulting from excessive work without sufficient rest. It leads to declining performance, weight loss, susceptibility to illness and behavioural changes.",
       },
       {
-        question: "How should a horse be brought back into work after six weeks off?",
+        question:
+          "How should a horse return to work after time off, illness or injury?",
         options: [
+          "Follow an individual reconditioning plan agreed with qualified professionals",
           "Resume the previous workload immediately",
-          "Start with intense work to build fitness quickly",
-          "Reintroduce work gradually, starting with walking and light trotting",
-          "Keep the horse in the stable and lunge it daily",
+          "Start intense work to build fitness quickly",
+          "Copy a generic programme without considering the horse’s history",
         ],
-        correctIndex: 2,
+        correctIndex: 0,
         explanation:
-          "After a period of rest, the horse will have lost fitness. Reintroduce work gradually over 4–8 weeks, starting with walking and light trotting, to avoid injury.",
+          "A return-to-work programme must reflect the individual horse’s condition, reason for time off and professional advice. Do not use a one-size-fits-all timeline.",
       },
     ],
     aiTutorPrompts: [
       "How can I tell if my horse is becoming fatigued during a schooling session?",
-      "Can you help me plan a gradual fitness programme for a horse coming back into work?",
+      "What information should I take to a qualified coach or veterinary professional when discussing a return-to-work plan?",
       "What are the signs of overtraining and how should I respond?",
     ],
     linkedCompetencies: ["welfare_awareness"],
@@ -4111,133 +3991,98 @@ A horse that is brought into work after a period of rest (holiday, illness, time
     category: "Horse Behaviour & Welfare",
     sortOrder: 6,
     objectives: [
-      "Explain how to trot a horse up for a basic lameness assessment",
-      "Describe the grading system for lameness",
-      "Identify the most common causes of lameness in horses",
-      "Understand when lameness requires veterinary intervention",
+      "Recognise observable changes in gait, stance or willingness to move",
+      "Explain why lameness assessment and grading are veterinary tasks",
+      "Identify when work must stop and veterinary advice is needed",
+      "Record useful observations without attempting to diagnose or treat lameness",
     ],
     content: `Lameness is the most common reason for loss of performance and time off work in horses. It is defined as any alteration in the horse's normal gait caused by pain or mechanical dysfunction. The ability to recognise lameness, grade its severity and know when to involve the vet is an important intermediate-level skill.
 
-## Trotting Up for Lameness Assessment
+## Observe, Record and Escalate
 
-A basic lameness assessment involves trotting the horse in hand on a firm, level surface in a straight line. This is often the first thing a vet will ask you to do.
+Lameness means a change from the horse’s normal way of moving, standing or willingness to move. It can arise from many different conditions, and observation alone cannot identify the cause. A learner’s role is to stop ridden or strenuous work, keep people safe and contact the responsible person and veterinary professional promptly.
 
-**Procedure:**
-1. Find a flat, firm surface — ideally concrete or tarmac, not deep footing.
-2. Use a bridle or headcollar with a lead rope. Hold the rope loosely so the horse can move its head freely — do not hold the head tightly, as this prevents the natural head-bob that reveals lameness.
-3. Walk the horse away from the observer for 20–30 metres, then trot back in a straight line.
-4. The observer watches from the front and the side, looking for:
-   - **Head nod** — The horse drops its head onto the sound foreleg and lifts it off the lame one.
-   - **Hip hike** — For hind limb lameness, the hip on the lame side rises higher than the other (the horse lifts the painful limb away from the ground more quickly).
-   - **Shortened stride** — The stride on the lame leg may be shorter.
-   - **Uneven foot placement** — The horse may land toe-first to protect a sore heel.
+Record what you observed without attempting to diagnose: when the change started; which activity was being done; whether movement, stance, behaviour, heat, swelling, wound or discharge was noticed; and whether the horse appears generally unwell. A veterinarian may ask for a controlled in-hand observation or other examination, but that should be performed only as they direct. Do not perform flexion tests, grade lameness, repeatedly circle or otherwise provoke movement in an effort to identify the cause.
 
-5. Repeat on both reins on a circle (15–20 metres) if requested, as some lameness is more visible on a circle.
-6. A flexion test may be performed by the vet — holding a joint flexed for 30–60 seconds, then trotting the horse immediately to see if the lameness worsens.
+## When to Seek Urgent Veterinary Advice
 
-## Grading Lameness
+Seek urgent veterinary advice if a horse is unwilling or unable to bear weight, shows a sudden or marked change in movement, has a wound, heat, swelling or discharge associated with the concern, or appears generally unwell. If you are uncertain, treat the situation as a welfare concern and contact a veterinary professional rather than waiting for a generic interval.
 
-The most commonly used system in the UK grades lameness from **0 to 10** (the American Association of Equine Practitioners scale uses 0–5):
+While awaiting advice, do not force the horse to walk, trot, lunge or continue ridden work. Follow the veterinary practice’s emergency instructions and the yard’s safe-management procedure. Do not act independently until a veterinary professional has provided direction.
 
-- **Grade 0** — Sound. No detectable lameness.
-- **Grade 1–2** — Subtle lameness. May only be visible under certain conditions (e.g., on a circle, after flexion, on hard ground).
-- **Grade 3–4** — Mild lameness. Visible at trot in a straight line. The head nod or hip hike is consistently present.
-- **Grade 5–6** — Moderate lameness. Obvious at trot. The horse may be reluctant to trot or may break gait.
-- **Grade 7–8** — Severe lameness. Visible at walk. The horse is clearly uncomfortable.
-- **Grade 9–10** — Non-weight-bearing. The horse cannot or will not place the leg on the ground.
+## Safe Observation Boundaries
 
-## Common Causes of Lameness
+A movement concern can be subtle, intermittent or obvious, but it is not made safer by repeated testing. Avoid the temptation to compare legs, manipulate joints, remove shoes, use force, or ask another person to reproduce the movement change. Those actions can increase discomfort, place people at risk and make it harder for the veterinary team to assess the original presentation. The responsible person should decide who handles the horse and how other horses, riders and members of the public are kept clear of the area.
 
-**Foot problems (the most common source of lameness):**
-- **Abscess** — A pocket of infection within the hoof causing sudden, severe lameness. Often non-weight-bearing.
-- **Bruised sole** — From walking on hard or stony ground.
-- **Laminitis** — Inflammation of the laminae, causing severe foot pain.
-- **Navicular syndrome** — Chronic heel pain, often causing bilateral (both front feet) low-grade lameness.
+If the horse must remain in a stable, field or other location while advice is obtained, use the current yard procedure for safe supervision, access and communication. Do not make confinement, turnout, bedding, transport or exercise changes based on a generic lesson. These decisions depend on the individual horse and the veterinary instruction received.
 
-**Lower leg problems:**
-- **Tendon injuries** — Strains of the superficial or deep digital flexor tendons, causing heat, swelling and lameness.
-- **Ligament injuries** — Particularly the suspensory ligament, which supports the fetlock.
-- **Splints** — Bony growths on the splint bones, common in young horses.
+## Preparing a Useful Handover
 
-**Upper leg and body problems:**
-- **Joint inflammation (arthritis)** — Particularly in the hock, fetlock and coffin joints.
-- **Muscle soreness** — From overwork, poor saddle fit or compensatory movement.
-- **Back pain** — Can cause hind limb gait abnormalities and resistance under saddle.
+A factual handover is more useful than a guessed diagnosis. Record when the concern was first noticed; what the horse was doing beforehand; whether the change was sudden or gradual; what was visibly different in movement, stance or behaviour; and whether there was any wound, heat, swelling, discharge or sign of general illness. State what has already been done only in factual terms, including that work was stopped and the responsible person was contacted.
 
-## When to Call the Vet
-
-- **Non-weight-bearing lameness** — Always call the vet urgently. This may indicate a fracture, severe abscess or tendon rupture.
-- **Sudden onset of severe lameness** — A horse that was sound and is suddenly very lame needs veterinary assessment.
-- **Heat, swelling or discharge in a limb** — Especially if accompanied by lameness.
-- **Lameness that does not improve within 24–48 hours** with rest.
-- **Any lameness in both front feet simultaneously** — May indicate laminitis.
-- **A lame horse that seems systemically unwell** (elevated temperature, reduced appetite, dullness).
-
-While waiting for the vet:
-- Do not force a lame horse to walk or trot
-- Confine the horse to a stable with deep bedding
-- Apply cold hosing to a swollen limb (10–15 minutes, 3–4 times daily) if no open wound is present
-- Do not administer painkillers without veterinary advice, as they can mask the severity of the problem and complicate diagnosis`,
+When the veterinary practice responds, follow its questions and instructions exactly. If the horse’s condition changes while waiting, update the practice promptly. After the situation is resolved, the responsible person can decide whether the written health record, risk assessment or management plan needs review. This is how a careful learner contributes to welfare without crossing into clinical assessment.`,
     keyPoints: [
-      "Trot the horse on a firm, level surface with a loose head to allow the natural head-bob to show",
-      "Foreleg lameness: the horse nods onto the sound leg and lifts its head off the painful leg",
-      "Hind limb lameness: the hip on the lame side hikes higher as the horse lifts the painful leg away faster",
-      "Foot problems are the single most common cause of lameness — always check the foot first",
-      "Non-weight-bearing lameness is always an emergency requiring immediate veterinary attention",
+      "A change in gait, stance or willingness to move is a welfare concern, not a learner diagnosis task",
+      "Record observations and contact the responsible person and veterinary professional promptly",
+      "Do not use a lameness grade, a generic wait interval or repeated movement tests to decide whether care is needed",
+      "Do not force a horse with a movement concern to continue work or testing",
+      "A horse unwilling or unable to bear weight, or showing marked sudden change, needs urgent veterinary advice",
     ],
     safetyNote:
-      "When trotting a horse up for lameness assessment, run alongside the horse at the shoulder — do not run in front of it. Keep the lead rope slack so the horse can move its head naturally. If the horse is very lame, do not force it to trot — this causes additional pain and risk of further injury. A severely lame horse that is panicking or in extreme pain should only be handled by experienced people.",
+      "Do not undertake a lameness examination or provoke movement without veterinary direction. Keep people safe, stop work and follow the yard’s emergency procedure while obtaining veterinary advice. A horse in severe pain or distress should be handled only by appropriate experienced people following professional direction.",
     practicalApplication:
-      "Practise trotting horses up in hand on a hard surface. Ask your instructor or vet to teach you what a head-nod looks like and how to spot hip hike. Learn to run your hands down each leg daily, feeling for heat, swelling or sensitivity. Check the feet for stones, cracks and shoe condition. If you notice anything unusual, report it before the horse is ridden. Early detection saves time, money and horse welfare.",
+      "With an instructor, practise completing a concise observation record for a horse that appears uncomfortable: activity, time, changes in movement or behaviour, and any visible concern. Report observations before the horse is ridden and ask a veterinary professional to explain the practice’s safe assessment and escalation process.",
     commonMistakes: [
-      "Holding the horse's head tightly when trotting up, which prevents the head-nod that reveals lameness",
-      "Trotting a horse on deep or uneven footing, which masks or exacerbates lameness",
-      "Ignoring subtle lameness and continuing to ride, risking further injury",
-      "Giving painkillers before the vet's assessment, masking the severity",
-      "Assuming lameness always comes from the leg when the foot is the most common source",
+      "Continuing to ride or test a horse with an observed movement concern",
+      "Trying to identify the cause by repeated trotting, circling or flexion tests without veterinary direction",
+      "Using a generic grading scale or wait interval instead of seeking appropriate advice",
+      "Acting independently before veterinary direction is provided",
+      "Assuming an observation establishes the cause of the problem",
     ],
     knowledgeCheck: [
       {
-        question: "When assessing foreleg lameness, what does the horse's head do?",
+        question:
+          "What is the appropriate learner response to a new change in gait, stance or willingness to move?",
         options: [
-          "Drops onto the lame leg",
-          "Stays level throughout",
-          "Nods onto the sound leg and lifts off the lame leg",
-          "Turns toward the lame side",
+          "Stop ridden or strenuous work, record observations and seek appropriate veterinary advice",
+          "Repeat movement tests until the cause is clear",
+          "Continue work if the horse is willing",
+          "Independently manage the concern without professional direction",
         ],
-        correctIndex: 2,
+        correctIndex: 0,
         explanation:
-          "The horse lifts its head as the painful foreleg hits the ground (to reduce weight on it) and drops its head as the sound leg lands, creating a visible nodding motion.",
+          "Observation cannot establish the cause of lameness. Stop work, keep people safe, record what was observed and contact the responsible person and veterinary professional promptly.",
       },
       {
-        question: "What is the most common source of lameness in horses?",
+        question:
+          "Which information is useful to record before contacting a veterinary professional about a movement concern?",
         options: [
-          "Back problems",
-          "The foot",
-          "The stifle joint",
-          "Muscle injuries",
+          "When it started, the activity, observed changes and any visible heat, swelling, wound or discharge",
+          "A self-assigned lameness grade only",
+          "An independent management plan chosen by the learner",
+          "Only the horse’s competition record",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "The foot is the most common source of lameness. Abscesses, bruised soles, laminitis and navicular syndrome are all foot-related causes of lameness. 'No foot, no horse.'",
+          "A concise factual observation record helps the veterinary team assess urgency and decide what they need next. Do not turn observations into a diagnosis.",
       },
       {
-        question: "When should you always call the vet for lameness?",
+        question: "Which situation needs urgent veterinary advice?",
         options: [
-          "Only if the horse has been lame for more than a week",
-          "For non-weight-bearing lameness, sudden severe lameness, or lameness in both front feet",
-          "Only if there is visible blood",
-          "Only if the horse is a competition horse",
+          "A horse unwilling or unable to bear weight, or showing a marked sudden change in movement",
+          "Only a concern that lasts for a generic number of days",
+          "Only a concern in a competition horse",
+          "Only a concern with visible blood",
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explanation:
-          "Non-weight-bearing lameness, sudden severe lameness and lameness in both front feet (potential laminitis) are all situations requiring urgent veterinary attention.",
+          "A horse that cannot bear weight or has a marked sudden movement change needs urgent veterinary advice. If you are uncertain, treat the situation as a welfare concern and seek professional guidance.",
       },
     ],
     aiTutorPrompts: [
-      "Can you walk me through how to trot a horse up for a basic lameness assessment?",
-      "What are the most common causes of sudden lameness in horses?",
-      "How do I tell the difference between foreleg and hind limb lameness by watching the horse trot?",
+      "What observations should I record if a horse’s movement changes?",
+      "When should work stop and veterinary advice be sought for a movement concern?",
+      "Why should I not diagnose or perform movement tests without veterinary direction?",
     ],
     linkedCompetencies: ["welfare_awareness", "stable_checks"],
   },
@@ -4319,9 +4164,9 @@ Regular, honest welfare assessment — ideally involving an objective third part
       "Regular welfare assessment prevents the gradual normalisation of poor welfare",
     ],
     safetyNote:
-      "Welfare decisions, particularly around euthanasia and retirement, should always involve veterinary advice. Do not make these decisions alone or under emotional pressure. If you have concerns about any horse's welfare — whether it is in your care or someone else's — speak to a vet, a welfare charity (such as the BHS, RSPCA or World Horse Welfare) or a trusted mentor. Reporting a welfare concern is not disloyalty; it is advocacy for an animal that cannot speak for itself.",
+      "Welfare decisions, particularly around euthanasia and retirement, should always involve veterinary advice. Do not make these decisions alone or under emotional pressure. If you have concerns about any horse's welfare — whether it is in your care or someone else's — speak to a vet, an appropriate welfare charity, your local authority, or a trusted mentor. Reporting a welfare concern is not disloyalty; it is advocacy for an animal that cannot speak for itself.",
     practicalApplication:
-      "Apply the Five Domains framework to a horse in your care. For each domain, assess whether the horse's needs are being met and whether there are opportunities to improve its experience. Discuss your assessment with your instructor or yard manager. If you observe a horse whose welfare may be compromised — anywhere, not just on your own yard — know the process for reporting concerns: contact the BHS, RSPCA or your local authority.",
+      "Apply the Five Domains framework to a horse in your care. For each domain, assess whether the horse's needs are being met and whether there are opportunities to improve its experience. Discuss your assessment with your instructor or yard manager. If you observe a horse whose welfare may be compromised — anywhere, not just on your own yard — know the process for reporting concerns: contact an appropriate welfare charity or your local authority.",
     commonMistakes: [
       "Confusing the absence of suffering with positive welfare — a horse can be free from pain but still have poor welfare if it lacks companionship, space or mental stimulation",
       "Allowing personal attachment to prevent a necessary euthanasia decision, prolonging suffering",
@@ -4331,7 +4176,8 @@ Regular, honest welfare assessment — ideally involving an objective third part
     ],
     knowledgeCheck: [
       {
-        question: "What is the main difference between the Five Freedoms and the Five Domains model?",
+        question:
+          "What is the main difference between the Five Freedoms and the Five Domains model?",
         options: [
           "The Five Domains apply only to competition horses",
           "The Five Freedoms focus on preventing suffering; the Five Domains also promote positive experiences",
@@ -4343,7 +4189,8 @@ Regular, honest welfare assessment — ideally involving an objective third part
           "The Five Freedoms aim to prevent suffering (freedom from hunger, pain, distress, etc.). The Five Domains model goes further by also considering positive mental states and quality of life, not just the absence of negative experiences.",
       },
       {
-        question: "When is euthanasia considered a compassionate welfare decision?",
+        question:
+          "When is euthanasia considered a compassionate welfare decision?",
         options: [
           "When the horse is old and no longer useful for riding",
           "When treatment costs exceed the horse's monetary value",
@@ -4355,7 +4202,8 @@ Regular, honest welfare assessment — ideally involving an objective third part
           "Euthanasia is a compassionate act when a horse's quality of life has deteriorated to the point where suffering outweighs any positive experiences and cannot be improved by treatment or management.",
       },
       {
-        question: "What does 'freedom to express normal behaviour' include for horses?",
+        question:
+          "What does 'freedom to express normal behaviour' include for horses?",
         options: [
           "Being able to canter at any time",
           "Sufficient space, facilities, and company of other horses",
@@ -4407,7 +4255,7 @@ A **general-purpose (GP) saddle** is the most common type of saddle for everyday
 - **Knee roll** — A padded roll at the front of the saddle flap that helps keep the rider's knee in the correct position.
 - **Stirrup bar** — A hinged metal bar attached to the saddle tree (hidden beneath the flap) from which the stirrup leather hangs. The safety catch on the stirrup bar should always be **down** (open) so the stirrup leather can slide free if the rider falls.
 - **Stirrup leather** — The adjustable strap that hangs from the stirrup bar and holds the stirrup iron.
-- **Stirrup iron** — The metal foot rest. It should be wide enough that there is approximately 1.5 cm of clearance on each side of the rider's boot. Too wide risks the foot going through; too narrow risks the foot becoming jammed.
+- **Stirrup iron** — The metal foot rest. Its fit must be assessed with the rider’s boot, current equipment, manufacturer guidance and applicable safety standard; it must not trap the foot or allow it to pass through.
 - **Girth** — The broad strap that passes under the horse's belly to hold the saddle in place. Available in leather, synthetic materials or string (cord). Fastens to girth straps on both sides of the saddle.
 - **Girth straps (billets)** — Three straps hanging from each side of the saddle tree. Typically the first and third (or first and second) are used.
 - **Panel** — The padded underside of the saddle that distributes the rider's weight over the horse's back. Should be evenly stuffed and smooth.
@@ -4590,7 +4438,8 @@ A correctly fitted headcollar:
     ],
     knowledgeCheck: [
       {
-        question: "Why should you put the lead rope around the horse's neck before fitting the headcollar?",
+        question:
+          "Why should you put the lead rope around the horse's neck before fitting the headcollar?",
         options: [
           "To warm the horse's neck",
           "To provide temporary control so the horse cannot walk away",
@@ -4602,7 +4451,8 @@ A correctly fitted headcollar:
           "Looping the lead rope over the horse's neck gives you a degree of control while both hands are occupied fitting the headcollar. Without it, the horse can simply walk away.",
       },
       {
-        question: "Why must you never leave a headcollar on a horse in the field?",
+        question:
+          "Why must you never leave a headcollar on a horse in the field?",
         options: [
           "It gets dirty",
           "Other horses will chew it",
@@ -4614,7 +4464,8 @@ A correctly fitted headcollar:
           "A headcollar left on in the field can catch on fences, trees, water troughs or even the horse's own hind foot when scratching. Trapped horses can panic, sustain serious injuries or die.",
       },
       {
-        question: "How much clearance should there be between the noseband and the horse's face?",
+        question:
+          "How much clearance should there be between the noseband and the horse's face?",
         options: [
           "No gap — it should be snug",
           "One finger's width",
@@ -4633,7 +4484,6 @@ A correctly fitted headcollar:
     ],
     linkedCompetencies: ["tack_identification", "leading_safely"],
   },
-
 
   // ── Lesson 30 ─────────────────────────────────────────────────────────────
   {
@@ -4731,7 +4581,8 @@ A correctly fitted headcollar:
           "Tack cleaning is an opportunity to inspect every strap, buckle, stitch and fitting for wear and damage. Finding a problem during cleaning prevents a failure during riding.",
       },
       {
-        question: "What is the difference between saddle soap and leather conditioner?",
+        question:
+          "What is the difference between saddle soap and leather conditioner?",
         options: [
           "They are the same thing",
           "Saddle soap cleans and lightly protects; conditioner deeply nourishes the leather",
@@ -4819,7 +4670,7 @@ A numnah or saddle pad is not a solution for a poorly fitting saddle. Its purpos
 
 ## When to Call a Saddle Fitter
 
-- Every 6–12 months as a routine check
+- At intervals determined by the qualified fitter, the horse’s current shape, workload, tack condition and any signs of discomfort
 - If the horse has gained or lost weight significantly
 - If the horse has changed shape (e.g., muscled up through work, or lost muscle through time off)
 - If you notice dry spots, sweat patches, white hairs or sore areas under the saddle after riding
@@ -4829,11 +4680,11 @@ A numnah or saddle pad is not a solution for a poorly fitting saddle. Its purpos
 A qualified saddle fitter (look for Society of Master Saddlers or equivalent qualification) can assess, adjust and reflock the saddle to improve the fit.`,
     keyPoints: [
       "A poorly fitting saddle causes pain, white hairs, muscle atrophy and behavioural problems",
-      "Three fingers' clearance between the pommel and the withers (unmounted); two fingers when mounted",
-      "The gullet must clear the spine completely — at least 3–4 fingers wide",
+      "Pommel, wither and spinal clearance require qualified assessment in the horse’s current ridden and unmounted context; do not use copied finger-count rules",
+      "The gullet must provide suitable spinal clearance as assessed by a qualified fitter and current manufacturer guidance",
       "The panels should make even contact with no bridging or rocking",
       "A numnah is not a fix for a badly fitting saddle — professional fitting is essential",
-      "Have the saddle checked by a qualified fitter every 6–12 months or when the horse's condition changes",
+      "Have the saddle assessed by a qualified fitter whenever the horse, rider, workload, tack condition or comfort indicators warrant review",
     ],
     safetyNote:
       "Never ride in a saddle that is obviously too big, too small, too wide or too narrow for the horse. A saddle that rocks, slips or sits on the withers is unsafe and causing the horse pain. If you suspect a saddle fit problem, stop riding in that saddle and seek professional advice. Riding in pain causes the horse to compensate with abnormal movement, which can lead to secondary injuries.",
@@ -4848,7 +4699,8 @@ A qualified saddle fitter (look for Society of Master Saddlers or equivalent qua
     ],
     knowledgeCheck: [
       {
-        question: "How much wither clearance should there be with the rider mounted?",
+        question:
+          "How much wither clearance should there be with the rider mounted?",
         options: [
           "No clearance — the pommel should rest on the withers",
           "One finger",
@@ -4940,10 +4792,9 @@ Snaffle bits are the most commonly used family of bits and act primarily on the 
 
 ## Bit Sizing and Fitting
 
-A correctly fitted bit:
-- Extends approximately **0.5 cm beyond the lips on each side**. Too wide allows the bit to slide from side to side, catching the lip; too narrow pinches.
-- Creates **one to two wrinkles** at the corners of the mouth. No wrinkles means the bit is too low and may bang on the teeth; too many wrinkles mean it is too tight against the lips.
-- The mouthpiece thickness should suit the horse — a thicker mouthpiece spreads pressure over a larger area (generally milder), while a thinner mouthpiece concentrates pressure (potentially more precise but sharper).
+Bit fitting is individual to the horse’s mouth, dental status, bridle, discipline rules and way of going. There is no universal width extension or wrinkle count that proves a bit is suitable. A qualified instructor, bit fitter and appropriate equine dental professional should assess fit and comfort, using the manufacturer’s instructions and the current discipline rules where relevant.
+
+Do not infer that a thicker, thinner, stronger or more complex mouthpiece is automatically kinder or more suitable. The rider’s hands, the horse’s anatomy, health and training all matter.
 
 ## Signs the Bit Is Not Suitable
 
@@ -4960,14 +4811,14 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
       "The bit is only as kind or severe as the hands holding the reins — educated hands make any bit kinder",
       "Snaffle bits act on the bars, tongue and lips with no leverage action",
       "A French link distributes pressure more evenly than a single joint by eliminating the nutcracker action",
-      "A correctly fitted bit extends 0.5 cm beyond the lips on each side and creates one to two wrinkles",
-      "Signs of bit discomfort include head tossing, mouth opening, tongue displacement and resistance",
-      "Always rule out dental problems before changing the bit",
+      "A suitable bit fit is individual; do not use one generic width or wrinkle measurement as proof of comfort",
+      "Signs of possible bit discomfort include head tossing, mouth opening, tongue displacement and resistance",
+      "Ask qualified tack and dental professionals to assess fit and oral-health concerns before changing equipment",
     ],
     safetyNote:
       "Never change a horse's bit without consulting an experienced instructor. An inappropriate bit can cause pain, mouth injuries and dangerous behaviour. If you notice a horse showing signs of bit discomfort, report it immediately rather than continuing to ride. A horse in pain from its bit may become unpredictable, tossing its head, bolting or rearing. Always ensure the bit is checked for sharp edges, cracks or damage before fitting.",
     practicalApplication:
-      "Learn to identify the bits used on the horses you ride. Ask your instructor to explain why each horse wears a particular bit. Practise fitting a bit correctly, checking the width and height. When riding, focus on developing soft, following hands that maintain a consistent, gentle contact — this is far more important than the type of bit you use. Record any signs of bit discomfort in the horse and discuss with your instructor.",
+      "Learn to identify the bits used on the horses you ride. Ask your instructor why each horse wears a particular bit and how the responsible qualified professional checks its fit. Focus on soft, following hands and record any possible discomfort for discussion with the instructor, bit fitter and appropriate dental professional rather than changing equipment yourself.",
     commonMistakes: [
       "Blaming the bit when the real issue is rough or unsteady hands",
       "Choosing a stronger bit to solve a problem caused by poor riding rather than improving skill",
@@ -4977,7 +4828,8 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
     ],
     knowledgeCheck: [
       {
-        question: "What is the 'nutcracker' action of a single-jointed snaffle?",
+        question:
+          "What is the 'nutcracker' action of a single-jointed snaffle?",
         options: [
           "The bit cracks nuts placed in the mouth",
           "The single joint collapses when both reins are used, squeezing the bars and potentially contacting the palate",
@@ -4989,19 +4841,21 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
           "When rein pressure is applied to a single-jointed bit, the joint collapses inward, creating a V-shape that squeezes the bars and may press upward against the palate. This is called the nutcracker action.",
       },
       {
-        question: "How much should a correctly fitted bit extend beyond the horse's lips on each side?",
+        question:
+          "What is the safe approach to deciding whether a bit fits a particular horse?",
         options: [
-          "2 cm",
-          "1 cm",
-          "0.5 cm",
-          "It should not extend beyond the lips at all",
+          "Use a qualified fitting and oral-health assessment, manufacturer guidance and current discipline rules",
+          "Apply one generic width measurement to every horse",
+          "Count wrinkles only",
+          "Choose the strongest available bit",
         ],
-        correctIndex: 2,
+        correctIndex: 0,
         explanation:
-          "The bit should extend approximately 0.5 cm (half a centimetre) beyond the lips on each side. Too wide allows sliding and lip-catching; too narrow causes pinching.",
+          "No universal measurement proves a bit fits every horse. Suitability depends on the individual horse, equipment, health, riding and applicable rules.",
       },
       {
-        question: "What should you investigate before changing a horse's bit due to apparent discomfort?",
+        question:
+          "What should you investigate before changing a horse's bit due to apparent discomfort?",
         options: [
           "The horse's colour preferences",
           "Dental issues such as sharp edges, wolf teeth or mouth ulcers",
@@ -5010,12 +4864,12 @@ If a horse shows these signs, consult an experienced instructor, bit fitter or e
         ],
         correctIndex: 1,
         explanation:
-          "Dental problems can cause symptoms identical to bit discomfort. Always have the horse's teeth checked by a qualified equine dentist before assuming the bit is the problem.",
+          "Oral-health concerns can contribute to apparent bit discomfort. Discuss them with the appropriate qualified equine dental and veterinary professionals before assuming the bit is the cause.",
       },
     ],
     aiTutorPrompts: [
       "Can you explain the differences between the main snaffle bit types?",
-      "How do I know if a bit is fitted correctly?",
+      "What information should a qualified professional consider when assessing bit fit and comfort?",
       "What signs should tell me that a horse is uncomfortable with its bit?",
     ],
     linkedCompetencies: ["tack_identification", "tacking_up_correctly"],
@@ -5143,7 +4997,8 @@ Equipment should never be used to mask a problem (e.g., using a stronger bit ins
           "Training aids encourage a posture but cannot replace correct muscular development. Over-reliance produces a horse that only works correctly when constrained, rather than one that has developed genuine self-carriage.",
       },
       {
-        question: "What is the risk of applying an exercise bandage too tightly?",
+        question:
+          "What is the risk of applying an exercise bandage too tightly?",
         options: [
           "The bandage will not stay on",
           "The horse's leg will sweat",
@@ -5226,7 +5081,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
     ],
     knowledgeCheck: [
       {
-        question: "What should a rider do immediately before asking for a walk to trot transition?",
+        question:
+          "What should a rider do immediately before asking for a walk to trot transition?",
         options: [
           "Lean forward to encourage the horse",
           "Apply a half-halt to prepare and rebalance the horse",
@@ -5238,7 +5094,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
           "A half-halt prepares the horse by rebalancing it and gaining its attention. This ensures the transition is smooth and the horse does not fall onto the forehand.",
       },
       {
-        question: "Where should the rider's legs be positioned when asking for a trot transition?",
+        question:
+          "Where should the rider's legs be positioned when asking for a trot transition?",
         options: [
           "Well behind the girth near the horse's flank",
           "On the girth",
@@ -5250,7 +5107,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
           "The rider's legs should close gently just behind the girth. This is the correct position for asking the horse to move forward into a new gait.",
       },
       {
-        question: "What is a common fault when transitioning from trot to walk?",
+        question:
+          "What is a common fault when transitioning from trot to walk?",
         options: [
           "Sitting too deep in the saddle",
           "Pulling sharply on the reins without using the seat",
@@ -5262,7 +5120,8 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
           "Pulling on the reins without engaging the seat and back causes the horse to hollow its back and raise its head. The downward transition should be ridden primarily from the seat.",
       },
       {
-        question: "Why is practising transitions at specific markers beneficial?",
+        question:
+          "Why is practising transitions at specific markers beneficial?",
         options: [
           "It makes the lesson shorter",
           "It develops accuracy, planning, and clear communication with the horse",
@@ -5289,113 +5148,117 @@ Regular practice of walk to trot and trot to walk transitions builds the rider's
     category: "Flatwork",
     sortOrder: 2,
     objectives: [
-      "Understand the mechanics of the trot gait and why rhythm is important",
-      "Develop the ability to rise (post) in rhythm with the horse's trot",
-      "Learn to maintain balance in both rising and sitting trot",
-      "Identify and correct loss of rhythm or balance in the trot",
+      "Use qualified coaching to recognise a suitable, individual trot rhythm and balance task",
+      "Practise rising trot only within a coach-approved progression",
+      "Recognise when a trot exercise requires more support, a slower progression, or a stop",
+      "Report changes in rider security, horse comfort, tack, footing, or conditions to the qualified coach",
     ],
-    content: `The trot is a two-beat diagonal gait in which the horse's legs move in diagonal pairs — the left fore and right hind strike the ground at the same time, followed by the right fore and left hind. Between each pair of steps there is a brief moment of suspension when all four feet are off the ground. This natural rhythm gives the trot its characteristic bouncy feel, and learning to move in harmony with it is one of the most important skills for the developing rider.
+    content: `Trot work must be planned for the individual rider, horse, saddle, footing, setting, level of instruction, and current conditions. Reviewed coach guidance directs that ridden work is undertaken on safe horses suitable for the participant level and under coach instruction and supervision. This lesson is a reflective vocabulary aid, not a substitute for an instructor’s real-time assessment, a horse-health or tack assessment, or a fixed progression.
 
-Rhythm refers to the regularity and consistency of the horse's steps. A good working trot should have an even, metronome-like beat — one-two, one-two — that the rider can feel through the saddle. When rhythm is lost, it usually indicates that either the horse is unbalanced, the rider is interfering with the horse's movement, or the pace is too fast or too slow.
+A coach may use **rhythm**, **balance**, **security**, **position**, and **contact** as coaching terms. Whether a trot is suitable depends on the individual partnership and task. A learner must not use a change in feel or appearance to diagnose horse balance, rider error, pain, tack fit, or a particular cause. If the rider loses security, the horse appears uncomfortable or difficult to control, the tack or footing is unsuitable, or conditions change, stop and obtain qualified advice.
 
-Rising trot, also known as posting trot, is the most common way for riders to trot. The rider rises out of the saddle on one beat and sits lightly back into the saddle on the next, in time with the horse's movement. To rise correctly, the rider should allow the horse's movement to push the hips slightly forward and upward rather than actively standing in the stirrups. The movement comes from the thigh and hip joint, not the knee or ankle. The upper body should remain balanced over the centre of the saddle, not tipping forward or falling behind the movement.
+A qualified coach may introduce rising trot when the rider, horse, setting, tack, support, and current safety arrangements are appropriate. The coach selects the position cue, pace, duration, exercise, aids, and level of assistance for the individual. The reviewed coach guidance focuses on balance and security in the saddle and permits support, such as a neck strap, where required. Do not treat a generic cue as a universal anatomical instruction or continue when the rider is insecure.
 
-Rising on the correct diagonal is an important concept. In rising trot, the rider should rise when the outside foreleg moves forward and sit when it returns to the ground. This can be checked by glancing briefly at the horse's outside shoulder — the rider should rise as the shoulder moves forward. Riding on the correct diagonal helps the horse to balance, especially on circles and turns. The diagonal should be changed when the rider changes direction by sitting for an extra beat.
+**Diagonal** is a coaching concept that a qualified instructor may introduce at an appropriate stage. The reviewed introductory coach guidance states that a rider need not recognise a “correct diagonal” to demonstrate security in rising trot at that level. A coach should decide whether, when, and how diagonal awareness is taught for the individual rider and task; do not look down, change a diagonal, or apply a fixed rule in a way that compromises balance, safety, or current instruction.
 
-Sitting trot requires the rider to remain seated in the saddle throughout the trot. This is more challenging because the rider must absorb the horse's movement through a supple lower back and relaxed seat muscles. Stiffness in the back, gripping with the thighs, or bracing in the stirrups will cause the rider to bounce uncomfortably and disturb the horse's rhythm. To sit the trot effectively, the rider should think of allowing the hips to follow the horse's movement, keeping the core engaged but not rigid, and maintaining a deep, draped leg.
+Sitting-trot work is not appropriate for every horse-and-rider partnership or every stage of learning. A qualified coach must decide whether it is suitable and how to support the rider. Do not interpret tension, discomfort, loss of balance, or an uneven feel as a diagnosis or a reason to force a rider or horse through an exercise. Stop and obtain qualified guidance if rider security, horse comfort, tack, footing, or conditions are unsuitable.
 
-Balance in the trot is influenced by the rider's position, the horse's way of going, and the quality of the contact. A balanced rider sits centrally in the saddle with equal weight on both seat bones, the shoulders directly above the hips, and the heels below the hips. If the rider leans to one side, grips with one leg more than the other, or collapses through the waist, the horse will compensate by drifting, falling in on circles, or becoming crooked.
+Balance and position must be observed in context by a qualified coach. Tack fit, horse comfort, rider health, task, environment, and training can all require appropriate review. A position observation alone does not prove why a horse moves in a particular way or establish a correction. Persistent pain, limitation, horse discomfort, or tack concern requires the relevant qualified professional.
 
-To develop trot rhythm and balance, riders should practise trotting on large circles, changing the rein frequently, and riding transitions within the trot — lengthening and shortening the stride. Exercises without stirrups are also invaluable for building an independent seat, though these should only be attempted when the rider feels confident and the horse is calm.
+A qualified coach may select an appropriately simple trot exercise and may modify, stop, or postpone it as conditions change. Do not set a generic pattern, duration, diagonal task, speed, no-stirrup exercise, or progression from this lesson. Any no-stirrup activity requires explicit coach approval, a suitable partnership, and current safety controls; it is not a universal assessment or fitness tool.
 
-A useful exercise is to count the rhythm aloud — "one-two, one-two" — while trotting. This helps the rider internalise the beat and immediately notice if the rhythm changes. Over time, the rider develops an instinctive feel for the correct tempo and can adjust the horse's pace with subtle aids.
+If a qualified coach selects a verbal, visual, or physical cue, use it only as directed and within a safe, supported setting. A cue can help a coaching conversation but does not establish a “correct” tempo, diagnose a change, or authorise a learner to alter the horse’s pace independently.
 
-The quality of the trot is a direct reflection of the partnership between horse and rider. When both are balanced, relaxed, and moving in harmony, the trot feels effortless and flowing. This is the foundation upon which all further schooling in trot — shoulder-in, half-pass, medium and collected trot — is built.`,
+Trot schooling should progress only through an individual, welfare-aware coaching plan. The qualified coach and responsible person must decide whether the partnership is ready for any new exercise, pace, or movement.`,
     keyPoints: [
-      "The trot is a two-beat diagonal gait with a moment of suspension between each stride",
-      "In rising trot, allow the horse's movement to push the hips forward rather than actively standing",
-      "Rise on the correct diagonal — rise when the outside foreleg moves forward",
-      "In sitting trot, absorb the movement through a supple lower back and relaxed seat",
-      "Maintain equal weight on both seat bones and keep the shoulders above the hips for balance",
-      "Count the rhythm aloud to develop feel and recognise changes in tempo",
+      "Trot work must use a horse, rider, tack, setting, supervision, and exercise appropriate to the individual partnership",
+      "A qualified coach selects any rising-trot position cue and support; learners should not treat one cue as universal anatomy",
+      "Diagonal awareness is coach-led and stage-specific; the reviewed introductory coach guidance does not require a rider to recognise it to demonstrate rising-trot security",
+      "Sitting trot is not automatically appropriate; stop and seek coaching if rider security, horse comfort, tack, footing, or conditions are unsuitable",
+      "Position observations do not diagnose rider health, saddle fit, horse comfort, or the cause of a movement concern",
+      "Use a verbal or physical cue only as coach-directed support, not as a universal diagnosis or self-correction method",
     ],
     safetyNote:
-      "When practising sitting trot or exercises without stirrups, only do so on a calm, well-mannered horse in an enclosed arena. If you feel insecure, return to rising trot immediately and discuss your concerns with your instructor.",
+      "Do not begin or progress trot, sitting-trot, diagonal, or no-stirrup work without coach instruction and the responsible person’s current safety arrangements. Stop if rider security, horse comfort or behaviour, tack, footing, weather, supervision, or emergency arrangements become unsuitable, then obtain qualified advice.",
     practicalApplication:
-      "During your next ride, spend time in rising trot focusing on the correct diagonal. Change the rein at least four times, checking your diagonal each time. Then attempt short periods of sitting trot on a large circle, counting the rhythm aloud to maintain an even tempo.",
+      "Ask a qualified coach which trot work, support, and observation are suitable for your current horse-and-rider partnership. Follow the coach’s individual plan rather than setting a fixed diagonal, circle, sitting-trot, no-stirrup, or counting exercise from this lesson. Report any safety, comfort, tack, or conditions concern promptly.",
     commonMistakes: [
-      "Rising too high out of the saddle, which makes the rider unsteady and behind the movement",
-      "Gripping with the knees in sitting trot, causing the lower leg to swing and the rider to bounce",
-      "Forgetting to check and change the diagonal when changing direction",
-      "Allowing the upper body to tip forward in rising trot",
-      "Losing rhythm by letting the horse speed up or slow down without correction",
+      "Continuing a trot exercise without the instruction, supervision, support, or conditions identified in the current coaching plan",
+      "Using a position observation to diagnose rider health, horse comfort, tack fit, or the cause of a performance concern",
+      "Treating a coach-selected diagonal concept as a universal rule rather than stage- and partnership-specific instruction",
+      "Progressing to sitting trot, no-stirrup work, a faster pace, or a new exercise without coach approval",
+      "Trying to correct a perceived rhythm change independently rather than stopping and seeking qualified coaching when needed",
     ],
     knowledgeCheck: [
       {
-        question: "How many beats does the trot have?",
+        question:
+          "Who should decide whether a developing rider’s trot exercise is suitable and how it progresses?",
         options: [
-          "One beat",
-          "Two beats",
-          "Three beats",
-          "Four beats",
+          "The rider alone, using a generic online checklist",
+          "A qualified coach within the current responsible-person safety arrangements",
+          "Any spectator who sees the horse moving",
+          "The rider’s desire to progress to a faster pace",
         ],
         correctIndex: 1,
         explanation:
-          "The trot is a two-beat diagonal gait. The horse's legs move in diagonal pairs with a moment of suspension between each step.",
+          "The reviewed coach guidance requires ridden work to be on safe horses suitable for the participant level and under coach instruction and supervision. The individual partnership and current conditions determine the suitable exercise.",
       },
       {
-        question: "When should the rider rise in rising trot?",
+        question:
+          "What does the reviewed introductory coach guidance say about recognising a correct diagonal?",
         options: [
-          "When the inside foreleg moves forward",
-          "When the outside foreleg moves forward",
-          "On every third beat",
-          "It does not matter when the rider rises",
-        ],
-        correctIndex: 1,
-        explanation:
-          "The rider should rise when the outside foreleg moves forward and sit when it comes back to the ground. This helps the horse balance, particularly on circles and turns.",
-      },
-      {
-        question: "What is the main cause of bouncing in sitting trot?",
-        options: [
-          "The horse trotting too slowly",
-          "The saddle being too large",
-          "Stiffness in the rider's lower back and gripping with the thighs",
-          "Holding the reins too long",
+          "It must be recognised before any rising trot",
+          "It is never used in coaching",
+          "It is not required at that introductory stage for a rider to demonstrate security in rising trot",
+          "It may be selected only by a spectator",
         ],
         correctIndex: 2,
         explanation:
-          "Stiffness in the lower back and gripping with the thighs prevents the rider from absorbing the horse's movement, causing them to bounce in the saddle.",
+          "The reviewed introductory coach guidance says the correct diagonal does not have to be recognised at that level, while coach instruction and supervision remain required. A coach decides when diagonal awareness is suitable for the individual rider and task.",
       },
       {
-        question: "How does the rider change the diagonal?",
+        question:
+          "What should a rider do if they lose security or notice a horse-comfort, tack, footing, or conditions concern during trot work?",
         options: [
-          "By changing the rein length",
-          "By sitting for one extra beat before resuming rising",
-          "By rising faster",
-          "By leaning to the opposite side",
+          "Continue until the planned exercise is complete",
+          "Try a faster pace to test the issue",
+          "Stop or move to safety as directed and obtain qualified coaching or responsible-person advice",
+          "Diagnose the cause and prescribe an exercise",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A generic lesson cannot diagnose the cause of a concern. Stop, follow the current safety arrangement, and obtain qualified advice before continuing or progressing the work.",
+      },
+      {
+        question: "When is no-stirrup trot work appropriate?",
+        options: [
+          "For every rider as a required balance test",
+          "Whenever the rider wants a harder exercise",
+          "Only when a qualified coach approves it for the individual partnership and current safety conditions",
+          "Only after the rider counts aloud for a set time",
+        ],
+        correctIndex: 2,
+        explanation:
+          "No-stirrup work is not a universal assessment or progression. It requires coach approval, a suitable horse-and-rider partnership, and current safety controls.",
+      },
+      {
+        question:
+          "How should a learner use a verbal rhythm cue selected by a coach?",
+        options: [
+          "As universal proof that the horse’s tempo is correct",
+          "Only as coach-directed support in the current safe exercise",
+          "As a reason to change the horse’s pace independently",
+          "As a substitute for instruction and supervision",
         ],
         correctIndex: 1,
         explanation:
-          "To change the diagonal, the rider simply sits for one extra beat — sit-sit instead of sit-rise — and then continues rising. This shifts them onto the other diagonal pair.",
-      },
-      {
-        question: "Why is counting the rhythm aloud useful?",
-        options: [
-          "It calms the horse down",
-          "It helps the rider internalise the beat and notice tempo changes",
-          "It is required in dressage tests",
-          "It helps the horse change pace",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Counting the rhythm aloud helps the rider develop an internal sense of the correct tempo. If the counting speeds up or slows down, the rider can immediately feel that the rhythm has changed and make corrections.",
+          "A verbal cue can support a coach-led exercise, but it does not diagnose horse movement or authorise a learner to make independent pace corrections.",
       },
     ],
     aiTutorPrompts: [
-      "What exercises can help me develop a more independent seat in sitting trot?",
-      "How do I know if I am on the correct diagonal without looking down?",
-      "Can you explain why rhythm is considered one of the scales of training?",
+      "What current coach-approved trot exercise and support are appropriate for my horse-and-rider partnership?",
+      "When is diagonal awareness appropriate in my current coach-led progression?",
+      "What safety or comfort changes should make me stop and seek qualified advice during trot work?",
     ],
     linkedCompetencies: ["control_at_trot", "balance_and_coordination"],
   },
@@ -5522,17 +5385,13 @@ Practising steering exercises at walk before attempting them at trot allows the 
     ],
     content: `School figures are the geometric shapes and patterns ridden in a manège or arena. They are not merely exercises for the rider to follow; they are fundamental training tools that develop the horse's suppleness, straightness, balance, and obedience. Understanding the purpose behind each figure — and riding it with accuracy — is a mark of an educated rider and a well-schooled horse.
 
-The standard dressage arena measures 20 metres by 40 metres (or 20 metres by 60 metres for the large arena). The letters around the arena — A, K, E, H, C, M, B, F, and the centre line markers D, X, and G — provide reference points for planning and executing school figures. Every rider should memorise these letters and be able to navigate to any point in the arena confidently.
+Dressage arena layouts vary by level, organiser and jurisdiction. The FEI 2026 international specification is 20 m wide by 60 m long, while a 20 m × 40 m small arena is used in some introductory schooling and national tests. Use the current organiser’s approved diagram for any competition. Letters around an arena provide reference points for planning and executing school figures; learn the layout used for the arena in which you are riding.
 
 The 20-metre circle is the most basic circle and is ridden by touching the track at one end of the arena and passing through the centre point X. For example, a 20-metre circle at A would touch the track at A, pass through the centre line at X, touch the long side at E or B (depending on direction), and return to A. The shape should be truly round — not egg-shaped, diamond-shaped, or lopsided. Riding an accurate circle requires the rider to use all four aids: the inside leg on the girth to maintain bend and impulsion, the outside leg behind the girth to prevent the quarters from swinging out, the inside rein for flexion, and the outside rein to control the bend and the size of the circle.
 
-A 15-metre circle is smaller and more demanding. It is ridden within the arena without touching the opposite long side. For example, a 15-metre circle at E would loop inward from the track by approximately 2.5 metres on each side. The smaller radius requires more bend from the horse and greater balance from the rider. It is an excellent exercise for developing the horse's suppleness and engagement.
+Smaller circles are more demanding because they require more balance, bend and coordination. Practise them only with an instructor’s guidance, at a size appropriate to the horse, rider, arena and current test or exercise instructions.
 
-A 10-metre circle is used primarily in canter work and more advanced schooling. It requires a significant degree of collection and bend and should only be attempted when both horse and rider are sufficiently trained.
-
-Other important school figures include the half-circle and return to the track (sometimes called a demi-volte), the figure of eight, the serpentine, and the shallow loop. A serpentine consists of a series of equal-sized loops across the width of the arena, with each loop touching the long side. A three-loop serpentine in a 40-metre arena produces loops of approximately 13 metres each. When riding a serpentine, the rider must change the bend each time the centre line is crossed, which develops coordination and the horse's ability to change flexion smoothly.
-
-Shallow loops are ridden along the long side of the arena. A 5-metre loop, for instance, requires the horse to leave the track, loop inward by 5 metres, and return to the track. This exercise tests the rider's ability to maintain a consistent bend while keeping the horse balanced on a gentle curve.
+Other important school figures include the half-circle and return to the track (sometimes called a demi-volte), the figure of eight, the serpentine and the shallow loop. A serpentine consists of a series of balanced loops across the arena, with a smooth change of bend each time the centre line is crossed. A shallow loop leaves the track, follows a gentle inward curve and returns to the track. Use the current arena diagram and instructor direction to choose the size and placement of each figure.
 
 Straightness on the long sides and centre line is just as important as accuracy on curved lines. The horse should travel parallel to the sides of the arena, not drifting inward or outward. On the centre line, the horse should be perfectly straight, with the nose, shoulders, and hindquarters all aligned. Any deviation is immediately visible and is penalised in dressage tests.
 
@@ -5549,7 +5408,7 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
     safetyNote:
       "When riding school figures in a shared arena, be aware of other riders' lines. Call out clearly when changing the rein or riding across the arena. Give way to riders on the outside track and adjust your figures to avoid collisions.",
     practicalApplication:
-      "Practise riding a 20-metre circle at E or B in trot. Use markers or cones to check accuracy — place them at the four key points of the circle. Once the 20-metre circle is consistent, try reducing to a 15-metre circle and note how the aids need to change. Finish with a three-loop serpentine, focusing on smooth changes of bend.",
+      "Practise a circle at the markers specified by your instructor or current arena diagram. Use markers or cones to check a consistent shape. When horse and rider are ready, practise a smaller figure or a serpentine under instruction, focusing on balance and smooth changes of bend rather than copying a fixed size from another arena.",
     commonMistakes: [
       "Riding egg-shaped or lopsided circles instead of truly round ones",
       "Losing rhythm or balance when riding smaller circles",
@@ -5559,7 +5418,8 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
     ],
     knowledgeCheck: [
       {
-        question: "What are the four key points of a 20-metre circle at A in a 20x40 arena?",
+        question:
+          "What are the four key points of a 20-metre circle at A in a 20x40 arena?",
         options: [
           "A, E or B, X, and C",
           "A, the centre line at X, the opposite long side at E or B, and back to A",
@@ -5571,7 +5431,8 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
           "A 20-metre circle at A touches the track at A, passes through X on the centre line, touches the long side at E or B, and returns to A, creating a truly round shape.",
       },
       {
-        question: "How many loops does a standard three-loop serpentine have, and where does the bend change?",
+        question:
+          "How many loops does a standard three-loop serpentine have, and where does the bend change?",
         options: [
           "Three loops, with the bend changing at each long side",
           "Three loops, with the bend changing each time the centre line is crossed",
@@ -5622,113 +5483,116 @@ Regular practice of school figures at walk, trot, and canter develops the rider'
     category: "Rider Development",
     sortOrder: 5,
     objectives: [
-      "Understand what an independent seat is and why it matters for effective riding",
-      "Identify the key elements of a balanced riding position",
-      "Learn exercises to develop core stability and an independent seat",
-      "Recognise how rider balance directly affects the horse's way of going",
+      "Use qualified coaching to reflect on rider position, balance, and security",
+      "Recognise that position cues must be adapted to the individual rider, horse, saddle, activity, and conditions",
+      "Recognise when any mounted or off-horse exercise requires qualified approval or health-professional input",
+      "Report rider-security, horse-comfort, tack, footing, or conditions concerns through the qualified coaching route",
     ],
-    content: `An independent seat is the ability to maintain a stable, balanced position in the saddle without relying on the reins for support or the stirrups for security. It means the rider can use each aid — hands, legs, and seat — independently and with precision, without one action interfering with another. Developing an independent seat is one of the most important goals for any rider, as it directly affects how well the rider communicates with the horse and how freely the horse can move.
+    content: `“Independent seat” is a coaching term that may describe a rider’s developing balance, security, and ability to follow qualified instruction without using the reins as support. It is not a medical diagnosis, a universal position standard, proof of horse comfort, or a substitute for assessment by a qualified coach, health professional, saddle fitter, or veterinarian. The reviewed coach guidance requires ridden work on horses suitable for the participant level and under coach instruction and supervision; every position cue and exercise must be adapted to the individual partnership and current conditions.
 
-The foundation of the independent seat is correct alignment. When viewed from the side, the rider's ear, shoulder, hip, and heel should be in a vertical line. This alignment places the rider's centre of gravity directly over the horse's centre of gravity, creating a partnership in balance. If any of these points fall out of alignment — the shoulder ahead of the hip, the heel drawn up, or the hip behind the shoulder — the rider becomes unbalanced and must compensate, often by gripping with the knees, hanging on the reins, or bracing in the stirrups.
+A qualified coach may observe how the rider appears positioned in the current saddle, task, pace, and setting. Familiar reference points such as the head, shoulders, hips, legs, feet, hands, and stirrups can help a coach communicate, but no single line, posture, or cue is correct for every rider, horse, discipline, or circumstance. An observation does not establish a rider’s anatomy, saddle fit, horse comfort, centre of gravity, or the cause of a movement concern.
 
-Core stability is central to the independent seat. The rider's core muscles — the abdominals, obliques, and lower back muscles — act as the stabilising centre from which all movement radiates. A strong core allows the rider to absorb the horse's movement without stiffening, to follow the motion of each gait, and to apply aids clearly and effectively. However, core engagement does not mean rigidity; the rider must be firm yet elastic, stable yet supple.
+A coach may use terms such as stability, balance, comfort, tension, and security in an individual coaching discussion. Learners should not infer that apparent tension, weakness, asymmetry, pain, or loss of balance has one cause or can be corrected through a generic lesson. Persistent pain, injury, limitation, or health concern requires an appropriately qualified health professional; horse discomfort, behaviour, or tack concerns require the appropriate responsible or qualified person.
 
-The pelvis plays a crucial role in balance. The rider should sit on the two seat bones and the pubic bone — the three-point seat — with the pelvis in a neutral position, neither tipped too far forward (which hollows the back) nor too far back (which rounds the back and causes the rider to sit on the back of the seat bones). A neutral pelvis allows the lower back to absorb movement and the hips to follow the horse's stride.
+A qualified coach may use a cue about the rider’s pelvis, upper body, hips, or seat only after considering the individual rider, horse, saddle, pace, task, comfort, and safety context. The cue is not a diagnosis or a fixed anatomical treatment. If a rider feels pain, numbness, insecurity, or persistent discomfort, they should stop and seek appropriate qualified advice rather than attempting to self-correct through a generic instruction.
 
-The legs contribute to balance but should not be the primary source of stability. The thigh should lie flat against the saddle with a long, draped feel. The knee should be soft and slightly bent, not gripping. The lower leg should hang naturally at the horse's side, with the ball of the foot on the stirrup and the heel gently stretching down. Gripping with the knee or calf is a common fault that actually reduces stability by lifting the rider out of the saddle and preventing the seat from deepening.
+The reviewed coach guidance supports a focus on rider position, balance, security, appropriate assistance, and safe foot placement in the stirrup. The qualified coach must determine any further leg, knee, foot, or stirrup cue for the individual rider and activity. Do not assume that a visible position feature proves a cause, creates a particular horse response, or can be changed safely without qualified input.
 
-The hands and arms must operate independently of the rider's balance. Many developing riders use the reins as a balancing aid, holding on when they feel insecure. This creates a hard, unforgiving contact that restricts the horse's movement and causes the horse to resist or become tense. The arms should hang naturally from relaxed shoulders, with a straight line from elbow to hand to the horse's mouth. The fingers should close softly around the reins, maintaining an elastic contact that follows the horse's head movement.
+Riders should not use reins or other equipment in a way that conflicts with their current coach instruction or compromises safety. If the rider feels insecure, the coach may select a safe support or change the exercise; the reviewed guidance allows aids such as a neck strap where required. Do not treat a generic hand, arm, shoulder, rein, or contact description as a universal rule or a means to diagnose horse comfort or behaviour.
 
-Exercises to develop an independent seat include riding without stirrups at walk and trot, arm exercises while riding (such as placing hands on hips, raising arms to the side, or touching the horse's ears and tail), and transitions within and between gaits. Lunging lessons — where the rider is on a lunge line controlled by the instructor — are particularly valuable because the rider can focus entirely on position without worrying about steering.
+A qualified coach may select an exercise, level of assistance, and progression only after assessing the current partnership and conditions. No-stirrup work, arm movements, transitions, lunge work, and any unfamiliar task are not universal balance tests or programmes. They require explicit coach approval, a suitable horse, appropriate equipment and setting, supervision, and current emergency arrangements. Stop or postpone the activity when rider security, horse comfort or behaviour, tack, footing, weather, or support is unsuitable.
 
-Off-horse exercises are equally important. Yoga, Pilates, and core stability work all develop the suppleness, strength, and body awareness that transfer directly to riding. Specific exercises include the plank, single-leg balance work, hip flexor stretches, and exercises on a stability ball that mimic the movement of the saddle.
+Any off-horse activity must suit the individual’s health, experience, and current professional advice. This lesson does not prescribe yoga, Pilates, core work, rehabilitation, stretching, strength training, duration, frequency, or a health outcome. Seek an appropriately qualified health or exercise professional for pain, injury, persistent limitation, or individual exercise planning.
 
-The independent seat is not achieved overnight. It is a gradual process that requires patience, consistent practice, and honest self-assessment. Riders should regularly check their position — are the shoulders back, is the core engaged, is the seat deep, are the hands independent? — and be willing to return to basics whenever faults creep in. The reward is a rider who sits in true harmony with the horse, communicating through subtle shifts of weight and gentle aids rather than force and tension.`,
+Developing rider balance should follow an individual, welfare-aware coaching plan. The qualified coach and responsible person decide whether the current horse, rider, tack, setting, supervision, and exercise remain suitable. Use this lesson to prepare questions for a qualified coach, not to self-prescribe a correction, blame the rider or horse, or progress an activity independently.`,
     keyPoints: [
-      "An independent seat means the rider can use hands, legs, and seat independently without relying on any one for balance",
-      "Correct alignment — ear, shoulder, hip, heel in a vertical line — is the foundation of balance",
-      "Core stability provides the stabilising centre for all rider movement; it should be firm yet elastic",
-      "The pelvis should be in a neutral position, allowing the lower back to absorb the horse's movement",
-      "Riding without stirrups and lunge lessons are invaluable for developing an independent seat",
-      "Off-horse exercises such as Pilates and core stability work directly benefit the rider's position",
+      "“Independent seat” is a coaching term, not a diagnosis, universal standard, proof of horse comfort, or substitute for qualified assessment",
+      "Position cues must be adapted by a qualified coach to the individual rider, horse, saddle, task, and current conditions",
+      "Pain, injury, persistent limitation, horse discomfort, behaviour, or tack concerns require the appropriate qualified professional",
+      "An observation of the rider’s pelvis, seat, legs, hands, or shoulders does not establish cause or a safe correction",
+      "No-stirrup work, lunge work, or any new exercise require explicit coach approval, suitable conditions, and current safety controls",
+      "Off-horse exercise must be individualised and must not be prescribed from this lesson as a treatment or guaranteed riding outcome",
     ],
     safetyNote:
-      "Riding without stirrups should only be done on a calm, reliable horse in an enclosed arena and under supervision. If you feel unbalanced, take your stirrups back immediately. Never attempt exercises without stirrups at canter until your instructor confirms you are ready.",
+      "Do not begin or progress no-stirrup work, lunge work, or any new balance exercise without coach instruction and the responsible person’s current safety arrangements. Stop if rider security, horse comfort or behaviour, tack, footing, weather, supervision, or emergency arrangements become unsuitable, then obtain qualified advice.",
     practicalApplication:
-      "During your next lesson, ask your instructor for five minutes of walk work without stirrups. Focus on letting your legs hang long and heavy, sitting on your seat bones, and maintaining a tall upper body. If comfortable, try a short period of trot without stirrups on a 20-metre circle. Between rides, practise a two-minute plank and single-leg balance exercises at home.",
+      "Ask a qualified coach which position observation, support, and exercise are suitable for your current horse-and-rider partnership. Follow the individual plan rather than starting no-stirrup, lunge, fitness, strengthening, stretching, or position-correction work from this lesson. Report any safety, comfort, tack, footing, or conditions concern promptly.",
     commonMistakes: [
-      "Gripping with the knees, which lifts the seat out of the saddle and reduces stability",
-      "Using the reins for balance, creating a hard contact that restricts the horse",
-      "Tipping forward from the waist, placing the rider ahead of the horse's centre of gravity",
-      "Rounding the lower back and sitting on the back of the seat bones instead of maintaining a neutral pelvis",
-      "Stiffening through the hips and lower back instead of absorbing the horse's movement",
+      "Using a position cue to diagnose rider health, horse comfort, saddle fit, or the cause of a performance concern",
+      "Continuing an exercise without the instruction, supervision, support, or conditions identified in the current coaching plan",
+      "Progressing to no-stirrup, lunge, a faster pace, or a new exercise without explicit coach approval",
+      "Self-prescribing an off-horse fitness, rehabilitation, or treatment programme from a generic riding lesson",
+      "Blaming either rider or horse without qualified assessment of the individual partnership and current context",
     ],
     knowledgeCheck: [
       {
-        question: "What is an independent seat?",
+        question: "How should a learner use the term ‘independent seat’?",
         options: [
-          "The ability to ride without a saddle",
-          "The ability to maintain balance without relying on the reins or stirrups, using each aid independently",
-          "A type of saddle designed for balance",
-          "The ability to ride with one hand",
+          "As a medical diagnosis of the rider",
+          "As a coach-led description that must be adapted to the individual partnership and current conditions",
+          "As proof that the horse is comfortable",
+          "As a reason to begin no-stirrup work alone",
         ],
         correctIndex: 1,
         explanation:
-          "An independent seat means the rider can maintain a stable, balanced position without using the reins for support or stirrups for security, and can apply each aid independently.",
+          "Independent seat is a coaching term. It does not diagnose a rider or horse, prove horse comfort, or replace qualified assessment and coach-approved progression.",
       },
       {
-        question: "Which alignment is correct for a balanced riding position?",
+        question:
+          "Who should determine whether a position cue is suitable for a rider?",
         options: [
-          "Ear, knee, toe in a line",
-          "Shoulder, hand, heel in a line",
-          "Ear, shoulder, hip, heel in a vertical line",
-          "Head, elbow, knee, ankle in a line",
+          "The rider alone using a fixed online diagram",
+          "A qualified coach considering the rider, horse, saddle, task, discipline, and current conditions",
+          "Any spectator who sees the horse move",
+          "A generic assessment that applies to every partnership",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A visible position feature does not establish anatomy, saddle fit, horse comfort, or cause. The qualified coach must adapt a cue to the individual partnership and context.",
+      },
+      {
+        question:
+          "What should a rider do if a position concern is accompanied by pain, persistent limitation, insecurity, horse discomfort, or a tack concern?",
+        options: [
+          "Continue until a generic exercise fixes it",
+          "Diagnose the cause from the rider’s position",
+          "Stop or move to safety as directed and seek the appropriate qualified advice",
+          "Progress to a more difficult balance exercise",
         ],
         correctIndex: 2,
         explanation:
-          "The ear, shoulder, hip, and heel should form a vertical line when viewed from the side. This places the rider's centre of gravity over the horse's centre of gravity.",
+          "A generic lesson cannot diagnose the cause of a concern. Stop, follow the current safety arrangement, and obtain qualified coaching, health, tack, or horse-care advice as appropriate.",
       },
       {
-        question: "Why is gripping with the knee a fault?",
+        question:
+          "How should a rider choose an off-horse exercise for a position or balance concern?",
         options: [
-          "It causes the rider to lean forward",
-          "It lifts the seat out of the saddle and pushes the lower leg away, reducing stability",
-          "It makes the horse go faster",
-          "It wears out the saddle",
-        ],
-        correctIndex: 1,
-        explanation:
-          "Gripping with the knee acts as a pivot point, lifting the seat out of the saddle and swinging the lower leg away from the horse's side. This reduces stability and makes it harder to apply effective leg aids.",
-      },
-      {
-        question: "What off-horse activity is particularly beneficial for developing rider balance?",
-        options: [
-          "Running long distances",
-          "Weightlifting with heavy weights",
-          "Pilates or core stability exercises",
-          "Swimming",
+          "Use a generic programme as treatment",
+          "Choose the most difficult online exercise",
+          "Use an individual plan from an appropriate qualified professional when needed",
+          "Assume that all core exercises transfer directly to riding",
         ],
         correctIndex: 2,
         explanation:
-          "Pilates and core stability exercises develop the suppleness, strength, and body awareness that directly transfer to the riding position. They specifically target the core muscles that stabilise the rider in the saddle.",
+          "This lesson does not prescribe fitness, rehabilitation, stretching, or treatment. Pain, injury, persistent limitation, and individual exercise planning require an appropriately qualified professional.",
       },
       {
-        question: "What is the benefit of lunge lessons for developing an independent seat?",
+        question: "When may lunge work or no-stirrup work be considered?",
         options: [
-          "The rider can go faster on the lunge",
-          "The rider can focus entirely on position without worrying about steering",
-          "The horse learns to lunge better",
-          "The instructor can stand further away",
+          "For every rider as a required balance test",
+          "Only when a qualified coach explicitly approves it for the individual partnership and current safety conditions",
+          "Whenever the rider wants a harder activity",
+          "When there is no supervision available",
         ],
         correctIndex: 1,
         explanation:
-          "On the lunge, the instructor controls the horse, freeing the rider to concentrate fully on their position, balance, and the feel of the horse's movement without the distraction of steering.",
+          "Lunge and no-stirrup work are not universal balance tests or programmes. They require coach approval, suitable conditions, appropriate equipment, supervision, and current safety controls.",
       },
     ],
     aiTutorPrompts: [
-      "What are the best off-horse exercises I can do to improve my seat and core stability?",
-      "How do I know if I am gripping with my knees, and what does it feel like when I stop?",
-      "Can you explain the concept of a three-point seat and neutral pelvis in more detail?",
+      "Which individual position, balance, or off-horse support should I discuss with a qualified coach or health professional?",
+      "Which current coach-approved observation and support are appropriate for my horse-and-rider partnership?",
+      "When should I stop a balance exercise and seek qualified coaching, health, tack, or horse-care advice?",
     ],
     linkedCompetencies: ["balance_and_coordination", "rider_position"],
   },
@@ -5822,7 +5686,8 @@ A responsible rider always prioritises the horse's welfare by allowing adequate 
           "The cool-down allows the horse's body to recover gradually. Without it, the horse risks muscle stiffness, tying-up, dehydration, and general discomfort.",
       },
       {
-        question: "What additional measure should be taken when cooling down in hot weather?",
+        question:
+          "What additional measure should be taken when cooling down in hot weather?",
         options: [
           "Put a heavy rug on the horse",
           "Allow the horse to drink as much water as it wants immediately",
@@ -5892,7 +5757,8 @@ Good preparation becomes second nature with practice, and it is a mark of a comm
     ],
     knowledgeCheck: [
       {
-        question: "How early should a rider aim to arrive before a lesson if they need to groom and tack up?",
+        question:
+          "How early should a rider aim to arrive before a lesson if they need to groom and tack up?",
         options: [
           "Five minutes before",
           "At least thirty minutes before",
@@ -5904,7 +5770,8 @@ Good preparation becomes second nature with practice, and it is a mark of a comm
           "Arriving at least thirty minutes before the lesson allows adequate time to groom the horse properly, tack up carefully, and perform all safety checks without rushing.",
       },
       {
-        question: "What should the rider check when picking out the horse's feet?",
+        question:
+          "What should the rider check when picking out the horse's feet?",
         options: [
           "Only whether the shoes are shiny",
           "Stones, signs of thrush, and the condition of the shoes",
@@ -6011,7 +5878,8 @@ Finally, reflection should be balanced. It is easy to focus only on what went wr
     ],
     knowledgeCheck: [
       {
-        question: "What is a useful framework for reflecting on a riding session?",
+        question:
+          "What is a useful framework for reflecting on a riding session?",
         options: [
           "Rate the session out of ten",
           "What went well? What was challenging? What will I focus on next time?",
@@ -6092,7 +5960,7 @@ The key elements of collection are:
 - **Self-carriage** — The horse maintains its frame and balance without relying on the rider's hand for support. You can test self-carriage by momentarily softening the rein contact — a collected horse will maintain its outline.
 - **Throughness** (*Durchlässigkeit*) — This German training term refers to the horse being permeable to the aids, with energy flowing from the hindquarters through a supple back to a soft, accepting contact. A horse that is truly 'through' responds instantly and lightly to the rider's seat, leg, and hand.
 
-Achieving collection takes months of progressive training. It cannot be forced or faked by pulling the horse's head in with the reins. The BHS and classical training scales emphasise that collection is the final stage, built upon rhythm, suppleness, contact, impulsion, and straightness.
+Achieving collection takes months of progressive training. It cannot be forced or faked by pulling the horse's head in with the reins. A progressive training approach treats collection as a later-stage outcome built upon rhythm, suppleness, contact, impulsion, and straightness.
 
 ## Medium and Extended Gaits
 
@@ -6167,7 +6035,8 @@ This lesson provides the theoretical foundation — practical work on flying cha
           "True collection involves the horse engaging its hindquarters to carry more weight, lowering the croup, and lightening the forehand. It is generated from behind, not created by the rider's hands.",
       },
       {
-        question: "In a medium trot, what should remain the same as in working trot?",
+        question:
+          "In a medium trot, what should remain the same as in working trot?",
         options: [
           "The stride length",
           "The frame and outline",
@@ -6230,7 +6099,7 @@ Video is the single most powerful tool for self-assessment. What you feel in the
 - **Accuracy** — Are your circles round? Are your changes of rein through X? Do you ride into the corners?
 - **Rhythm and tempo** — Is the horse's rhythm consistent, or does it speed up and slow down?
 
-Compare your video with footage of riders you admire or training videos from BHS-approved coaches. Note the differences without being self-critical — the goal is objective assessment, not self-punishment.
+Compare your video with footage of riders you admire or demonstrations from suitably qualified coaches. Note the differences without being self-critical — the goal is objective assessment, not self-punishment.
 
 ## Objective Self-Assessment
 
@@ -6251,13 +6120,9 @@ Effective goals follow the **SMART** framework:
 - **Measurable** — How will you know you have achieved it? "I will perform three balanced canter-to-trot transitions on each rein without the horse falling onto the forehand."
 - **Achievable** — Set goals that stretch you but are realistic given your current level and the horse's training.
 - **Relevant** — The goal should address a genuine weakness or support your broader riding ambitions.
-- **Time-bound** — "I will achieve this within four weeks" gives you a deadline to work towards.
+- **Time-aware** — Agree a realistic review point with your coach or responsible instructor, taking account of the horse, rider, welfare and access to suitable supervision.
 
-Break larger goals into smaller milestones. For example, if your goal is to ride a balanced medium trot, milestones might include:
-1. Week 1–2: Improve half-halts to prepare for the transition.
-2. Week 3–4: Ride three strides of lengthening on each diagonal.
-3. Week 5–6: Sustain a medium trot for the full diagonal.
-4. Week 7–8: Ride medium trot with a balanced transition back to working trot.
+Break larger goals into smaller, coach-agreed milestones. For a balanced medium trot, this might mean first checking that the horse and rider are ready for the work; then practising preparation under suitable supervision; then reviewing the quality of a brief attempt; and finally deciding with the coach whether the next progression is appropriate. Stop, simplify or seek advice if the horse becomes tense, uncomfortable or unbalanced.
 
 ## Creating Improvement Plans
 
@@ -6265,25 +6130,25 @@ An improvement plan brings goals and self-assessment together into a practical r
 
 **Structure of an improvement plan:**
 - **Current assessment** — Where are you now? (Use video and journal evidence.)
-- **Target** — Where do you want to be in 8–12 weeks?
-- **Weekly focus areas** — What will you work on each week?
+- **Target** — What improvement is appropriate for the horse and rider at this stage?
+- **Focus areas** — What coach-agreed skill or welfare observation will you work on next?
 - **Resources needed** — Do you need a coach session, a different horse, or specific equipment?
-- **Review points** — Schedule regular check-ins (every 2–4 weeks) to review progress and adjust the plan.
+- **Review points** — Agree review points with the coach and revise the plan when welfare, safety, progress or circumstances change.
 
-Share your improvement plan with your coach or a knowledgeable friend. External perspective helps keep your assessment honest and your goals realistic. Re-film yourself every few weeks and compare the footage to track genuine progress.
+Share the improvement plan with a qualified coach. External perspective helps keep assessment honest, welfare-aware and realistic. Re-film only when it is safe and useful, then review the footage against the coach-agreed focus rather than a generic schedule.
 
 Self-coaching is not a replacement for professional coaching — it is a complement. The most effective approach combines regular self-assessment with periodic lessons from a qualified coach who can identify issues you cannot see or feel yourself.`,
     keyPoints: [
-      "Video analysis provides objective evidence of your riding that feelings alone cannot",
-      "Use a structured self-assessment framework after every session: what went well, what to improve, horse feedback, next focus",
-      "Set SMART goals — specific, measurable, achievable, relevant, and time-bound",
-      "Break larger goals into weekly milestones to make progress manageable and trackable",
+      "Video analysis provides an objective record that can complement qualified coaching",
+      "Use a structured self-assessment framework after a suitable session: what went well, what to improve, horse feedback, next focus",
+      "Set goals that are specific, measurable, achievable, relevant and reviewed at a coach-agreed time",
+      "Break larger goals into coach-agreed milestones that can be revised for welfare, safety and progress",
       "Self-coaching complements professional coaching — it does not replace it",
     ],
     safetyNote:
       "When filming your riding, ensure the camera is positioned safely outside the arena and does not obstruct the horse's path. If you are riding alone to practise self-coaching, always tell someone where you are and when you expect to finish. Never attempt challenging exercises without supervision for the first time, regardless of your self-assessment confidence.",
     practicalApplication:
-      "Set up a phone or camera to record your next schooling session from the long side. Afterwards, watch the footage and complete the four-point self-assessment: what went well, what to improve, horse feedback, and next focus. Set one SMART goal based on your assessment and write an improvement plan for the next four weeks. Re-film yourself at the end of week four and compare the footage.",
+      "With a qualified coach’s agreement, record a suitable schooling session from a safe position. Review it using the four-point reflection: what went well, what to improve, horse feedback and next focus. Agree one appropriate goal and a review point with the coach; only re-film when it is safe and useful for that review.",
     commonMistakes: [
       "Only recording the good parts of a session rather than filming the entire ride for honest assessment",
       "Setting vague goals such as 'ride better' instead of specific, measurable targets",
@@ -6304,12 +6169,7 @@ Self-coaching is not a replacement for professional coaching — it is a complem
       },
       {
         question: "What does the 'M' in SMART goals stand for?",
-        options: [
-          "Motivated",
-          "Measurable",
-          "Mounted",
-          "Multiple",
-        ],
+        options: ["Motivated", "Measurable", "Mounted", "Multiple"],
         correctIndex: 1,
         explanation:
           "The 'M' stands for Measurable. A measurable goal has clear criteria for success, such as 'Perform three balanced transitions on each rein,' so you know when you have achieved it.",
@@ -6330,7 +6190,7 @@ Self-coaching is not a replacement for professional coaching — it is a complem
     aiTutorPrompts: [
       "Can you help me create a SMART goal for improving my canter transitions?",
       "What specific things should I look for when analysing a video of my trot work?",
-      "How do I write a four-week improvement plan for my flatwork?",
+      "How do I create a coach-agreed improvement plan that can be revised for welfare, safety and progress?",
     ],
     linkedCompetencies: ["rider_position", "welfare_awareness"],
   },
@@ -6397,16 +6257,30 @@ Polework should be introduced gradually. Start with one pole, then add more as c
     ],
     knowledgeCheck: [
       {
-        question: "What is the most important thing to look at when riding over a ground pole?",
-        options: ["The pole itself", "Your horse's ears", "A point ahead beyond the pole", "The ground on the other side"],
+        question:
+          "What is the most important thing to look at when riding over a ground pole?",
+        options: [
+          "The pole itself",
+          "Your horse's ears",
+          "A point ahead beyond the pole",
+          "The ground on the other side",
+        ],
         correctIndex: 2,
-        explanation: "Looking ahead beyond the pole keeps your weight centred and allows you to plan your line. Looking down at the pole causes you to tip forward and unbalances the horse.",
+        explanation:
+          "Looking ahead beyond the pole keeps your weight centred and allows you to plan your line. Looking down at the pole causes you to tip forward and unbalances the horse.",
       },
       {
-        question: "What should happen to the rhythm when trotting over a single pole?",
-        options: ["The horse should speed up to jump it", "The rhythm should stay the same before, over, and after", "The horse should slow to walk", "You should post higher"],
+        question:
+          "What should happen to the rhythm when trotting over a single pole?",
+        options: [
+          "The horse should speed up to jump it",
+          "The rhythm should stay the same before, over, and after",
+          "The horse should slow to walk",
+          "You should post higher",
+        ],
         correctIndex: 1,
-        explanation: "The rhythm should remain consistent. The pole is simply part of the track — the horse should maintain its tempo without rushing or hesitating.",
+        explanation:
+          "The rhythm should remain consistent. The pole is simply part of the track — the horse should maintain its tempo without rushing or hesitating.",
       },
     ],
     aiTutorPrompts: [
@@ -6424,20 +6298,20 @@ Polework should be introduced gradually. Start with one pole, then add more as c
     category: "Polework & Jump Foundations",
     sortOrder: 2,
     objectives: [
-      "Understand correct trot pole distances for horses and ponies",
-      "Set up a row of three to five trot poles with accurate spacing",
-      "Ride through a trot pole grid maintaining rhythm, balance, and straightness",
-      "Adjust distances for different horse sizes and stride lengths",
+      "Understand why pole spacing must be set for the individual horse, exercise and conditions",
+      "Prepare a coach-approved pole exercise with a safe approach and exit",
+      "Ride through a pole exercise while maintaining rhythm, balance and straightness",
+      "Observe the horse’s response and seek qualified adjustment when spacing or setup needs review",
     ],
     content: `Once you are confident walking and trotting over single poles, the next step is to work through a row of poles — commonly called a grid. Grids develop the horse's ability to judge distances, improve its coordination, and build the strength needed for jumping. For the rider, grids demand consistent rhythm, accurate steering, and core stability.
 
-## Correct Trot Pole Distances
+## Individual Pole Spacing
 
-The standard distance between trot poles for an average 16hh horse is approximately 1.2 to 1.4 metres (4 to 4.5 feet). For ponies under 14.2hh, reduce the distance to approximately 0.9 to 1.1 metres (3 to 3.5 feet). These distances allow the horse to place one trot stride between each pole without stretching or shortening unnaturally.
+Pole spacing is not a universal horse-versus-pony table. It depends on the individual horse’s way of going, fitness, current training, rider, surface, pole type and exercise objective. A qualified coach should set, observe and adjust the exercise; a learner must not apply a copied measurement from a lesson as an instruction.
 
-## Setting Up a Trot Grid
+## Setting Up a Pole Exercise
 
-Lay three to five poles in a straight line at the correct distance. Ensure the poles are perpendicular to the line of travel and parallel to each other. Place the grid on a straight section of the arena — not on a turn. There should be at least three horse-lengths of straight approach before the first pole and space to ride straight away after the last pole.
+Use a straight, level area with a clear approach and exit, and set the number and arrangement of poles only as approved for the individual horse and exercise. Confirm that poles are secure, visible and not placed on a turn, in a gateway or where surface conditions create a risk.
 
 ## Riding Through the Grid
 
@@ -6451,16 +6325,16 @@ If the horse consistently clips poles or takes choppy steps, the distance may ne
 
 Once the basic grid is comfortable, you can raise alternate poles onto small blocks to create a bouncing effect that encourages greater engagement. You can also add a small cross-pole after the grid as an introduction to jumping from trot.`,
     keyPoints: [
-      "Standard trot pole distance is 1.2–1.4m for horses, 0.9–1.1m for ponies",
-      "Set grids on straight lines with adequate approach and exit space",
+      "Pole spacing must be set, observed and adjusted for the individual horse, exercise, surface and qualified-coach guidance",
+      "Use a straight, level setup with a clear approach and exit that has been assessed as safe for the current exercise",
       "Maintain consistent rhythm — the horse should step neatly between each pole",
       "Adjust distances to suit the individual horse's stride length",
       "Progress by raising alternate poles or adding a small fence after the grid",
     ],
     safetyNote:
-      "Always measure pole distances carefully. Incorrect spacing forces the horse into awkward strides that can cause trips or knock confidence. Check poles have not rolled between uses.",
+      "Do not set or alter pole spacing from a copied generic table. Use a qualified coach to assess the horse, rider, surface, pole arrangement and current exercise; stop if the horse appears uncomfortable, unsettled or unsafe. Check that poles have not rolled between uses.",
     practicalApplication:
-      "Set up four trot poles at 1.3m spacing. Ride through in trot on both reins five times each. Observe whether your horse steps centrally between each pole. If it clips any pole, adjust the spacing and repeat.",
+      "With a qualified coach, set a pole exercise appropriate to the individual horse and current conditions. Ride only the coach-agreed approaches, observe rhythm and straightness, and report any concern for the setup to be reassessed rather than changing it independently.",
     commonMistakes: [
       "Not measuring distances accurately — guessing leads to incorrect spacing",
       "Allowing the horse to drift sideways through the grid instead of staying straight",
@@ -6470,16 +6344,29 @@ Once the basic grid is comfortable, you can raise alternate poles onto small blo
     ],
     knowledgeCheck: [
       {
-        question: "What is the standard trot pole distance for an average 16hh horse?",
-        options: ["0.5 metres", "1.2 to 1.4 metres", "2.0 metres", "3.0 metres"],
+        question: "How should trot-pole spacing be determined?",
+        options: [
+          "By copying the same measurement for every horse",
+          "By a qualified coach assessing the individual horse, exercise, rider, surface and current conditions",
+          "By placing poles as close together as possible",
+          "By changing several parts of the exercise at once until the horse stops touching poles",
+        ],
         correctIndex: 1,
-        explanation: "The standard distance is 1.2–1.4 metres, which allows one trot stride between each pole for a horse of average size.",
+        explanation:
+          "Pole spacing is individual. A qualified coach should set and observe the exercise, then make safe adjustments based on the horse, rider, footing and learning objective rather than a copied table.",
       },
       {
-        question: "What should you do if your horse consistently clips the trot poles?",
-        options: ["Ride faster", "Shout at the horse", "Adjust the pole distances", "Remove the poles"],
+        question:
+          "What should you do if your horse consistently clips the trot poles?",
+        options: [
+          "Ride faster",
+          "Shout at the horse",
+          "Adjust the pole distances",
+          "Remove the poles",
+        ],
         correctIndex: 2,
-        explanation: "Clipping poles usually means the distances are wrong for that horse's stride. Adjust the spacing and observe whether the problem resolves.",
+        explanation:
+          "Clipping poles is a reason to stop and ask a qualified coach to reassess the horse, approach, rhythm, surface and setup. Do not independently apply a generic spacing correction.",
       },
     ],
     aiTutorPrompts: [
@@ -6543,16 +6430,29 @@ The jumping position can and should be practised without poles first. At halt, s
     ],
     knowledgeCheck: [
       {
-        question: "Where should the rider fold when adopting the jumping position?",
-        options: ["From the waist", "From the hip", "From the knee", "From the shoulders"],
+        question:
+          "Where should the rider fold when adopting the jumping position?",
+        options: [
+          "From the waist",
+          "From the hip",
+          "From the knee",
+          "From the shoulders",
+        ],
         correctIndex: 1,
-        explanation: "The rider folds from the hip joint, closing the angle between thigh and torso. Folding from the waist rounds the back, which is incorrect.",
+        explanation:
+          "The rider folds from the hip joint, closing the angle between thigh and torso. Folding from the waist rounds the back, which is incorrect.",
       },
       {
         question: "What is a 'crest release'?",
-        options: ["Dropping the reins completely", "Pushing hands forward along the horse's neck crest over a fence", "Gripping the mane", "Letting the horse slow down"],
+        options: [
+          "Dropping the reins completely",
+          "Pushing hands forward along the horse's neck crest over a fence",
+          "Gripping the mane",
+          "Letting the horse slow down",
+        ],
         correctIndex: 1,
-        explanation: "A crest release involves pushing the hands forward along the crest of the horse's neck to allow the head and neck to stretch over the fence without catching the mouth.",
+        explanation:
+          "A crest release involves pushing the hands forward along the crest of the horse's neck to allow the head and neck to stretch over the fence without catching the mouth.",
       },
     ],
     aiTutorPrompts: [
@@ -6572,18 +6472,18 @@ The jumping position can and should be practised without poles first. At halt, s
     objectives: [
       "Understand what a cross-rail fence is and why it is used for early jumping",
       "Approach and jump a small cross-rail from trot with correct position and rhythm",
-      "Know how to ride a simple course of two to three small fences",
+      "Know how to follow a qualified coach’s safe, horse-specific plan for a simple fence exercise",
       "Identify and correct common faults when jumping small fences",
     ],
     content: `A cross-rail (or cross-pole) is the ideal first fence for a novice jumper. The poles cross in the centre, creating a low point in the middle that naturally guides the horse to jump in the centre. Cross-rails are inviting, forgiving, and build confidence for both horse and rider.
 
 ## Setting Up a Cross-Rail
 
-A cross-rail is made by resting two poles in an X shape — one end of each pole is on the ground, and the other end is raised on a cup or block. The centre of the X should be approximately 30–45cm high. Place a ground pole approximately 2.5 metres in front of the cross-rail to help the horse judge its take-off point.
+A cross-rail is made by resting two poles in an X shape—one end of each pole is on the ground and the other end is raised on a suitable support. Height, placing-pole use and all distances must be set, checked and observed by a qualified coach for the individual horse, rider, surface and current exercise; do not copy a generic setup from this lesson.
 
 ## Approaching the Fence
 
-Approach in a steady, balanced trot. Look beyond the fence, not at it. Maintain your rhythm and keep your leg on to sustain the forward energy. About three strides out, adopt a slightly forward position with your weight sinking into your heels. Trust the horse — do not interfere with the reins.
+Approach in a steady, balanced trot. Look beyond the fence, not at it. Maintain your rhythm and keep your leg on to sustain the forward energy. Adopt the position and timing directed by the qualified coach for the current approach; do not apply a copied stride-count cue. Trust the horse — do not interfere with the reins.
 
 ## Over the Fence
 
@@ -6591,7 +6491,7 @@ As the horse takes off, fold forward from the hip and push your hands forward al
 
 ## Building a Short Course
 
-Once you are comfortable over a single cross-rail, you can begin linking two or three fences together with turns between them. Plan your track before you start: know which fences you will jump, in what order, and how you will turn between them. Ride each fence as if it were the only one — maintain rhythm, straightness, and balance throughout.
+Once the qualified coach judges horse and rider ready, the coach may introduce an appropriate linked-fence exercise with turns between elements. Plan your track before you start: know which fences you will jump, in what order, and how you will turn between them. Ride each fence as if it were the only one — maintain rhythm, straightness, and balance throughout.
 
 ## What Makes a Good Jump?
 
@@ -6606,7 +6506,7 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
     safetyNote:
       "Always wear a body protector for jumping. Never jump alone — always have someone on the ground who can rebuild fences and assist in an emergency. Start with fences well within your comfort zone and build up gradually.",
     practicalApplication:
-      "Set up a single cross-rail approximately 35cm at the centre with a placing pole 2.5m in front. Trot over it five times on each rein. Have someone observe your position, rhythm, and straightness.",
+      "Under qualified-coach supervision, use the current horse-specific cross-rail exercise. Focus on position, rhythm and straightness, stop if safety or welfare concerns arise, and ask the coach to reassess the setup rather than changing height, distance or placing poles independently.",
     commonMistakes: [
       "Looking down at the fence instead of beyond it",
       "Getting in front of the movement — leaning too far forward before take-off",
@@ -6617,23 +6517,40 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
     knowledgeCheck: [
       {
         question: "Why are cross-rails ideal first fences for novice riders?",
-        options: ["They are very high", "The X shape guides the horse to jump centrally", "They are the hardest type", "They don't need a ground pole"],
+        options: [
+          "They are very high",
+          "The X shape guides the horse to jump centrally",
+          "They are the hardest type",
+          "They don't need a ground pole",
+        ],
         correctIndex: 1,
-        explanation: "The crossed poles create a low central point that naturally guides the horse to take off and land in the centre, building confidence and encouraging straightness.",
+        explanation:
+          "The crossed poles create a low central point that naturally guides the horse to take off and land in the centre, building confidence and encouraging straightness.",
       },
       {
-        question: "What should the rider do with their hands as the horse takes off?",
-        options: ["Pull back firmly", "Drop the reins", "Push forward along the crest", "Hold the pommel"],
+        question:
+          "What should the rider do with their hands as the horse takes off?",
+        options: [
+          "Pull back firmly",
+          "Drop the reins",
+          "Push forward along the crest",
+          "Hold the pommel",
+        ],
         correctIndex: 2,
-        explanation: "Pushing the hands forward along the crest (crest release) allows the horse to stretch its head and neck over the fence without being caught in the mouth.",
+        explanation:
+          "Pushing the hands forward along the crest (crest release) allows the horse to stretch its head and neck over the fence without being caught in the mouth.",
       },
     ],
     aiTutorPrompts: [
-      "How far should a placing pole be from a cross-rail?",
+      "Why must a qualified coach set a cross-rail’s height, placing pole and distances for the current horse and rider?",
       "My horse runs out at fences — what should I do?",
       "How do I know when I'm ready to raise the fences?",
     ],
-    linkedCompetencies: ["jumping_foundations", "rider_position", "balance_and_rhythm"],
+    linkedCompetencies: [
+      "jumping_foundations",
+      "rider_position",
+      "balance_and_rhythm",
+    ],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -6641,86 +6558,89 @@ A good jump is not about height — it is about quality. A good jump has a rhyth
   // ═══════════════════════════════════════════════════════════════════════════
 
   {
-    slug: "signs-of-good-health",
+    slug: "daily-health-check-and-vital-signs",
     pathwaySlug: "horse-health-first-response",
     title: "Recognising Signs of Good Health",
     level: "beginner",
     category: "Horse Health & First Response",
     sortOrder: 1,
     objectives: [
-      "Identify the key indicators of a healthy horse",
-      "Know the normal vital signs: temperature, pulse, and respiration (TPR)",
-      "Carry out a basic daily health check",
-      "Understand why daily observation is essential for early detection of problems",
+      "Recognise that health and welfare observations, vital-sign records, clinical decisions, treatment, and emergency action require the current responsible-person, veterinary, safety, welfare, and written-care-plan route",
+      "Understand the limited World Horse Welfare adult-at-rest temperature, pulse, and respiration reference as contextual information, not a measurement method, diagnosis, self-triage threshold, or universal health profile",
+      "Record authorised factual context and observations without examining, handling, testing, diagnosing, treating, deciding fitness, or deciding a cause, correction, outcome, or emergency status",
+      "Use the current responsible-person, veterinary, yard, welfare, safety, incident, and emergency procedure when a health or welfare concern is outside the plan or unclear",
     ],
-    content: `Knowing what a healthy horse looks like — and being able to spot when something is wrong — is one of the most fundamental skills in horse care. Problems caught early are almost always easier and cheaper to treat, and early intervention can be life-saving in serious conditions like colic or laminitis.
+    content: `Health and welfare observation can involve an individual horse’s baseline, behaviour, environment, management, veterinary direction, responsible person, authorisation, safety, welfare, current written care plan, and changing circumstances. This lesson is an educational boundary only. It is not a clinical examination, a procedure for taking temperature, pulse, respiration, or any other measurement, a daily-check protocol, a health checklist, a fitness assessment, a lameness assessment, a colic assessment, a pain/stress assessment, a welfare assessment, a diagnosis, treatment, medication, emergency decision, or a substitute for veterinary advice.
 
-## The Healthy Horse
+## Individual Context and Limited Reference Information
 
-A healthy horse is bright, alert, and interested in its surroundings. Its eyes are clear and fully open, its ears are mobile, and its expression is relaxed. The coat should be smooth and glossy (though this varies with season — a thick winter coat is normal). The horse should be standing evenly on all four feet, shifting weight occasionally but not persistently resting one leg (hind leg resting is normal; foreleg resting is not).
+World Horse Welfare gives usual temperature **37.5–38.5°C**, pulse **36–42 beats per minute**, and respiration **8–12 breaths per minute** values for a healthy adult horse calmly at rest, and directs carers to learn an individual normal baseline. These values are contextual source information only. They are not a method for obtaining a reading, a universal health profile, a diagnosis, a rule for every horse, a fitness test, a pain/stress test, a treatment trigger, a self-triage threshold, or a reason to delay professional contact. Only an appropriately authorised and competent person may obtain, record, interpret, compare, or act on measurements under the current individual care plan and veterinary/responsible-person direction.
 
-## Normal Vital Signs
+A generic lesson cannot determine a horse’s normal state, health, welfare, pain, discomfort, behaviour, fitness, soundness, hydration, appetite, faeces, respiratory status, infection status, injury, lameness, colic, cause, correction, prognosis, emergency status, or treatment need. A familiar appearance, a single reading, another horse, an online example, a previous record, or an apparent lack of change does not determine that an individual horse is safe or well.
 
-Every horse owner and carer should know the normal vital signs — collectively known as TPR:
+## Authorised Factual Observation
 
-- **Temperature**: 37.5–38.5°C (99.5–101.3°F), taken rectally with a digital thermometer
-- **Pulse**: 28–44 beats per minute at rest, taken at the facial artery under the jaw
-- **Respiration**: 8–16 breaths per minute at rest, counted by watching the flank rise and fall
+Where the responsible person permits it and the current written plan requires it, a learner may record authorised factual context and observations such as date, time, location, who is responsible, current instruction, visible environment, people present, whether food or water is present, visible behaviour, a visible change, and what escalation route was used. Do not touch, restrain, move, test, measure, inspect, palpate, pick out feet, obtain a sample, assess, diagnose, treat, medicate, decide fitness, decide welfare status, determine a cause, determine a correction, or decide an emergency status from this lesson.
 
-These figures represent resting values. Exercise, stress, pain, and hot weather all increase them. Know what is normal for your horse so you can recognise deviations.
+The responsible person and current veterinary/yard procedure determine what is observed; who is authorised; what records, equipment, hygiene, supervision, access, handling, safety, welfare, incident, emergency and reporting arrangements apply; whether activity can begin, continue, change, pause, or stop; and when veterinary support is required. Do not use a generic checklist or value to override them.
 
-## The Daily Health Check
+## Escalation
 
-A basic daily health check takes five minutes and should be done every time you see the horse. Look at the horse from a distance first: is it standing normally? Is it eating? Is it interacting with other horses? Then approach and check:
+If a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear, do not self-triage or seek a generic correction. Stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route. Do not delay required emergency support to gather additional observations or compare a number to a generic range.
 
-- **Eyes**: bright, clear, no discharge
-- **Nostrils**: clean, no unusual discharge
-- **Legs**: cool, tight (no heat or swelling), no cuts or scratches
-- **Feet**: pick out and check for stones, thrush, or shoe condition
-- **Body**: no new lumps, cuts, or swellings
-- **Droppings**: formed, regular colour, not too hard or too soft
-- **Water**: check intake — the bucket or trough should show evidence of drinking
-- **Appetite**: the horse should eat its feed within a reasonable time
+## Reflective Use
 
-## When Something Is Wrong
-
-Signs that something may be wrong include: dullness, loss of appetite, abnormal droppings, nasal discharge, coughing, lameness, heat or swelling in the legs, excessive sweating, rolling repeatedly (colic warning), and reluctance to move. Any significant change from normal should be reported immediately.`,
+Use this lesson to ask: who is responsible; what current written plan and veterinary direction apply; what may I safely record; what remains unknown; and what is the current escalation route? The aim is recognition of individual professional scope and safe information handling, not independent health assessment.`,
     keyPoints: [
-      "A healthy horse is bright, alert, and interested with clear eyes and a smooth coat",
-      "Normal TPR: temperature 37.5–38.5°C, pulse 28–44 bpm, respiration 8–16 breaths/min",
-      "Daily health checks should cover eyes, nostrils, legs, feet, body, droppings, water, and appetite",
-      "Know what is normal for your individual horse so you can spot deviations quickly",
-      "Report any significant change from normal to the yard manager or vet immediately",
+      "Health and welfare observations, vital-sign records, clinical decisions, treatment, and emergency action require the current responsible-person, veterinary, safety, welfare, and written-care-plan route",
+      "World Horse Welfare’s adult-at-rest temperature 37.5–38.5°C, pulse 36–42 bpm, and respiration 8–12 breaths/minute reference is contextual information only; it is not a measurement method, diagnosis, self-triage threshold, or universal health profile",
+      "A generic lesson cannot determine health, welfare, pain, discomfort, behaviour, fitness, soundness, hydration, appetite, respiratory status, injury, lameness, colic, cause, correction, prognosis, or emergency status",
+      "A learner may record authorised factual context and observations but must not touch, restrain, move, test, measure, inspect, palpate, pick out feet, obtain a sample, assess, diagnose, treat, medicate, decide fitness, decide welfare status, determine a cause, determine a correction, or decide an emergency status",
+      "If a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear, use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route",
     ],
     safetyNote:
-      "When taking a horse's temperature rectally, stand to the side of the hindquarters, not directly behind. Have someone hold the horse's head. Use a digital thermometer with a string attached so it cannot be lost inside the horse.",
+      "Do not use this lesson to approach, handle, restrain, move, touch, test, measure, inspect, palpate, pick out feet, obtain a sample, assess, diagnose, treat, medicate, decide fitness, decide welfare status, determine a cause, determine a correction, or decide an emergency status. Follow the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting procedure.",
     practicalApplication:
-      "Carry out a full daily health check on your horse or a yard horse. Record the TPR values. Repeat this for five consecutive days and note the horse's normal resting ranges. This gives you a personal baseline for that horse.",
+      "With the responsible person’s permission, review the current written health-observation, welfare, safety, veterinary, incident, emergency, and reporting procedure. Identify what factual context may be recorded, who is authorised to act, and which escalation route applies. Do not undertake a health examination, handling, measurement, test, diagnosis, treatment, or emergency decision from this lesson.",
     commonMistakes: [
-      "Only checking the horse when something seems obviously wrong, rather than daily",
-      "Not knowing normal TPR values and therefore not recognising abnormal readings",
-      "Checking legs only visually — always run your hands down them to feel for heat or swelling",
-      "Dismissing subtle signs like a slightly dull coat or reduced appetite",
-      "Forgetting to check water intake as part of the daily assessment",
+      "Treating a generic temperature, pulse, respiration, appearance, behaviour, checklist, online example, previous record, another horse, or apparent lack of change as a diagnosis, self-triage threshold, universal health profile, fitness test, welfare assessment, or reason to delay professional contact",
+      "Touching, restraining, moving, testing, measuring, inspecting, palpating, picking out feet, obtaining a sample, assessing, diagnosing, treating, medicating, deciding fitness, deciding welfare status, determining a cause, determining a correction, or deciding an emergency status from a generic lesson",
+      "Using a generic value or checklist to override the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, written-care-plan, or authorised reporting route",
+      "Failing to record only authorised factual context and observations when a concern needs escalation",
+      "Continuing an activity or delaying required emergency support when a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear",
     ],
     knowledgeCheck: [
       {
-        question: "What is the normal resting pulse rate for a horse?",
-        options: ["10–15 bpm", "28–44 bpm", "60–80 bpm", "100+ bpm"],
-        correctIndex: 1,
-        explanation: "The normal resting pulse for a horse is 28–44 beats per minute. Rates above this at rest may indicate pain, stress, or illness.",
+        question:
+          "What is the correct scope of World Horse Welfare’s adult-at-rest temperature 37.5–38.5°C, pulse 36–42 bpm, and respiration 8–12 breaths/minute reference?",
+        options: [
+          "A universal measurement procedure and self-triage threshold",
+          "A diagnosis and treatment trigger for every horse",
+          "Contextual information for a healthy adult horse calmly at rest that does not replace the individual baseline, current care plan, veterinary direction, or professional escalation route",
+          "A reason to delay professional contact until more measurements are collected",
+        ],
+        correctIndex: 2,
+        explanation:
+          "The reference is not a measurement method, universal health profile, diagnosis, self-triage threshold, or substitute for current responsible-person and veterinary direction.",
       },
       {
-        question: "Which is NOT a normal sign in a healthy horse at rest?",
-        options: ["Bright, alert expression", "Resting a hind leg occasionally", "Persistently resting a foreleg", "Clear, open eyes"],
+        question:
+          "What should a learner do when a health, welfare, pain, comfort, behaviour, environment, safety, incident, injury, feed/water, observation, measurement, handling, or rule concern is outside the current plan or unclear?",
+        options: [
+          "Use a generic checklist or vital-sign range to decide the diagnosis and correction",
+          "Touch, restrain, move, test, measure, inspect, palpate, or treat the horse from this lesson",
+          "Stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route",
+          "Delay required emergency support while comparing the horse with an online example or another horse",
+        ],
         correctIndex: 2,
-        explanation: "Horses commonly rest hind legs, but persistently resting a foreleg can indicate pain in that limb and should be investigated.",
+        explanation:
+          "A learner may record authorised factual context and observations, but must not independently assess, diagnose, treat, decide fitness/welfare, or decide an emergency status.",
       },
     ],
     aiTutorPrompts: [
-      "How do I take a horse's pulse correctly?",
-      "What are the early signs of colic I should watch for?",
-      "How does a horse's TPR change after exercise?",
+      "What current written health-observation, welfare, safety, veterinary, incident, emergency, and reporting procedure applies, and who is authorised to act?",
+      "How can I record authorised factual context and observations without examining, handling, measuring, testing, diagnosing, treating, deciding fitness/welfare, or deciding an emergency status?",
+      "Why is an adult-at-rest vital-sign reference contextual information rather than a measurement method, diagnosis, self-triage threshold, or substitute for the individual horse’s current care plan and veterinary direction?",
     ],
     linkedCompetencies: ["daily_health_check", "welfare_awareness"],
   },
@@ -6732,70 +6652,88 @@ Signs that something may be wrong include: dullness, loss of appetite, abnormal 
     category: "Horse Health & First Response",
     sortOrder: 2,
     objectives: [
-      "Recognise the signs of common ailments including colic, laminitis, thrush, and mud fever",
-      "Understand when a condition is a vet emergency versus manageable first aid",
-      "Know basic first-response actions for each common ailment",
-      "Understand the importance of not delaying veterinary attention when needed",
+      "Recognise that labels such as colic, laminitis, hoof concerns, skin concerns, wounds, breathing concerns, movement changes, and other health/welfare concerns require current professional, responsible-person, veterinary, safety, welfare, and emergency-route context",
+      "Understand that World Horse Welfare describes colic as abdominal pain with different possible causes, and World Horse Welfare and the British Horse Society treat suspected laminitis as an emergency requiring prompt veterinary contact",
+      "Record authorised factual context and observations without identifying a condition, assessing severity, deciding a cause, treatment, prognosis, outcome, or emergency status, or changing feed, water, turnout, medication, handling, movement, or care",
+      "Use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route when a health or welfare concern is outside the individual plan or unclear",
     ],
-    content: `Horses are surprisingly prone to a range of common ailments. Understanding what these look like and how to respond is essential for every horse carer. Recognising the difference between a minor issue and a veterinary emergency can save a horse's life.
+    content: `A health or welfare concern may be described with a familiar label, but labels do not establish a diagnosis, severity, cause, treatment, prognosis, outcome, or emergency status for an individual horse. This lesson is an educational boundary only. It is not a procedure for identifying, ruling out, diagnosing, assessing, examining, handling, moving, restraining, monitoring, treating, medicating, feeding, watering, housing, turning out, exercising, restricting, bandaging, cleaning, applying a product, choosing a kit, making an emergency decision, or troubleshooting any health or welfare concern.
 
-## Colic
+## Colic and Laminitis: Limited Source Context
 
-Colic is abdominal pain and is the single biggest emergency in horse care. Signs include: looking at the flanks, pawing the ground, lying down and getting up repeatedly, rolling, sweating, and loss of appetite. Colic ranges from mild (gas build-up) to life-threatening (twisted gut). Any sign of colic should be treated seriously. Remove food, keep the horse walking gently if it wants to roll violently, and call the vet immediately. Do not wait to see if it passes.
+World Horse Welfare describes colic as abdominal pain rather than a single disease, with different possible causes; it directs a carer to make an emergency veterinary call at the first signs and follow the veterinary practice’s advice. World Horse Welfare and the British Horse Society describe suspected laminitis as an emergency requiring prompt veterinary contact. British Horse Society guidance explains that signs can be subtle and variable, that the frequently described “laminitic stance” occurs in less than half of diagnosed cases, and that diagnosis and management require veterinary assessment and an individual plan.
 
-## Laminitis
+These sources do not authorise a learner to decide that an individual horse has colic, laminitis, a hoof condition, a skin condition, a wound condition, a breathing condition, lameness, pain, stress, dehydration, a feed/water problem, or any other diagnosis. They do not provide a universal distinction between “minor” and “emergency,” a generic treatment protocol, a generic feed/water/turnout/movement decision, or a reason to delay veterinary contact while comparing signs with a list, image, another horse, a previous episode, an online example, or a stated label.
 
-Laminitis is inflammation of the sensitive laminae inside the hoof — it is extremely painful and can be career-ending or fatal if not treated. Signs include: reluctance to move, shifting weight, the classic "rocking horse" stance (leaning back to take weight off the front feet), heat in the hooves, and a bounding digital pulse. Laminitis is triggered by overfeeding (especially rich grass or grain), obesity, stress, or toxins. At first signs, remove the horse from grass, do not force it to walk, and call the vet urgently.
+## Professional and Responsible-Person Scope
 
-## Thrush
+The current responsible person, veterinary practice, yard, welfare, safety, incident, emergency, authorised reporting procedure, and relevant qualified professionals determine what action is appropriate; who is authorised; what records, contacts, equipment, supplies, access, supervision, handling, movement, transport, welfare, safety, hygiene, isolation, care, clinical and emergency arrangements apply; and whether activity can begin, continue, change, pause, or stop. A generic lesson cannot determine any of those decisions.
 
-Thrush is a bacterial infection of the frog of the hoof, recognised by a foul-smelling black discharge. It is caused by standing in wet, dirty conditions. Treatment involves cleaning the frog thoroughly, applying antibacterial spray or solution, and improving the horse's living conditions. Prevention is better than cure — regular hoof picking and clean bedding are key.
+## Authorised Factual Observation and Escalation
 
-## Mud Fever
+Where the responsible person permits it and the current written procedure requires it, a learner may record authorised factual context and observations such as date, time, location, current instruction, people present, visible environment, visible behaviour, a visible change, and which escalation route was used. Do not touch, restrain, move, inspect, palpate, pick out feet, obtain a sample, test, measure, assess, diagnose, treat, medicate, determine a cause, determine severity, decide fitness/welfare, decide a prognosis, or decide an emergency status from this lesson.
 
-Mud fever (pastern dermatitis) affects the lower legs, causing scabs, swelling, and soreness. It is caused by prolonged exposure to wet, muddy conditions. Treatment involves gently washing and drying the legs, removing scabs carefully, and applying antibacterial cream. Severe cases may need veterinary treatment including antibiotics.
+If a health, welfare, pain, comfort, behaviour, environment, movement, hoof, skin, wound, breathing, feed/water, handling, safety, incident, emergency, transport, record, procedure, or rule concern is outside the current plan or unclear, stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route. Do not delay required emergency support, or independently change feed, water, turnout, movement, medication, treatment, housing, handling, transport, equipment, supplies, or a care plan.
 
-## When to Call the Vet
+## Reflective Use
 
-Call the vet immediately for: any sign of colic, suspected laminitis, deep or joint-near wounds, eye injuries, severe lameness, difficulty breathing, profuse bleeding, or any condition that is worsening despite first aid.`,
+Use this lesson to ask: who is responsible; what current individual plan and veterinary/yard procedure apply; what factual information may be recorded; what remains unknown; and what escalation route is current? The aim is safe recognition of professional scope, not self-directed ailment management.`,
     keyPoints: [
-      "Colic is an emergency — any sign of abdominal pain requires immediate veterinary attention",
-      "Laminitis signs include reluctance to move, heat in the hooves, and the rocking horse stance",
-      "Thrush is recognised by foul-smelling black discharge from the frog and is caused by poor conditions",
-      "Mud fever affects the lower legs and requires cleaning, drying, and antibacterial treatment",
-      "When in doubt, always call the vet — delayed treatment can turn a minor problem into a major one",
+      "A familiar label, sign list, image, another horse, previous episode, online example, or apparent lack of change does not establish a diagnosis, severity, cause, treatment, prognosis, outcome, or emergency status for an individual horse",
+      "World Horse Welfare describes colic as abdominal pain with different possible causes and directs a carer to make an emergency veterinary call at first signs; suspected laminitis is treated as an emergency requiring prompt veterinary contact",
+      "British Horse Society guidance describes variable/subtle laminitis signs and notes that the commonly described “laminitic stance” occurs in less than half of diagnosed cases; it is not a learner diagnosis rule",
+      "Only the current responsible person, veterinary practice, yard, welfare, safety, incident, emergency, authorised reporting procedure, and relevant qualified professionals determine records, contacts, supplies, handling, movement, transport, clinical action, care, and escalation",
+      "A learner may record authorised factual context and observations but must not independently examine, handle, move, test, measure, inspect, diagnose, treat, medicate, change feed/water/turnout, decide fitness/welfare, determine severity/cause/prognosis, or decide an emergency status",
     ],
     safetyNote:
-      "A colicky horse can be dangerous — it may throw itself to the ground without warning. Stay alert, keep a safe distance, and do not attempt to restrain a horse that is thrashing. Wait for the vet.",
+      "Do not use this lesson to touch, restrain, move, inspect, palpate, pick out feet, obtain a sample, test, measure, assess, diagnose, treat, medicate, decide fitness/welfare, determine severity/cause/prognosis, decide an emergency status, or change feed, water, turnout, housing, handling, movement, transport, equipment, supplies, or a care plan. Follow the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting procedure.",
     practicalApplication:
-      "Create a quick-reference card listing the signs and first-response actions for colic, laminitis, thrush, and mud fever. Keep it in the tack room or feed room where it can be accessed quickly in an emergency.",
+      "With the responsible person’s permission, review the current individual emergency-care, veterinary-contact, welfare, safety, incident, emergency, authorisation, and reporting procedure. Identify the authorised decision-maker, the factual information that may be recorded, and the escalation route. Do not create a generic ailment action card or undertake an examination, handling, treatment, feed/water, turnout, movement, medication, or emergency decision from this lesson.",
     commonMistakes: [
-      "Waiting to see if colic improves on its own before calling the vet",
-      "Continuing to exercise a horse showing early signs of laminitis",
-      "Neglecting regular hoof picking, allowing thrush to develop",
-      "Ripping off mud fever scabs without softening them first, causing pain and infection risk",
-      "Assuming a horse is fine because it is still eating — some horses eat through significant pain",
+      "Treating a familiar label, sign list, image, another horse, previous episode, online example, or apparent lack of change as a diagnosis, severity assessment, cause, treatment plan, prognosis, outcome, or emergency decision",
+      "Using a generic lesson to decide whether a concern is “minor,” to delay professional contact, or to override the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, individual-plan, or authorised reporting route",
+      "Touching, restraining, moving, inspecting, palpating, picking out feet, obtaining a sample, testing, measuring, assessing, diagnosing, treating, medicating, deciding fitness/welfare, determining severity/cause/prognosis, or deciding an emergency status from a generic lesson",
+      "Independently changing feed, water, turnout, housing, handling, movement, transport, equipment, supplies, treatment, medication, or a care plan",
+      "Failing to record only authorised factual context and observations when a concern needs escalation",
     ],
     knowledgeCheck: [
       {
-        question: "What is the most important first action if you suspect colic?",
-        options: ["Give the horse a feed to see if appetite returns", "Walk the horse briskly for an hour", "Remove food, keep the horse calm, and call the vet immediately", "Apply a poultice to the stomach area"],
+        question:
+          "What is the correct scope of a familiar ailment label or an online sign list for an individual horse?",
+        options: [
+          "It establishes a diagnosis, severity, cause, treatment, prognosis, outcome, and emergency status",
+          "It allows a learner to change feed, water, turnout, medication, movement, housing, or treatment before professional contact",
+          "It can support recognition that a concern needs the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route; it is not a diagnosis or self-triage rule",
+          "It replaces the current individual care plan and veterinary direction",
+        ],
         correctIndex: 2,
-        explanation: "Colic is a potential emergency. Remove food to prevent further gut problems, keep the horse calm, and contact the vet immediately. Do not wait.",
+        explanation:
+          "World Horse Welfare and British Horse Society guidance supports prompt veterinary escalation for relevant concerns, not generic learner diagnosis, treatment, or self-directed management.",
       },
       {
-        question: "What is the classic stance of a horse with laminitis?",
-        options: ["Standing on three legs", "Leaning forward", "Rocking horse stance — leaning back to reduce weight on the front feet", "Lying flat on its side"],
+        question:
+          "What should a learner do if a health, welfare, pain, comfort, behaviour, environment, movement, hoof, skin, wound, breathing, feed/water, handling, safety, incident, emergency, transport, record, procedure, or rule concern is outside the current plan or unclear?",
+        options: [
+          "Determine the cause and severity from a generic symptom list before acting",
+          "Touch, restrain, move, inspect, test, measure, diagnose, treat, medicate, or change feed/water/turnout from this lesson",
+          "Stop any activity where safe to do so and use the current responsible-person, veterinary, yard, welfare, safety, incident, emergency, and authorised reporting route",
+          "Delay required professional contact while comparing the horse with another horse, online example, previous episode, or a stated label",
+        ],
         correctIndex: 2,
-        explanation: "The rocking horse stance — with hind legs pushed under the body and front legs stretched forward — is the classic sign of laminitic pain in the front feet.",
+        explanation:
+          "A learner may record authorised factual context and observations, but must not independently identify a condition, assess severity, decide a cause, treatment, prognosis, outcome, or emergency status.",
       },
     ],
     aiTutorPrompts: [
-      "What are the different types of colic and how do they differ?",
-      "How can I prevent laminitis in a good doer on rich pasture?",
-      "What should be in a basic equine first-aid kit?",
+      "What current individual emergency-care, veterinary-contact, welfare, safety, incident, emergency, authorisation, and reporting procedure applies, and who is authorised to act?",
+      "How can I record authorised factual context and observations without identifying a condition, assessing severity, deciding a cause/treatment/prognosis, changing care, or deciding an emergency status?",
+      "Why do World Horse Welfare and British Horse Society sources require professional escalation for colic/laminitis concerns rather than a generic learner diagnosis or treatment plan?",
     ],
-    linkedCompetencies: ["daily_health_check", "first_aid_basics", "welfare_awareness"],
+    linkedCompetencies: [
+      "daily_health_check",
+      "first_aid_basics",
+      "welfare_awareness",
+    ],
   },
   {
     slug: "equine-first-aid-basics",
@@ -6806,63 +6744,73 @@ Call the vet immediately for: any sign of colic, suspected laminitis, deep or jo
     sortOrder: 3,
     objectives: [
       "Assemble a basic equine first-aid kit",
-      "Know how to clean and dress a minor wound safely",
-      "Understand when cold hosing is appropriate and how to do it correctly",
-      "Know the correct procedures for managing a horse while waiting for the vet",
+      "Understand the limits of a non-veterinary first response",
+      "Recognise when to contact a veterinary professional without delay",
+      "Record useful observations and follow current veterinary or yard emergency instructions",
     ],
-    content: `Every horse carer should be able to provide basic first aid. While serious injuries and illnesses need veterinary attention, knowing how to manage a situation before the vet arrives can prevent complications and reduce suffering.
+    content: `A first response is not a diagnosis or treatment plan. If a horse is injured, unwell, distressed or behaves outside its normal pattern, protect people from immediate danger, contact the veterinary professional promptly and follow the directions you are given. Do not delay contact while attempting additional checks or online research.
 
-## The First-Aid Kit
+## The First-Response Kit and Plan
 
-A well-stocked equine first-aid kit should contain: a digital thermometer, clean wound dressings (non-stick), conforming bandage, self-adhesive bandage (Vetwrap), cotton wool, antiseptic wound wash or spray, clean scissors, disposable gloves, a clean bucket, poultice material (Animalintex), and the vet's emergency phone number.
+Keep the yard’s current emergency contacts, horse identification details, authorised first-response supplies and written emergency procedure accessible. Check supplies under the responsible person’s procedure and use products or equipment only within your competence and the current veterinary or manufacturer directions.
 
-## Wound Management
+## Observation and Escalation
 
-For minor wounds: put on gloves, gently clean the wound with clean water or saline solution (not hot, not cold — lukewarm), remove any visible debris, apply antiseptic spray, and cover with a non-stick dressing and light bandage if the wound is in a bandageable area. For wounds on the body that cannot be bandaged, clean and spray with antiseptic and monitor for signs of infection (heat, swelling, discharge, increasing pain).
+From a safe position, record factual observations such as the time concern was noticed, what changed, the horse’s demeanour, visible swelling, bleeding or damage, and any relevant recent events. Do not diagnose, probe a wound, administer medication, apply products, bandage, cool an area, move the horse or withhold feed unless a veterinary professional or the current written emergency procedure directs you to do so.
 
-## Cold Hosing
+## Waiting for Veterinary Direction
 
-Cold hosing is one of the most effective first-aid treatments for swelling, bruising, sprains, and post-exercise leg care. Run cold water gently over the affected area for 15–20 minutes, two to three times daily. The water should flow continuously — standing in a bucket of cold water is not the same. Cold hosing reduces inflammation, numbs pain, and promotes healing.
-
-## Waiting for the Vet
-
-When waiting for the vet, keep the horse calm and contained. Do not feed a colicky horse. Do not force a lame horse to walk. Keep a bleeding wound under gentle pressure with a clean dressing. Record what happened, when it happened, and what you have observed — the vet will want this information. If you have taken the horse's TPR, share this with the vet on arrival.`,
+Keep people safe and follow the veterinary professional’s instructions about containment, access, handling and any further observation. Give the veterinary professional the factual record, including any measurements taken only when competent and requested. Escalate immediately if the horse’s condition changes or safety cannot be maintained.`,
     keyPoints: [
-      "Always have a stocked first-aid kit accessible in the yard",
-      "Clean wounds with lukewarm water or saline — never use strong chemicals directly on open wounds",
-      "Cold hosing for 15–20 minutes reduces swelling and inflammation effectively",
-      "When waiting for the vet, keep the horse calm, record observations, and do not feed if colic is suspected",
-      "Know the limits of first aid — always call the vet for deep wounds, joint-near injuries, or worsening conditions",
+      "Keep current emergency contacts, horse details, authorised supplies and the yard procedure accessible",
+      "A non-veterinary first response is observation, scene safety, accurate recording and prompt escalation—not diagnosis or treatment",
+      "Use products, cooling, bandaging, medication, feeding changes or movement only when current professional direction and competence permit",
+      "Give the veterinary professional a factual record and report any material change promptly",
+      "When in doubt or when safety cannot be maintained, contact the veterinary professional without delay",
     ],
     safetyNote:
-      "When treating a wound on a horse's leg, kneel to one side rather than directly in front of or behind the leg. The horse may kick or stamp if in pain. Have someone hold the horse's head during treatment.",
+      "Do not place yourself in a position where a painful, frightened or distressed horse could injure you. Follow the current yard emergency procedure and veterinary direction; do not attempt a clinical technique beyond your competence.",
     practicalApplication:
-      "Check the first-aid kit in your yard. Make a list of anything missing or expired and replace it. Practise bandaging a leg using conforming bandage and Vetwrap on a calm horse under supervision.",
+      "With the responsible person, locate the current yard emergency procedure, veterinary contacts, horse-identification records and authorised supplies. Identify the information that should be recorded if a concern is observed; do not practise clinical techniques except within an approved, professionally supervised training context.",
     commonMistakes: [
-      "Using cotton wool directly on an open wound — fibres can stick and cause infection",
-      "Bandaging too tightly, which can cause pressure injuries",
-      "Not cleaning a wound thoroughly before applying dressings",
-      "Cold hosing for too short a time to be effective — fifteen minutes minimum is needed",
-      "Failing to call the vet because the wound looks small — depth and location matter more than surface size",
+      "Delaying veterinary contact while attempting extra checks, internet research or unapproved treatment",
+      "Diagnosing from appearance alone or assuming a concern is minor",
+      "Applying products, bandages, cooling or medication outside current professional direction and competence",
+      "Putting people in an unsafe position around a painful, frightened or distressed horse",
+      "Failing to record observations and communicate changes to the veterinary professional",
     ],
     knowledgeCheck: [
       {
-        question: "How long should you cold hose an area of swelling?",
-        options: ["2 minutes", "5 minutes", "15–20 minutes", "1 hour continuously"],
-        correctIndex: 2,
-        explanation: "Cold hosing is effective at 15–20 minutes per session. Shorter durations do not provide sufficient cooling to reduce inflammation.",
+        question:
+          "What is the appropriate first response when a horse has an injury or acute health concern?",
+        options: [
+          "Choose a treatment from a generic online guide before contacting anyone",
+          "Protect people from immediate danger, record factual observations, contact the veterinary professional promptly and follow current instructions",
+          "Assume the issue is minor if the horse is still standing",
+          "Keep trying different treatments until the horse appears more comfortable",
+        ],
+        correctIndex: 1,
+        explanation:
+          "A learner’s role is safety, accurate observation and prompt professional escalation. Diagnosis and treatment depend on the horse, concern and veterinary direction.",
       },
       {
-        question: "What should you NOT use directly on an open wound?",
-        options: ["Saline solution", "Clean water", "Cotton wool fibres", "Non-stick dressing"],
+        question:
+          "Which action should be avoided without current professional direction and appropriate competence?",
+        options: [
+          "Recording what was observed and when",
+          "Providing the veterinary professional with the horse’s identification details",
+          "Applying a treatment, product, bandage or cooling regimen",
+          "Locating the yard emergency procedure",
+        ],
         correctIndex: 2,
-        explanation: "Cotton wool sheds fibres that can stick in a wound, causing infection and delayed healing. Use non-stick dressings or clean gauze instead.",
+        explanation:
+          "Do not apply treatment or carry out a clinical technique beyond your competence or the direction given for the current situation.",
       },
     ],
     aiTutorPrompts: [
-      "Can you walk me through how to bandage a horse's lower leg correctly?",
-      "What should I do if a wound won't stop bleeding?",
-      "How do I know if a wound needs stitching?",
+      "What factual observations should I record before speaking with the veterinary professional?",
+      "Where should a responsible yard keep its current emergency contacts and horse-identification records?",
+      "Why must a first response remain within current professional direction and my competence?",
     ],
     linkedCompetencies: ["first_aid_basics", "welfare_awareness"],
   },
@@ -6874,71 +6822,84 @@ When waiting for the vet, keep the horse calm and contained. Do not feed a colic
     category: "Horse Health & First Response",
     sortOrder: 4,
     objectives: [
-      "Understand why vaccination and worming are essential for horse health",
-      "Know the standard vaccination schedule for influenza and tetanus",
-      "Understand targeted worming programmes based on faecal egg counts",
-      "Keep accurate health records including vaccination and worming dates",
+      "Understand why individual vaccination and parasite-control plans belong in preventive health care",
+      "Understand why vaccination timing and eligibility require a current veterinary plan and applicable organiser or governing-body checks",
+      "Understand why test-led parasite control requires a current veterinary or qualified prescriber plan",
+      "Keep authorised health records and escalate an unclear record or health concern promptly",
     ],
-    content: `Vaccinations and worming are two cornerstones of preventive health care for horses. Correct programmes protect not only the individual horse but also every horse it comes into contact with. Many yards and all competitions require up-to-date vaccination records.
+    content: `Vaccination and parasite control are parts of preventive health care. A programme must protect the individual horse while also accounting for its age, health, history, location, travel and contact with other horses. The correct plan is set and reviewed with the veterinary team and, where relevant, against the current rules of the event organiser or governing body.
 
-## Equine Vaccinations
+## Vaccination plans
 
-The two core vaccinations for horses in the UK and Ireland are **equine influenza** and **tetanus**.
+World Horse Welfare includes vaccination within an annual health plan and notes that competition requirements may differ. Do not use an old calendar, a lesson handout or another horse’s record to decide whether an injection is due or whether a horse is eligible to travel or compete. Instead, provide the passport and complete available vaccination history to the veterinary team, and check the current requirements directly with the relevant organiser or governing body.
 
-**Equine influenza** is a highly contagious respiratory disease. The vaccination protocol is: first vaccination, followed by a second vaccination 21–92 days later, then a third booster 150–215 days after the second. Annual boosters are required thereafter. Competition horses under FEI rules need a booster within 6 months plus 21 days of competing. Failure to keep vaccinations current means starting the primary course again.
+If a record is missing, late or unclear, do not guess at the next action. Give the veterinary team the factual record available, including any recorded date, product and batch information, then follow the current authorised plan. This protects the horse and avoids presenting a competition-specific requirement as a universal rule.
 
-**Tetanus** is caused by bacteria found in soil and is almost always fatal in horses. The initial course is two injections 4–6 weeks apart, followed by a booster at 12 months, then every 2 years thereafter. Many vets administer a combined flu/tetanus vaccine to simplify the schedule.
+## Evidence-led parasite control
 
-## Modern Worming Approaches
+World Horse Welfare advises that worm-control decisions should be based on appropriate testing and a bespoke plan developed with a vet or SQP/RAMA. A faecal egg count, saliva test or blood test may be relevant depending on the parasite question and time of year, but no single test answers every question. Collect and label samples as instructed by the laboratory, record results, and ask the professional adviser to explain what the result does and does not show before using any medicine.
 
-Traditional worming — giving a chemical wormer every 6–8 weeks regardless — has led to widespread resistance. Modern best practice uses a **targeted worming programme** based on faecal egg counts (FEC). A small dung sample is tested in a laboratory, and wormer is only given if the egg count exceeds a threshold (typically 200 eggs per gram).
+Pasture management and clear records matter as well. Follow the responsible person’s current plan for droppings, grazing, new arrivals, test records and any authorised treatment record. Do not select, dose, administer or repeat a wormer from a fixed calendar, a generic internet threshold or an isolated result.
 
-Strategic treatments at specific times of year are still recommended:
-- **Spring/summer**: treat based on FEC for redworm (cyathostomins)
-- **Late autumn**: treat for encysted small redworm (moxidectin)
-- **Winter**: consider tapeworm treatment (praziquantel or pyrantel double dose)
+## Record keeping and escalation
 
-## Record Keeping
-
-Every horse should have a health record that includes: vaccination dates and batch numbers, worming dates and products used, FEC results, dental visits, farrier visits, and any illness or injury. This information is invaluable for the vet and is required for competition passports.`,
+Keep a health record for each horse with passport/ID details, vaccination dates, product and batch information, laboratory reports, veterinary advice, treatment authorisation and any adverse observations. Before an event or journey, check the current organiser, governing-body and official requirements directly. If the horse is unwell, has a suspected infectious disease or there is uncertainty about a health record, follow veterinary advice before mixing, travelling or competing.`,
     keyPoints: [
-      "Equine influenza and tetanus are the core vaccinations — tetanus is almost always fatal without vaccination",
-      "Flu vaccinations must follow strict timing intervals; competition rules require 6-monthly boosters",
-      "Modern worming uses faecal egg counts (FEC) rather than routine chemical worming to reduce resistance",
-      "Strategic seasonal treatments for encysted redworm and tapeworm remain important",
-      "Accurate health records including dates, products, and results are essential for every horse",
+      "Use a current veterinary preventive-health plan and check the applicable event or governing-body rules before travel or competition",
+      "Do not infer a vaccination due date from a generic timetable, an old record or another horse’s programme",
+      "World Horse Welfare advises bespoke parasite control using appropriate testing and a vet or SQP/RAMA plan",
+      "Pasture management, test records and careful sample handling support evidence-led parasite control",
+      "Accurate health records should include vaccination, product, batch, test-result and professional-advice details",
     ],
     safetyNote:
-      "Only administer wormers that are appropriate for your horse's weight — overdosing and underdosing both cause problems. If in doubt, weigh the horse with a weigh tape and consult your vet. Never give medication to a horse you are not authorised to treat.",
+      "Do not decide that a vaccination is due, select or administer a wormer, calculate a dose, or change a parasite-control plan unless the current veterinary or qualified prescriber plan, responsible-person authorisation and your competence clearly permit it. Escalate uncertainty, illness or a record concern promptly.",
     practicalApplication:
-      "Review your horse's vaccination record and check whether boosters are due. If your yard uses a targeted worming programme, find out when the next faecal egg count is scheduled and ensure your horse is included.",
+      "With the responsible person, locate the current veterinary contact, passport or health record and the yard’s parasite-control record. Identify the factual information that should be given to the veterinary team or qualified prescriber if a record is unclear; do not determine a booster due date, treatment, sample schedule or medicine action independently.",
     commonMistakes: [
-      "Letting vaccination intervals lapse, requiring the primary course to be restarted",
-      "Worming on a rigid calendar without faecal egg count testing, which promotes resistance",
-      "Not recording worming products and dates, making it impossible to track what has been given",
-      "Assuming a horse in a field alone does not need worming — larvae persist in pasture for months",
-      "Forgetting tapeworm treatment, which is not always detected by standard FEC",
+      "Using a generic timetable instead of confirming the individual horse’s current veterinary and competition plan",
+      "Treating or repeating medicine without appropriate testing and professional advice",
+      "Not recording vaccination product, batch, test result and treatment advice",
+      "Assuming an isolated horse needs no parasite-risk assessment",
+      "Treating a laboratory result as a complete diagnosis rather than discussing its limits with the adviser",
     ],
     knowledgeCheck: [
       {
-        question: "Why are faecal egg counts (FEC) now preferred over routine worming schedules?",
-        options: ["They are cheaper", "They reduce chemical resistance by only treating horses that need it", "They are more convenient", "They eliminate the need for any worming"],
+        question:
+          "Why should a parasite-test result be discussed within the horse’s current veterinary or qualified prescriber plan?",
+        options: [
+          "One result always answers every parasite question",
+          "Different tests provide different information, and the professional adviser decides whether action is needed for the individual horse",
+          "A result lets any learner choose a medicine and dose",
+          "Testing removes the need for pasture management and records",
+        ],
         correctIndex: 1,
-        explanation: "Targeted worming based on FEC reduces unnecessary chemical use, slowing the development of wormer resistance — a serious problem in equine parasitology.",
+        explanation:
+          "British Horse Society and World Horse Welfare support risk-based, test-led control with a veterinary professional or qualified prescriber. A result is part of the individual plan, not a diagnosis or a self-directed treatment instruction.",
       },
       {
-        question: "How often should a horse receive an equine influenza booster after the primary course?",
-        options: ["Every month", "Every 6 months for competition, annually otherwise", "Every 5 years", "Only once in its lifetime"],
+        question:
+          "What is the safest way to confirm whether a horse is currently eligible to travel or compete after a vaccination history concern?",
+        options: [
+          "Use the timetable from another horse’s passport",
+          "Ask the vet to review the complete record and check the current organiser or governing-body requirements",
+          "Assume one missed date is harmless if the horse looks well",
+          "Give a medicine dose without professional advice",
+        ],
         correctIndex: 1,
-        explanation: "Annual boosters are the standard requirement, with 6-monthly boosters for horses competing under FEI or many national rules.",
+        explanation:
+          "Vaccination products, veterinary plans and competition requirements can differ. The correct route is a veterinary review of the record plus the current organiser or governing-body requirements, not a generic schedule.",
       },
     ],
     aiTutorPrompts: [
-      "Can you explain the equine influenza vaccination schedule step by step?",
-      "What is encysted small redworm and why is it dangerous?",
-      "How do I set up a targeted worming programme for my yard?",
+      "What information should I give my vet when a vaccination record is unclear?",
+      "What can a parasite test tell me, and what are its limits?",
+      "How do I work with a vet or SQP/RAMA on a targeted parasite-control plan for my yard?",
     ],
-    linkedCompetencies: ["daily_health_check", "welfare_awareness", "record_keeping"],
+    linkedCompetencies: [
+      "daily_health_check",
+      "welfare_awareness",
+      "record_keeping",
+    ],
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -7001,15 +6962,23 @@ A well-managed muck heap should be square-sided and compact, built up in layers.
     knowledgeCheck: [
       {
         question: "Why should bedding be banked up against the stable walls?",
-        options: ["To save bedding", "To make the stable look tidy", "To help prevent the horse getting cast", "To keep the walls clean"],
+        options: [
+          "To save bedding",
+          "To make the stable look tidy",
+          "To help prevent the horse getting cast",
+          "To keep the walls clean",
+        ],
         correctIndex: 2,
-        explanation: "Banking bedding against the walls creates a cushion that helps prevent the horse from getting stuck (cast) against the wall when it lies down or rolls.",
+        explanation:
+          "Banking bedding against the walls creates a cushion that helps prevent the horse from getting stuck (cast) against the wall when it lies down or rolls.",
       },
       {
-        question: "Which bedding type is best for a horse with a respiratory condition?",
+        question:
+          "Which bedding type is best for a horse with a respiratory condition?",
         options: ["Straw", "Dust-extracted shavings or paper", "Hay", "Sand"],
         correctIndex: 1,
-        explanation: "Dust-extracted shavings or paper bedding produce minimal dust, reducing airborne irritants for horses with respiratory conditions like COPD/RAO.",
+        explanation:
+          "Dust-extracted shavings or paper bedding produce minimal dust, reducing airborne irritants for horses with respiratory conditions like COPD/RAO.",
       },
     ],
     aiTutorPrompts: [
@@ -7036,59 +7005,73 @@ A well-managed muck heap should be square-sided and compact, built up in layers.
 
 ## Daily Field Checks
 
-Every field containing horses should be checked daily. Walk the boundary and check: fencing is secure with no broken rails or loose wire, gates open and close properly, the water supply is clean and functioning, there are no foreign objects (litter, fallen branches, broken equipment), and the ground condition is not dangerously wet or rutted.
+Follow a written, risk-based field-inspection routine appropriate to the yard, weather, turnout pattern and known hazards. Check boundaries, gates, water, foreign objects and ground condition often enough to identify and address changes safely. Escalate fencing, water, ground or plant hazards through the responsible yard procedure.
 
 ## Pasture Quality
 
-Horse pasture should contain a mix of grasses suitable for horses — not the high-sugar ryegrass mixes used for cattle. Weeds should be controlled, and droppings should be picked up regularly (at least twice a week) to break the parasite lifecycle. Harrowing in warm, dry weather can help break up any remaining droppings and spread nutrients.
+Pasture suitability depends on the horse, soil, climate, forage analysis, grazing pressure, local plant risks and the individual nutrition plan. Manage weeds, droppings and ground condition through a written pasture and parasite-control plan agreed with appropriate veterinary, nutrition and land-management professionals. Do not rely on a universal droppings-removal or harrowing interval.
 
 ## Rotational Grazing
 
-Dividing fields into sections and rotating horses between them allows grass to recover, reduces parasite burden, and maintains pasture quality. Rest each section for four to six weeks before re-grazing. Cross-grazing with cattle or sheep can also help control parasites, as equine parasites do not survive in other livestock species.
+Dividing fields into sections can support grass recovery and pasture management, but the rotation pattern must be designed for the local soil, season, stocking, forage condition, parasite plan and individual horses. Discuss cross-grazing, harrowing and any parasite-control approach with qualified local professionals; do not assume a universal rest period or outcome.
 
 ## Poisonous Plants
 
-Common poisonous plants include ragwort (highly toxic to the liver), yew (rapidly fatal), privet, deadly nightshade, foxglove, and bracken. Ragwort is the most common threat and must be pulled by the roots and removed from the field — it becomes more palatable when wilted or dead. Regular field checks and prompt removal of poisonous plants are essential.
+Potentially harmful plants vary by region and season. Learn to identify local hazards using current official or qualified local guidance, and report any suspected plant hazard before horses can access it. Do not attempt removal, disposal or plant-risk assessment without the yard’s approved procedure and appropriate competent supervision.
 
 ## Seasonal Considerations
 
-In spring and summer, monitor grass growth to prevent overeating — particularly for good doers and laminitis-prone horses. Strip grazing or muzzles may be needed. In winter, provide hay if grass quality is poor and ensure the field does not become a mud bath — rotating shelter areas and using hard-standing around gateways helps.`,
+Seasonal grass growth, mud, forage availability and turnout management should be reviewed within each horse’s individual welfare, nutrition and veterinary plan. Discuss any restricted grazing, supplementary forage, muzzle use, hard-standing or field-layout change with the responsible professionals rather than applying a generic seasonal intervention.`,
     keyPoints: [
-      "Check fields daily for fencing, water, hazards, and poisonous plants",
-      "Pick up droppings at least twice a week to control parasites",
-      "Rotational grazing allows grass recovery and reduces worm burden",
-      "Ragwort is the most common poisonous plant threat — pull it by the root and remove it completely",
-      "Manage grass intake carefully for laminitis-prone horses, especially in spring and summer",
+      "Use the yard’s risk-based field-inspection routine to identify fencing, water, ground and plant hazards",
+      "Manage droppings, pasture condition and parasites through an individual written plan rather than a universal interval",
+      "Rotational grazing patterns must reflect local soil, season, stocking, forage condition and the parasite-control plan",
+      "Use current official or qualified local guidance to identify and manage plant hazards",
+      "Manage grass intake and seasonal turnout within each horse’s individual welfare, nutrition and veterinary plan",
     ],
     safetyNote:
-      "Always wear gloves when handling ragwort — the toxins can be absorbed through the skin. Never leave pulled ragwort in the field, even in bags, as horses may investigate and eat it.",
+      "Do not handle or remove a suspected hazardous plant unless the yard’s approved procedure, current local guidance and appropriate competent supervision are in place. Use the specified protective equipment and keep horses away from the area while the concern is managed.",
     practicalApplication:
       "Walk a field used for horses and conduct a full safety and maintenance check. Note any fencing issues, poisonous plants, water supply problems, or areas of poaching. Create an action list and address the most urgent items first.",
     commonMistakes: [
       "Not checking fields daily — hazards can appear overnight",
-      "Leaving droppings in the field, which allows parasite eggs to reinfect the pasture",
-      "Overgrazing without rotation, leading to bare, muddy fields",
-      "Spraying ragwort instead of pulling it — dead ragwort is still toxic and more palatable",
-      "Underestimating how quickly spring grass can trigger laminitis in susceptible horses",
+      "Using a generic droppings, pasture or parasite-control interval instead of the written local plan",
+      "Applying a rotation pattern without considering soil, season, stocking and forage condition",
+      "Trying to identify, remove or dispose of a hazardous plant without current local guidance and competent supervision",
+      "Changing grazing management for a susceptible horse without the individual welfare, nutrition and veterinary plan",
     ],
     knowledgeCheck: [
       {
-        question: "Why is ragwort still dangerous after it has been cut or wilted?",
-        options: ["It grows back faster", "It becomes more palatable and horses are more likely to eat it", "It attracts more insects", "It does not — it is safe once cut"],
-        correctIndex: 1,
-        explanation: "Ragwort becomes sweeter and more palatable when wilted or dead, making horses more likely to eat it. The toxin remains active, so dead ragwort must be removed from the field.",
+        question:
+          "What should you do when you find a plant you suspect may be hazardous in a horse field?",
+        options: [
+          "Keep horses away from the area and report it through the yard’s approved procedure",
+          "Assume it is safe if you cannot identify it",
+          "Remove it without guidance or protective equipment",
+          "Wait for a fixed calendar interval before acting",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Plant hazards vary by region and season. Keep horses away from a suspected concern and use current official or qualified local guidance with the yard’s approved procedure.",
       },
       {
-        question: "How often should droppings ideally be removed from horse pasture?",
-        options: ["Once a month", "At least twice a week", "Once a year", "Only before a competition"],
-        correctIndex: 1,
-        explanation: "Removing droppings at least twice a week breaks the parasite lifecycle by removing eggs before they hatch and become infective larvae on the grass.",
+        question:
+          "How should droppings, pasture condition and parasite risk be managed?",
+        options: [
+          "Through an individual written plan with appropriate professional guidance",
+          "Using one universal calendar interval at every yard",
+          "Only before a competition",
+          "By waiting until horses show signs of illness",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Pasture and parasite management depend on local conditions, horses, stocking and the professional control plan. Do not apply a generic interval as a universal rule.",
       },
     ],
     aiTutorPrompts: [
-      "How do I set up a rotational grazing system on a small yard?",
-      "What grasses are best for horse pasture?",
-      "How do I manage a field for a laminitis-prone pony in spring?",
+      "What information should a local land-management professional review when planning rotational grazing?",
+      "How can I obtain current local guidance about pasture species and potential plant hazards?",
+      "What should be included in the individual welfare, nutrition and veterinary plan for a horse with grazing sensitivities?",
     ],
     linkedCompetencies: ["stable_management", "welfare_awareness"],
   },
@@ -7147,15 +7130,27 @@ A well-organised feed room has clearly labelled bins for each type of feed, a wr
     knowledgeCheck: [
       {
         question: "Why is a written feed chart important in the feed room?",
-        options: ["It looks professional", "It ensures every horse gets the correct feed, especially when different people are feeding", "It is a legal requirement", "It helps sell the horse"],
+        options: [
+          "It looks professional",
+          "It ensures every horse gets the correct feed, especially when different people are feeding",
+          "It is a legal requirement",
+          "It helps sell the horse",
+        ],
         correctIndex: 1,
-        explanation: "A written feed chart prevents feeding mistakes, especially when multiple carers are involved. The wrong feed can cause colic, weight gain, or nutritional imbalance.",
+        explanation:
+          "A written feed chart prevents feeding mistakes, especially when multiple carers are involved. The wrong feed can cause colic, weight gain, or nutritional imbalance.",
       },
       {
         question: "What should the last task of the day be on a yard?",
-        options: ["Sweep the yard", "A final check that all horses are settled, safe, and have water", "Lock the tack room", "Close the office"],
+        options: [
+          "Sweep the yard",
+          "A final check that all horses are settled, safe, and have water",
+          "Lock the tack room",
+          "Close the office",
+        ],
         correctIndex: 1,
-        explanation: "A final check ensures all horses are comfortable, have water, and are not showing signs of distress. Issues caught at night can be addressed before they worsen overnight.",
+        explanation:
+          "A final check ensures all horses are comfortable, have water, and are not showing signs of distress. Issues caught at night can be addressed before they worsen overnight.",
       },
     ],
     aiTutorPrompts: [
@@ -7220,15 +7215,27 @@ Create a seasonal maintenance calendar: spring — arena servicing, fencing chec
     knowledgeCheck: [
       {
         question: "How often should an arena surface typically be harrowed?",
-        options: ["Once a year", "At least weekly depending on usage", "Only when it rains", "Never — let it compact naturally"],
+        options: [
+          "Once a year",
+          "At least weekly depending on usage",
+          "Only when it rains",
+          "Never — let it compact naturally",
+        ],
         correctIndex: 1,
-        explanation: "Regular harrowing — typically weekly or more for busy arenas — prevents compaction, maintains an even surface, and ensures consistent footing for safe riding.",
+        explanation:
+          "Regular harrowing — typically weekly or more for busy arenas — prevents compaction, maintains an even surface, and ensures consistent footing for safe riding.",
       },
       {
         question: "Why is drainage important on an equestrian yard?",
-        options: ["It makes the yard look nicer", "It prevents mud, health conditions like mud fever, and hazardous working conditions", "It is only important for competition yards", "Drainage is not important for horse yards"],
+        options: [
+          "It makes the yard look nicer",
+          "It prevents mud, health conditions like mud fever, and hazardous working conditions",
+          "It is only important for competition yards",
+          "Drainage is not important for horse yards",
+        ],
         correctIndex: 1,
-        explanation: "Poor drainage creates mud that causes health problems (mud fever, thrush), makes areas dangerous to work in, and deteriorates the ground surface over time.",
+        explanation:
+          "Poor drainage creates mud that causes health problems (mud fever, thrush), makes areas dangerous to work in, and deteriorates the ground surface over time.",
       },
     ],
     aiTutorPrompts: [
@@ -7260,11 +7267,11 @@ Create a seasonal maintenance calendar: spring — arena servicing, fencing chec
 
 ## Dressage
 
-Dressage tests are performed in a marked arena (20m × 40m for introductory levels). The rider performs a set sequence of movements (the test) from memory, judged on accuracy, rhythm, balance, and the horse's way of going. Introductory and preliminary tests involve walk and trot only, making them perfect for novice competitors. Each movement is marked out of 10.
+Dressage tests are performed in a marked arena. The permitted arena, movements, scoring and level requirements are set by the current organiser and governing-body rules. A beginner should choose an appropriate class with their instructor, read the published test and schedule, and follow the layout supplied for that event.
 
 ## Show Jumping
 
-Show jumping involves riding a course of coloured fences within a set time. Faults are given for knocking down a pole (4 faults) or refusing a fence (4 faults, with elimination after two refusals in most rules). Clear rounds mean no faults. Many shows offer "clear round" classes for novice riders where the focus is on completing the course rather than speed.
+Show jumping involves riding a course of coloured fences under a published class format. Penalties, time allowances, refusals, eliminations and clear-round conditions vary by organiser, level and current rules. Read the schedule and ask an instructor to help select an appropriate novice or clear-round class.
 
 ## Cross-Country
 
@@ -7278,8 +7285,8 @@ Showing classes judge the horse's conformation, way of going, and overall qualit
 
 Combined training (or hunter trials, one-day events) combines two or three disciplines. An unaffiliated one-day event might include a dressage test and a show-jumping round. Eventing at higher levels combines dressage, cross-country, and show jumping. Starting with combined training at intro level is an excellent way to gain all-round experience.`,
     keyPoints: [
-      "Dressage tests riding accuracy and the horse's way of going — introductory tests are walk and trot only",
-      "Show jumping tests the ability to clear fences within a time — clear round classes are ideal for beginners",
+      "Dressage tests assess accuracy and the horse’s way of going under the current published test and arena specification",
+      "Show jumping class rules, penalties and time conditions are event-specific; choose an appropriate class using the organiser’s current schedule",
       "Cross-country is exciting but demanding — build arena experience first",
       "Showing judges turnout and the horse's quality — it develops excellent presentation skills",
       "Combined training is a great way to experience multiple disciplines at a low level",
@@ -7297,16 +7304,30 @@ Combined training (or hunter trials, one-day events) combines two or three disci
     ],
     knowledgeCheck: [
       {
-        question: "What level of dressage test is most suitable for a complete beginner?",
-        options: ["Grand Prix", "Medium", "Introductory (walk and trot)", "Advanced medium"],
+        question:
+          "What level of dressage test is most suitable for a complete beginner?",
+        options: [
+          "Grand Prix",
+          "Medium",
+          "Introductory (walk and trot)",
+          "Advanced medium",
+        ],
         correctIndex: 2,
-        explanation: "Introductory tests require only walk and trot, making them ideal for novice riders and young horses gaining experience in a competitive environment.",
+        explanation:
+          "Choose a class with your instructor using the current organiser’s schedule, published test and eligibility requirements. Beginner-friendly classes vary between organisers and jurisdictions.",
       },
       {
-        question: "How many faults are given for knocking down a show-jumping pole?",
-        options: ["1 fault", "4 faults", "8 faults", "Elimination"],
-        correctIndex: 1,
-        explanation: "A knocked pole incurs 4 faults in standard show-jumping rules. A clear round (no faults) is the goal.",
+        question:
+          "Where should you confirm penalties, time conditions and elimination rules for a show-jumping class?",
+        options: [
+          "The organiser’s current schedule and governing-body rules for that class",
+          "A generic lesson from a different venue",
+          "Another competitor’s recollection",
+          "The colour of the fences",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Penalty, time and elimination rules vary by class, organiser, level and jurisdiction. Use the current published schedule and official rules for the class you enter.",
       },
     ],
     aiTutorPrompts: [
@@ -7337,7 +7358,7 @@ In the week before a competition: confirm your entry, check your horse's shoes a
 
 ## Competition Morning
 
-Allow much more time than you think you need. A realistic timeline for a morning competition: rise 2–3 hours before your first class, complete morning stable routine, groom the horse thoroughly, plait if required (dressage and showing), load the horse safely, travel with time to spare, arrive at least 1 hour before your first class.
+Build a competition-day timeline from the published start time, travel conditions, horse-care routine, organiser arrival instructions and the time needed to settle, prepare and warm up safely. Do not copy another rider’s arrival interval: late changes, venue procedures and the individual horse can alter the safe plan.
 
 ## Turnout
 
@@ -7345,7 +7366,7 @@ Presentation matters at every level. The horse should be clean, with mane and ta
 
 ## Walking the Course
 
-For show jumping and cross-country, always walk the course before riding it. Study each fence, plan your line of approach, check the ground conditions, and count strides between related fences. Walking the course is not optional — it is an essential part of competition preparation.
+Where the organiser allows and requires it, walk a jumping or cross-country course before riding. Study the published route, fences, ground and any briefing; ask a qualified instructor for help with planning. Follow event access restrictions and do not assume every class offers the same course-walk procedure.
 
 ## Managing Nerves
 
@@ -7371,15 +7392,27 @@ Competition nerves are normal and can actually improve performance at moderate l
     knowledgeCheck: [
       {
         question: "When should you ideally arrive at a competition venue?",
-        options: ["5 minutes before your class", "At least 1 hour before your first class", "The night before", "It doesn't matter as long as you make your start time"],
+        options: [
+          "5 minutes before your class",
+          "At the time and by the process stated in the organiser’s current schedule",
+          "Only after the class has started",
+          "It doesn't matter as long as you make your start time",
+        ],
         correctIndex: 1,
-        explanation: "Arriving at least an hour early allows time to settle the horse, tack up, walk the course if applicable, warm up properly, and report to the secretary.",
+        explanation:
+          "Arrival, check-in and warm-up arrangements are event-specific. Use the current organiser’s schedule, travel plan and horse-care needs to allow adequate safe preparation time.",
       },
       {
         question: "Why is walking a show-jumping course important?",
-        options: ["To exercise before riding", "To study each fence, plan your line, and count strides", "It is not important", "To warm up the horse"],
+        options: [
+          "To exercise before riding",
+          "To study each fence, plan your line, and count strides",
+          "It is not important",
+          "To warm up the horse",
+        ],
         correctIndex: 1,
-        explanation: "Walking the course allows you to plan your approach to each fence, identify potential difficulties, count strides between related fences, and check the going.",
+        explanation:
+          "Where the organiser permits a course walk, it helps the rider understand the route, fences and ground. Follow the event briefing and seek qualified instruction for any planning decision.",
       },
     ],
     aiTutorPrompts: [
@@ -7406,7 +7439,7 @@ Competition nerves are normal and can actually improve performance at moderate l
 
 ## Test Structure
 
-A dressage test is a set sequence of movements performed in a marked arena. The arena letters (A, K, E, H, C, M, B, F and additional letters in a long arena) mark specific points where movements begin and end. Introductory tests are performed in a 20m × 40m arena at walk and trot. Preliminary tests introduce canter. Each test is published in advance so you can learn it beforehand.
+A dressage test is a set sequence of movements performed in a marked arena. Arena letters mark points where movements begin and end, but the layout, movements, scoring and eligibility are defined by the current organiser and governing-body rules. Use the published test, schedule and approved arena diagram for the class you enter.
 
 ## Learning the Test
 
@@ -7422,7 +7455,7 @@ At introductory and preliminary levels, judges look for: correct rhythm (regular
 
 ## Making the Most of Your Score
 
-After the test, collect your score sheet. Read every comment — judges write helpful feedback on each movement. Use the feedback to identify what to work on in training. A score of 60% or above is considered a solid performance at introductory level.`,
+After the test, collect your score sheet where the event provides one. Read the feedback, discuss it with your instructor and use it to identify appropriate training priorities. Do not treat a generic percentage as a universal measure of success; marking, qualification and progression requirements are set by the current organiser and governing body.`,
     keyPoints: [
       "Dressage tests assess accuracy, rhythm, relaxation, contact, and the rider's effectiveness",
       "Learn tests by reading, visualising from above, walking on foot, and riding through",
@@ -7443,16 +7476,30 @@ After the test, collect your score sheet. Read every comment — judges write he
     ],
     knowledgeCheck: [
       {
-        question: "At introductory level dressage, which paces are required?",
-        options: ["Walk and trot only", "Walk, trot, and canter", "Canter only", "All paces plus lateral work"],
+        question:
+          "Where should you confirm the permitted paces, movements, arena layout and eligibility for the dressage class you intend to enter?",
+        options: [
+          "The current organiser’s schedule, published test and governing-body rules",
+          "A generic online example from another jurisdiction",
+          "A previous competitor’s score sheet",
+          "The colour of the arena markers",
+        ],
         correctIndex: 0,
-        explanation: "Introductory tests require walk and trot only, making them accessible for novice riders and horses.",
+        explanation:
+          "Dressage requirements vary by organiser, level and jurisdiction. Use the current published test, schedule and approved arena diagram for the class you enter.",
       },
       {
-        question: "What does a score of 60% typically indicate at introductory level?",
-        options: ["A poor performance", "A solid, competent performance", "Near elimination", "A perfect score"],
-        correctIndex: 1,
-        explanation: "60% is considered a solid performance at introductory level. Scores above 65% are strong, and above 70% is excellent.",
+        question:
+          "How should you use a dressage score sheet or judge feedback after a test?",
+        options: [
+          "Identify appropriate training priorities with your instructor",
+          "Treat one generic percentage as a universal pass/fail rule",
+          "Ignore comments and repeat the same plan",
+          "Compare only the total score with an unrelated class",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Where feedback is provided, review the movement comments with your instructor. Qualification, progression and scoring expectations are set by the current organiser and governing body.",
       },
     ],
     aiTutorPrompts: [
@@ -7460,7 +7507,11 @@ After the test, collect your score sheet. Read every comment — judges write he
       "What do the dressage arena letters mean and where are they positioned?",
       "How can I improve my horse's transitions for better dressage scores?",
     ],
-    linkedCompetencies: ["competition_awareness", "riding_position", "balance_and_rhythm"],
+    linkedCompetencies: [
+      "competition_awareness",
+      "riding_position",
+      "balance_and_rhythm",
+    ],
   },
   {
     slug: "competition-etiquette-and-sportsmanship",
@@ -7516,16 +7567,30 @@ Regardless of results, the most important thing is that you and your horse retur
     ],
     knowledgeCheck: [
       {
-        question: "What should you call when approaching a practice fence in the warm-up arena?",
-        options: ["Nothing", "The horse's name", "'Fence!' clearly and in good time", "'Move!'"],
+        question:
+          "What should you call when approaching a practice fence in the warm-up arena?",
+        options: [
+          "Nothing",
+          "The horse's name",
+          "'Fence!' clearly and in good time",
+          "'Move!'",
+        ],
         correctIndex: 2,
-        explanation: "Calling 'fence' alerts other riders that you are committed to jumping and need a clear approach. It is essential for safety in a busy warm-up arena.",
+        explanation:
+          "Calling 'fence' alerts other riders that you are committed to jumping and need a clear approach. It is essential for safety in a busy warm-up arena.",
       },
       {
-        question: "What is the correct response if you disagree with a judge's score?",
-        options: ["Argue with the judge immediately", "Post a complaint on social media", "Use official channels to query the result respectfully", "Refuse to leave the arena"],
+        question:
+          "What is the correct response if you disagree with a judge's score?",
+        options: [
+          "Argue with the judge immediately",
+          "Post a complaint on social media",
+          "Use official channels to query the result respectfully",
+          "Refuse to leave the arena",
+        ],
         correctIndex: 2,
-        explanation: "Disagreements with judging should be handled through official channels — typically speaking to the show secretary or submitting a formal query. Public confrontation is unprofessional.",
+        explanation:
+          "Disagreements with judging should be handled through official channels — typically speaking to the show secretary or submitting a formal query. Public confrontation is unprofessional.",
       },
     ],
     aiTutorPrompts: [
@@ -7598,16 +7663,30 @@ You do not need a gym membership. A simple 15-minute routine three times a week 
     ],
     knowledgeCheck: [
       {
-        question: "Which fitness component is considered the rider's foundation?",
-        options: ["Arm strength", "Core strength", "Running speed", "Upper body power"],
+        question:
+          "Which fitness component is considered the rider's foundation?",
+        options: [
+          "Arm strength",
+          "Core strength",
+          "Running speed",
+          "Upper body power",
+        ],
         correctIndex: 1,
-        explanation: "Core strength — the muscles of the abdomen, lower back, and pelvis — is the foundation for a stable, effective riding position and independent aids.",
+        explanation:
+          "Core strength — the muscles of the abdomen, lower back, and pelvis — is the foundation for a stable, effective riding position and independent aids.",
       },
       {
-        question: "When is the best time to stretch for flexibility improvement?",
-        options: ["Before any warm-up", "After riding or exercise when muscles are warm", "Only on non-riding days", "Never — stretching is not important for riders"],
+        question:
+          "When is the best time to stretch for flexibility improvement?",
+        options: [
+          "Before any warm-up",
+          "After riding or exercise when muscles are warm",
+          "Only on non-riding days",
+          "Never — stretching is not important for riders",
+        ],
         correctIndex: 1,
-        explanation: "Stretching warm muscles (after riding or exercise) is safer and more effective than stretching cold. Post-ride stretching improves flexibility over time.",
+        explanation:
+          "Stretching warm muscles (after riding or exercise) is safer and more effective than stretching cold. Post-ride stretching improves flexibility over time.",
       },
     ],
     aiTutorPrompts: [
@@ -7625,68 +7704,84 @@ You do not need a gym membership. A simple 15-minute routine three times a week 
     category: "Rider Fitness & Mindset",
     sortOrder: 2,
     objectives: [
-      "Understand why confidence issues are common in riding and that they are normal",
-      "Identify personal confidence triggers and patterns",
-      "Learn practical strategies for rebuilding and maintaining confidence",
-      "Know when to seek professional help for anxiety that impacts riding",
+      "Recognise that confidence, fear, stress, and anxiety experiences vary and are not diagnoses a riding lesson can make",
+      "Use factual self-observation and qualified-coach communication without self-diagnosing a cause",
+      "Understand that any riding activity or progression requires qualified coach approval and current safety, welfare, and consent arrangements",
+      "Know when anxiety, fear, or panic requires appropriate health support or urgent local help",
     ],
-    content: `Confidence is one of the most important factors in riding — and one of the most fragile. A fall, a spook, a bad experience, or even watching someone else's accident can dent riding confidence profoundly. Understanding confidence, recognising when it is struggling, and knowing how to rebuild it are vital skills.
+    content: `Feeling less confident, worried, tense, fearful, or stressed around riding can have many possible causes and can affect people differently. A lesson cannot diagnose anxiety, trauma, panic, a horse’s behaviour, a rider’s health, or the cause of a concern. This content is a non-clinical wellbeing and safety aid; it does not replace a qualified coach, health professional, emergency service, veterinarian, saddle fitter, or responsible-person procedure.
 
-## Why Confidence Matters
+## Safety, Welfare, and Choice Come First
 
-A confident rider makes clear, decisive aids. The horse responds to confidence — horses are herd animals that look to their leader for reassurance. A nervous rider transmits tension through their body: tightened muscles, restricted breathing, and unclear aids. The horse picks up on this and becomes tense or uncertain itself, creating a negative spiral.
+No rider should be pressured to start, continue, or progress an activity that is outside their current qualified coaching plan or safety arrangements. The qualified coach and responsible person must consider the individual rider, horse, task, equipment, environment, footing, weather, supervision, consent, welfare, safeguarding, and emergency arrangements. If the rider feels unsafe, uncomfortable, unable to continue, or declines an activity—or if the horse, tack, conditions, or support become unsuitable—the activity must be paused, adapted, stopped, or escalated through the current procedure.
 
-## Common Confidence Challenges
+A rider can describe factual experiences to the qualified coach, such as feeling worried before a particular activity, feeling less secure after time away, or noticing a change in comfort. These observations are a starting point for a coach-led safety conversation, not proof of a psychological, medical, welfare, tack, or behavioural cause. Do not use this lesson to self-diagnose, to decide a horse is reliable or suitable, or to select a replacement activity independently.
 
-Loss of confidence can stem from: a fall or near-miss, a horse that is too strong or unpredictable, advancing too quickly to new skills, a period away from riding, peer pressure to attempt things you are not ready for, or a gradual accumulation of small anxious moments. All of these are normal and common — you are not alone.
+## Supported, Individual Progression
 
-## Rebuilding Confidence
+NHS guidance advises setting small targets and, where appropriate, slowly building time in worrying situations rather than avoiding everything at once. In riding, this does **not** mean self-directed exposure, forcing an exercise, repeating a frightening event, or using a generic progression. A qualified coach must decide whether any coach-approved activity is suitable, what support is needed, and whether it should stop. The rider may ask for the current plan, support, options, and stop/escalation route to be explained.
 
-The most effective confidence-building strategy is systematic desensitisation — gradually re-exposing yourself to the thing you find difficult, starting from a level that feels manageable and building up slowly. If canter worries you, go back to work that feels comfortable — walk and trot — and rebuild from there. Set small, achievable goals and celebrate reaching them.
+British Equestrian’s wellbeing material recognises that equestrian activity can contribute to wellbeing and connection, but riding is not a treatment and no horse, lesson, phrase, breathing technique, visualisation exercise, or goal guarantees confidence or mental-health improvement. Avoid comparing progress with other riders or treating a setback as evidence of failure.
 
-## Practical Strategies
+## Optional Calming Support
 
-Breathing techniques help enormously: breathe in for 4 counts, hold for 2, out for 6. This activates the body's relaxation response. Positive self-talk matters — replace "I can't do this" with "I am working on this and improving." Visualisation — imagining yourself riding successfully — programmes the brain for success. Riding a reliable schoolmaster horse can rebuild trust.
+NHS describes a comfortable, unforced breathing exercise as one option some people use for stress, anxiety, or panic. A rider may discuss a suitable approach with an appropriate health professional and use it only when it does not distract from safety or current coach instruction. Do not force the breath, use fixed counts as a prescription, continue if it causes discomfort or dizziness, or attempt a breathing exercise instead of responding to an immediate riding safety concern.
 
-## When to Seek Help
+Some riders find it helpful to talk to a trusted person or set a small, coach-agreed goal. Others may need different support. A qualified coach can support the riding context but cannot diagnose or treat mental-health conditions, investigate safeguarding concerns, or promise confidentiality where reporting may be required.
 
-If anxiety around riding is significantly impacting your enjoyment, sleep, or daily life, consider speaking to a sports psychologist or counsellor who understands equestrian sport. There is no shame in seeking help — many professional riders use sports psychology regularly.`,
+## When to Seek Further Help
+
+NHS advises obtaining medical help if a person is struggling to cope with anxiety, fear, or panic, especially when self-help is not helping or symptoms affect daily life. Seek urgent local mental-health or emergency support for a crisis or emergency. The appropriate route depends on location and individual circumstances; a riding lesson must not delay urgent help.`,
     keyPoints: [
-      "Confidence loss is normal and common — every rider experiences it at some point",
-      "Nervous riding creates tension that the horse picks up, creating a negative spiral",
-      "Rebuild confidence gradually — go back to a comfortable level and build up slowly",
-      "Breathing techniques, positive self-talk, and visualisation are practical confidence tools",
-      "Seek professional help if anxiety is significantly impacting your riding or daily life",
+      "Confidence, fear, stress, and anxiety experiences vary; a riding lesson must not diagnose their cause or a rider’s health",
+      "Rider, horse, tack, welfare, environment, and safety concerns require factual observation and the appropriate qualified assessment, not a generic causal conclusion",
+      "Any riding activity or progression must be qualified-coach approved, welfare-aware, individual, and stopped or escalated when conditions are unsuitable",
+      "Comfortable, unforced breathing may be an optional support for some people but is not a treatment, fixed prescription, or substitute for immediate safety action",
+      "Seek appropriate health support when struggling to cope with anxiety, fear, or panic; obtain urgent local help for a mental-health crisis or emergency",
     ],
     safetyNote:
-      "Never let anyone pressure you into doing something that feels unsafe. A good instructor will support your confidence journey and respect your boundaries. If your gut says no, listen to it.",
+      "Do not start, continue, or progress a riding activity outside the current qualified coaching and responsible-person procedure. Pause, stop, adapt, or escalate if rider understanding, consent, security, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, privacy, or emergency arrangements become unsuitable. Seek urgent local help for a mental-health crisis or emergency.",
     practicalApplication:
-      "Identify one area of your riding where confidence is lower than you would like. Set three small, progressive goals to build your confidence in that area over the next month. Discuss these goals with your instructor so they can support you.",
+      "Discuss a factual confidence or safety concern with a qualified coach and ask what the current support, activity, stop/escalation route, and responsible-person procedure are. Do not set or progress a riding exposure, horse, pace, exercise, or goal from this lesson alone; obtain appropriate health support if anxiety, fear, or panic is difficult to cope with or affects daily life.",
     commonMistakes: [
-      "Pushing through fear without addressing it — this usually makes confidence worse, not better",
-      "Comparing yourself to other riders instead of measuring your own progress",
-      "Avoiding the thing you find difficult forever — gradual exposure is the path forward",
-      "Believing you should never feel nervous — some nervousness is normal and healthy",
-      "Not telling your instructor about confidence concerns — they need to know to help you",
+      "Forcing, self-directing, or continuing an activity without qualified coach approval and current safety, welfare, consent, and support arrangements",
+      "Using a generic lesson to diagnose a rider’s anxiety, health, confidence, a horse’s behaviour, tack fit, welfare, or the cause of a concern",
+      "Treating riding, a particular horse, visualisation, breathing, or a self-set target as a guaranteed confidence or mental-health treatment",
+      "Delaying appropriate health help when anxiety, fear, or panic is difficult to cope with, affects daily life, or is a crisis or emergency",
+      "Promising confidentiality, investigating a safeguarding concern, or providing mental-health treatment outside an authorised qualified role",
     ],
     knowledgeCheck: [
       {
-        question: "How does a rider's tension affect the horse?",
-        options: ["It has no effect", "The horse becomes more relaxed", "The horse picks up on the tension and may become tense or uncertain too", "The horse goes faster"],
+        question:
+          "What should happen if a rider feels unsafe, uncomfortable, unable to continue, or declines an activity—or if current conditions become unsuitable?",
+        options: [
+          "Continue to build confidence through repetition",
+          "Choose a different activity alone",
+          "Pause, stop, adapt, or escalate through the current qualified coaching and responsible-person procedure",
+          "Diagnose the rider or horse from the concern",
+        ],
         correctIndex: 2,
-        explanation: "Horses are highly attuned to their rider's body language and tension. A tense rider transmits anxiety through muscle tension and unclear aids, causing the horse to become unsettled.",
+        explanation:
+          "The individual rider, horse, task, welfare, consent, safety, and current conditions determine the next step. A generic lesson cannot diagnose the cause or choose a safe progression.",
       },
       {
-        question: "What is the most effective strategy for rebuilding riding confidence?",
-        options: ["Force yourself to do the scary thing immediately", "Stop riding altogether", "Gradually re-expose yourself starting from a comfortable level", "Only ride in competitions"],
+        question:
+          "How should a rider use the NHS suggestion to set small targets or gradually build time in worrying situations?",
+        options: [
+          "As an instruction to force a riding exercise alone",
+          "As a reason to repeat a frightening event regardless of welfare or safety",
+          "Only within an individual, qualified-coach-approved plan with current safety, welfare, consent, and stop/escalation arrangements",
+          "As proof that the rider does not need health support",
+        ],
         correctIndex: 2,
-        explanation: "Gradual, systematic re-exposure — starting from a level that feels manageable and building up — is the most effective way to rebuild confidence sustainably.",
+        explanation:
+          "NHS guidance is not a riding progression protocol. A qualified coach and responsible person must decide whether a riding activity is appropriate, while health concerns require the appropriate health support.",
       },
     ],
     aiTutorPrompts: [
-      "I lost confidence after a fall — how do I start riding again?",
-      "What breathing exercises can I use to calm myself before riding?",
-      "How do I talk to my instructor about my confidence issues?",
+      "How should I discuss a factual confidence or safety concern with my qualified coach and understand the current support and stop/escalation procedure?",
+      "When should I seek appropriate health help for anxiety, fear, or panic rather than treating a riding lesson as mental-health care?",
+      "What authority, safeguarding, welfare, and current site procedure are required before I support another rider’s confidence concern?",
     ],
     linkedCompetencies: ["rider_position", "welfare_awareness"],
   },
@@ -7744,16 +7839,29 @@ Do not measure progress by how many planks you can do — measure it by how your
     ],
     knowledgeCheck: [
       {
-        question: "Which exercise specifically targets the ability to give independent aids?",
-        options: ["Squats", "Dead bug — extending opposite arm and leg while stabilising the core", "Running", "Bicep curls"],
+        question:
+          "Which exercise specifically targets the ability to give independent aids?",
+        options: [
+          "Squats",
+          "Dead bug — extending opposite arm and leg while stabilising the core",
+          "Running",
+          "Bicep curls",
+        ],
         correctIndex: 1,
-        explanation: "The dead bug teaches the body to move limbs independently while maintaining a stable core — exactly what a rider needs to give separate hand and leg aids without losing balance.",
+        explanation:
+          "The dead bug teaches the body to move limbs independently while maintaining a stable core — exactly what a rider needs to give separate hand and leg aids without losing balance.",
       },
       {
         question: "Why are hip flexor stretches important for riders?",
-        options: ["They make you run faster", "Tight hip flexors prevent a deep, effective seat in the saddle", "They strengthen the arms", "They are not important for riders"],
+        options: [
+          "They make you run faster",
+          "Tight hip flexors prevent a deep, effective seat in the saddle",
+          "They strengthen the arms",
+          "They are not important for riders",
+        ],
         correctIndex: 1,
-        explanation: "Tight hip flexors — common from sitting at desks — prevent the rider from dropping their weight into the saddle and achieving a deep, following seat.",
+        explanation:
+          "Tight hip flexors — common from sitting at desks — prevent the rider from dropping their weight into the saddle and achieving a deep, following seat.",
       },
     ],
     aiTutorPrompts: [
@@ -7780,11 +7888,11 @@ Do not measure progress by how many planks you can do — measure it by how your
 
 ## Goal Setting for Riders
 
-Effective goal setting uses the SMART framework: Specific, Measurable, Achievable, Relevant, Time-bound. "I want to ride a consistent 20m circle in trot on both reins in my next lesson" is SMART. "I want to be better" is not. Set three types of goals: outcome goals (results you want), performance goals (specific improvements), and process goals (daily actions to take).
+Effective goal setting uses the SMART framework: Specific, Measurable, Achievable, Relevant, Time-bound. “I will practise a coach-selected, appropriate figure in trot with even bend and rhythm, then review it at the agreed point” is SMART. “I want to be better” is not. Set outcome goals (results you want), performance goals (specific improvements) and process goals (actions you can control). Goals must remain appropriate to the horse, rider, facility, current coach guidance and welfare context.
 
 ## Visualisation
 
-Visualisation is one of the most powerful mental tools available. Before riding, spend 3–5 minutes with eyes closed imagining your session in detail: the approach, the aids, the feel of a good transition, the rhythm of a good canter. Research shows that mental rehearsal activates the same neural pathways as physical practice. Visualise successfully, not anxiously.
+Visualisation can be used as one optional preparation exercise. Before riding, use a brief, comfortable rehearsal that suits the rider’s current plan: imagine the approach, aids, feel of a balanced transition and rhythm of the canter. Stop or adapt the exercise if it increases distress, and seek appropriate professional support when anxiety is persistent or overwhelming.
 
 ## Focus and Concentration
 
@@ -7818,15 +7926,27 @@ A growth mindset means believing that ability is developed through effort, pract
     knowledgeCheck: [
       {
         question: "What does the SMART goal framework stand for?",
-        options: ["Simple, Managed, Active, Reasonable, Tested", "Specific, Measurable, Achievable, Relevant, Time-bound", "Strong, Motivated, Athletic, Ready, Tough", "Set, Maintain, Assess, Review, Track"],
+        options: [
+          "Simple, Managed, Active, Reasonable, Tested",
+          "Specific, Measurable, Achievable, Relevant, Time-bound",
+          "Strong, Motivated, Athletic, Ready, Tough",
+          "Set, Maintain, Assess, Review, Track",
+        ],
         correctIndex: 1,
-        explanation: "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound — this framework ensures goals are clear and actionable.",
+        explanation:
+          "SMART goals are Specific, Measurable, Achievable, Relevant, and Time-bound — this framework ensures goals are clear and actionable.",
       },
       {
         question: "Why is visualisation effective for riders?",
-        options: ["It is not effective", "It replaces the need for physical practice", "It activates the same neural pathways as physical practice", "It only works for professional riders"],
+        options: [
+          "It is not effective",
+          "It replaces the need for physical practice",
+          "It activates the same neural pathways as physical practice",
+          "It only works for professional riders",
+        ],
         correctIndex: 2,
-        explanation: "Research shows that mental rehearsal activates the same brain areas and neural pathways as physical practice, making it a powerful complement to training.",
+        explanation:
+          "Research shows that mental rehearsal activates the same brain areas and neural pathways as physical practice, making it a powerful complement to training.",
       },
     ],
     aiTutorPrompts: [
@@ -7874,7 +7994,7 @@ Communication is at the heart of coaching. You must be able to convey informatio
 
 ## Qualities of a Good Coach
 
-The British Horse Society (BHS) and Pony Club both emphasise that a good coach is more than just a knowledgeable rider. Key qualities include:
+A good coach is more than a knowledgeable rider. Key qualities include:
 
 - **Patience** — Every rider learns at a different pace. Repeating exercises without frustration is vital.
 - **Empathy** — Understanding a nervous rider's feelings helps you support them rather than push them too fast.
@@ -7912,7 +8032,8 @@ Understanding these fundamentals will give you the strongest possible foundation
     ],
     knowledgeCheck: [
       {
-        question: "What is the main difference between coaching and instructing?",
+        question:
+          "What is the main difference between coaching and instructing?",
         options: [
           "Coaching focuses on holistic development and understanding, while instructing is purely directive",
           "Instructing is more modern than coaching",
@@ -7924,7 +8045,8 @@ Understanding these fundamentals will give you the strongest possible foundation
           "Coaching encourages riders to understand the 'why' behind what they do and supports long-term development, whereas instructing is focused on telling riders what to do in the moment.",
       },
       {
-        question: "Which of the following is NOT a key quality of a good equestrian coach?",
+        question:
+          "Which of the following is NOT a key quality of a good equestrian coach?",
         options: [
           "Patience and empathy",
           "Willingness to push riders beyond their ability to accelerate progress",
@@ -7964,110 +8086,95 @@ Understanding these fundamentals will give you the strongest possible foundation
     category: "Coaching & Teaching Skills",
     sortOrder: 2,
     objectives: [
-      "Recognise how different ages and abilities affect learning in the saddle",
-      "Identify the main learning styles and how to accommodate them",
-      "Understand how to build confidence and rapport with riders",
-      "Appreciate the importance of adapting your approach to individual needs",
+      "Recognise that qualified coaching must adapt safely to individual rider needs, age, experience, and current conditions",
+      "Use factual observation and qualified-coach escalation rather than assigning a learner type or diagnosing a cause",
+      "Understand that participant-centred communication, safety, welfare, safeguarding, and adaptation require qualified-coach responsibility",
+      "Prepare appropriate questions for a qualified coach about inclusion, support, consent, privacy, safeguarding, and progression",
     ],
-    content: `Every rider who comes to you for coaching is unique. They bring different physical abilities, emotional states, previous experiences, and ways of learning. Understanding your learners is fundamental to being an effective coach — it allows you to pitch sessions at the right level, communicate in a way that resonates, and build the trust needed for genuine progress.
+    content: `Rider needs are individual. Qualified coaching must consider age, experience, ability, disability or long-term health conditions where relevant and appropriately disclosed, communication needs, current consent, safety, horse welfare, safeguarding, equipment, environment, and the current responsible-person procedure. This lesson is a reflection aid for an authorised context; it does not authorise a learner to coach, supervise, select a horse or exercise, assess health or ability, obtain personal information, make a safeguarding decision, or determine a rider’s support or progression alone.
 
-## Different Ages and Abilities
+## Participant-Centred Qualified Coaching
 
-The age of your rider significantly affects how you should coach them. **Young children** (under 8) have short attention spans and learn best through games and fun activities. Keep instructions simple, sessions short, and praise frequent. They may not yet have the physical strength or coordination to perform advanced movements, so focus on balance, confidence, and enjoyment.
+Professional coach standards require participant-centred coaching, suitable adaptation, consideration of age and experience, safety, welfare, safeguarding, communication, and feedback. The qualified coach and responsible person decide how rider needs are identified, which information is necessary, how consent and privacy are handled, what support is suitable, and when specialist guidance is required.
 
-**Older children and teenagers** can handle more structured sessions and begin to understand theory. However, they may also be self-conscious, especially in group lessons. Be sensitive to peer dynamics and avoid singling out individuals for criticism. Positive reinforcement works well with this age group.
+Do not apply a generic rule to children, teenagers, adults, disabled riders, riders with special educational needs, returning riders, or anyone else. A learner’s age, appearance, disclosure, behaviour, or one session does not establish attention, strength, coordination, confidence, anxiety, learning capacity, risk, or a coaching intervention. Observe factual information within the authorised role and report or ask the qualified coach which current procedure applies.
 
-**Adult learners** often bring anxiety or self-consciousness, particularly if they are returning to riding after a long break or starting as complete beginners. They may overthink instructions and tense up physically. Adults appreciate understanding the reasoning behind exercises, so include brief explanations of why you are asking them to do something. Respect their life experience and treat them as partners in the learning process.
+## Communication and Adaptation
 
-**Riders with additional needs** — whether physical disabilities, learning difficulties, or sensory impairments — require you to adapt your communication and exercises. Work with the rider (and their carers if appropriate) to understand their specific requirements. Organisations such as the Riding for the Disabled Association (RDA) offer excellent training in adaptive coaching.
+Do not label a rider as a visual, auditory, kinaesthetic, anxious, difficult, or “type” learner and then select a generic exercise, demonstration, explanation, no-stirrup activity, lunge work, game, pace, or progression. The qualified coach decides whether a communication method, support, adaptation, or activity is appropriate for the individual rider, horse, task, setting, equipment, and conditions.
 
-## Learning Styles
+If a rider does not understand, appears uncomfortable, feels unsafe, declines an activity, discloses a need, or if the horse, tack, footing, weather, supervision, consent, or safeguarding circumstances become unsuitable, the activity must be paused, adapted, stopped, or escalated under the current qualified procedure. Do not diagnose the cause, promise confidentiality where reporting may be required, collect unnecessary personal information, contact a carer independently, or investigate a safeguarding concern.
 
-People absorb information in different ways. While modern research suggests learning is more complex than simple categories, it is useful as a coach to be aware of three broad approaches:
+## Respectful Rapport and Boundaries
 
-- **Visual learners** benefit from demonstrations, watching other riders, and using markers or visual aids in the arena. Show them what you want rather than just describing it.
-- **Auditory learners** respond well to clear verbal instructions, analogies, and discussion. They may benefit from talking through what they are going to do before they do it.
-- **Kinaesthetic learners** learn by doing. They need to feel the movement in their body. Exercises that exaggerate a position or movement — such as riding without stirrups to develop feel — are particularly effective for these riders.
+An authorised coach may use respectful communication and encourage riders to ask questions or report discomfort and concern. The exact approach must be individual, professional, and consistent with safeguarding and current site policy. Do not assume that a particular phrase, praise, discussion, or progression creates confidence, trust, or learning for every person.
 
-In practice, most people use a blend of styles, and a good coach will naturally incorporate visual, auditory, and kinaesthetic elements into every session. If a rider is not responding to one approach, try another.
+A learner can prepare for qualified coaching by asking the responsible coach how the current plan addresses rider and horse suitability, support, privacy, consent, safeguarding, safety, welfare, communication, adaptation, incident response, and review. The qualified coach remains responsible for selecting and adapting instruction, feedback, support, and progression.
 
-## Building Confidence and Rapport
+## Records and Escalation
 
-Confidence is the foundation of all riding progress. A nervous rider will grip, tense up, and be unable to learn effectively. Building confidence starts from the very first interaction.
-
-**Rapport** is the connection between coach and rider. To build it:
-
-- Learn your rider's name and use it regularly.
-- Ask about their goals, fears, and previous experience before the first lesson.
-- Be consistent in your manner — calm, positive, and professional.
-- Celebrate small achievements genuinely. Progress in riding is often incremental, and acknowledging each step matters.
-- Never dismiss a rider's fear. If someone is anxious about cantering, acknowledge that feeling and work at their pace.
-
-**Trust** is built over time. Follow through on what you say, be reliable, and always prioritise the rider's safety and comfort. If you promise to keep a session at walk and trot, do not suddenly ask for canter without discussion.
-
-## Adapting Your Approach
-
-No single coaching method works for everyone. You must be prepared to change your plan mid-session based on what you observe. If a rider is becoming frustrated, simplify the exercise and rebuild. If they are finding something easy, progress them gently. Reading your rider's body language and energy level is a skill you will develop with experience.
-
-Keep notes on each rider between sessions — what went well, what they struggled with, and what to focus on next time. This shows professionalism and helps you plan effective, personalised lessons.`,
+Only authorised people should create, access, use, store, or share rider records, and only through current privacy, safeguarding, organisational, and legal procedures. A learner should report factual observations promptly through the designated route and follow the stop/escalation instruction rather than creating a profile or action plan independently. Where needs exceed the current qualified coach’s remit, the responsible person should use the approved route to obtain appropriate specialist or organisational support.`,
     keyPoints: [
-      "Children, teenagers, adults, and riders with additional needs all require different coaching approaches",
-      "Visual, auditory, and kinaesthetic learning styles should all be incorporated into sessions",
-      "Building confidence through rapport and trust is essential before riders can progress",
-      "Never dismiss a rider's fear — acknowledge it and work at their pace",
-      "Keep notes on each rider to plan personalised, progressive sessions",
+      "Qualified coaching must adapt to individual rider needs, age, experience, safety, welfare, safeguarding, consent, privacy, and current conditions",
+      "Do not assign a learner type or select a generic intervention; the qualified coach adapts communication and support to the individual context",
+      "Do not assume a phrase, praise, discussion, or progression will create confidence, trust, or learning for every rider",
+      "Pause, stop, adapt, or escalate through the qualified procedure when understanding, consent, safety, welfare, or safeguarding conditions are unsuitable",
+      "Only authorised people may create, access, use, store, or share rider records through current privacy, safeguarding, organisational, and legal procedures",
     ],
     safetyNote:
-      "When working with nervous riders, always ensure the horse is calm and well-suited to the rider's level. A frightened rider on an excitable horse is a dangerous combination. If a rider becomes genuinely distressed, halt the session calmly, bring the horse to a stop, and allow the rider to dismount if they wish. Never force a rider to continue an exercise they are clearly not ready for.",
+      "Do not coach, supervise, select a horse or activity, obtain learner information, or continue an activity outside your authority and the current qualified coaching procedure. Pause, stop, adapt, or escalate if rider understanding, consent, security, horse welfare or behaviour, tack, footing, weather, supervision, privacy, safeguarding, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "Before your next session, spend five minutes talking to the rider about their experience, goals, and any concerns. During the session, try giving the same instruction three different ways — as a verbal direction, as a demonstration, and as a physical exercise. Afterwards, note which approach seemed to work best. Over time, build a simple profile for each regular rider to guide your lesson planning.",
+      "Ask a qualified coach how their current procedure identifies and supports rider needs while addressing consent, privacy, safeguarding, safety, welfare, and adaptation. Within an authorised setting, practise reporting factual observations and asking clarifying questions; do not create a rider profile, determine an intervention, or select an activity from this lesson alone.",
     commonMistakes: [
-      "Assuming all riders learn the same way and only using verbal instructions",
-      "Pushing a nervous rider too fast to 'get them past their fear' rather than building confidence progressively",
-      "Failing to adapt the lesson when a rider is clearly struggling or losing engagement",
+      "Assigning a learner type, cause, health status, confidence level, or support need from a generic observation",
+      "Giving instruction, selecting a horse or activity, or changing a progression outside an authorised qualified-coaching role",
+      "Creating, accessing, using, storing, or sharing rider information outside the current privacy, safeguarding, organisational, and legal procedure",
     ],
     knowledgeCheck: [
       {
-        question: "Which approach is most effective for coaching young children?",
+        question:
+          "Who determines how coaching is adapted for an individual rider, including a child or a rider with a disclosed additional need?",
         options: [
-          "Long theoretical explanations before mounting",
-          "Short, fun sessions with games and frequent praise",
-          "Strict discipline and repetitive drills",
-          "Allowing them to ride unsupervised to build independence",
+          "Any learner using an age-based generic rule",
+          "The qualified coach within current responsible-person, privacy, safeguarding, safety, and welfare arrangements",
+          "A fixed online profile",
+          "The rider’s appearance alone",
         ],
         correctIndex: 1,
         explanation:
-          "Young children have short attention spans and respond best to fun, game-based sessions with plenty of positive reinforcement. This builds confidence and a love of riding.",
+          "Professional coaching standards require participant-centred adaptation that considers individual needs, age and experience while maintaining safety, welfare, safeguarding, consent, and current procedures.",
       },
       {
-        question: "What should you do if a rider is not responding to verbal instructions?",
+        question:
+          "What should happen if a rider does not understand, declines an activity, feels unsafe, or if conditions become unsuitable?",
         options: [
-          "Repeat the same instruction more loudly",
-          "Tell them they are not trying hard enough",
-          "Try a different approach, such as a demonstration or a physical exercise",
-          "Move on to a harder exercise to challenge them",
+          "Continue using a generic alternative exercise",
+          "Label the rider’s learning style and decide a correction",
+          "Pause, stop, adapt, or escalate through the current qualified coaching procedure",
+          "Collect personal information and create an independent profile",
         ],
         correctIndex: 2,
         explanation:
-          "Different riders learn in different ways. If verbal instructions are not working, switching to a visual demonstration or a kinaesthetic exercise may help the rider understand what is being asked.",
+          "A generic lesson cannot determine the cause of a concern or the correct support. The current qualified coach and responsible-person procedure determine whether the activity is paused, adapted, stopped, or escalated.",
       },
       {
-        question: "How can a coach best build rapport with a new rider?",
+        question:
+          "How should a learner handle rider information and observations?",
         options: [
-          "Immediately start the lesson to make the most of the time",
-          "Learn their name, ask about their goals and experience, and be consistent and positive",
-          "Focus only on correcting their faults so they improve quickly",
-          "Avoid personal conversation and keep the session strictly professional",
+          "Create and share a personal profile with anyone who helps on the yard",
+          "Use only the current authorised privacy, safeguarding, organisational, and legal procedure, and report factual observations through the designated route",
+          "Promise absolute confidentiality in all circumstances",
+          "Infer a support plan from one conversation",
         ],
         correctIndex: 1,
         explanation:
-          "Building rapport starts with showing genuine interest in the rider as a person. Learning their name, understanding their goals, and being consistently positive creates a foundation of trust.",
+          "Only authorised people may create, access, use, store, or share rider records. Safeguarding and privacy requirements may require a designated reporting route rather than confidentiality or independent action.",
       },
     ],
     aiTutorPrompts: [
-      "How can I adapt a group lesson when riders have very different confidence levels?",
-      "What are some fun mounted games I can use with young children to develop their balance?",
-      "How should I approach coaching an adult beginner who is very nervous about riding?",
+      "Which current qualified procedure governs adaptation, privacy, consent, safeguarding, safety, welfare, and escalation for individual rider needs?",
+      "How should I report a factual rider, horse, tack, footing, consent, privacy, or safety concern to the qualified coach?",
+      "What authority, safeguarding, privacy, and current site procedure are required before I coach or supervise a rider?",
     ],
     linkedCompetencies: ["coaching_fundamentals", "welfare_awareness"],
   },
@@ -8080,136 +8187,94 @@ Keep notes on each rider between sessions — what went well, what they struggle
     category: "Coaching & Teaching Skills",
     sortOrder: 3,
     objectives: [
-      "Plan a safe, progressive lesson structure for novice riders",
-      "Understand the purpose of warm-up, main work, and cool-down phases",
-      "Manage lesson time effectively to cover all planned content",
-      "Identify how to set achievable objectives for each beginner lesson",
+      "Recognise that beginner lesson planning requires appropriate qualification, authority, risk assessment, safeguarding, and current site procedures",
+      "Understand that a qualified coach adapts preparation, activity, recovery, support, and review to the individual context",
+      "Recognise that assessment-specific timings do not create a universal lesson duration or phase allocation",
+      "Prepare appropriate questions for a qualified coach about objectives, suitability, risk, welfare, safeguarding, progression, and evaluation",
     ],
-    content: `A well-structured lesson is the backbone of effective coaching. For beginner riders, clear structure is especially important — it keeps the session safe, progressive, and focused. Without a plan, lessons can drift, become repetitive, or overwhelm the learner. In this lesson, you will learn how to build a beginner lesson from scratch, manage your time, and ensure every session has a clear purpose.
+    content: `Riding ability does not by itself authorise someone to plan or teach a beginner lesson. Professional coaching requires appropriate qualification, authority, safeguarding, current legal and site procedures, responsible-person arrangements, horse-and-rider suitability, risk assessment, welfare, suitable equipment, and an environment appropriate to the activity. This lesson is a reflection aid for an authorised context; it does not qualify the learner to select a horse, plan or deliver an activity, set a duration, assess health or readiness, supervise a rider, manage an incident, or make a welfare, safeguarding, medical, legal, or emergency decision.
 
-## Why Structure Matters
+## Qualified Lesson Planning in Context
 
-Beginner riders are often anxious and unsure of what to expect. A structured lesson provides a reassuring framework: the rider knows there is a beginning, a middle, and an end. Structure also helps you, as the coach, to track progress. If every session follows a logical format, you can see what the rider has mastered and what needs more work.
+Professional coaching standards require plans to address risk assessment, aims and objectives, equipment, preparation, activity, cool-down, conclusion, feedback, progression, adaptation, evaluation, and horse/rider suitability. The qualified coach and responsible person decide whether those elements are appropriate for the individual rider, horse, discipline, task, setting, weather, footing, equipment, supervision, safeguarding, and current conditions.
 
-The BHS and Pony Club both advocate a three-phase lesson structure: **warm-up, main work, and cool-down**. Each phase serves a specific purpose and should be planned in advance.
+A qualified plan may include preparation, a main activity, recovery or cool-down, and a conclusion, but it is not a universal three-phase template. The content, sequence, duration, exercise, pace, support, review, and stopping point are individual decisions. Assessment-specific durations or timings from a coaching qualification must not be turned into a public universal lesson duration or percentage allocation.
 
-## The Warm-Up Phase (10–15 minutes)
+## Risk, Welfare, and Suitability
 
-The warm-up prepares both horse and rider for the work ahead. For beginner riders, it also serves as a confidence-building phase.
+The qualified coach must assess and respond to the current horse, rider, equipment, environment, risk, welfare, safety, safeguarding, and support needs. A learner must not use a generic lesson to decide that a horse is suitable, that a rider is ready, that a warm-up, exercise, transition, no-stirrup activity, pace, circle, game, or cool-down is appropriate, or that an observed concern has a particular cause.
 
-**For the rider**, the warm-up should include:
-- A brief chat to check how they are feeling and remind them of the previous session's achievements.
-- Gentle mounted exercises at halt and walk, such as arm circles, toe touches, and looking left and right. These loosen the rider's muscles and improve body awareness.
-- Walking on both reins to establish rhythm and relaxation. Encourage the rider to breathe deeply and soften their seat.
+If the rider does not understand, feels unsafe, declines an activity, appears uncomfortable or distressed, or if the horse, tack, footing, weather, supervision, consent, safeguarding, or emergency arrangements become unsuitable, the activity must be paused, adapted, stopped, or escalated through the current qualified procedure. Do not continue to a planned next phase because a predetermined time, objective, or plan says so.
 
-**For the horse**, the warm-up allows muscles to loosen and joints to mobilise. Walk work on large circles and changes of rein ensures the horse is moving freely before you ask for more demanding work.
+## Aims, Progression, and Adaptation
 
-Avoid rushing the warm-up. For beginners, feeling settled and secure at walk is more important than getting quickly into trot.
+A qualified coach may select aims, progressive activities, communication, support, feedback, and adaptations that meet the rider’s needs while maintaining horse welfare and safety. Do not assume one objective, exercise sequence, or progression is appropriate for every beginner. Do not label a rider’s response as anxiety, fatigue, lack of confidence, poor coordination, or a behavioural cause from a generic observation.
 
-## The Main Work Phase (20–25 minutes)
+An authorised learner can prepare by asking the qualified coach how the current plan addresses suitability, risk, welfare, safeguarding, equipment, communication, support, adaptation, incident response, progression, review, and evaluation. Report factual observations through the designated route and follow the current stop/escalation instruction rather than selecting a substitute activity or progression independently.
 
-This is where the lesson's primary objective is addressed. For a beginner, this might be:
-- Establishing a rising trot on both reins.
-- Practising smooth transitions between walk and trot.
-- Riding accurate shapes — circles, changes of rein through the diagonal or across the centre line.
-- Beginning to understand basic aids for steering and pace control.
+## Records and Review
 
-**Set one clear objective** for each session. Trying to cover too much confuses the beginner rider. For example, if the objective is "Rider will maintain a steady rising trot on both reins," all exercises in the main work phase should support this goal.
-
-**Progressive difficulty** is important. Start with the easiest version of the exercise and gradually increase the challenge. For example:
-1. Rising trot on a large circle with the coach leading.
-2. Rising trot on a large circle independently.
-3. Rising trot on the outside track with a change of rein.
-
-Use frequent halts to check in with the rider, offer praise, and make adjustments. Beginners tire quickly — both physically and mentally — so intersperse active riding with brief rest periods.
-
-## The Cool-Down Phase (5–10 minutes)
-
-The cool-down is essential but often overlooked. It allows:
-- The horse to stretch and relax after work, usually on a long rein at walk.
-- The rider to reflect on what they have learnt and ask questions.
-- You, as the coach, to summarise the session and set expectations for next time.
-
-Encourage the rider to pat the horse and walk on a loose rein. This promotes a positive end to the session and reinforces the partnership between horse and rider.
-
-## Time Management
-
-A typical beginner lesson lasts 30–45 minutes. Managing your time well ensures all three phases are covered without rushing. A useful rule of thumb:
-- **Warm-up**: 25–30% of the session.
-- **Main work**: 50–55% of the session.
-- **Cool-down**: 15–20% of the session.
-
-Keep a watch or arena clock visible. It is easy to spend too long on the warm-up or overrun on the main work, leaving no time for a proper cool-down.
-
-## Writing a Lesson Plan
-
-Before every session, write a brief lesson plan. Include:
-- The rider's name and current level.
-- The session objective (one clear goal).
-- Warm-up exercises.
-- Main work exercises with progressions.
-- Cool-down plan.
-- Equipment or arena setup needed.
-
-This need not be elaborate — a few bullet points on a notepad are sufficient. The act of planning ensures you arrive prepared and confident. After the session, make a brief note of what went well and what to work on next time.`,
+Only authorised people may create, access, use, store, or share lesson or rider records through current privacy, safeguarding, organisational, and legal procedures. The qualified coach remains responsible for reviewing the session and determining any next step. Where the current coach’s remit or information is insufficient, the responsible organisation should use the approved route to obtain appropriate support before an activity resumes.`,
     keyPoints: [
-      "Every lesson should follow a three-phase structure: warm-up, main work, and cool-down",
-      "The warm-up builds confidence and prepares horse and rider physically and mentally",
-      "Set one clear, achievable objective per beginner lesson to avoid information overload",
-      "Use progressive difficulty within the main work phase to build skills gradually",
-      "Always write a brief lesson plan and review it after the session for continuous improvement",
+      "Professional lesson planning requires qualified consideration of risk, aims, suitability, equipment, preparation, activity, recovery, conclusion, adaptation, and evaluation",
+      "Preparation, main activity, recovery, and conclusion are context-specific; no universal phase structure, exercise, duration, or percentage applies to every lesson",
+      "A qualified coach selects aims, support, progression, communication, and adaptation for the individual while maintaining safety and welfare",
+      "Do not use a generic plan to decide horse/rider suitability, readiness, medical or behavioural cause, or a safe next exercise",
+      "Only authorised people may create, access, use, store, or share lesson or rider records under current privacy, safeguarding, organisational, and legal procedures",
     ],
     safetyNote:
-      "Before every beginner lesson, check that the horse is suitable for the rider's level, the arena surface is safe, and all equipment fits correctly. During the warm-up, assess the rider's confidence and the horse's behaviour — if either seems unsettled, adapt your plan accordingly. Never skip the warm-up phase, as cold muscles in both horse and rider increase the risk of injury.",
+      "Do not plan, coach, supervise, select a horse or activity, set a duration, assess suitability, or continue an activity outside your authority and the current qualified procedure. Pause, stop, adapt, or escalate if rider understanding, consent, security, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, privacy, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "Write a lesson plan for a 30-minute beginner lesson with the objective of 'Rider will perform smooth walk-to-trot transitions on both reins.' Include specific warm-up exercises, two or three main work progressions, and a cool-down plan. Time each section and use the plan in your next session. Afterwards, note what you would change for next time.",
+      "Ask a qualified coach how their current plan addresses horse/rider suitability, risk, welfare, safeguarding, equipment, preparation, activity, recovery, communication, support, adaptation, progression, review, and evaluation. Within an authorised setting, practise reporting factual observations and asking clarifying questions; do not write, deliver, or alter a beginner lesson from this lesson alone.",
     commonMistakes: [
-      "Trying to cover too many skills in one session, leaving the rider overwhelmed and confused",
-      "Skipping the warm-up to save time, increasing the risk of injury and rider anxiety",
-      "Failing to plan the lesson in advance, resulting in a disorganised and unfocused session",
+      "Assuming that a fixed phase sequence, duration, percentage, objective, or exercise is safe or appropriate for every beginner lesson",
+      "Selecting a horse, activity, progression, timing, support, or adaptation outside an authorised qualified-coaching role",
+      "Creating, accessing, using, storing, or sharing lesson or rider records outside current privacy, safeguarding, organisational, and legal procedures",
     ],
     knowledgeCheck: [
       {
-        question: "What is the recommended three-phase structure for a riding lesson?",
+        question:
+          "Who determines the appropriate lesson structure, activity sequence, support, duration, and progression for a beginner rider?",
         options: [
-          "Theory, practical, exam",
-          "Warm-up, main work, cool-down",
-          "Trot, canter, gallop",
-          "Mounting, riding, dismounting",
+          "Any experienced rider using a fixed online template",
+          "The qualified coach within the current responsible-person, safety, welfare, safeguarding, and site procedures",
+          "The planned duration alone",
+          "The rider’s wish to progress to a faster pace",
         ],
         correctIndex: 1,
         explanation:
-          "The BHS and Pony Club both advocate a warm-up, main work, and cool-down structure. This ensures horse and rider are prepared, the learning objective is addressed, and the session ends calmly.",
+          "Professional planning requires qualified consideration of risk, suitability, welfare, equipment, activity, adaptation, progression, and evaluation. Assessment-specific timings are not universal public coaching rules.",
       },
       {
-        question: "How many main objectives should a beginner lesson typically have?",
+        question:
+          "What should occur if rider understanding, consent, security, horse welfare, tack, footing, weather, supervision, safeguarding, or emergency arrangements become unsuitable?",
         options: [
-          "As many as possible to maximise learning",
-          "Three or four to cover a range of skills",
-          "One clear, achievable objective",
-          "None — beginner lessons should be unstructured",
+          "Continue because the planned objective is not complete",
+          "Use a generic substitute exercise without consulting the coach",
+          "Pause, stop, adapt, or escalate through the current qualified procedure",
+          "Diagnose the cause from a generic lesson plan",
         ],
         correctIndex: 2,
         explanation:
-          "Setting one clear objective per session keeps the lesson focused and prevents information overload. All exercises in the main work phase should support this single goal.",
+          "A generic lesson cannot determine the cause of a concern or the correct activity. The current qualified coach and responsible-person procedure determine whether the plan is paused, adapted, stopped, or escalated.",
       },
       {
-        question: "What percentage of the lesson should the warm-up typically occupy?",
+        question: "How should a learner handle lesson or rider records?",
         options: [
-          "5% — just a quick walk around",
-          "25–30% of the total session time",
-          "50% — half the lesson should be warm-up",
-          "There is no need for a warm-up in beginner lessons",
+          "Create a personal record and share it with any yard helper",
+          "Use only the current authorised privacy, safeguarding, organisational, and legal procedure",
+          "Store notes on a personal device without permission",
+          "Write a profile based on one lesson observation",
         ],
         correctIndex: 1,
         explanation:
-          "The warm-up should take approximately 25–30% of the session. For a 30-minute lesson, that is roughly 8–10 minutes — enough to prepare horse and rider physically and mentally.",
+          "Only authorised people may create, access, use, store, or share lesson or rider records. The qualified coach remains responsible for review and next-step decisions.",
       },
     ],
     aiTutorPrompts: [
-      "Can you help me write a lesson plan for a 45-minute beginner group lesson focused on steering?",
-      "What mounted warm-up exercises are best for beginner riders to improve balance?",
-      "How do I manage time effectively when a beginner takes longer than expected to master an exercise?",
+      "Which current qualified procedure governs planning, risk, welfare, safeguarding, support, adaptation, timing, progression, and review for a beginner lesson?",
+      "How should I report a factual rider, horse, tack, footing, consent, privacy, or safety concern to the qualified coach?",
+      "What qualification, authority, safeguarding, privacy, and current site procedure are required before I plan, coach, or supervise a beginner rider?",
     ],
     linkedCompetencies: ["coaching_fundamentals", "lesson_planning"],
   },
@@ -8315,7 +8380,8 @@ Positive reinforcement means rewarding desired behaviour to encourage its repeti
           "The feedback sandwich structures feedback as: positive comment, correction or improvement area, then encouragement. This approach maintains confidence while still addressing areas for development.",
       },
       {
-        question: "Why should a coach address the root cause of a rider fault rather than just the symptom?",
+        question:
+          "Why should a coach address the root cause of a rider fault rather than just the symptom?",
         options: [
           "To impress the rider with technical knowledge",
           "Because fixing the underlying issue resolves the visible fault more effectively and permanently",
@@ -8380,13 +8446,13 @@ Anyone coaching children or vulnerable adults must have appropriate safeguarding
 
 ## Qualifications Pathway
 
-In the UK, the main coaching qualifications are through the British Horse Society (BHS): Level 1 Coach, Level 2 Coach, and upward. These qualifications cover riding ability, coaching skills, horse care knowledge, and safety. Continuing Professional Development (CPD) is required to maintain coaching status.`,
+In the UK, coaches should hold qualifications and insurance appropriate to the activity, setting, rider age, and level being taught. Before booking a coach, check their current training, safeguarding arrangements, first-aid provision, and professional indemnity cover.`,
     keyPoints: [
       "Coaching develops understanding; instructing tells — effective coaches use both approaches appropriately",
       "Key coaching qualities: clear communication, patience, observation, safety, empathy, and adaptability",
       "Coaches are responsible for safety, appropriate content, safeguarding, insurance, and professional development",
       "Safeguarding training and DBS checks are mandatory for coaching children and vulnerable adults",
-      "BHS coaching qualifications are the standard pathway in the UK — CPD is required to maintain status",
+      "Choose a coach with current qualifications, safeguarding arrangements, first-aid provision, and suitable insurance",
     ],
     safetyNote:
       "Never coach without appropriate insurance and qualifications. If you witness a safeguarding concern, follow your organisation's reporting procedures immediately. The safety of riders — especially children — is the absolute top priority.",
@@ -8401,16 +8467,29 @@ In the UK, the main coaching qualifications are through the British Horse Societ
     ],
     knowledgeCheck: [
       {
-        question: "What is the main difference between coaching and instructing?",
-        options: ["There is no difference", "Coaching develops understanding; instructing directs actions", "Instructing is better than coaching", "Coaching is only for advanced riders"],
+        question:
+          "What is the main difference between coaching and instructing?",
+        options: [
+          "There is no difference",
+          "Coaching develops understanding; instructing directs actions",
+          "Instructing is better than coaching",
+          "Coaching is only for advanced riders",
+        ],
         correctIndex: 1,
-        explanation: "Coaching aims to develop the learner's understanding and problem-solving ability, while instructing provides direct guidance. Both are needed at different times.",
+        explanation:
+          "Coaching aims to develop the learner's understanding and problem-solving ability, while instructing provides direct guidance. Both are needed at different times.",
       },
       {
         question: "What is mandatory when coaching children in the UK?",
-        options: ["A university degree", "DBS check and safeguarding training", "Olympic experience", "None of the above"],
+        options: [
+          "A university degree",
+          "DBS check and safeguarding training",
+          "Olympic experience",
+          "None of the above",
+        ],
         correctIndex: 1,
-        explanation: "DBS (Disclosure and Barring Service) checks and safeguarding training are mandatory for anyone working with children and vulnerable adults in the UK.",
+        explanation:
+          "DBS (Disclosure and Barring Service) checks and safeguarding training are mandatory for anyone working with children and vulnerable adults in the UK.",
       },
     ],
     aiTutorPrompts: [
@@ -8418,7 +8497,11 @@ In the UK, the main coaching qualifications are through the British Horse Societ
       "How do I adapt my coaching style for nervous riders?",
       "What should be in a coaching session plan?",
     ],
-    linkedCompetencies: ["coaching_skills", "welfare_awareness", "yard_safety_awareness"],
+    linkedCompetencies: [
+      "coaching_skills",
+      "welfare_awareness",
+      "yard_safety_awareness",
+    ],
   },
   {
     slug: "planning-effective-lessons",
@@ -8484,15 +8567,28 @@ In group lessons, plan exercises that can be differentiated. A polework exercise
     knowledgeCheck: [
       {
         question: "What must a good lesson objective be?",
-        options: ["Vague and aspirational", "Specific, observable, and achievable within one lesson", "Only about jumping", "The same for every rider"],
+        options: [
+          "Vague and aspirational",
+          "Specific, observable, and achievable within one lesson",
+          "Only about jumping",
+          "The same for every rider",
+        ],
         correctIndex: 1,
-        explanation: "Good objectives are specific (clear what is being worked on), observable (the coach can see it happening), and achievable within the lesson timeframe for that rider.",
+        explanation:
+          "Good objectives are specific (clear what is being worked on), observable (the coach can see it happening), and achievable within the lesson timeframe for that rider.",
       },
       {
-        question: "What should a coach do if a rider is struggling with the main exercise?",
-        options: ["Push through regardless", "End the lesson early", "Go back a step and rebuild", "Move to a completely different exercise"],
+        question:
+          "What should a coach do if a rider is struggling with the main exercise?",
+        options: [
+          "Push through regardless",
+          "End the lesson early",
+          "Go back a step and rebuild",
+          "Move to a completely different exercise",
+        ],
         correctIndex: 2,
-        explanation: "Going back to a step the rider can manage, then rebuilding progressively, is the most effective response. It maintains confidence while still working toward the objective.",
+        explanation:
+          "Going back to a step the rider can manage, then rebuilding progressively, is the most effective response. It maintains confidence while still working toward the objective.",
       },
     ],
     aiTutorPrompts: [
@@ -8510,73 +8606,84 @@ In group lessons, plan exercises that can be differentiated. A polework exercise
     category: "Coaching & Teaching Skills",
     sortOrder: 3,
     objectives: [
-      "Communicate instructions clearly and concisely during lessons",
-      "Give effective feedback that builds confidence and supports improvement",
-      "Understand different communication styles for different learner types",
-      "Use questioning techniques to develop riders' understanding",
+      "Recognise that coaching communication requires appropriate qualification, authority, safeguarding, and current site procedures",
+      "Understand that a qualified coach adapts communication and feedback to the individual rider, horse, activity, and conditions",
+      "Use factual observation and qualified-coach escalation rather than assigning a learner type or diagnosing a cause",
+      "Prepare appropriate questions about communication, feedback, safety, welfare, and safeguarding for a qualified coach",
     ],
-    content: `Communication is the coach's most important tool. A coach who knows everything but cannot communicate it effectively will not develop riders. Clear, timely, and encouraging communication transforms a coaching session from a series of instructions into a genuine learning experience.
+    content: `Riding ability does not by itself authorise someone to coach. Professional coaching requires the appropriate qualification, authority, safeguarding, current legal and site procedures, rider and horse suitability, safety, welfare, and responsible-person arrangements. This lesson is a reflection aid for an authorised coaching context; it does not qualify the learner to instruct, supervise, select an activity, assess a rider or horse, manage an incident, or make safeguarding, medical, legal, welfare, or emergency decisions.
 
-## Clarity and Timing
+## Qualified Communication in Context
 
-Instructions should be short, specific, and timed correctly. "Shorten your reins slightly and ask for trot at C" is clear and timely. "Try to sort of get the horse going a bit more" is vague and unhelpful. Give instructions when the rider can act on them — not in the middle of a complex movement, and not too far in advance.
+Professional coach standards require effective verbal and non-verbal communication, demonstrations, coach positioning, rapport, motivation, receiving and providing feedback, participant-centred adaptation, safety, horse welfare, and safeguarding. The qualified coach decides what language, timing, demonstration, support, question, feedback, pause, and escalation route are appropriate for the individual rider, horse, activity, environment, and current conditions.
 
-## The Feedback Sandwich
+A learner may prepare by asking the qualified coach what the current communication and safety plan requires. If a rider does not understand, feels unsafe, uncomfortable, nervous, or distressed—or if the horse, tack, footing, weather, supervision, consent, safeguarding, or environment becomes unsuitable—the activity must be paused, adapted, stopped, or escalated under the current qualified procedure.
 
-Effective feedback follows a positive-constructive-positive structure:
-1. What the rider did well (genuine, specific praise)
-2. What to improve (one thing at a time, with a clear how-to)
-3. An encouraging statement or look-forward
+## Feedback Is Individual, Not a Formula
 
-For example: "That circle was much rounder — well done. On the next one, try to keep your inside leg on a little more through the second half. Let's try it again — I think you'll feel the difference."
+There is no universal feedback sequence, “sandwich,” timing interval, correction cue, or emotional outcome. A qualified coach must consider the rider’s needs, age, experience, communication preferences, culture, disability or health needs where disclosed and relevant, task, horse welfare, safeguarding, and safety. Do not assume that praise, criticism, imagery, repetition, silence, a question, or a demonstration will have the same effect for every person.
 
-## Types of Learner
+A learner should not label someone as a visual, auditory, kinaesthetic, anxious, disruptive, or difficult “type” and then select a generic intervention. Observe and report factual information within the authorised role. The coach should adapt communication and support appropriately and may seek further qualified guidance where required.
 
-Riders learn in different ways. Visual learners benefit from demonstrations and watching others. Auditory learners respond well to verbal instructions and explanations. Kinaesthetic learners need to feel it — exercises, body positioning, and practice. Most people use a mix, but recognising a rider's primary learning style helps you communicate more effectively.
+## Questions and Boundaries
 
-## Questioning Techniques
+A qualified coach may use questions to check understanding, invite reflection, or clarify what the rider noticed, but questions must be suitable for the moment and must not distract from safety. Do not use a question to diagnose a horse’s behaviour, rider’s health, tack fit, welfare, or the cause of a movement concern. Stop and follow the escalation route if a concern arises.
 
-Questions develop thinking and understanding. Closed questions check facts: "Which leg should be on the inside of a canter circle?" Open questions develop thinking: "Why do you think the horse fell out of canter on that corner?" Guided questions lead to discovery: "What did you notice about your balance when the horse turned?" Use questions throughout the lesson, not just at the end.
+Tone, body language, and communication should remain respectful and consistent with safeguarding and current site requirements. Do not shout, intimidate, promise confidentiality where reporting may be required, conduct a safeguarding investigation, or continue an activity when communication or conditions are no longer safe.
 
-## Tone and Body Language
+## Reflecting Within Your Role
 
-Your tone of voice carries as much meaning as your words. Calm, encouraging, and clear tones build trust. Shouting creates anxiety. Your body language matters too — open, relaxed posture invites communication. Crossed arms and frustrated sighing shut it down. Remember: riders are watching you even when you do not think they are.`,
+Within an authorised setting, a learner can practise neutral, factual communication: say when they do not understand, identify a safety concern, report what was observed, and ask the qualified coach which current instruction or procedure applies. The qualified coach remains responsible for selecting and adapting communication, feedback, instruction, and progression.`,
     keyPoints: [
-      "Instructions must be short, specific, and timed so the rider can act on them",
-      "Use the feedback sandwich: praise, one improvement point, encouragement",
-      "Recognise different learning styles — visual, auditory, kinaesthetic — and adapt accordingly",
-      "Use open and guided questions to develop riders' understanding, not just tell them what to do",
-      "Tone and body language are as important as the words — stay calm, clear, and encouraging",
+      "Professional communication, feedback, demonstration, positioning, adaptation, safety, welfare, and safeguarding require qualified-coach responsibility",
+      "No universal feedback formula, timing, cue, or emotional outcome applies to every learner or context",
+      "Do not label a learner type or infer a cause; use factual observation and the qualified coach’s individual adaptation",
+      "A qualified coach decides whether a question is suitable and safe in the current activity; questions must not replace safety-critical instruction",
+      "Tone, body language, communication, and feedback must remain respectful and consistent with safeguarding and current site procedures",
     ],
     safetyNote:
-      "Never shout in anger at a rider — it creates anxiety, erodes trust, and can cause dangerous loss of concentration. If frustration builds, take a breath and reset. Safety-critical instructions should be given firmly and clearly, not in anger.",
+      "Do not coach, supervise, give safety-critical instruction, select a communication method, or continue an activity outside your authority and the current qualified coaching procedure. Pause, stop, or escalate if communication, rider security, consent, horse welfare or behaviour, tack, footing, weather, supervision, safeguarding, or emergency arrangements become unsuitable.",
     practicalApplication:
-      "In your next coaching session, consciously practise the feedback sandwich for every piece of feedback you give. After the session, reflect on how many times you used open questions versus closed questions. Aim to increase your use of open questions next time.",
+      "Ask a qualified coach how their current communication and feedback approach addresses the individual rider, horse, activity, safety, welfare, safeguarding, support, and escalation route. Within an authorised setting, practise reporting factual observations and asking clarifying questions; do not coach, diagnose, or select an intervention from this lesson alone.",
     commonMistakes: [
-      "Giving too many corrections at once — riders can only process one thing at a time",
-      "Only pointing out faults without acknowledging what is going well",
-      "Using jargon the rider does not understand without explaining it",
-      "Talking too much — sometimes silence allows the rider to feel and process",
-      "Inconsistent tone — alternating between encouraging and frustrated confuses the rider",
+      "Assuming that a fixed amount, sequence, or timing of feedback is safe or effective for every rider and activity",
+      "Labelling a learner or inferring a psychological, medical, biomechanical, welfare, tack, or behavioural cause from a generic observation",
+      "Giving instruction, feedback, or a communication intervention outside an authorised qualified-coaching role",
+      "Using questions or discussion in a way that distracts from immediate safety or current qualified instruction",
+      "Ignoring a change in rider understanding, consent, security, horse welfare, or safeguarding conditions that requires pause or escalation",
     ],
     knowledgeCheck: [
       {
-        question: "What is the 'feedback sandwich'?",
-        options: ["A snack break during lessons", "Praise, constructive improvement point, encouragement", "Three criticisms in a row", "Only positive feedback with no correction"],
+        question:
+          "Who decides whether a feedback approach, question, or communication cue is suitable for a rider?",
+        options: [
+          "Any experienced rider using a fixed feedback formula",
+          "The qualified coach within the current responsible-person and safeguarding arrangements",
+          "The rider alone while moving at any pace",
+          "A generic learning-style label",
+        ],
         correctIndex: 1,
-        explanation: "The feedback sandwich delivers constructive feedback within a supportive framework: genuine praise, one improvement point with a clear how-to, and an encouraging statement.",
+        explanation:
+          "Professional coaching standards require communication, feedback, adaptation, safety, welfare, and safeguarding that meet the individual rider’s needs in the current activity.",
       },
       {
-        question: "Why are open questions valuable in coaching?",
-        options: ["They test memory", "They develop the rider's thinking and understanding", "They save time", "They are not valuable"],
+        question:
+          "What should happen if a rider does not understand, feels unsafe, or if the horse, tack, footing, or conditions become unsuitable?",
+        options: [
+          "Continue the activity while trying a different generic feedback cue",
+          "Pause, stop, adapt, or escalate through the current qualified coaching procedure",
+          "Diagnose the rider or horse from the observation",
+          "Ignore the concern if the planned lesson has not finished",
+        ],
         correctIndex: 1,
-        explanation: "Open questions encourage riders to think, reflect, and develop understanding rather than just following instructions. This leads to deeper, more lasting learning.",
+        explanation:
+          "A generic lesson cannot diagnose the cause of a concern. The current qualified coach and responsible-person arrangements determine whether the activity is paused, adapted, stopped, or escalated.",
       },
     ],
     aiTutorPrompts: [
-      "Can you give me examples of effective open questions for a riding lesson?",
-      "How do I communicate with a very nervous adult rider?",
-      "What feedback techniques work best for children versus adults?",
+      "Which current communication, feedback, safety, welfare, safeguarding, and escalation questions should I discuss with a qualified coach?",
+      "How should I report a factual rider, horse, tack, footing, or safety concern to the qualified coach?",
+      "What authority, safeguarding, and current site procedure are required before I coach or supervise a rider?",
     ],
     linkedCompetencies: ["coaching_skills"],
   },
@@ -8634,16 +8741,30 @@ A rider is ready for the next level when they can perform current-level skills c
     ],
     knowledgeCheck: [
       {
-        question: "How should you manage a group of riders with different ability levels?",
-        options: ["Teach to the highest level and let others keep up", "Teach to the lowest level only", "Plan differentiated exercises where each rider works at their appropriate level", "Refuse to teach mixed groups"],
+        question:
+          "How should you manage a group of riders with different ability levels?",
+        options: [
+          "Teach to the highest level and let others keep up",
+          "Teach to the lowest level only",
+          "Plan differentiated exercises where each rider works at their appropriate level",
+          "Refuse to teach mixed groups",
+        ],
         correctIndex: 2,
-        explanation: "Differentiation allows every rider to work productively at their level. The same type of exercise (e.g., circles) can be adapted in size, pace, and complexity.",
+        explanation:
+          "Differentiation allows every rider to work productively at their level. The same type of exercise (e.g., circles) can be adapted in size, pace, and complexity.",
       },
       {
-        question: "How do you know when a rider is ready to progress to the next level?",
-        options: ["When they ask to", "When they can perform current-level skills consistently with confidence", "After a set number of lessons", "When their parents request it"],
+        question:
+          "How do you know when a rider is ready to progress to the next level?",
+        options: [
+          "When they ask to",
+          "When they can perform current-level skills consistently with confidence",
+          "After a set number of lessons",
+          "When their parents request it",
+        ],
         correctIndex: 1,
-        explanation: "Readiness is based on consistent, confident performance at the current level. Rushing progression leads to gaps in skills and loss of confidence.",
+        explanation:
+          "Readiness is based on consistent, confident performance at the current level. Rushing progression leads to gaps in skills and loss of confidence.",
       },
     ],
     aiTutorPrompts: [
@@ -8653,7 +8774,6 @@ A rider is ready for the next level when they can perform current-level skills c
     ],
     linkedCompetencies: ["coaching_skills", "welfare_awareness"],
   },
-
 
   // ═══════════════════════════════════════════════════════════════════════════
   // NEW LESSON UNITS — Handling & Groundwork, Nutrition & Feeding,
@@ -8668,62 +8788,84 @@ A rider is ready for the next level when they can perform current-level skills c
     category: "Handling & Groundwork",
     sortOrder: 1,
     objectives: [
-      "Approach a horse safely in the stable and field",
-      "Understand the horse's flight zone and how to work with it",
-      "Catch a horse using a headcollar and lead rope correctly",
-      "Recognise signs that a horse is reluctant to be caught",
+      "Recognise that approach and catching require individual-horse assessment, qualified instruction, and current site procedures",
+      "Use factual observation and appropriate escalation rather than diagnosing horse behaviour or applying a fixed handling method",
+      "Understand that a qualified handler must select, check, fit, and use the appropriate headcollar and lead rope for the individual horse",
+      "Know when to stop and seek responsible-person or experienced-handler support rather than pursuing, restraining, or treating a horse independently",
     ],
-    content: `Approaching and catching a horse correctly is the very first practical skill every equestrian must master. Horses are prey animals whose survival instincts are triggered by sudden movements or unfamiliar approaches.
+    content: `Approaching and catching a horse are handling activities that require individual-horse assessment, qualified instruction, appropriate equipment, supervision, and current site procedures. Horses may respond quickly to changes in their surroundings; a generic lesson cannot predict a particular horse’s behaviour, diagnose fear or aggression, establish a blind-spot distance, decide that a horse is safe to approach, or replace the responsible person, experienced handler, veterinarian, or emergency procedure.
 
-## Approaching in the Stable
+## Before Entering the Horse’s Space
 
-Always speak to the horse before entering the stable. Approach at the shoulder — never from directly behind. Keep your body language calm and your voice steady. Allow the horse to see and smell you before touching.
+The responsible person or qualified handler must decide whether the horse, location, group of horses, task, equipment, handler experience, support, footing, weather, gates, and current conditions are suitable. Do not enter a stable, field, pen, or other enclosure, approach a horse, or attempt catching if you do not have permission, instruction, a safe route, or the required support.
 
-## Approaching in the Field
+Penn State Extension advises a slow, confident approach from the front toward the shoulder, speaking to the horse and avoiding approach from the rear. The exact route and position must be demonstrated by a qualified handler for that horse and setting. Make sure the horse knows where you are; do not run, surprise the horse, stand directly in front of it, put yourself behind it, block its escape route, or rely on a generic body-language rule.
 
-Walk towards the horse at an angle, not head-on. Avoid making prolonged direct eye contact as horses can interpret this as predatory behaviour. If the horse moves away, stop, turn slightly sideways, and wait.
+## Equipment and Headcollar Safety
 
-## Using a Headcollar
+Before handling, a qualified person should check that the headcollar and lead rope are in suitable condition and fit appropriately for the individual horse. Follow the equipment instructions, site procedure, and qualified handler’s demonstrated method; do not use a fixed finger measurement, copied fitting rule, or one side of the horse as a universal instruction. Penn State describes approaching calmly, placing the halter over the muzzle, and fastening it carefully; a learner should practise this only under appropriate qualified supervision.
 
-Hold the headcollar open with the noseband ready. Approach from the left (near) side. Slide the noseband over the muzzle, then bring the headpiece behind the ears and fasten the buckle. You should be able to fit two fingers under the noseband.
+Use a lead rope attached to the appropriate halter or bridle connection as directed. Never wrap a lead rope around your hand or body, and do not allow excess rope to create an entanglement hazard. The qualified handler should teach the individual method for holding, leading, turning, releasing, and responding to a horse movement. Do not hold the horse by the headcollar alone or try to overpower a horse.
 
-## Dealing with a Difficult-to-Catch Horse
+## Field and Group Contexts
 
-Never chase a horse — this confirms their fear response. Use a calm, patient approach. Carry a small treat as a positive association. In extreme cases, bring the horse into a smaller area first.`,
+Horses in a field or group can respond to each other and the environment. If a horse moves away, is alert, appears uncomfortable, pins its ears, changes body position, becomes difficult to control, or if you are unsure, stop at a safe position and obtain experienced-handler support. Do not chase, corner, use food, separate horses, enter a smaller area, restrain, or attempt a “difficult horse” method from this lesson. These actions can create additional risks for people and horses.
+
+The University of Kentucky and Mississippi State materials support controlled handling and responsible release practices, but release or turnout must follow the local procedure and an experienced person’s instruction. It is outside this lesson’s scope to teach an individual release process.
+
+## Stop and Escalate
+
+Pause, move to safety as directed, and seek the responsible person or qualified handler if the horse, handler, equipment, gate, surface, environment, supervision, consent, welfare, or emergency arrangements are unsuitable. Do not diagnose the cause, punish a horse, continue alone, or use advice from a generic lesson as a substitute for in-person instruction.`,
     keyPoints: [
-      "Always speak to the horse before approaching or entering its space",
-      "Approach at the shoulder, never directly from behind",
-      "Walk at an angle in the field — avoid head-on body language",
-      "Fit the headcollar correctly with the noseband over the muzzle first",
-      "Never chase a horse that is difficult to catch",
+      "Approach and catching require individual-horse assessment, qualified instruction, appropriate equipment, supervision, and current site procedures",
+      "Penn State Extension advises a slow approach from the front toward the shoulder while making sure the horse knows where the handler is; the exact route is context-specific",
+      "Do not rely on generic body-language, eye-contact, blind-spot, distance, or horse-behaviour rules to decide that an approach is safe",
+      "A qualified person must select, inspect, fit, and use the appropriate headcollar and lead rope for the individual horse and setting",
+      "Stop and seek responsible-person or experienced-handler support if a horse moves away, appears unsettled, or cannot be approached or caught safely",
     ],
-    safetyNote: "Never wrap a lead rope around your hand or fingers. If a horse pulls away unexpectedly, you could be dragged.",
-    practicalApplication: "Practise approaching and catching three different horses in the field. Note the differences in their responses.",
+    safetyNote:
+      "Never wrap a lead rope around your hand or body, allow excess rope to create an entanglement hazard, hold a horse by the headcollar alone, or try to overpower a horse. Pause, move to safety as directed, and obtain qualified help if handling conditions are unsuitable.",
+    practicalApplication:
+      "Only under qualified supervision and the responsible person’s current procedure, observe an experienced handler’s approach and equipment check for a suitable horse. Ask how the current horse, setting, equipment, group context, safety route, and escalation process were assessed. Do not approach, catch, release, pursue, separate, or restrain a horse from this lesson alone.",
     commonMistakes: [
-      "Approaching from directly behind — this is a blind spot",
-      "Making sudden movements or loud noises when approaching",
-      "Wrapping the lead rope around your hand",
-      "Chasing a horse that moves away",
-      "Putting the headcollar on incorrectly",
+      "Approaching, catching, releasing, or entering a stable, field, pen, or other enclosure without permission, instruction, a safe route, or required support",
+      "Using a generic body-language, eye-contact, distance, equipment-fitting, or horse-behaviour rule as proof that an approach is safe",
+      "Wrapping a lead rope around the hand or body, allowing an entanglement hazard, holding a horse by the headcollar alone, or trying to overpower a horse",
+      "Chasing, cornering, using food, separating horses, entering a smaller area, restraining, punishing, or using a ‘difficult horse’ method without qualified direction",
+      "Selecting, fitting, checking, leading, turning, releasing, or responding to a horse movement without the individual qualified method and current procedure",
     ],
     knowledgeCheck: [
       {
-        question: "From which direction should you approach a horse in the stable?",
-        options: ["Directly from behind", "From the front", "At the shoulder", "From the right side only"],
-        correctIndex: 2,
-        explanation: "Approaching at the shoulder allows the horse to see you clearly and is the safest position.",
+        question:
+          "What should be established before someone approaches or catches a horse?",
+        options: [
+          "That the person has watched a generic lesson",
+          "Individual-horse assessment, qualified instruction, appropriate equipment, supervision, a safe route, and current site procedures",
+          "That the horse was easy to handle yesterday",
+          "That the handler can use a treat if needed",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Approach and catching are context-specific. The responsible person or qualified handler must assess the individual horse, location, support, equipment, and conditions before the activity begins.",
       },
       {
-        question: "What should you do if a horse moves away from you in the field?",
-        options: ["Run after it", "Shout its name loudly", "Stop, turn slightly sideways, and wait", "Give up"],
+        question:
+          "What should happen if a horse moves away, appears unsettled, or cannot be approached or caught safely?",
+        options: [
+          "Chase, corner, or restrain the horse using a generic method",
+          "Use food or move the horse into a smaller area without instruction",
+          "Stop at a safe position and obtain responsible-person or experienced-handler support",
+          "Assume the horse is testing the handler and continue alone",
+        ],
         correctIndex: 2,
-        explanation: "Stopping and turning sideways reduces pressure and shows non-threatening body language.",
+        explanation:
+          "A generic lesson cannot identify the cause of a horse’s behaviour or authorise a catching method. Stop and obtain qualified support rather than escalating the situation.",
       },
     ],
     aiTutorPrompts: [
-      "How do I catch a horse that always runs away?",
-      "Why does my horse pin its ears when I approach?",
-      "What is the correct way to fit a headcollar?",
+      "What current responsible-person and qualified-handler procedure applies if a horse cannot be approached or caught safely?",
+      "How should I report a factual horse, equipment, field, gate, footing, welfare, or safety concern to the qualified handler?",
+      "What authority, instruction, equipment check, supervision, and current site procedure are required before I approach, catch, lead, or release a horse?",
     ],
     linkedCompetencies: ["safety_awareness", "groundwork_skills"],
   },
@@ -8765,8 +8907,10 @@ Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on th
       "Open gates fully and maintain control when leading through",
       "Use voice commands and body language for transitions",
     ],
-    safetyNote: "Never wrap the lead rope around your hand. If the horse spooks, you could be dragged or injured.",
-    practicalApplication: "Practise leading a horse in walk, halting, and making three turns. Focus on keeping your position at the shoulder.",
+    safetyNote:
+      "Never wrap the lead rope around your hand. If the horse spooks, you could be dragged or injured.",
+    practicalApplication:
+      "Practise leading a horse in walk, halting, and making three turns. Focus on keeping your position at the shoulder.",
     commonMistakes: [
       "Walking too far ahead of the horse",
       "Looking back at the horse constantly",
@@ -8776,16 +8920,29 @@ Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on th
     ],
     knowledgeCheck: [
       {
-        question: "When turning a horse while leading, which direction should you turn them?",
-        options: ["Towards you", "Away from you", "It doesn't matter", "Always to the left"],
+        question:
+          "When turning a horse while leading, which direction should you turn them?",
+        options: [
+          "Towards you",
+          "Away from you",
+          "It doesn't matter",
+          "Always to the left",
+        ],
         correctIndex: 1,
-        explanation: "Turning the horse away from you keeps you on the outside of the turn.",
+        explanation:
+          "Turning the horse away from you keeps you on the outside of the turn.",
       },
       {
         question: "Where should you hold the excess lead rope?",
-        options: ["Wrapped around your right hand", "Dragging on the ground", "Folded in your left hand", "Tied to the headcollar"],
+        options: [
+          "Wrapped around your right hand",
+          "Dragging on the ground",
+          "Folded in your left hand",
+          "Tied to the headcollar",
+        ],
         correctIndex: 2,
-        explanation: "The excess rope should be neatly folded in the left hand.",
+        explanation:
+          "The excess rope should be neatly folded in the left hand.",
       },
     ],
     aiTutorPrompts: [
@@ -8804,62 +8961,82 @@ Say "whoa" clearly, slow your own pace, and apply gentle backward pressure on th
     category: "Handling & Groundwork",
     sortOrder: 3,
     objectives: [
-      "Tie a quick-release knot correctly",
-      "Choose appropriate tying locations and equipment",
-      "Understand why baler twine breakpoints are used",
-      "Handle a horse that pulls back when tied",
+      "Recognise that tying requires individual-horse assessment, qualified instruction, appropriate equipment, and current site emergency procedures",
+      "Understand that the responsible person or qualified handler must select and inspect the tie point, equipment, and supervision for the individual context",
+      "Recognise that breakaway arrangements and knot choice are site- and equipment-specific safety decisions, not universal instructions",
+      "Know when to move to safety and obtain experienced-handler or emergency support rather than attempting a pull-back remedy independently",
     ],
-    content: `Tying a horse up safely is an essential everyday skill.
+    content: `Tying a horse is a handling activity that requires individual-horse assessment, qualified instruction, appropriate equipment, active supervision, and current site emergency procedures. A generic lesson cannot decide whether a horse is safe to tie, identify the cause of a pull-back, select an appropriate tie point or breakaway arrangement, guarantee that any knot will release in an emergency, or replace the responsible person, experienced handler, veterinarian, or emergency response.
 
-## The Quick-Release Knot
+## Before a Horse Is Tied
 
-The quick-release knot is the only knot you should use. It can be undone instantly by pulling the free end. Loop the rope through the tie ring, create a bight, pass it through the loop, and tighten.
+The responsible person or qualified handler must assess the horse, handling history, location, tie point, equipment condition, rope material and length, surrounding hazards, supervision, access, group context, weather, footing, welfare, and emergency arrangements. Do not tie a horse, select a location, alter equipment, or practise a knot if you do not have current permission, in-person instruction, and the required support.
 
-## Tying Height and Length
+Mississippi State Extension describes using a quick-release knot as part of safe tying practice and explains that a sturdy tie point and an appropriate amount of rope can reduce entanglement risk. Its approximate examples are context-specific; they are not a universal height, length, or equipment prescription. A qualified handler must demonstrate the knot, tie point, rope handling, supervision, emergency release, and any site-specific breakaway arrangement for the individual horse and setting.
 
-Tie at approximately the horse's eye level. The rope should be short enough that the horse cannot get a leg over it, but long enough for comfort — roughly 60-80cm.
+## Knot and Equipment Boundaries
 
-## Baler Twine Breakpoints
+A quick-release knot may be appropriate when it is selected and taught by the qualified handler under the current site procedure. Do not claim that it is the only acceptable knot, copy a sequence from text alone, assume it can be released instantly under load, or use a knot as a substitute for supervision and emergency planning. The handler must know the site’s designated emergency response before tying begins.
 
-Always tie to a piece of baler twine attached to a solid ring, not directly to a fixed ring. If the horse panics and pulls back, the baler twine breaks before the horse injures itself.
+Do not use a fixed centimetre measurement, an “eye-level” rule, baler twine, cross-tie, fixed ring, bridle rein, rope, or breakaway material as a universal recommendation. The responsible person must select equipment that is in good condition and appropriate to the horse, task, tie point, local procedure, and current risks. Never wrap rope around the hand or body, leave it where it may entangle a person or horse, or use damaged equipment.
 
-## Dealing with Horses That Pull Back
+## If a Horse Pulls Back or Becomes Unsettled
 
-Never punish a horse for pulling back. Use a longer rope initially and stand nearby. Build confidence with short tying sessions.`,
+If a horse becomes tense, pulls back, moves unexpectedly, entangles equipment, or conditions change, do not punish, hold against the horse, lengthen a rope, start a training session, or attempt a self-directed remedy from this lesson. Move to safety as directed, follow the current emergency procedure, and obtain the responsible person or an experienced handler. Call emergency or veterinary support when the current procedure requires it.
+
+## Supervision and Review
+
+A tied horse requires the supervision and safety arrangements set by the responsible person. Do not assume a generic maximum unattended time, “short session,” repeated practice count, or progress schedule is safe. Use factual observation and ask the qualified handler how the tie point, equipment, horse suitability, supervision, welfare checks, and stop/escalation route were assessed.`,
     keyPoints: [
-      "Always use a quick-release knot",
-      "Tie at eye level with 60-80cm of rope",
-      "Use baler twine as a breakpoint",
-      "Never leave a tied horse unattended for long periods",
-      "Build confidence gradually with horses that pull back",
+      "Tying requires individual-horse assessment, qualified instruction, appropriate equipment, active supervision, and current site emergency procedures",
+      "A qualified handler must select and demonstrate the appropriate tie point, rope handling, knot, equipment, supervision, and emergency release for the individual context",
+      "Do not treat a fixed height, length, knot, rope, breakaway material, baler twine, or tie point as a universal recommendation",
+      "Follow the responsible person’s current supervision and welfare arrangements; no generic unattended-time rule applies to every horse and setting",
+      "If a horse becomes tense, pulls back, moves unexpectedly, or entangles equipment, move to safety as directed and obtain experienced-handler or emergency support",
     ],
-    safetyNote: "Never tie a horse using the reins of a bridle. If the horse pulls back, it can injure its mouth.",
-    practicalApplication: "Practise tying a quick-release knot 10 times until you can do it smoothly.",
+    safetyNote:
+      "Do not tie, alter equipment, choose a knot, or attempt a pull-back remedy outside the current qualified handling and emergency procedure. Never wrap rope around the hand or body, use damaged equipment, or continue if horse behaviour, welfare, tie point, equipment, supervision, or emergency arrangements are unsuitable.",
+    practicalApplication:
+      "Only under qualified in-person instruction and the responsible person’s current procedure, observe how the appropriate tie point, equipment, knot, supervision, emergency release, welfare checks, and escalation route are selected. Do not practise knot tying, tie a horse, test an emergency release, or respond to a pull-back from this lesson alone.",
     commonMistakes: [
-      "Using a dead knot",
-      "Tying the rope too long",
-      "Tying directly to a solid object without baler twine",
-      "Leaving a tied horse completely unattended",
-      "Tying with the reins",
+      "Using a knot, tie point, rope, breakaway material, height, length, or equipment arrangement without the individual qualified method and current site procedure",
+      "Assuming a fixed rope measurement, eye-level reference, or generic unattended-time rule applies to every horse and setting",
+      "Copying a breakaway, baler-twine, cross-tie, or emergency-release arrangement without qualified assessment of the horse, tie point, equipment, and current risks",
+      "Continuing to tie or attempting a self-directed pull-back remedy when horse behaviour, welfare, equipment, tie point, supervision, or emergency arrangements are unsuitable",
+      "Wrapping rope around the hand or body, allowing entanglement, using damaged equipment, punishing a horse, or trying to hold against the horse",
     ],
     knowledgeCheck: [
       {
-        question: "Why should you always use baler twine when tying a horse?",
-        options: ["It looks neater", "It acts as a breakpoint if the horse panics", "It's cheaper than rope", "It's tradition"],
+        question:
+          "Who decides the appropriate tie point, knot, rope handling, breakaway arrangement, supervision, and emergency release for a horse?",
+        options: [
+          "Any learner using a generic online measurement or knot diagram",
+          "The responsible person or qualified handler after assessing the individual horse, equipment, location, risks, and current site procedure",
+          "The horse’s previous tie arrangement alone",
+          "A fixed baler-twine rule",
+        ],
         correctIndex: 1,
-        explanation: "Baler twine breaks under extreme force, preventing injury.",
+        explanation:
+          "Tying arrangements are context-specific. A generic lesson cannot select a safe knot, tie point, breakaway material, height, length, or supervision plan for every horse and setting.",
       },
       {
-        question: "What type of knot should you use?",
-        options: ["A reef knot", "A bowline", "A quick-release knot", "A double knot"],
+        question:
+          "What should happen if a tied horse becomes tense, pulls back, moves unexpectedly, or entangles equipment?",
+        options: [
+          "Hold against the horse and add more rope",
+          "Punish the horse or begin a training session alone",
+          "Move to safety as directed, follow the current emergency procedure, and obtain responsible-person or experienced-handler support",
+          "Assume a generic knot will solve the problem",
+        ],
         correctIndex: 2,
-        explanation: "A quick-release knot can be undone instantly in emergencies.",
+        explanation:
+          "A pull-back or entanglement can become an emergency. Do not use a generic remedy; move to safety, follow the current procedure, and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How to tie a quick-release knot step by step?",
-      "My horse always pulls back when tied",
-      "Is it safe to cross-tie a horse?",
+      "What current qualified-handler and site procedure governs tying, supervision, emergency release, and escalation for this individual horse?",
+      "How should I report a factual tie-point, equipment, rope, horse-welfare, behaviour, or safety concern to the responsible person?",
+      "What authority, in-person instruction, equipment check, supervision, and emergency procedure are required before I tie a horse?",
     ],
     linkedCompetencies: ["safety_awareness", "groundwork_skills"],
   },
@@ -8872,62 +9049,82 @@ Never punish a horse for pulling back. Use a longer rope initially and stand nea
     category: "Handling & Groundwork",
     sortOrder: 4,
     objectives: [
-      "Understand the purpose and benefits of lungeing",
-      "Set up for lungeing with correct equipment",
-      "Maintain a safe triangle position",
-      "Control pace and direction on the lunge",
+      "Recognise that lungeing is a specialist handling activity requiring qualified professional competence, individual assessment, and current site procedures",
+      "Understand that a qualified professional must select, inspect, fit, and adjust equipment, protective equipment, circle, environment, and support for the individual horse",
+      "Recognise that handler, horse, line, whip, command, and position techniques require in-person qualified instruction rather than a fixed diagram",
+      "Know when to stop, move to safety, and obtain qualified or emergency support rather than attempting lungeing or a correction independently",
     ],
-    content: `Lungeing is a groundwork technique where the horse works on a circle around the handler at the end of a lunge line.
+    content: `Lungeing is a specialist horse-handling activity in which a horse works on a circle around a qualified handler. It requires in-person professional competence, individual-horse assessment, appropriate personal protective equipment, current site procedures, welfare checks, equipment inspection and fit, suitable space and surface, active supervision, and an emergency plan. This lesson does not qualify a learner to lunge, assess movement, choose equipment, select a circle, use a whip, apply pressure, direct a horse, train a horse, or make a welfare, medical, veterinary, behavioural, or emergency decision.
 
-## Equipment
+## Qualified Scope and Welfare
 
-You need a lunge line (8-10 metres), a lunge whip, a lunge cavesson or headcollar, and protective boots.
+Professional lungeing standards include horse welfare, handler protective equipment, equipment safety and fit, appropriate circle size, handler position, horse position and balance, use of commands and aids, duration, surroundings, and progression. These are professional competencies assessed in context, not a universal self-teaching sequence. A lunge line, whip, cavesson, headcollar, side rein, protective equipment, line length, circle size, surface, pace, command, and duration must be selected by the qualified professional for the individual horse, task, environment, and current conditions.
 
-## The Triangle
+A learner must not infer that lungeing is required for warm-up, exercise, training, assessment, behaviour management, “freshness,” rider preparation, rehabilitation, or any other purpose. The appropriate purpose, if any, is decided by the qualified professional after considering the individual horse’s health, welfare, training, behaviour, fitness, equipment, space, surface, weather, support, and current risk.
 
-The handler, horse, and lunge whip should form a triangle. The handler stands at the centre. The lunge line goes to the horse's head, and the whip points towards the hindquarters.
+## Equipment, Space, and Position
 
-## Voice and Body Language
+Before any lungeing activity, the responsible person or qualified professional must inspect the equipment and setting, decide whether the horse and handler are suitable, identify the safe working area and access, establish supervision and emergency arrangements, and determine whether the activity should take place at all. Do not rely on a generic line length, triangle diagram, whip position, command word, “centre” position, distance, circle size, or equipment list.
 
-Use clear commands: "walk on", "trot", "whoa". Stepping ahead of the horse's shoulder slows them; stepping behind encourages forward movement.
+The handler should receive in-person instruction for the individual method of holding and managing the line, using any whip or aid, communicating, moving, maintaining awareness of surroundings, and responding to a horse change. Never wrap a lunge line around the hand or body, allow it to create an entanglement hazard, use equipment beyond your competence, stand in an unsafe position, or use a whip to punish or force a horse.
 
-## Starting and Stopping
+## Progression, Time, and Assessment
 
-Begin in walk. Ask for trot with voice and a gentle lift of the whip. To stop, lower the whip, say "whoa", and gently take up the lunge line.`,
+Professional standards consider circle size, paces, transitions, responsiveness, equipment adjustment, duration, surroundings, and horse welfare. No fixed number of minutes, paces, exercises, progressions, or assessment method is appropriate for every horse. A learner must not copy a session, judge movement quality, or adjust equipment based on a generic lesson.
+
+## Stop and Escalate
+
+Stop, move to safety as directed, and obtain the responsible person or qualified professional if the horse becomes unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe; equipment, surface, weather, space, gate, support, supervision, welfare, or emergency arrangements change; or the learner is unsure. Follow the current emergency procedure and obtain veterinary or emergency support when required.`,
     keyPoints: [
-      "Lungeing is for exercise, training, warm-up, and movement assessment",
-      "Equipment: lunge line, lunge whip, cavesson, protective boots",
-      "Maintain the triangle: handler, horse, whip",
-      "Use consistent voice commands",
-      "Never wrap the lunge line around your hand",
+      "Lungeing is a specialist handling activity requiring qualified professional competence, individual assessment, welfare checks, equipment inspection, suitable space, active supervision, and emergency planning",
+      "A qualified professional selects and fits any line, whip, cavesson, headcollar, protective equipment, circle, surface, pace, command, and duration for the individual horse and current conditions",
+      "Handler, horse, line, whip, command, and position techniques require in-person qualified instruction rather than a fixed diagram or cue",
+      "Do not infer that lungeing is required for a particular purpose or use a generic lesson to assess movement, behaviour, fitness, welfare, or a safe progression",
+      "Never wrap the lunge line around the hand or body, allow an entanglement hazard, use equipment beyond competence, stand in an unsafe position, or use a whip to punish or force a horse",
     ],
-    safetyNote: "Never wrap the lunge line around your hand or wrist. Hold the line in controlled folds.",
-    practicalApplication: "Practise lungeing a calm horse in walk and trot on both reins for 10 minutes each side.",
+    safetyNote:
+      "Do not lunge, direct a horse, choose or adjust equipment, select a circle or duration, judge movement, or continue an activity outside qualified professional instruction and the current site procedure. Stop, move to safety as directed, and obtain qualified or emergency support if horse behaviour, welfare, equipment, surface, space, support, supervision, or emergency arrangements are unsuitable.",
+    practicalApplication:
+      "Only under qualified in-person professional instruction and the responsible person’s current procedure, observe how the horse, handler, equipment, protective equipment, space, surface, circle, welfare, supervision, duration, and emergency route are assessed. Do not lunge, copy a session, use a line or whip, direct a horse, or adjust equipment from this lesson alone.",
     commonMistakes: [
-      "Wrapping the lunge line around the hand",
-      "Standing too close to the horse",
-      "Using the whip aggressively",
-      "Inconsistent voice commands",
-      "Letting the circle become too small",
+      "Lungeing, directing a horse, selecting or adjusting equipment, choosing a circle, surface, duration, pace, or progression outside qualified professional instruction and the current procedure",
+      "Using a fixed triangle, whip position, command, line length, circle size, pace, duration, or equipment list as a universal technique",
+      "Wrapping the lunge line around the hand or body, allowing entanglement, standing in an unsafe position, or using a whip to punish or force a horse",
+      "Assessing movement, behaviour, fitness, welfare, lameness, or a horse’s training needs from a generic lungeing observation",
+      "Continuing when horse behaviour, welfare, equipment, surface, space, weather, support, supervision, or emergency arrangements are unsuitable",
     ],
     knowledgeCheck: [
       {
-        question: "What shape should handler, horse, and whip form?",
-        options: ["A straight line", "A triangle", "A square", "A circle"],
+        question:
+          "Who determines whether lungeing is appropriate and how the horse, handler, equipment, protective equipment, space, circle, duration, and emergency arrangements are managed?",
+        options: [
+          "Any learner using a generic triangle diagram",
+          "The qualified professional and responsible person after individual assessment and current risk review",
+          "A copied lunge-line length",
+          "The horse’s previous session alone",
+        ],
         correctIndex: 1,
-        explanation: "The triangle formation gives the best control.",
+        explanation:
+          "Professional lungeing standards require individual assessment, welfare, equipment safety and fit, handler position, safe control, space, circle, duration, surroundings, and emergency planning. A generic lesson cannot select a safe protocol.",
       },
       {
-        question: "How should you hold the lunge line?",
-        options: ["Wrapped around your hand", "In controlled folds", "Dragging on the ground", "Tied to your belt"],
-        correctIndex: 1,
-        explanation: "Controlled folds keep the line managed safely.",
+        question:
+          "What should happen if a lungeing activity becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, or emergency conditions change?",
+        options: [
+          "Continue until the planned duration has finished",
+          "Use more force or a larger whip movement",
+          "Stop, move to safety as directed, and obtain qualified or emergency support through the current procedure",
+          "Diagnose the horse and adjust the equipment alone",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A lungeing concern may require qualified or emergency action. Do not use a generic technique; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "My horse keeps cutting in on the circle",
-      "When should I introduce side reins?",
-      "How long should a lungeing session last?",
+      "What current qualified-professional and site procedure applies if a horse cannot be lunged safely or becomes unsettled?",
+      "How should I report a factual horse-welfare, equipment, surface, space, handler-safety, or emergency concern to the responsible person?",
+      "What authority, in-person instruction, protective equipment, equipment check, supervision, welfare, and emergency procedure are required before any lungeing activity?",
     ],
     linkedCompetencies: ["groundwork_skills", "horse_care"],
   },
@@ -8940,62 +9137,82 @@ Begin in walk. Ask for trot with voice and a gentle lift of the whip. To stop, l
     category: "Handling & Groundwork",
     sortOrder: 5,
     objectives: [
-      "Understand the purpose of long-reining",
-      "Set up equipment for basic long-reining",
-      "Walk behind a horse safely while maintaining rein contact",
-      "Guide a horse through simple turns and transitions",
+      "Recognise that long-reining is a specialist handling activity requiring qualified professional competence, individual assessment, and current site procedures",
+      "Understand that a qualified professional must select, inspect, fit, and use equipment, protective equipment, space, environment, and support for the individual horse",
+      "Recognise that handler position, line management, communication, and horse-response techniques require in-person qualified instruction rather than a fixed learner method",
+      "Know when to stop, move to safety, and obtain qualified or emergency support rather than attempting long-reining or a correction independently",
     ],
-    content: `Long-reining is an advanced groundwork technique where the handler works behind or to the side of the horse using two long reins.
+    content: `Long-reining is a specialist horse-handling activity that may involve long lines and a horse’s response to handling from the ground. It requires in-person qualified professional competence, individual-horse assessment, appropriate equipment and protective equipment, current site procedures, welfare checks, suitable space and surface, active supervision, and an emergency plan. This lesson does not qualify a learner to long-rein, select equipment, position themselves, manage lines, guide a horse, train a horse, assess movement, choose a circle or route, apply pressure, decide a progression, or make a welfare, medical, veterinary, behavioural, or emergency decision.
 
-## Purpose
+## Evidence and Scope Boundary
 
-Long-reining develops the horse's response to rein aids, straightness, and obedience without a rider's weight.
+The reviewed professional coaching standard requires qualified assessment of horse and rider suitability, equipment, environment, risks, safety, welfare, safeguarding, response to concerns or emergencies, and reporting for support. It does not provide a public long-reining procedure, equipment configuration, line length, attachment point, handler position, contact, distance, turn, transition, training purpose, or progression protocol. Therefore, this lesson deliberately does not teach those actions.
 
-## Equipment Setup
+A learner must not infer that long-reining is suitable for a young, unfamiliar, nervous, recovering, fresh, trained, or any other horse; is required for training, exercise, rehabilitation, behaviour management, assessment, or rider preparation; or is safer because the handler is on the ground. Only the qualified professional and responsible person can decide whether it is appropriate after reviewing the individual horse, task, equipment, environment, welfare, fitness, health information available to them, handler competence, support, weather, footing, access, and current risk.
 
-Two long reins (7-8 metres each) attached to the bit rings or cavesson. The reins pass through the stirrups or surcingle rings back to the handler.
+## Equipment, Space, and Handler Safety
 
-## Handler Position
+Before any specialist ground-handling activity, the responsible person or qualified professional must inspect the equipment and setting, identify the safe working area and access, establish supervision and emergency arrangements, and decide whether the activity should take place at all. Do not rely on a generic line length, attachment point, rein route, surcingle, stirrup, headcollar, bit, cavesson, handler location, distance, surface, enclosure, communication cue, or exercise sequence.
 
-Walk behind the horse at a safe distance. Maintain light, elastic contact similar to riding contact.
+The handler must receive in-person instruction for the individual method of handling any line, maintaining awareness of surroundings, communicating, moving, responding to the horse, and using safety equipment. Never wrap lines around the hand or body, allow an entanglement hazard, use equipment beyond your competence, place yourself in an unsafe position, or attempt to hold or force a horse through a response.
 
-## Basic Exercises
+## Stop and Escalate
 
-Start in an enclosed arena. Walk on straight lines first. Gradually introduce gentle turns. Progress to halts and walk-to-halt transitions.`,
+Stop, move to safety as directed, and obtain the responsible person or qualified professional if the horse becomes unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe; equipment, surface, weather, space, gate, support, supervision, welfare, safeguarding, or emergency arrangements change; or the learner is unsure. Follow the current emergency procedure and obtain veterinary or emergency support when required.
+
+## Learning Boundary
+
+Use this lesson to prepare questions for a qualified professional, not to copy a method. Ask how the horse, handler, equipment, protective equipment, space, welfare, supervision, emergency route, and stop/escalation criteria are assessed for the current situation.`,
     keyPoints: [
-      "Long-reining develops rein response and straightness from the ground",
-      "Use two long reins through stirrups or surcingle",
-      "Maintain light elastic contact",
-      "Start with straight lines then simple turns",
-      "Always work in an enclosed area",
+      "Long-reining is a specialist handling activity requiring qualified professional competence, individual assessment, welfare checks, appropriate equipment, suitable space, active supervision, and emergency planning",
+      "The reviewed professional standard does not provide a public long-reining equipment configuration, line length, attachment point, handler position, contact, or training protocol",
+      "A qualified professional must decide whether long-reining is appropriate and select the individual horse, handler, equipment, setting, support, welfare, and safety method",
+      "Handler position, line management, communication, horse response, exercise, route, duration, and progression require in-person qualified instruction rather than a generic learner method",
+      "Stop, move to safety as directed, and obtain qualified or emergency support when horse behaviour, welfare, equipment, surface, space, support, supervision, safeguarding, or emergency arrangements are unsuitable",
     ],
-    safetyNote: "Long-reining requires experience. Work under supervision. A horse unaccustomed to reins around its hindquarters may kick.",
-    practicalApplication: "Under supervision, practise walking a trained horse in straight lines using long reins.",
+    safetyNote:
+      "Do not long-rein, manage lines, select or adjust equipment, choose a route or duration, guide a horse, judge movement, or continue an activity outside qualified professional instruction and the current site procedure. Never wrap lines around the hand or body or allow an entanglement hazard. Stop, move to safety as directed, and obtain qualified or emergency support if conditions are unsuitable.",
+    practicalApplication:
+      "Only under qualified in-person professional instruction and the responsible person’s current procedure, observe how the individual horse, handler, equipment, protective equipment, space, surface, welfare, supervision, and emergency route are assessed. Do not long-rein, copy a configuration, manage lines, direct a horse, or adjust equipment from this lesson alone.",
     commonMistakes: [
-      "Working a horse unfamiliar with reins around hindquarters",
-      "Pulling on the reins instead of guiding",
-      "Standing too close behind the horse",
-      "Not working in an enclosed area",
-      "Using equipment that is too long or short",
+      "Long-reining, managing lines, selecting or adjusting equipment, choosing a route, surface, duration, or progression outside qualified professional instruction and the current procedure",
+      "Using a generic equipment configuration, attachment point, line length, handler position, contact, distance, route, cue, or progression as a universal technique",
+      "Wrapping lines around the hand or body, allowing entanglement, standing in an unsafe position, or trying to force or hold a horse through a response",
+      "Assessing movement, behaviour, fitness, welfare, lameness, health, or training needs from a generic long-reining observation",
+      "Continuing when horse behaviour, welfare, equipment, surface, space, weather, support, supervision, safeguarding, or emergency arrangements are unsuitable",
     ],
     knowledgeCheck: [
       {
-        question: "What is the primary purpose of long-reining?",
-        options: ["To tire the horse", "To develop rein response and straightness from the ground", "To replace riding entirely", "To teach jumping"],
+        question:
+          "Who determines whether long-reining is appropriate and how the horse, handler, equipment, protective equipment, space, welfare, supervision, and emergency arrangements are managed?",
+        options: [
+          "Any learner using a generic online diagram",
+          "The qualified professional and responsible person after individual assessment and current risk review",
+          "A copied line length or attachment point",
+          "The horse’s previous activity alone",
+        ],
         correctIndex: 1,
-        explanation: "Long-reining develops rein aids understanding and straightness without rider weight.",
+        explanation:
+          "The reviewed professional standard supports qualified assessment of suitability, equipment, environment, risk, safety, welfare, safeguarding, and emergencies. It does not provide a generic long-reining protocol.",
       },
       {
-        question: "Where should the long reins pass through?",
-        options: ["Through the horse's legs", "Through the stirrup irons or surcingle rings", "Over the horse's back loosely", "Through the noseband"],
-        correctIndex: 1,
-        explanation: "The reins pass through stirrups or surcingle rings for correct contact angle.",
+        question:
+          "What should happen if long-reining becomes unsafe, the horse is unsettled or uncomfortable, or equipment, space, surface, supervision, welfare, or emergency conditions change?",
+        options: [
+          "Continue until the planned exercise is complete",
+          "Use a generic correction or change equipment alone",
+          "Stop, move to safety as directed, and obtain qualified or emergency support through the current procedure",
+          "Assume the horse needs more pressure",
+        ],
+        correctIndex: 2,
+        explanation:
+          "A specialist ground-handling concern may require qualified or emergency action. Do not use a generic technique; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How do I introduce long-reining to a young horse?",
-      "What exercises improve straightness with long reins?",
-      "Is long-reining suitable for all horses?",
+      "What current qualified-professional and site procedure applies if long-reining is proposed or becomes unsafe?",
+      "How should I report a factual horse-welfare, equipment, surface, space, handler-safety, or emergency concern to the responsible person?",
+      "What authority, in-person instruction, protective equipment, equipment check, supervision, welfare, and emergency procedure are required before any specialist ground-handling activity?",
     ],
     linkedCompetencies: ["groundwork_skills", "riding_position"],
   },
@@ -9008,62 +9225,82 @@ Start in an enclosed arena. Walk on straight lines first. Gradually introduce ge
     category: "Handling & Groundwork",
     sortOrder: 6,
     objectives: [
-      "Use in-hand work to develop collection and engagement",
-      "Understand lateral work from the ground",
-      "Develop the horse's response to subtle body language cues",
-      "Apply groundwork principles to rehabilitation",
+      "Recognise that advanced groundwork, fitness, and rehabilitation planning require individual assessment and qualified professional direction",
+      "Understand that exercise selection, equipment, handler position, and progression cannot be taken from a generic lesson",
+      "Use factual observation and appropriate escalation rather than diagnosing behaviour, pain, fitness, welfare, or training needs",
+      "Know when a veterinary, rehabilitation, welfare, or qualified professional concern requires the authorised support route",
     ],
-    content: `Advanced groundwork goes beyond basic handling into training and rehabilitation.
+    content: `Advanced groundwork may include specialist non-ridden training or conditioning activity, but it is not a generic exercise programme and is not rehabilitation advice. It requires individual-horse assessment, qualified professional competence, current site procedures, appropriate equipment and personal protective equipment, welfare checks, safe space and surface, supervision, and an emergency plan. This lesson does not qualify a learner to select or perform in-hand collection, lateral work, long-reining, lungeing, whip work, body-language techniques, rehabilitation activity, muscle conditioning, training progression, or a veterinary, behavioural, welfare, or emergency decision.
 
-## In-Hand Work for Collection
+## Individual Planning, Not a Copied Exercise
 
-Using a bridle and short whip as an extension of the hand, the handler walks beside the horse asking for increased engagement of the hindquarters. This develops balance and self-carriage.
+World Horse Welfare identifies groundwork, fitness, and rehabilitation as expert-led topics. Its return-to-work guidance says plans must be tailored and adapted to each horse, with expert help when readiness or health is uncertain. British Horse Society fitness guidance similarly advises slow, practical, individual plans rather than rushing or copying another horse’s workload. Therefore, a lesson cannot establish that a particular exercise, step count, distance, circle, rein aid, whip, position, amount of “engagement,” movement pattern, session length, or progression is suitable or beneficial for any individual horse.
 
-## Lateral Work from the Ground
+The responsible person and qualified professional must assess the horse’s current health information, welfare, fitness, training, behaviour, history, equipment, tack, environment, surface, space, access, support, weather, handler competence, and current risks before considering any activity. A horse’s changed behaviour, resistance, discomfort, lameness, reduced performance, tack concern, or unusual response has many possible causes. Do not diagnose pain, stiffness, weakness, asymmetry, attitude, training need, or a rehabilitation stage from a generic observation.
 
-Shoulder-in and travers can be introduced from the ground before the rider attempts them in the saddle, teaching the horse the movement pattern.
+## Training and Handling Boundary
 
-## Body Language Refinement
+A qualified professional must select and demonstrate any advanced handling or training method, including the equipment, position, contact, communication, exercise, line, whip, rein, pace, route, surface, timing, rest, progression, and stop criteria for the individual horse. Do not use a bridle, whip, reins, lines, or body position as a generic instruction; ask a horse for collection, engagement, lateral work, response to a cue, or a rehabilitation exercise; or copy a demonstration from text alone.
 
-At advanced levels, the handler's body position, energy, and intention become primary communication tools.
+Never wrap a line or rein around the hand or body, use equipment beyond your competence, force a response, punish a horse, attempt to work through discomfort, or continue when safety or welfare conditions are unsuitable. A learner should not infer that advanced groundwork is required before ridden work, that it replaces ridden work, or that it is safer because it is performed from the ground.
 
-## Rehabilitation Applications
+## Rehabilitation, Health, and Welfare
 
-Groundwork is invaluable for horses returning from injury. Controlled in-hand work allows targeted muscle development without the strain of carrying a rider.`,
+If a horse is returning from injury, has lameness, changed behaviour, pain, poor performance, fitness, tack, hoof, feeding, dental, health, welfare, or rehabilitation concerns, use the authorised veterinary and qualified-professional route. Do not begin, restart, progress, reduce, or substitute an exercise plan from this lesson. Rehabilitation and workload decisions must follow the individual professional plan and current welfare procedure.
+
+## Stop and Escalate
+
+Stop, move to safety as directed, and obtain the responsible person, qualified professional, veterinary support, or emergency support when required if the horse becomes unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe; equipment, surface, space, weather, support, supervision, welfare, safeguarding, or emergency arrangements change; or the learner is unsure.`,
     keyPoints: [
-      "Advanced groundwork includes in-hand work for collection and lateral exercises",
-      "Shoulder-in and travers can be taught from the ground first",
-      "Body language becomes primary communication at advanced levels",
-      "Groundwork is essential for rehabilitation",
-      "Classical in-hand work develops self-carriage",
+      "Advanced groundwork, fitness, and rehabilitation planning require individual-horse assessment, qualified professional competence, welfare checks, suitable equipment and environment, supervision, and emergency planning",
+      "A generic lesson cannot select an advanced in-hand exercise, equipment, position, cue, pace, route, surface, duration, progression, or claimed biomechanical outcome for an individual horse",
+      "Changed behaviour, resistance, discomfort, lameness, reduced performance, tack concern, or unusual response requires factual observation and appropriate qualified assessment, not a generic diagnosis",
+      "Rehabilitation, health, welfare, fitness, workload, tack, hoof, feeding, dental, and behaviour concerns require the authorised veterinary and qualified-professional route",
+      "Do not use a bridle, whip, rein, line, body position, or advanced exercise as a copied learner instruction or substitute for individual professional guidance",
     ],
-    safetyNote: "Advanced groundwork requires an experienced handler and well-established basic groundwork.",
-    practicalApplication: "Under expert supervision, practise asking a schooled horse for three steps of shoulder-in from the ground.",
+    safetyNote:
+      "Do not perform or direct advanced groundwork, select or adjust equipment, choose a route or duration, assess movement, or continue outside qualified professional instruction and the current site procedure. Never force a response, punish a horse, use equipment beyond competence, or continue if health, welfare, safety, supervision, or emergency arrangements are unsuitable.",
+    practicalApplication:
+      "Only under qualified in-person professional instruction and the responsible person’s current procedure, observe how the individual horse, handler, health information, welfare, equipment, space, surface, fitness, support, supervision, and emergency route are assessed. Do not select, perform, copy, or progress an advanced groundwork or rehabilitation activity from this lesson alone.",
     commonMistakes: [
-      "Attempting advanced exercises before basics are solid",
-      "Over-using the whip",
-      "Working for too long",
-      "Not recognising confusion vs resistance",
-      "Ignoring the horse's physical condition",
+      "Selecting, performing, copying, or progressing an advanced groundwork, conditioning, or rehabilitation exercise without individual qualified direction and the current procedure",
+      "Using a generic exercise, equipment, position, cue, distance, timing, surface, route, or progression as a universal method or claimed treatment",
+      "Using a bridle, whip, rein, line, or body position beyond competence; wrapping equipment around the hand or body; forcing a response; or punishing a horse",
+      "Diagnosing pain, lameness, weakness, asymmetry, behaviour, fitness, welfare, tack fit, health, or a rehabilitation stage from a generic observation",
+      "Continuing when the horse is unsettled, difficult to control, uncomfortable, lame, distressed, or unsafe, or when health, welfare, equipment, surface, space, support, supervision, or emergency arrangements are unsuitable",
     ],
     knowledgeCheck: [
       {
-        question: "Why is groundwork valuable for rehabilitation?",
-        options: ["It's easier than riding", "It allows controlled exercise without rider weight", "It doesn't require equipment", "Horses prefer it"],
+        question:
+          "Who decides whether an advanced groundwork, conditioning, or rehabilitation activity is appropriate and how it is selected, performed, progressed, monitored, or stopped?",
+        options: [
+          "Any learner using a generic lesson or copied exercise",
+          "The responsible person and appropriate qualified or veterinary professional after individual assessment and current risk review",
+          "A fixed distance or session duration",
+          "A horse’s previous response alone",
+        ],
         correctIndex: 1,
-        explanation: "Groundwork allows targeted exercise without the strain of carrying a rider.",
+        explanation:
+          "World Horse Welfare and British Horse Society guidance support tailored, adaptable individual planning and expert help when readiness or health is uncertain. A generic lesson cannot prescribe a rehabilitation or advanced training programme.",
       },
       {
-        question: "What is the foundation of classical in-hand work?",
-        options: ["Speed", "Jumping", "Developing collection and engagement of the hindquarters", "Lunging"],
+        question:
+          "What should happen if a horse shows changed behaviour, discomfort, lameness, reduced performance, a tack concern, or an unusual response during or around advanced groundwork?",
+        options: [
+          "Select a harder exercise to improve engagement",
+          "Diagnose the cause and adjust the exercise alone",
+          "Stop, move to safety as directed, and use the authorised responsible-person, qualified-professional, veterinary, or emergency route",
+          "Treat the response as resistance and continue",
+        ],
         correctIndex: 2,
-        explanation: "Classical in-hand work focuses on engaging the hindquarters for balance and collection.",
+        explanation:
+          "These observations can have many causes. Do not diagnose, force, or work through a concern; follow the current welfare and escalation procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How do I start teaching shoulder-in from the ground?",
-      "What groundwork exercises help tendon recovery?",
-      "How does in-hand work relate to ridden collection?",
+      "What current qualified-professional and site procedure applies if advanced groundwork or a rehabilitation activity is proposed or becomes unsafe?",
+      "How should I report a factual health, lameness, welfare, equipment, surface, handler-safety, or emergency concern through the authorised route?",
+      "What authority, in-person instruction, health and welfare assessment, equipment check, supervision, and emergency procedure are required before any advanced groundwork activity?",
     ],
     linkedCompetencies: ["groundwork_skills", "horse_care"],
   },
@@ -9093,20 +9330,22 @@ The small intestine handles digestion and absorption of proteins, fats, sugars, 
 
 ## Hindgut
 
-The hindgut is where fibre is fermented by billions of beneficial microorganisms. This microbial population is sensitive to sudden dietary changes — all feed changes must be made gradually over 7-14 days.
+The hindgut is where fibre is fermented by a microbial population that may be disrupted by abrupt dietary change. Any change to feed, forage or routine must follow an individual plan agreed with the responsible person and, where needed, a qualified nutrition or veterinary professional.
 
-## Colic Prevention
+## Colic Awareness
 
-Colic is the leading cause of equine death. Feed little and often, ensure constant forage access, introduce changes slowly, and always provide clean water.`,
+Colic can be an emergency. Support a consistent, individually appropriate feeding and forage plan, maintain access to clean water, record relevant changes, and contact the veterinary professional promptly if abdominal-pain signs or other concerns are observed.`,
     keyPoints: [
       "The horse's stomach is small — designed for little and often",
       "The hindgut ferments fibre using sensitive microbial populations",
       "Sudden diet changes can cause colic",
-      "All feed changes over 7-14 days",
+      "Any dietary change must follow an individual, professionally informed plan rather than a universal timetable",
       "Constant forage access is essential",
     ],
-    safetyNote: "Colic is a veterinary emergency. If a horse shows signs of abdominal pain, call the vet immediately.",
-    practicalApplication: "Observe the feeding routine at your yard for one week. Note forage access and any feed changes.",
+    safetyNote:
+      "Colic is a veterinary emergency. If a horse shows signs of abdominal pain, call the vet immediately.",
+    practicalApplication:
+      "Observe the feeding routine at your yard for one week. Note forage access and any feed changes.",
     commonMistakes: [
       "Feeding large meals infrequently",
       "Making sudden feed changes",
@@ -9117,15 +9356,27 @@ Colic is the leading cause of equine death. Feed little and often, ensure consta
     knowledgeCheck: [
       {
         question: "Why must horses eat little and often?",
-        options: ["They are greedy", "Their stomach is small and produces acid continuously", "They prefer it", "It's cheaper"],
+        options: [
+          "They are greedy",
+          "Their stomach is small and produces acid continuously",
+          "They prefer it",
+          "It's cheaper",
+        ],
         correctIndex: 1,
-        explanation: "The horse's small stomach and continuous acid production require frequent small meals.",
+        explanation:
+          "The horse's small stomach and continuous acid production require frequent small meals.",
       },
       {
-        question: "Over how many days should you introduce a new feed?",
-        options: ["Immediately", "2-3 days", "7-14 days", "30 days"],
+        question: "How should a change to feed or forage be managed?",
+        options: [
+          "Use the same timetable for every horse",
+          "Make the change immediately so the horse gets used to it",
+          "Follow an individual plan agreed with the responsible person and qualified professional where needed",
+          "Change several feeding factors at once so results are faster",
+        ],
         correctIndex: 2,
-        explanation: "Feed changes should be gradual over 7-14 days for hindgut microbes to adapt.",
+        explanation:
+          "Horses and circumstances differ. Feeding changes require an individual approach, records and appropriate professional input rather than a copied universal schedule.",
       },
     ],
     aiTutorPrompts: [
@@ -9144,62 +9395,82 @@ Colic is the leading cause of equine death. Feed little and often, ensure consta
     category: "Nutrition & Feeding",
     sortOrder: 2,
     objectives: [
-      "Identify common types of horse feed",
-      "Understand the difference between forage and hard feed",
-      "Recognise when supplementary feeding is needed",
-      "Describe the importance of quality control in feed",
+      "Recognise broad feed categories while understanding that the individual feeding plan, not a generic list, determines suitability",
+      "Understand that forage, concentrates, balancers, supplements, water, quality, and storage decisions require individual welfare and nutrition assessment",
+      "Know that a qualified nutrition or veterinary professional may be required before selecting, adding, removing, or changing feed or supplements",
+      "Use factual observation and the current responsible-person procedure to identify and report feed, forage, storage, water, condition, health, welfare, or safety concerns",
     ],
-    content: `Horse feed falls into two broad categories: forage and concentrates.
+    content: `Feed selection is an individual horse-health, welfare, nutrition, management, and safety decision. This lesson introduces broad categories only. It does not prescribe a diet, calculate quantities, diagnose a nutritional or health problem, decide that a feed is safe or unsafe for an individual horse, select a supplement, treat a condition, interpret a laboratory analysis, replace a veterinary or qualified nutrition assessment, or authorise a feed, forage, hydration, storage, grazing, weight, or workload change.
 
-## Forage
+## Broad Feed Categories
 
-Hay is dried grass. Good hay should smell sweet, feel dry, and be free of dust and mould. Haylage is semi-dried wrapped grass — more palatable but higher in energy. Grass is the most natural forage.
+World Horse Welfare and British Horse Society describe forage as high-fibre material that can include grass, hay, haylage, chaffs, fibre products, and other sources selected for the individual horse. They describe concentrates as energy-dense feeds that may be used for some horses, while balancers and supplements may have different purposes. Category names do not establish that a particular product, ingredient, amount, nutrient content, texture, moisture level, energy level, or feed type is suitable for every horse.
 
-## Concentrates
+A responsible person and, where needed, a qualified nutrition or veterinary professional must consider the individual horse’s current feeding plan, body condition, age, workload, health information, welfare, dental and hoof information, access to water, forage, grazing, environment, management, feed analysis, manufacturer information, storage, and current risks. Do not decide that a horse needs extra calories, concentrates, chaff, a balancer, a supplement, haylage, straw, soaked forage, or a restriction from this lesson alone.
 
-Concentrates include cubes, coarse mixes, and straights (oats, barley, sugar beet). These supplement the diet for horses in work or needing extra calories.
+## Forage and Concentrate Boundaries
 
-## Chaff
+Both reviewed sources describe forage-led feeding and regular access to clean water as central general principles, but the quantity, type, method, timing, and access arrangement must follow the individual plan. Some horses need a tailored approach to control calories, condition, chewing opportunity, health, work, turnout, or other circumstances. Do not use “majority,” “constant,” “natural,” “rich,” “high energy,” “little and often,” or a copied percentage as a universal instruction.
 
-Chaff (chopped hay or straw) is added to hard feeds to slow eating and encourage chewing, promoting better digestion.
+Concentrates, balancers, and supplements are not interchangeable. A product’s label, an ingredient list, a scoop, a feed type, a yard routine, or another horse’s diet is not enough to select the correct feeding plan. Consult the responsible person and obtain appropriate qualified support before changing a diet, adding a supplement, responding to a weight, condition, hydration, health, workload, or grazing concern, or using a product for a claimed health outcome.
 
-## Quality Control
+## Feed, Forage, Water, and Storage Quality
 
-Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof containers. Check use-by dates.`,
+The reviewed sources support good hygiene, clean feed and utensils, dry and appropriate storage, clean water, and not feeding visibly mouldy feed or forage. These principles do not let a learner diagnose respiratory disease, toxicity, contamination, spoilage, a feed-borne illness, a water problem, or a horse’s condition from a smell, dust, appearance, date, or generic rule. Follow the current site procedure, record factual observations, remove access only when instructed by the responsible person or emergency procedure, and seek the appropriate professional support.
+
+## Stop and Escalate
+
+Stop and use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route if feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare becomes concerning; if a product is damaged, contaminated, expired, unidentified, incorrectly stored, or not in the current plan; or if the learner is unsure. Do not feed, withhold, substitute, dose, or change a product independently.`,
     keyPoints: [
-      "Forage should form the majority of every horse's diet",
-      "Concentrates are supplementary",
-      "Chaff slows eating and improves digestion",
-      "Always check feed quality",
-      "Store feed properly",
+      "Forage, concentrates, balancers, supplements, water, quality, and storage decisions must follow the individual horse’s current feeding, welfare, and professional plan",
+      "Forage, concentrate, balancer, supplement, product, ingredient, quantity, nutrient, texture, moisture, and energy claims are not universal instructions",
+      "A product name, label, ingredient list, scoop, feed type, yard routine, or another horse’s diet does not establish suitability for an individual horse",
+      "Use factual observation and the current procedure to report feed, forage, water, storage, hygiene, condition, health, safety, or welfare concerns; do not diagnose the cause",
+      "Do not feed, withhold, substitute, dose, add, remove, or change a feed product independently when it is outside the current plan or conditions are uncertain",
     ],
-    safetyNote: "Dusty or mouldy hay causes serious respiratory conditions. Always inspect before feeding.",
-    practicalApplication: "Identify five different types of feed at your yard and categorise each.",
+    safetyNote:
+      "Do not use appearance, smell, dust, a date, or a generic rule to diagnose contamination, respiratory disease, toxicity, spoilage, a feed-borne illness, a water problem, or a horse’s condition. Follow the current site procedure, report factual concerns, and use responsible-person, veterinary, qualified nutrition, welfare, or emergency support when required.",
+    practicalApplication:
+      "With the responsible person’s permission, read the current written feeding plan and observe how authorised people check product identity, storage, water access, hygiene, and records. Ask who selected the plan and what current professional, welfare, and escalation procedures apply. Do not categorise a product as suitable, feed a horse, change a product, or make a health or nutrition decision from this lesson alone.",
     commonMistakes: [
-      "Overfeeding concentrates",
-      "Feeding dusty hay",
-      "Not storing feed properly",
-      "Assuming all horses need hard feed",
-      "Feeding rich haylage to laminitis-prone horses",
+      "Selecting, adding, removing, withholding, substituting, dosing, or changing forage, concentrate, balancer, supplement, water, or another product outside the individual current plan and authorised procedure",
+      "Using a generic category, product label, ingredient, scoop, feed type, yard routine, or another horse’s diet as proof that a product is suitable",
+      "Diagnosing contamination, respiratory disease, toxicity, spoilage, a feed-borne illness, a water problem, or a horse’s condition from appearance, smell, dust, a date, or a generic rule",
+      "Treating a concentrate, balancer, supplement, chaff, haylage, straw, soaked forage, or restriction as a universal response to workload, weight, condition, hydration, health, grazing, or welfare",
+      "Continuing when feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare is concerning or outside the current plan",
     ],
     knowledgeCheck: [
       {
-        question: "What should form the majority of a horse's diet?",
-        options: ["Concentrates", "Forage", "Supplements", "Treats"],
+        question:
+          "What determines whether a particular forage, concentrate, balancer, supplement, or product is suitable for a horse?",
+        options: [
+          "Its category name or another horse’s diet",
+          "The individual horse’s current feeding, welfare, and professional plan after appropriate assessment",
+          "A generic online list",
+          "The product’s colour or smell alone",
+        ],
         correctIndex: 1,
-        explanation: "Forage should always be the bulk of the diet.",
+        explanation:
+          "Broad feed categories do not select an individual diet. The responsible person and, where needed, qualified nutrition or veterinary professionals must consider the current plan and individual context.",
       },
       {
-        question: "Why is chaff added to hard feed?",
-        options: ["Better taste", "Cheaper", "To slow eating and improve digestion", "To add colour"],
+        question:
+          "What should happen if feed, forage, water, storage, hygiene, condition, behaviour, appetite, chewing, droppings, comfort, health, safety, or welfare is concerning or outside the current plan?",
+        options: [
+          "Choose a replacement feed from a generic list",
+          "Make a rapid change to test whether the concern improves",
+          "Use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route and report factual observations",
+          "Assume the problem is caused by a single ingredient",
+        ],
         correctIndex: 2,
-        explanation: "Chaff encourages chewing and saliva production for better digestion.",
+        explanation:
+          "A generic lesson cannot diagnose the cause or select a diet change. Follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "What's the difference between hay and haylage?",
-      "How do I know if my horse needs hard feed?",
-      "What are the signs of poor-quality hay?",
+      "What current responsible-person and qualified-professional procedure applies if feed, forage, water, storage, or a horse’s condition is concerning?",
+      "How should I report factual feed, forage, water, appetite, condition, health, welfare, or safety observations without selecting a product or diagnosing a cause?",
+      "What authority, written feeding plan, product check, storage procedure, professional support, and emergency route apply before any feed change?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "horse_care"],
   },
@@ -9217,28 +9488,24 @@ Always check feed for mould, dust, or unusual smells. Store in dry, rodent-proof
       "Understand feeding before and after exercise",
       "Weigh feed correctly using scales",
     ],
-    content: `Consistent feeding routines are essential for horse health.
-
+    content: `Consistent feeding routines should be based on the individual horse’s current written feeding plan, workload, condition, management and professional advice.
 ## The Golden Rules
-
-1. Feed little and often  2. Feed plenty of forage  3. Feed by weight, not volume  4. Make changes gradually  5. Keep to a routine  6. Ensure constant access to clean water  7. Do not ride for at least one hour after a hard feed  8. Feed according to size, condition, workload, and temperament
-
+1. Provide an individually appropriate forage-led plan  2. Feed by weight, not volume  3. Record and manage dietary changes through the agreed individual plan  4. Keep accurate feeding records  5. Ensure access to clean water  6. Review the plan when workload, condition, health, forage or management changes
 ## Weighing Feed
-
-A scoop of one feed weighs very differently to another. Always weigh on scales until confident with quantities.
-
+A scoop of one feed can weigh differently from a scoop of another. Use suitable scales and the current individual plan rather than estimating by volume.
 ## Exercise and Feeding
-
-Do not give a large feed immediately before or after exercise. Allow at least one hour between feeding and riding.`,
+Plan feeding and exercise around the individual horse and current professional advice. Do not apply a copied interval or make abrupt changes before or after work.`,
     keyPoints: [
       "Feed little and often with plenty of forage",
       "Always weigh feed",
-      "Make all feed changes gradually over 7-14 days",
-      "Keep to consistent feeding times",
-      "Allow one hour between hard feed and exercise",
+      "Manage dietary changes through the documented individual plan rather than a universal timetable",
+      "Keep current, accurate feeding records",
+      "Plan feed and exercise around the individual horse and current professional advice",
     ],
-    safetyNote: "Riding immediately after a large feed can cause discomfort or colic.",
-    practicalApplication: "Weigh out the feed for one horse using scales. Compare this to a level scoop.",
+    safetyNote:
+      "Riding immediately after a large feed can cause discomfort or colic.",
+    practicalApplication:
+      "Weigh out the feed for one horse using scales. Compare this to a level scoop.",
     commonMistakes: [
       "Feeding by scoop volume instead of weight",
       "Inconsistent feeding times",
@@ -9249,15 +9516,26 @@ Do not give a large feed immediately before or after exercise. Allow at least on
     knowledgeCheck: [
       {
         question: "Why should you weigh feed rather than use scoops?",
-        options: ["It's more traditional", "Different feeds weigh differently per scoop", "It's faster", "Horses prefer it"],
+        options: [
+          "It's more traditional",
+          "Different feeds weigh differently per scoop",
+          "It's faster",
+          "Horses prefer it",
+        ],
         correctIndex: 1,
         explanation: "A scoop of oats weighs differently to a scoop of cubes.",
       },
       {
-        question: "How long between feeding hard feed and riding?",
-        options: ["No wait needed", "15 minutes", "At least one hour", "24 hours"],
-        correctIndex: 2,
-        explanation: "The horse needs blood supply to the gut for digestion.",
+        question: "How should feeding and exercise be planned?",
+        options: [
+          "Use the same interval for every horse",
+          "Follow the documented individual plan and current professional advice",
+          "Make a last-minute change whenever a horse seems energetic",
+          "Ignore the workload and management context",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Feeding and exercise planning is individual. A lesson should not substitute a fixed generic interval for the horse’s current plan and appropriate professional input.",
       },
     ],
     aiTutorPrompts: [
@@ -9276,58 +9554,82 @@ Do not give a large feed immediately before or after exercise. Allow at least on
     category: "Nutrition & Feeding",
     sortOrder: 4,
     objectives: [
-      "Understand basic nutritional needs",
-      "Assess body condition using scoring",
-      "Adjust feed to match workload",
-      "Recognise signs of imbalance",
+      "Recognise that diet balancing requires individual assessment of welfare, condition, workload, health information, forage, management, and the current approved plan",
+      "Use factual observations and authorised condition-monitoring processes without diagnosing health, nutrition, fitness, pain, or welfare causes",
+      "Understand that only the responsible person and appropriate qualified nutrition or veterinary professional can select, change, restrict, or progress a diet",
+      "Know when condition, behaviour, appetite, water, droppings, coat, hoof, health, or welfare observations require the authorised support route",
     ],
-    content: `A balanced diet provides the correct amount of energy, protein, fibre, vitamins, and minerals.
+    content: `Balancing a horse’s diet is an individual health, welfare, nutrition, management, and safety decision. This lesson is not a ration calculator, a body-condition scoring protocol, a diagnostic tool, a laminitis risk assessment, a feed prescription, or a substitute for the responsible person, qualified nutrition professional, veterinarian, farrier, dental professional, or current emergency procedure. It does not authorise a learner to add, remove, restrict, substitute, dose, or change feed, forage, water, supplements, grazing, turnout, exercise, or medication.
 
-## Body Condition Scoring
+## Individual Plans, Not Fixed Scores
 
-Use the 0-5 system. Score 0 is emaciated; 5 is obese. Ideal for most riding horses is 2.5-3. Check neck crest, ribs, spine, and quarters.
+World Horse Welfare and British Horse Society describe diet and fitness planning as individual processes that consider condition, workload, forage, water, management, health information, welfare, and the horse’s current needs. They support regular condition monitoring, but a fixed 0–5 system, “ideal” score, body-part checklist, timeline, quantity, or diet response is not a universal instruction in this lesson. Use only the authorised site method and current plan, and do not diagnose a horse’s condition, health, fitness, pain, nutritional status, or welfare from an appearance, scale, weigh tape, coat, hoof, rib, crest, spine, or generic score.
 
-## Energy Requirements
+A responsible person and, where needed, a qualified nutrition or veterinary professional must consider the individual horse’s age, current feeding plan, forage and feed information, body condition, workload, health information, dental and hoof information, behaviour, appetite, water access, droppings, environment, grazing, turnout, equipment, management, season, support, and current risks. Do not assume that workload alone determines energy needs, that a leisure horse needs only forage, that a thin horse needs concentrates, that an overweight horse needs restriction, or that a particular product will correct an observed concern.
 
-Energy needs increase with workload. Most leisure horses thrive on good forage alone. Over-feeding energy leads to weight gain and behavioural issues.
+## Observations and Current Plan
 
-## Signs of Imbalance
+Factual records can help the authorised professional review an existing plan. Record only what is observed through the current site process—for example, the approved condition measurement, appetite, water access, droppings, current workload, forage or feed identity, and a change in comfort or behaviour. Do not label a cause, rank a risk, choose a feed change, or promise a result.
 
-A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes can indicate dietary imbalance. Consult an equine nutritionist if in doubt.`,
+Changes in coat, hoof quality, weight, body shape, appetite, droppings, energy, behaviour, comfort, performance, chewing, or water intake can have many possible causes. The reviewed sources do not allow a learner to conclude that an observation is a dietary imbalance, nutritional deficiency, excess energy, laminitis, pain, or another health condition. Report factual observations and use the current responsible-person, qualified nutrition, veterinary, welfare, or emergency route.
+
+## Health and Welfare Escalation
+
+A nutrition, condition, workload, or feed concern may require professional review. Stop and use the authorised procedure if a horse’s condition, appetite, water, droppings, behaviour, comfort, health, welfare, feed, forage, storage, hygiene, grazing, turnout, workload, or safety becomes concerning or is outside the current plan. Do not make a rapid diet or exercise change, restrict forage, add a supplement, treat an apparent condition, or delay veterinary or emergency support when required.
+
+## Learning Boundary
+
+Use this lesson to understand why individual planning matters and to prepare questions for authorised professionals. Ask who selected the current plan, how condition and workload are monitored, what factual records are required, and which support or emergency route applies if a concern arises.`,
     keyPoints: [
-      "Assess body condition regularly using the 0-5 system",
-      "Most leisure horses thrive on forage alone",
-      "Energy needs increase with workload",
-      "Signs of poor nutrition include dull coat and weight changes",
-      "Consult an equine nutritionist for complex needs",
+      "Diet balancing requires individual assessment of welfare, condition, workload, health information, forage, management, and the current approved plan",
+      "A fixed score, ideal condition, body-part checklist, timeline, quantity, feed type, or diet response is not a universal instruction for an individual horse",
+      "Workload, condition, feed, forage, water, health, behaviour, comfort, hoof, coat, and welfare observations require factual recording and appropriate qualified assessment, not a generic causal conclusion",
+      "Do not diagnose a dietary imbalance, deficiency, excess energy, laminitis, pain, fitness, or health condition from an appearance, score, coat, hoof, weight, body shape, appetite, droppings, or behaviour",
+      "Use the authorised responsible-person, qualified nutrition, veterinary, welfare, or emergency route before changing feed, forage, water, supplements, grazing, turnout, exercise, or medication",
     ],
-    safetyNote: "Overweight horses are at serious risk of laminitis. Monitor body condition closely.",
-    practicalApplication: "Condition score three horses at your yard using the 0-5 system.",
+    safetyNote:
+      "Do not use a generic score, appearance, weight, body shape, coat, hoof, appetite, droppings, workload, or behaviour observation to diagnose laminitis, health, pain, nutrition, or welfare. Record factual observations and follow the current responsible-person, veterinary, qualified nutrition, welfare, or emergency procedure when concerns arise.",
+    practicalApplication:
+      "With the responsible person’s permission, observe how authorised people use the current written feeding plan and approved condition-monitoring process. Ask who reviews workload, forage, feed, water, condition, welfare, records, and escalation criteria. Do not score, diagnose, rank, feed, restrict, supplement, or change an individual horse’s plan from this lesson alone.",
     commonMistakes: [
-      "Over-feeding treats without accounting for them",
-      "Assuming thin horses always need more hard feed",
-      "Not scoring regularly",
-      "Feeding the same ration year-round",
-      "Relying on visual assessment alone",
+      "Adding, removing, restricting, substituting, dosing, or changing feed, forage, water, supplements, grazing, turnout, exercise, or medication outside the individual current plan and authorised procedure",
+      "Using a generic body score, ideal range, body-part checklist, timeline, quantity, product, workload, or appearance as proof that a diet change is suitable",
+      "Diagnosing dietary imbalance, deficiency, excess energy, laminitis, pain, fitness, health, or welfare from condition, weight, coat, hoof, appetite, droppings, energy, behaviour, or performance observations",
+      "Assuming a horse’s age, leisure status, workload, season, thinness, body shape, or weight alone determines a forage, concentrate, balancer, supplement, or restriction",
+      "Continuing when condition, appetite, water, droppings, behaviour, comfort, health, welfare, feed, forage, storage, grazing, turnout, workload, or safety is concerning or outside the current plan",
     ],
     knowledgeCheck: [
       {
-        question: "Ideal body condition score for riding horses?",
-        options: ["0-1", "2.5-3", "4-5", "It doesn't matter"],
+        question:
+          "What determines whether a condition, workload, feed, forage, water, supplement, grazing, turnout, or exercise change is suitable for a horse?",
+        options: [
+          "A generic ideal score or range",
+          "The individual horse’s current approved plan after responsible-person and appropriate qualified assessment",
+          "Another horse’s diet",
+          "A coat or body-shape observation alone",
+        ],
         correctIndex: 1,
-        explanation: "2.5-3 on the 0-5 scale indicates a healthy weight.",
+        explanation:
+          "A generic lesson cannot select a diet or workload change. The individual plan and appropriate assessment determine what is suitable.",
       },
       {
-        question: "What can a dull coat indicate?",
-        options: ["Needs a bath", "Possible dietary imbalance", "The horse is cold", "Nothing"],
-        correctIndex: 1,
-        explanation: "A dull coat is often a first sign of nutritional deficiency.",
+        question:
+          "What should happen if a change in condition, appetite, water, droppings, coat, hoof, behaviour, comfort, health, welfare, feed, forage, or workload is concerning or outside the current plan?",
+        options: [
+          "Choose a generic diet change or supplement",
+          "Diagnose a nutritional deficiency or laminitis from the observation",
+          "Record factual observations and use the current responsible-person, qualified nutrition, veterinary, welfare, or emergency route",
+          "Wait until the horse’s appearance changes further",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Many observations have multiple possible causes. Do not diagnose or change the plan from a generic lesson; follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How do I body condition score a horse?",
-      "My horse is overweight — what should I change?",
-      "What vitamins and minerals does my horse need?",
+      "What current approved condition-monitoring and responsible-person procedure applies to this individual horse?",
+      "How should I report factual condition, feed, forage, water, appetite, droppings, comfort, health, welfare, or safety observations without changing the plan or diagnosing a cause?",
+      "What authority, written feeding plan, qualified nutrition or veterinary review, welfare procedure, and emergency route apply before any diet or workload change?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "health_awareness"],
   },
@@ -9340,58 +9642,74 @@ A dull coat, poor hoof quality, weight changes, lethargy, or behavioural changes
     category: "Nutrition & Feeding",
     sortOrder: 5,
     objectives: [
-      "Match feeding to different workloads",
-      "Adjust diets seasonally",
-      "Understand needs of veterans, youngstock, competition horses",
-      "Create a basic weekly feeding plan",
+      "Explain why workload, season and management need an individual nutrition review",
+      "Recognise observations that should be recorded for a qualified nutrition or veterinary professional",
+      "Understand that young, older, working and retired horses may have different individual needs",
+      "Use a written feeding record without independently prescribing a ration",
     ],
-    content: `Understanding how to adapt feeding to workload, season, and individual needs is essential.
+    content: `Feeding must reflect the individual horse’s body condition, forage, work, health, dental status, environment and current professional advice. A lesson cannot prescribe a ration, feeding interval, pre-exercise meal or supplement plan for every horse.
 
-## Workload Categories
+## Workload and Condition
 
-Light work (1-3 hrs/week): forage usually sufficient. Medium work (3-6 hrs/week): may need extra energy. Hard work (6+ hrs, competing): careful energy management needed.
+Record the horse’s actual work, behaviour, appetite, water intake, droppings and body-condition observations using the yard’s approved process. A change in perceived energy or condition may have many causes; discuss it with the responsible person and an appropriate qualified nutrition or veterinary professional before changing the diet.
 
-## Seasonal Adjustments
+## Seasonal and Management Changes
 
-In winter, increase forage for warmth. In summer, manage grazing time for good-doers.
+Grass availability, forage quality, weather, turnout, travel and stabling can all change the feeding plan. Any seasonal change should be planned gradually within the horse’s individual nutrition and veterinary guidance. Do not assume that a generic forage, concentrate, muzzle, supplement or grazing change is suitable.
 
-## Special Categories
+## Different Horses, Individual Plans
 
-Veterans may need softer feeds and higher protein. Youngstock need protein for growth. Competition horses need carefully timed energy.`,
+Young, older, working, retired and competition horses can have different requirements, but category alone does not determine a safe diet. Oral health, disease, growth, workload, forage analysis and management all need professional consideration. Keep accurate records and ask the qualified professional who knows the horse to explain the purpose of any approved change.`,
     keyPoints: [
-      "Light work usually needs forage only",
-      "Increase forage in winter for warmth",
-      "Veterans, youngstock, and competition horses have different needs",
-      "Base every plan on the individual horse",
-      "Electrolytes may be needed for hard work",
+      "Workload and condition observations should be recorded before any diet change is considered",
+      "Seasonal feeding changes belong in the individual nutrition and veterinary plan",
+      "Young, older, working and retired horses may have different needs, but category is not a ration",
+      "Base every feeding decision on the individual horse and qualified professional guidance",
+      "Do not introduce electrolytes, supplements or feed changes without an informed review",
     ],
-    safetyNote: "Over-feeding energy to a horse in light work can cause dangerous behavioural changes.",
-    practicalApplication: "Write a weekly feeding plan for a horse in medium work at your yard.",
+    safetyNote:
+      "Do not independently increase, restrict or time feeds, supplements or electrolytes in response to workload. Record observations and seek qualified nutrition or veterinary guidance before changing the individual plan.",
+    practicalApplication:
+      "With the responsible person, practise completing a factual feeding and workload record for review by the qualified professional who manages the horse’s nutrition plan.",
     commonMistakes: [
-      "Feeding competition rations to horses in light work",
-      "Not increasing forage in cold weather",
-      "Ignoring seasonal grass changes",
-      "Feeding veterans the same as hard-working horses",
-      "Not reviewing and adjusting plans",
+      "Copying a ration or supplement plan from a horse with different needs",
+      "Changing feed because of one observation without reviewing the individual plan",
+      "Ignoring seasonal, forage or workload changes that should be recorded",
+      "Assuming a horse category determines its diet without professional assessment",
+      "Failing to record changes and seek qualified review",
     ],
     knowledgeCheck: [
       {
-        question: "Best way to increase calorie intake in winter?",
-        options: ["Double hard feed", "Increase forage", "Add sugar to water", "Feed less frequently"],
-        correctIndex: 1,
-        explanation: "Forage provides sustained energy and generates heat through fermentation.",
+        question:
+          "What is the appropriate response to a change in a horse’s workload, condition or forage availability?",
+        options: [
+          "Record the change and review the individual nutrition plan with qualified guidance",
+          "Copy a generic ration from another horse",
+          "Make a large unrecorded feed change immediately",
+          "Assume that season alone determines the diet",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Dietary needs are individual. Record the relevant observations and obtain qualified nutrition or veterinary guidance before changing the plan.",
       },
       {
-        question: "Why do veterans often need different feeding?",
-        options: ["They're fussier", "Reduced digestive efficiency and dental issues", "They eat faster", "They don't like hay"],
-        correctIndex: 1,
-        explanation: "Older horses often have dental issues and reduced digestive efficiency.",
+        question:
+          "Why should feeding decisions for young, older or competition horses be individually reviewed?",
+        options: [
+          "Category alone does not account for health, oral status, forage, workload and management",
+          "All horses in one category need the same ration",
+          "The highest-energy feed is always appropriate for working horses",
+          "Age or activity makes professional review unnecessary",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Age and activity can influence needs, but the individual horse’s health, forage, management and professional plan determine safe feeding decisions.",
       },
     ],
     aiTutorPrompts: [
-      "How do I create a feeding plan for a competition horse?",
-      "What should I feed a retired horse?",
-      "How do I know if the diet provides enough energy?",
+      "What observations should I record before asking for a qualified review of a competition horse’s nutrition plan?",
+      "What factors should a qualified professional consider for a retired horse’s feeding plan?",
+      "When should a perceived energy or condition change be reviewed by a nutrition or veterinary professional?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "horse_care"],
   },
@@ -9404,62 +9722,82 @@ Veterans may need softer feeds and higher protein. Youngstock need protein for g
     category: "Nutrition & Feeding",
     sortOrder: 6,
     objectives: [
-      "Understand when supplements are appropriate",
-      "Manage diets for metabolic conditions",
-      "Apply electrolyte and hydration knowledge",
-      "Critically evaluate feed marketing claims",
+      "Understand that supplement, balancer, hydration, and special-diet decisions require an individual current plan and appropriate veterinary or qualified nutrition review",
+      "Recognise that EMS, PPID, laminitis, metabolic, health, hydration, and dietary concerns require authorised veterinary assessment and management",
+      "Use factual observations and current procedures without diagnosing a condition or selecting, dosing, mixing, administering, or changing a product",
+      "Know how to refer feed-label, product-identity, supplement, water, welfare, and safety questions through the authorised support route",
     ],
-    content: `At advanced levels, nutrition management includes supplements, metabolic conditions, and critical evaluation of feeding advice.
+    content: `Supplements, balancers, special diets, metabolic conditions, hydration, and feed-product decisions are individual health, welfare, nutrition, management, and safety matters. This lesson does not diagnose a horse, interpret laboratory results, prescribe a diet, identify a deficiency, recommend an ingredient, assess a product’s efficacy, select a supplement, calculate a dose, choose an administration route, mix a product, alter water, feed, forage, grazing, turnout, exercise, medication, or treatment, or replace veterinary, qualified nutrition, responsible-person, or emergency procedures.
 
-## Supplements
+## Supplements and Product Decisions
 
-Common categories: joint support (glucosamine, MSM), hoof supplements (biotin), calmers, and vitamin/mineral balancers. Always check for nutrient overlap with existing feed.
+British Horse Society feeding guidance explains that supplements may support nutritional deficiencies but advises veterinary or nutritionist guidance before a horse is given them. It also distinguishes supplements from balancers and the wider feeding plan. A product category, marketing statement, ingredient list, brand, review, feed label, yard routine, sport, workload, horse type, coat, hoof, age, behaviour, condition, or another horse’s plan does not establish that a product is needed, effective, safe, permitted, compatible, correctly stored, correctly prepared, or suitable for an individual horse.
 
-## Metabolic Conditions
+Do not use a generic lesson to identify a joint, hoof, calming, vitamin, mineral, metabolic, electrolyte, hydration, recovery, performance, or health need. Do not diagnose nutrient overlap, toxicity, an allergy, dehydration, a condition, a product interaction, a feeding error, or the reason a horse looks, feels, performs, drinks, eats, sweats, behaves, or moves differently. The responsible person and appropriate qualified nutrition or veterinary professional must review the current written plan, product information, health information, diet, forage, water, workload, condition, environment, welfare, medication, competition rules where applicable, and current risks.
 
-EMS and PPID (Cushing's) require strict low-sugar, low-starch diets. Soak hay to reduce sugar. Manage grazing carefully.
+## Metabolic and Health Boundaries
 
-## Electrolytes
+The reviewed welfare and professional guidance describes equine metabolic syndrome (EMS) as a condition that requires veterinary assessment and a veterinary-agreed management plan. Diagnosis uses veterinary testing, and EMS can be confused with Cushing’s disease/PPID. A learner must not diagnose EMS, PPID, insulin dysregulation, laminitis, obesity, pain, a metabolic disorder, a dietary condition, or an associated risk from weight, fat deposits, body condition, thirst, urination, coat, hoof, gait, appetite, behaviour, a feed label, or an online rule.
 
-Horses lose electrolytes through sweat. Competition horses need supplementation. Dissolve in water or add to damp feed — never give dry.
+Do not create or modify a special diet, restrict or change forage, soak or substitute feed, alter grazing, use a muzzle, start or change exercise, give a supplement, use an electrolyte, or delay professional support for a suspected metabolic, laminitis, hydration, health, welfare, or dietary concern. Follow the individual veterinary and current site plan. If a horse has a suspected or known condition, only authorised professionals can decide the assessment, diagnosis, treatment, product, diet, monitoring, workload, progression, or stop criteria.
 
-## Critical Evaluation
+## Hydration and Electrolyte Boundary
 
-Learn to read feed labels, understand guaranteed analysis, and consult independent nutritionists.`,
+Water is essential, and changes in water access or intake can be important observations. However, a generic lesson cannot decide whether a horse needs an electrolyte, diagnose dehydration, select a formulation, amount, timing, route, preparation, or mixing method, or assume that competition, heat, sweating, travel, or workload alone determines use. Record factual observations using the current procedure and obtain the responsible person, veterinary, or qualified nutrition guidance before any change.
+
+## Label and Escalation Practice
+
+An authorised person may use product identity, instructions, storage requirements, label information, current plan, and professional advice to manage a feed or supplement. A learner may observe and report factual information but must not infer efficacy, safety, necessity, a health claim, a legal status, or a treatment result. Stop and use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route if product identity, storage, water, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety is concerning, outside the current plan, or unclear.`,
     keyPoints: [
-      "Supplements should address genuine gaps",
-      "EMS and PPID need strict low-sugar diets",
-      "Electrolytes are essential for hard work in heat",
-      "Read feed labels critically",
-      "Consult independent equine nutritionists",
+      "Supplements, balancers, special diets, hydration, and product decisions require the individual horse’s current plan and appropriate veterinary or qualified nutrition review",
+      "A generic lesson cannot diagnose EMS, PPID, insulin dysregulation, laminitis, dehydration, nutritional deficiency, a product interaction, or a health condition",
+      "Do not select, dose, mix, administer, change, or recommend a supplement, balancer, electrolyte, forage, feed, grazing, turnout, exercise, medication, or treatment from general information",
+      "Product identity, marketing, ingredient lists, labels, brands, reviews, workload, coat, hoof, age, behaviour, condition, and another horse’s plan do not establish suitability for an individual horse",
+      "Record factual concerns and use the authorised responsible-person, veterinary, qualified nutrition, welfare, or emergency route when product, water, feeding, condition, health, or welfare is uncertain",
     ],
-    safetyNote: "Feeding inappropriate supplements can cause toxicity or imbalance.",
-    practicalApplication: "Read the labels of three different horse feeds. Compare protein, fibre, and energy content.",
+    safetyNote:
+      "Do not diagnose toxicity, overlap, deficiency, allergy, dehydration, a product interaction, a feeding error, EMS, PPID, laminitis, pain, or another condition from a generic observation. Do not alter a product, diet, water, feed, forage, grazing, turnout, exercise, medication, or treatment independently; follow the current procedure and obtain appropriate support.",
+    practicalApplication:
+      "With the responsible person’s permission, observe how authorised people confirm product identity, storage, current written plan, label instructions, water access, records, professional support, and escalation routes. Do not compare products to select a diet, infer a health benefit, prepare, dose, mix, administer, or change a product from this lesson alone.",
     commonMistakes: [
-      "Adding multiple supplements without checking overlap",
-      "Feeding high-sugar feeds to metabolic horses",
-      "Giving dry electrolytes",
-      "Believing all marketing claims",
-      "Over-supplementing young healthy horses",
+      "Selecting, adding, removing, withholding, substituting, dosing, mixing, administering, or changing a supplement, balancer, electrolyte, feed, forage, water, grazing, turnout, exercise, medication, or treatment outside the individual current plan and authorised procedure",
+      "Diagnosing EMS, PPID, insulin dysregulation, laminitis, obesity, dehydration, deficiency, pain, health, welfare, or a product interaction from condition, weight, fat deposits, thirst, urination, coat, hoof, gait, appetite, behaviour, a label, or a generic rule",
+      "Using a category, marketing statement, ingredient list, brand, review, label, yard routine, sport, workload, horse type, coat, hoof, age, behaviour, condition, or another horse’s plan as proof that a product is needed, effective, safe, permitted, compatible, or suitable",
+      "Creating or modifying a special diet, forage, feed, grazing, muzzle, turnout, exercise, supplement, electrolyte, medication, treatment, or monitoring plan without the authorised veterinary and qualified-professional direction",
+      "Continuing when product identity, storage, water, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety is concerning, outside the current plan, or unclear",
     ],
     knowledgeCheck: [
       {
-        question: "What dietary management for a horse with EMS?",
-        options: ["High-protein diet", "Low-sugar, low-starch diet with managed grazing", "Unlimited rich pasture", "Double the hard feed"],
+        question:
+          "Who determines the diagnosis, management plan, diet, product, monitoring, workload, progression, and stop criteria for a horse with suspected or known EMS, PPID, laminitis, metabolic, hydration, or other health concern?",
+        options: [
+          "Any learner using a generic lesson or online rule",
+          "The responsible person and appropriate veterinary or qualified professional through the individual current plan",
+          "A feed label alone",
+          "Another horse’s plan",
+        ],
         correctIndex: 1,
-        explanation: "EMS horses are insulin resistant and need strict sugar/starch control.",
+        explanation:
+          "The reviewed welfare and professional guidance describes EMS as requiring veterinary assessment and a veterinary-agreed plan. A generic lesson cannot diagnose or prescribe management.",
       },
       {
-        question: "When are electrolyte supplements most needed?",
-        options: ["In winter", "During rest days", "During hard work or hot weather", "When the horse won't eat"],
+        question:
+          "What should happen if a product, water access, feeding, condition, appetite, droppings, sweating, behaviour, comfort, health, welfare, or safety concern is outside the current plan or unclear?",
+        options: [
+          "Choose, dose, mix, or administer a product based on workload or weather",
+          "Diagnose dehydration, a deficiency, EMS, PPID, or laminitis from the observation",
+          "Record factual observations and use the current responsible-person, veterinary, qualified nutrition, welfare, or emergency route",
+          "Delay action until a product review is available online",
+        ],
         correctIndex: 2,
-        explanation: "Electrolytes lost through sweat must be replaced during heavy sweating.",
+        explanation:
+          "Do not infer a diagnosis or product decision from general information. Follow the current procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How to manage diet for a horse with Cushing's?",
-      "Are joint supplements actually effective?",
-      "How to read and understand a feed label?",
+      "What current veterinary, qualified-nutrition, responsible-person, welfare, and emergency procedure applies if a metabolic, hydration, supplement, or dietary concern arises?",
+      "How should I report factual product, water, feeding, condition, appetite, droppings, sweating, comfort, health, welfare, or safety observations without selecting a product or diagnosing a cause?",
+      "What authority, current written plan, product-identity check, storage procedure, professional support, and emergency route apply before any supplement or dietary change?",
     ],
     linkedCompetencies: ["nutrition_knowledge", "health_awareness"],
   },
@@ -9472,58 +9810,82 @@ Learn to read feed labels, understand guaranteed analysis, and consult independe
     category: "Equine Welfare & Ethics",
     sortOrder: 1,
     objectives: [
-      "List and explain the Five Freedoms",
-      "Apply them to everyday horse management",
-      "Identify situations where freedoms are compromised",
-      "Understand the moral responsibility of ownership",
+      "Describe the Five Freedoms as a historical welfare prompt and distinguish them from current individual welfare assessment",
+      "Use an individual welfare lens that considers nutrition, environment, health, behaviour, mental state, current procedures, and the horse’s circumstances",
+      "Record factual observations without diagnosing welfare, pain, health, legal responsibility, or reportability",
+      "Know when to use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route",
     ],
-    content: `The Five Freedoms form the foundation of animal welfare assessment worldwide.
+    content: `The Five Freedoms are a historic way to prompt discussion about animal welfare. They are not a diagnostic checklist, a legal decision tool, a welfare investigation, a complete measure of a horse’s experience, or a substitute for the responsible person, veterinarian, qualified professional, current site procedure, emergency service, or relevant local authority. A learner must not diagnose pain, illness, distress, neglect, a welfare breach, a legal offence, an unsuitable environment, a social problem, or a reportable situation from one observation or this lesson alone.
 
-## The Five Freedoms
+## A Historical Prompt and a Current Assessment Lens
 
-1. Freedom from Hunger and Thirst  2. Freedom from Discomfort  3. Freedom from Pain, Injury, or Disease  4. Freedom to Express Normal Behaviour  5. Freedom from Fear and Distress
+The Five Freedoms are commonly summarised as freedom from hunger and thirst; discomfort; pain, injury, or disease; inability to express normal behaviour; and fear or distress. UK horse-welfare guidance describes related responsibilities: suitable environment, healthy diet, normal behaviour, appropriate company, and protection from pain, suffering, injury, and disease. Contemporary welfare guidance also uses a Five Domains approach: nutrition, environment, health, behaviour, and mental state. These frameworks encourage consideration of the whole horse and its individual circumstances, rather than a single visual check or a universal rule.
 
-## Applying to Horse Care
+The frameworks do not establish that every horse must have the same diet, water arrangement, turnout, company, shelter, rug, environment, space, management, exercise, training, restraint, treatment, or reporting route. An apparent concern may have context that a learner cannot see. For example, a horse may be temporarily alone, natural shelter may be available, a water source may be out of view, or a current veterinary and responsible-person plan may apply. Equally, an apparently calm horse may need an appropriate welfare review. Do not assume a cause or outcome.
 
-Every decision should consider these freedoms. Is the horse warm enough? Does it have friends? Is it in pain? Does it have enough to eat and drink?
+## Factual Observation, Not Diagnosis
 
-## Recognising Compromise
+A learner may record factual observations through the current approved procedure: location, date and time, the individual horse’s visible condition, access that can actually be seen, behaviour, environment, weather, hazards, interaction, and any immediate safety concern. Do not infer pain, hunger, thirst, fear, social deprivation, discomfort, disease, neglect, legal responsibility, a welfare breach, or reportability. Do not enter private land, confront a person, move a horse, offer feed or water, provide treatment, take action beyond your competence, or share identifying information outside the authorised procedure.
 
-Welfare compromise can be subtle. A horse standing alone without shelter may appear fine but is actually denied comfort and social behaviour.`,
+If you are responsible for a horse, use the current horse-specific care, welfare, health, feeding, management, training, safeguarding, incident, and emergency procedures. The responsible person and appropriate qualified professionals must decide what action, assessment, care, treatment, management, monitoring, welfare plan, or escalation is suitable. A court may consider the statutory code in a welfare case, but breach of the code is not by itself an offence; do not give legal advice or make legal conclusions from this lesson.
+
+## When to Escalate
+
+Use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route if factual observations suggest an immediate danger, injury, collapse, non-weight-bearing lameness, road risk, inability to safely manage the situation, or another condition covered by the current emergency procedure. For non-urgent welfare concerns, follow the authorised local process and provide first-hand factual information if requested. Routes vary by location and scenario. If you are unsure, do not delay required emergency support; use the current procedure and seek authorised advice.
+
+## Reflective Use
+
+Use the Five Freedoms and Five Domains as prompts to ask: what information is known, what is unknown, what current procedure applies, who is responsible, what individual needs have been assessed, and what support or escalation route is appropriate? The aim is respectful, evidence-based attention to welfare, not a learner diagnosis or a generic instruction.`,
     keyPoints: [
-      "The Five Freedoms are the foundation of welfare assessment",
-      "Every management decision should be evaluated against them",
-      "Welfare compromise can be subtle",
-      "Horses need social contact, space, shelter, and appropriate diet",
-      "Ownership carries moral obligation",
+      "The Five Freedoms are a historical welfare prompt; current individual welfare assessment also considers nutrition, environment, health, behaviour, and mental state",
+      "Welfare assessment requires individual context, factual observation, current procedures, responsible-person oversight, and appropriate qualified support",
+      "A single observation does not diagnose pain, illness, distress, neglect, a welfare breach, legal responsibility, or reportability",
+      "Diet, water, turnout, company, shelter, rugging, environment, space, management, exercise, training, restraint, treatment, and reporting routes are not universal learner instructions",
+      "Use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route when factual observations require escalation",
     ],
-    safetyNote: "If you see a horse in clear distress, contact the RSPCA or World Horse Welfare.",
-    practicalApplication: "Assess a horse at your yard against all Five Freedoms. Identify improvement areas.",
+    safetyNote:
+      "Do not diagnose, confront, enter private land, move a horse, offer feed or water, provide treatment, or share identifying information outside the authorised procedure. If factual observations suggest immediate danger or a condition covered by the current emergency procedure, use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route without delay; routes vary by location and scenario.",
+    practicalApplication:
+      "With the responsible person’s permission, observe how the current horse-specific welfare, health, feeding, management, safeguarding, incident, and emergency procedures are applied. Record only authorised factual observations and ask who is responsible for assessment and which escalation route applies. Do not assess, diagnose, investigate, report, move, feed, water, treat, or change management from this lesson alone.",
     commonMistakes: [
-      "Assuming welfare only concerns food and water",
-      "Keeping horses isolated",
-      "Ignoring low-grade pain",
-      "Not providing adequate shelter",
-      "Focusing only on physical needs",
+      "Using a single observation or a generic framework to diagnose pain, illness, distress, neglect, a welfare breach, legal responsibility, or reportability",
+      "Assuming that a horse alone, without a visible rug, without visible shelter, or without a visible water container establishes a welfare failure without the individual context and current procedure",
+      "Entering private land, confronting a person, moving a horse, offering feed or water, providing treatment, or taking action beyond competence instead of following the authorised route",
+      "Giving legal advice or treating the statutory welfare code as a standalone offence rather than following current authorised procedures and appropriate professional guidance",
+      "Continuing without escalation when factual observations suggest immediate danger, injury, collapse, non-weight-bearing lameness, road risk, inability to safely manage the situation, or another condition covered by the current emergency procedure",
     ],
     knowledgeCheck: [
       {
-        question: "Which is NOT one of the Five Freedoms?",
-        options: ["Freedom from hunger", "Freedom to express normal behaviour", "Freedom to compete in shows", "Freedom from pain"],
-        correctIndex: 2,
-        explanation: "Competition is not a welfare right.",
+        question:
+          "What is the appropriate use of the Five Freedoms in this lesson?",
+        options: [
+          "A complete diagnostic checklist that proves welfare or legal status from one observation",
+          "A historical prompt that supports a wider individual welfare assessment alongside current responsible-person and professional procedures",
+          "A universal diet, turnout, company, shelter, treatment, and reporting rule",
+          "A substitute for veterinary, welfare, emergency, or local-authority advice",
+        ],
+        correctIndex: 1,
+        explanation:
+          "The Five Freedoms can prompt reflection, but individual welfare assessment also considers nutrition, environment, health, behaviour, mental state, context, and current procedures.",
       },
       {
-        question: "A horse is kept alone. Which freedom is compromised?",
-        options: ["Freedom from hunger", "Freedom from fear", "Freedom to express normal behaviour", "Freedom from disease"],
+        question:
+          "What should a learner do if factual observations create a welfare concern?",
+        options: [
+          "Diagnose the welfare breach and confront the person responsible",
+          "Enter private land and alter the horse’s food, water, shelter, turnout, treatment, or management",
+          "Record authorised factual observations and use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route appropriate to the location and scenario",
+          "Assume that a horse alone, without a visible rug, without visible shelter, or without a visible water container proves a reportable breach",
+        ],
         correctIndex: 2,
-        explanation: "Horses are herd animals. Isolation prevents normal social behaviour.",
+        explanation:
+          "Context matters. Do not diagnose, confront, trespass, or take unauthorised action; follow the current authorised procedure and emergency route where required.",
       },
     ],
     aiTutorPrompts: [
-      "How do the Five Freedoms apply to stabled horses?",
-      "What does good welfare look like?",
-      "What should I do if I see a neglected horse?",
+      "How can I use the Five Freedoms and Five Domains as prompts without diagnosing the individual horse or applying a universal rule?",
+      "What current responsible-person, welfare, veterinary, safeguarding, incident, emergency, and relevant local authority procedure applies if a factual concern arises?",
+      "How should I record first-hand factual welfare observations without entering private land, confronting a person, moving a horse, treating a horse, or making a legal conclusion?",
     ],
     linkedCompetencies: ["welfare_awareness", "horse_care"],
   },
@@ -9541,11 +9903,11 @@ Welfare compromise can be subtle. A horse standing alone without shelter may app
       "Identify key welfare obligations",
       "Consider ethical alternatives to ownership",
     ],
-    content: `Owning a horse is a significant long-term commitment. Horses can live 25-30 years or more.
+    content: `Owning a horse is a significant long-term commitment that can extend across changing health, welfare, financial and care needs.
 
 ## Financial Commitment
 
-Costs include livery, feed, farrier (every 6-8 weeks), vet care, dental care, insurance, tack, and transport. Unexpected costs can be substantial.
+Costs can include livery, feed, hoof-care and veterinary professional services, dental care, insurance, tack and transport. The necessary frequency, scope and cost vary by horse, location, current professional advice and the arrangement in place. Unexpected costs can be substantial.
 
 ## Time Commitment
 
@@ -9559,14 +9921,15 @@ When you take on a horse, you commit to its entire life — including old age an
 
 Sharing or loaning allows enjoyment without full financial commitment. Always use written agreements.`,
     keyPoints: [
-      "Horse ownership is a 25-30 year commitment",
+      "Horse ownership requires a long-term, welfare-led commitment that can change over the horse’s lifetime",
       "Costs include farrier, vet, feed, livery, insurance, and emergencies",
       "Daily care needed regardless of circumstances",
       "Sharing or loaning are ethical alternatives",
       "Welfare must come before convenience",
     ],
     safetyNote: "Never take on a horse if you cannot provide for its needs.",
-    practicalApplication: "Calculate the estimated monthly and annual cost of keeping a horse at your yard.",
+    practicalApplication:
+      "Calculate the estimated monthly and annual cost of keeping a horse at your yard.",
     commonMistakes: [
       "Under-estimating costs",
       "Not considering long-term commitment",
@@ -9576,16 +9939,29 @@ Sharing or loaning allows enjoyment without full financial commitment. Always us
     ],
     knowledgeCheck: [
       {
-        question: "How long can a horse typically live?",
-        options: ["10-15 years", "15-20 years", "25-30 years or more", "5-10 years"],
-        correctIndex: 2,
-        explanation: "Horses commonly live 25-30 years.",
+        question:
+          "What should a prospective owner plan for before taking responsibility for a horse?",
+        options: [
+          "Only the first few months, because later needs can be ignored",
+          "A long-term welfare, financial, care and contingency commitment that can change over the horse’s lifetime",
+          "Only the purchase price and routine feed",
+          "A standard service timetable that will be identical for every horse",
+        ],
+        correctIndex: 1,
+        explanation:
+          "Responsible ownership requires a realistic long-term plan, current professional care, contingency arrangements and welfare-led decision-making. There is no single lifespan or service calendar that safely applies to every horse.",
       },
       {
         question: "What is a responsible alternative to ownership?",
-        options: ["Abandoning when costs get high", "Sharing or loaning with a written agreement", "Selling every year", "Keeping without vet care to save money"],
+        options: [
+          "Abandoning when costs get high",
+          "Sharing or loaning with a written agreement",
+          "Selling every year",
+          "Keeping without vet care to save money",
+        ],
         correctIndex: 1,
-        explanation: "Sharing or loaning allows responsible enjoyment without full commitment.",
+        explanation:
+          "Sharing or loaning allows responsible enjoyment without full commitment.",
       },
     ],
     aiTutorPrompts: [
@@ -9604,62 +9980,82 @@ Sharing or loaning allows enjoyment without full financial commitment. Always us
     category: "Equine Welfare & Ethics",
     sortOrder: 3,
     objectives: [
-      "Identify signs of neglect",
-      "Distinguish between abuse and poor management",
-      "Know who to contact for welfare concerns",
-      "Understand legal and moral obligations",
+      "Recognise that factual welfare observations may require authorised review but do not prove neglect, abuse, a welfare breach, legal responsibility, or reportability",
+      "Understand that a generic lesson cannot determine intent, abuse, neglect, poor management, criminality, or the appropriate legal or welfare outcome",
+      "Know how to use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route without confrontation or unauthorised intervention",
+      "Record first-hand factual observations and understand the legal-information boundary of this lesson",
     ],
-    content: `Recognising neglect or abuse is a critical welfare skill.
+    content: `Welfare concerns should be taken seriously, but a generic lesson cannot diagnose neglect, abuse, pain, illness, distress, a welfare breach, a legal duty, a criminal offence, intent, poor management, reportability, or the correct remedy. Individual context, location, first-hand evidence, current procedures, professional assessment, and emergency circumstances matter. This lesson does not authorise a learner to investigate, confront, enter private land, move a horse, feed or water a horse, provide treatment, seize property, publish information, make an accusation, give legal advice, or take action beyond competence.
 
-## Signs of Neglect
+## Factual Observation, Not a Verdict
 
-Poor body condition, overgrown hooves, matted or lice-infested coat, no access to clean water, no shelter, or untreated injuries.
+Visible condition, hoof length, coat condition, water access, shelter, injury, behaviour, training, equipment, movement, environment, weather, hazards, or interaction can be important factual observations. They do not by themselves establish neglect, abuse, deliberate harm, excessive force, pain, lameness, disease, a welfare breach, criminality, or reportability. A horse may have circumstances that are not visible to a learner, including natural shelter, water out of view, temporary management arrangements, a current veterinary or responsible-person plan, or a context that needs professional assessment.
 
-## Signs of Abuse
+Record only what you have first-hand observed using the current approved process: the location, date and time, identity or description where appropriate, visible facts, immediate risks, and what was seen or heard. Do not interpret a cause, assert an intention, diagnose a condition, make a legal conclusion, create a public record, share personal information, or pressure another person to act. Do not rely on images, social media, hearsay, a single appearance, breed type, age, body shape, turnout arrangement, rug, or a generic checklist as proof.
 
-Deliberate physical harm, excessive force during training, riding a clearly lame horse, or using equipment that causes pain.
+## Safe and Authorised Escalation
 
-## Reporting Concerns
+If factual observations suggest an immediate danger, injury, collapse, non-weight-bearing lameness, road risk, inability to safely manage the situation, or another condition in the current emergency procedure, use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route without delay. For non-urgent concerns, follow the authorised local process and provide first-hand factual information if requested. Routes, reporting thresholds, contact methods, confidentiality rules, age limits, legal responsibilities, and urgency arrangements vary by location and scenario.
 
-Contact the RSPCA, World Horse Welfare, or the Blue Cross. Provide specific details: location, description, what you observed.
+Do not confront an owner, handler, rider, or another person. Do not enter private land, remove or move a horse, offer feed or water, adjust equipment, provide treatment, take photographs or video outside the authorised procedure, post on social media, or make an allegation. If the concern is within a school, yard, workplace, event, or organisation, use its safeguarding, incident, welfare, and emergency procedures as well as any relevant external authorised route.
 
-## Your Responsibility
+## Legal Information Boundary
 
-Under the Animal Welfare Act 2006, every owner has a legal duty of care. Reporting concerns is responsible, not interfering.`,
+UK welfare guidance describes responsibilities for people responsible for a horse and explains that a court may consider the statutory code in welfare proceedings, but breach of the code is not itself an offence. Law and enforcement arrangements can vary by jurisdiction and change over time. Do not give legal advice, state that a person has committed an offence, or decide which authority has jurisdiction from this lesson. Use current official guidance and authorised advice.
+
+## Reflective Use
+
+The purpose of this lesson is to help a learner recognise the importance of careful factual observation, personal safety, confidentiality, individual context, and authorised escalation. Ask: what did I actually see, what do I not know, what immediate risk exists, who is responsible, which current procedure applies, and what support route is appropriate?`,
     keyPoints: [
-      "Signs include poor body condition, overgrown hooves, untreated illness",
-      "Abuse includes deliberate harm and misuse of equipment",
-      "Contact RSPCA or World Horse Welfare to report",
-      "Provide specific factual details",
-      "Under the Animal Welfare Act 2006, owners have a legal duty of care",
+      "Visible condition, hoof length, coat condition, water access, shelter, injury, behaviour, training, equipment, movement, environment, weather, hazards, or interaction can be factual observations but do not prove neglect, abuse, a welfare breach, or a legal outcome",
+      "A generic lesson cannot determine intent, deliberate harm, excessive force, pain, lameness, illness, abuse, neglect, poor management, criminality, or reportability",
+      "Use the current responsible-person, veterinary, welfare, emergency, or relevant local authority route appropriate to the location, scenario, and urgency",
+      "Record only authorised first-hand factual observations; do not investigate, confront, trespass, make an accusation, share personal information, or take unauthorised action",
+      "Do not give legal advice or make legal conclusions; follow current official guidance and authorised advice because law and enforcement arrangements vary and can change",
     ],
-    safetyNote: "Do not confront a suspected abuser directly. Report to welfare organisations.",
-    practicalApplication: "Learn the contact details for your local equine welfare organisation.",
+    safetyNote:
+      "Do not confront, investigate, enter private land, move a horse, offer feed or water, adjust equipment, provide treatment, publish information, make an allegation, or take action beyond competence. Follow the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority procedure; routes vary by location and scenario.",
+    practicalApplication:
+      "With the responsible person’s permission, identify the current organisation’s welfare, safeguarding, incident, emergency, and relevant external escalation procedures. Practise recording authorised factual observations without diagnosing a cause, identifying a person publicly, confronting anyone, entering private land, moving a horse, or taking an unauthorised action.",
     commonMistakes: [
-      "Assuming someone else will report",
-      "Not recognising subtle neglect",
-      "Confusing breed type with neglect",
-      "Confronting owners directly",
-      "Not documenting what you see",
+      "Assuming a single observation, image, social-media post, hearsay, breed type, age, body shape, turnout arrangement, rug, or generic checklist proves neglect, abuse, a welfare breach, a legal duty, criminality, or reportability",
+      "Diagnosing intent, deliberate harm, excessive force, pain, lameness, illness, welfare, or legal responsibility rather than recording factual observations and using authorised assessment",
+      "Confronting, investigating, trespassing, moving a horse, offering feed or water, adjusting equipment, treating a horse, publishing information, making an accusation, or taking action beyond competence",
+      "Giving legal advice or deciding an offence, jurisdiction, enforcement route, reportability, confidentiality requirement, or remedy from this lesson",
+      "Failing to use the authorised immediate-danger, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority route when factual observations suggest an urgent condition covered by current procedure",
     ],
     knowledgeCheck: [
       {
-        question: "What should you do if you suspect neglect?",
-        options: ["Ignore it", "Confront the owner aggressively", "Report to a welfare organisation with specific details", "Post on social media"],
+        question:
+          "What should a learner do if factual observations create a welfare concern?",
+        options: [
+          "Diagnose neglect or abuse and confront the person responsible",
+          "Enter private land and change the horse’s food, water, equipment, treatment, or management",
+          "Record authorised first-hand factual observations and use the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority route appropriate to the situation",
+          "Publish the concern on social media",
+        ],
         correctIndex: 2,
-        explanation: "Reporting to a welfare organisation allows professional investigation.",
+        explanation:
+          "Do not diagnose, confront, trespass, or take unauthorised action. Follow current authorised procedures and use emergency routes when factual observations indicate an urgent condition.",
       },
       {
-        question: "Which UK law requires a duty of care for horses?",
-        options: ["The Horse Act 1998", "The Animal Welfare Act 2006", "The Countryside Act 2000", "There is no such law"],
-        correctIndex: 1,
-        explanation: "The Animal Welfare Act 2006 places a legal duty of care on animal owners.",
+        question:
+          "What can a generic Academy lesson determine from a single concerning welfare observation?",
+        options: [
+          "That neglect, abuse, intent, an offence, and the required enforcement action have been proved",
+          "That a named person must be confronted or publicly identified",
+          "Only that an observation may require factual recording and the authorised current assessment or escalation route",
+          "That the learner should enter private land and intervene",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Individual context, professional assessment, location, current procedures, and emergency circumstances matter. This lesson does not diagnose, make legal conclusions, or authorise intervention.",
       },
     ],
     aiTutorPrompts: [
-      "What are early warning signs of neglect?",
-      "How to report a welfare concern in the UK?",
-      "What is the Animal Welfare Act?",
+      "How can I record first-hand factual welfare observations without diagnosing neglect, abuse, pain, illness, a legal duty, or a reportable breach?",
+      "What current responsible-person, veterinary, welfare, safeguarding, incident, emergency, and relevant local authority procedure applies in this location and scenario?",
+      "How do I maintain personal safety, confidentiality, individual context, and authorised escalation boundaries when a welfare concern arises?",
     ],
     linkedCompetencies: ["welfare_awareness", "health_awareness"],
   },
@@ -9672,58 +10068,84 @@ Under the Animal Welfare Act 2006, every owner has a legal duty of care. Reporti
     category: "Equine Welfare & Ethics",
     sortOrder: 4,
     objectives: [
-      "Understand the Animal Welfare Act 2006",
-      "Know legal requirements for horse identification",
-      "Understand duty of care and offences",
-      "Recognise the role of welfare organisations",
+      "Recognise that UK welfare law, codes, passport rules, enforcement, and reporting routes require current official guidance, individual facts, and authorised advice",
+      "Understand that passport, identification, microchip, ownership, movement, sale, treatment, import/export, vaccination, and record requirements vary by jurisdiction, activity, document, and current rule",
+      "Know that a generic lesson cannot determine legal responsibility, an offence, enforcement, a penalty, jurisdiction, or the correct legal or welfare action",
+      "Use factual records and the current responsible-person, veterinary, welfare, emergency, regulatory, or authorised-advice route when an official requirement or concern arises",
     ],
-    content: `The primary UK legislation is the Animal Welfare Act 2006.
+    content: `This lesson introduces a legal-information boundary for horse welfare and identification. It is not legal advice, a statement of every current rule, a passport or microchip inspection procedure, an enforcement guide, a licence to determine legal responsibility, an offence, a penalty, a jurisdiction, a reportable matter, or the correct action in an individual case. Rules can change and differ between England, Scotland, Wales, Northern Ireland, activities, documents, horses, owners, keepers, journeys, sales, veterinary treatment, competitions, import/export, and local arrangements. Use current official guidance and authorised advice before acting.
 
-## Animal Welfare Act 2006
+## Welfare Law and Codes
 
-It makes it an offence to cause unnecessary suffering, and places a positive duty of care on owners. Five needs must be met: environment, diet, normal behaviour, appropriate housing, and protection from pain and disease.
+The Animal Welfare Act 2006 contains provisions about responsibility for animals, unnecessary suffering, welfare, enforcement, prosecution, fines, disqualification, and other matters. The DEFRA horse-welfare code describes responsibilities for a person responsible for a horse, including suitable environment, healthy diet, normal behaviour, appropriate company, and protection from pain, suffering, injury, and disease. The code also states that breach of a code provision is not itself an offence, although a court may consider compliance with the code in welfare proceedings.
 
-## Horse Passports
+A generic lesson cannot decide whether a person is responsible, whether a welfare need has been met, whether an observation proves suffering, whether an offence or breach has occurred, which law applies, which authority has jurisdiction, whether enforcement is appropriate, or what outcome, penalty, remedy, report, or action is required. Do not give legal advice, make a legal conclusion, accuse a person, investigate, enter private land, move a horse, alter management, or take action beyond competence.
 
-All UK horses must have a passport with identification details, microchip number, and vaccination records.
+## Passport and Identification Boundary
 
-## Enforcement
+GOV.UK states that a horse passport is required for listed equines and must be kept with the animal. It describes information a passport can contain and specific situations where the document is needed. The current rules include specified ownership-update and death-return actions, and GOV.UK identifies particular microchip guidance for horses born before July 2009 while noting that rules differ in Scotland, Wales, and Northern Ireland. A generic lesson cannot decide whether a particular passport is valid, current, complete, correctly issued, correctly updated, sufficient for a sale, movement, treatment, competition, import/export, or other activity; whether a microchip is required or correctly recorded; or whether vaccination information is required or sufficient for a particular purpose.
 
-Local authorities and the RSPCA enforce the Act. Offences can result in fines, disqualification, or imprisonment.`,
+Do not inspect, alter, retain, complete, transfer, destroy, submit, travel with, buy, sell, loan, import, export, treat, compete, or make a legal or commercial decision about a passport or identification document from this lesson alone. The responsible person must use the current official route, issuing organisation, veterinary professional, regulator, organiser, transport provider, insurer, or other authorised adviser appropriate to the jurisdiction and activity.
+
+## Factual Records and Authorised Routes
+
+You may record only authorised factual information such as the document that is present, the horse identity information that can be seen, date and time, location, current responsible person, stated activity, and an identified question or concern. Do not diagnose a document problem, interpret a legal effect, disclose personal information, make an allegation, or rely on another person’s account, social media, or a generic rule.
+
+If an immediate horse-welfare, health, safety, road, or emergency concern arises, follow the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, or relevant local authority procedure without delay. For non-urgent legal, welfare, passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record questions, obtain current official guidance and authorised advice for the specific jurisdiction and activity.
+
+## Reflective Use
+
+Use this lesson to prepare appropriate questions: which current jurisdiction and activity apply; who is responsible; which official document or rule governs the situation; what factual information is known; what information is missing; and which authorised route can provide current advice?`,
     keyPoints: [
-      "The Animal Welfare Act 2006 is the key UK legislation",
-      "Owners must meet five welfare needs",
-      "All UK horses must have a passport and microchip",
-      "Offences can lead to fines, bans, or imprisonment",
-      "Duty of care applies to anyone with a horse in their charge",
+      "The Animal Welfare Act 2006 and the horse-welfare code provide an important legal and welfare context, but current rules, facts, jurisdiction, enforcement, and action require official and authorised advice",
+      "The horse-welfare code describes suitable environment, healthy diet, normal behaviour, appropriate company, and protection from pain, suffering, injury, and disease, but breach of the code itself is not an offence",
+      "Passport, identification, microchip, ownership, movement, sale, treatment, import/export, vaccination, and record requirements vary by jurisdiction, activity, document, current rule, and individual circumstances",
+      "A generic lesson cannot determine legal responsibility, an offence, enforcement, a penalty, jurisdiction, reportability, or the correct legal or welfare action",
+      "Record authorised factual information and use the current responsible-person, veterinary, welfare, emergency, regulatory, or authorised-advice route when an official requirement or concern arises",
     ],
-    safetyNote: "Buying or selling a horse without a valid passport is illegal.",
-    practicalApplication: "Check the passport of a horse at your yard for microchip number and vaccination records.",
+    safetyNote:
+      "Do not give legal advice or determine passport validity, microchip status, ownership, document sufficiency, sale, movement, treatment, competition, insurance, import/export, an offence, enforcement, a penalty, jurisdiction, or reportability from this lesson. Follow current official guidance and authorised advice for the specific jurisdiction and activity.",
+    practicalApplication:
+      "With the responsible person’s permission, identify the current local process for passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, welfare, incident, emergency, and authorised-advice questions. Observe only authorised factual document information and ask which jurisdiction, activity, current official guidance, and responsible route apply. Do not inspect, alter, retain, complete, transfer, destroy, submit, travel with, buy, sell, loan, or make a decision about a document from this lesson alone.",
     commonMistakes: [
-      "Assuming legislation only applies to owners",
-      "Not keeping passports updated",
-      "Ignoring duty of care for others' horses",
-      "Not understanding that causing suffering can be an offence even without intent",
-      "Failing to microchip horses",
+      "Using a generic lesson, document, image, social-media post, another person’s account, or one observation to determine legal responsibility, an offence, enforcement, a penalty, jurisdiction, reportability, or the correct legal or welfare action",
+      "Deciding that a passport is valid, current, complete, correctly issued, correctly updated, sufficient for a sale, movement, treatment, competition, import/export, or other activity without current official and authorised advice",
+      "Assuming that a passport, microchip, ownership, movement, sale, treatment, competition, import/export, vaccination, or record rule is universal across jurisdictions, activities, documents, and current regulations",
+      "Giving legal advice, making a legal conclusion, accusing a person, investigating, entering private land, moving a horse, altering management, or taking action beyond competence instead of using the authorised route",
+      "Failing to use the current responsible-person, veterinary, welfare, emergency, regulatory, safeguarding, incident, or authorised-advice route when a factual horse-welfare, health, safety, road, or document concern requires escalation",
     ],
     knowledgeCheck: [
       {
-        question: "What does the Animal Welfare Act 2006 require?",
-        options: ["Ride the horse regularly", "Meet five specific welfare needs", "Keep the horse in a stable", "Compete the horse"],
-        correctIndex: 1,
-        explanation: "The Act requires five welfare needs to be met.",
+        question:
+          "What can this generic Academy lesson determine from a horse-welfare or legal observation?",
+        options: [
+          "That an offence, legal responsibility, enforcement action, penalty, and jurisdiction have been proved",
+          "That a court will reach a particular conclusion",
+          "Only that current official guidance, individual facts, and an authorised responsible-person, professional, regulatory, welfare, or emergency route may be required",
+          "That the learner should investigate or intervene directly",
+        ],
+        correctIndex: 2,
+        explanation:
+          "The lesson provides a legal-information boundary. It does not give legal advice or determine responsibility, offences, enforcement, penalties, jurisdiction, or required action.",
       },
       {
-        question: "Who has a duty of care under the Act?",
-        options: ["Only the registered owner", "Only vets", "Anyone responsible for an animal", "Only professional breeders"],
+        question:
+          "What is the appropriate response to a passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record question?",
+        options: [
+          "Assume one generic rule applies across every UK jurisdiction and activity",
+          "Decide document validity or legal effect from an online lesson",
+          "Use the current official guidance and the authorised responsible-person, issuing-organisation, veterinary, regulatory, organiser, transport, insurer, or other relevant advice route for the specific jurisdiction and activity",
+          "Alter, transfer, retain, submit, or destroy the document without authority",
+        ],
         correctIndex: 2,
-        explanation: "The duty applies to any person responsible for an animal.",
+        explanation:
+          "Official requirements can vary by jurisdiction, activity, document, and current rule. A generic lesson cannot determine validity or the correct legal or commercial action.",
       },
     ],
     aiTutorPrompts: [
-      "What happens if I break the Animal Welfare Act?",
-      "Do I need a passport for my horse?",
-      "What are the five welfare needs under UK law?",
+      "What current official guidance and authorised advice route applies to this specific horse-welfare, legal, passport, identification, ownership, movement, sale, treatment, competition, insurance, import/export, or record question?",
+      "How can I record only authorised factual document information without deciding validity, legal effect, responsibility, an offence, enforcement, or a penalty?",
+      "What responsible-person, veterinary, welfare, emergency, regulatory, safeguarding, incident, and authorised-advice route applies if a factual concern needs escalation?",
     ],
     linkedCompetencies: ["welfare_awareness"],
   },
@@ -9736,62 +10158,82 @@ Local authorities and the RSPCA enforce the Act. Offences can result in fines, d
     category: "Equine Welfare & Ethics",
     sortOrder: 5,
     objectives: [
-      "Distinguish ethical and unethical training",
-      "Understand learning theory for horses",
-      "Recognise signs of mental distress during training",
-      "Apply welfare-first principles",
+      "Recognise that compassionate, consistent training should consider the individual horse’s physical and emotional welfare, safety, current procedures, and qualified professional support",
+      "Describe high-level learning-theory terms without using the lesson as a training, handling, riding, force, reward, pressure-release, exposure, desensitisation, or behaviour-treatment procedure",
+      "Record factual behavioural observations without diagnosing stress, fear, pain, discomfort, learned helplessness, safety risk, welfare, or a training cause",
+      "Know when to stop and use the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route",
     ],
-    content: `Training methods directly impact a horse's welfare. We must use ethical, evidence-based methods.
+    content: `Training can affect a horse’s physical and emotional welfare, safety, learning, and relationship with people. This lesson introduces high-level concepts only. It is not a procedure for training, handling, riding, leading, lunging, loading, restraint, pressure-release, cueing, force, punishment, reward, treat use, exposure, desensitisation, habituation, behaviour modification, pain assessment, welfare assessment, diagnosis, treatment, or emergency response. A learner must not use a generic definition, a behaviour, an online rule, a video, or another horse’s experience to decide why an individual horse behaves as it does, whether a method is safe or suitable, whether pain, fear, stress, discomfort, distress, learned helplessness, a welfare concern, or a safety risk is present, or which intervention is appropriate.
 
-## Learning Theory
+## Learning-Theory Vocabulary
 
-Positive reinforcement: adding something pleasant. Negative reinforcement: removing pressure when the horse responds correctly. Positive punishment: adding something unpleasant (generally unethical). Negative punishment: removing something pleasant.
+The reviewed welfare guidance explains that horses learn through the consequences of actions and that every interaction can matter. In an operant-conditioning context, reinforcement aims to make a behaviour more likely and punishment aims to make a behaviour less likely; “positive” means something is added and “negative” means something is removed. Positive reinforcement can describe adding something a horse values after a desired behaviour. Negative reinforcement can describe removing something the horse finds uncomfortable after a desired behaviour. Positive punishment can describe adding something a horse finds unpleasant after an undesired behaviour. Negative punishment can describe removing something the horse values after an undesired behaviour.
 
-## Ethical Practice
+These are technical descriptions, not learner instructions or endorsements. They do not decide what a horse values, whether a stimulus is pleasant or uncomfortable, whether timing is safe, what pressure, reward, exposure, equipment, environment, progression, distance, duration, frequency, intensity, trainer, handler, rider, horse, or context is appropriate, or whether a method causes physical or emotional harm. The reviewed guidance says methods that risk injury or physical or emotional harm should not be used and identifies flooding and positive punishment as ethically questionable. A qualified professional and the responsible person must consider the individual horse, medical and welfare history, behaviour, environment, equipment, training context, human safety, current procedure, and applicable rules.
 
-Relies on negative reinforcement (correct pressure-release timing) and positive reinforcement. Avoids excessive force and fear.
+## Behaviour Is Information, Not a Diagnosis
 
-## Signs of Mental Distress
+Horses communicate through behaviour and subtle changes can be important observations. Behaviours or body-language changes may have many possible explanations and do not prove pain, fear, stress, discomfort, injury, learned helplessness, intent, defiance, a training problem, a welfare breach, or a safety outcome. Do not label a horse as difficult, stubborn, lazy, naughty, dangerous, shut down, or “in pain” from this lesson alone. Do not attempt to correct a behaviour, increase pressure, add a punishment, use food, remove food, repeat an exposure, continue a session, or change equipment, management, exercise, handling, riding, treatment, or medication based on a generic observation.
 
-Teeth grinding, excessive sweating, tail swishing, white around the eyes, tension, or complete shutdown (learned helplessness).
+Record factual observations through the current approved procedure: date, time, context, environment, activity, equipment, people present, behaviour, and any immediate safety concern. If a behaviour, welfare, health, pain, comfort, handling, riding, equipment, or safety concern is outside the current plan or unclear, stop where it is safe to do so and use the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route. Do not diagnose the cause or delay required emergency support.
 
-## Welfare-First Principle
+## Compassionate and Qualified Practice
 
-If a method causes fear, pain, or distress, it is not acceptable.`,
+Compassionate, consistent training requires a current individual plan, appropriate competence, suitable supervision, attention to the horse’s experience, human safety, welfare, environment, equipment, and escalation routes. Fear or high emotional arousal can impede learning, but a learner must not assess a horse’s emotional state, decide a threshold, or prescribe how to change it. The responsible person and appropriate qualified professional decide whether training can proceed, pause, change, or stop and what assessment, support, plan, progression, or referral is needed.
+
+## Reflective Use
+
+Use this lesson to ask: what factual observation was made; what is unknown; what current plan and supervision apply; who is responsible; what welfare and safety boundary applies; and which qualified route should review the concern? The aim is to support careful, welfare-led escalation, not self-directed technique or diagnosis.`,
     keyPoints: [
-      "Ethical training uses reinforcement, not punishment",
-      "Excessive force and fear-based methods are unethical",
-      "Signs of distress include teeth grinding and learned helplessness",
-      "Good timing of pressure-release is foundational",
-      "If a method causes fear, pain, or distress, it is not acceptable",
+      "Learning-theory terms describe possible relationships between behaviour and consequences; they are not learner instructions or endorsements",
+      "Reviewed welfare guidance states that methods risking injury or physical or emotional harm should not be used, and identifies flooding and positive punishment as ethically questionable",
+      "Behaviour and body-language changes can be factual observations but do not diagnose pain, fear, stress, discomfort, distress, learned helplessness, a welfare concern, or a safety risk",
+      "Do not choose, apply, increase, reduce, time, repeat, or evaluate pressure, reward, punishment, food, exposure, desensitisation, equipment, handling, riding, or exercise from a generic lesson",
+      "Use the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route when a behavioural, welfare, health, pain, comfort, handling, riding, equipment, or safety concern is outside the current plan or unclear",
     ],
-    safetyNote: "A horse trained with fear-based methods can become unpredictable and dangerous.",
-    practicalApplication: "Watch a training session and identify which learning quadrants are being used.",
+    safetyNote:
+      "Do not diagnose fear, pain, stress, discomfort, distress, learned helplessness, a welfare concern, a safety risk, or a cause from behaviour. Do not correct a behaviour, increase pressure, add punishment, use food, remove food, repeat exposure, continue a session, or change equipment, management, exercise, handling, riding, treatment, or medication from this lesson alone. Follow the current procedure and obtain appropriate qualified support.",
+    practicalApplication:
+      "With the responsible person’s permission, observe how authorised people use the current horse-specific training, welfare, safety, incident, and escalation procedures. Record only authorised factual context and observations. Do not label the method, assess timing, diagnose a cause, direct a person, handle, ride, train, reward, punish, expose, desensitise, alter equipment, or change a plan from this lesson alone.",
     commonMistakes: [
-      "Using punishment because it appears to work quickly",
-      "Poor timing of pressure-release",
-      "Not recognising learned helplessness",
-      "Escalating force when the horse is confused",
-      "Ignoring emotional state during training",
+      "Treating a technical learning-theory definition as a learner instruction, endorsement, proof of safety, or proof that a method is suitable for an individual horse",
+      "Choosing, applying, increasing, reducing, timing, repeating, or evaluating pressure, reward, punishment, food, exposure, desensitisation, equipment, handling, riding, exercise, or a training progression from a generic lesson",
+      "Diagnosing fear, pain, stress, discomfort, distress, learned helplessness, intent, defiance, a training problem, welfare, or safety from a behaviour or body-language change",
+      "Labelling a horse difficult, stubborn, lazy, naughty, dangerous, shut down, or “in pain” instead of recording factual observations and using authorised assessment",
+      "Continuing, correcting a behaviour, increasing pressure, adding punishment, using food, removing food, repeating exposure, or changing equipment, management, exercise, handling, riding, treatment, or medication when a concern is outside the current plan or unclear",
     ],
     knowledgeCheck: [
       {
-        question: "What is negative reinforcement?",
-        options: ["Punishing the horse", "Removing pressure when the horse responds correctly", "Ignoring the horse", "Using treats"],
+        question:
+          "In the high-level operant-conditioning vocabulary used in this lesson, what does negative reinforcement describe?",
+        options: [
+          "A synonym for punishment",
+          "Removing something the horse finds uncomfortable after a desired behaviour, with the aim of making that behaviour more likely",
+          "Ignoring the horse",
+          "A learner-approved procedure for applying pressure or timing release",
+        ],
         correctIndex: 1,
-        explanation: "Removing an aversive stimulus when the horse responds correctly.",
+        explanation:
+          "This is a technical description, not a technique instruction or a decision that any pressure, timing, method, or context is suitable for an individual horse.",
       },
       {
-        question: "What might learned helplessness look like?",
-        options: ["Energetic responsive behaviour", "A shut-down horse that has stopped trying", "Excited bucking", "Curiosity"],
-        correctIndex: 1,
-        explanation: "Learned helplessness occurs when a horse gives up because nothing it does makes discomfort stop.",
+        question:
+          "What should a learner conclude from a concerning behavioural or body-language observation?",
+        options: [
+          "That pain, fear, stress, learned helplessness, a welfare breach, and a specific intervention have been diagnosed",
+          "That the horse is deliberately difficult or dangerous",
+          "Only that a factual observation may require the current responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency review route",
+          "That the learner should independently increase pressure, add punishment, use food, repeat exposure, or change equipment",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Behaviour can be important information but does not diagnose a cause. Record facts, follow current procedure, and obtain appropriate qualified support.",
       },
     ],
     aiTutorPrompts: [
-      "What does ethical horse training look like?",
-      "How can I tell if my horse is stressed during training?",
-      "What is learned helplessness?",
+      "How do the current horse-specific training, welfare, safety, incident, supervision, and escalation procedures apply before any training activity?",
+      "How can I record factual behavioural and contextual observations without diagnosing fear, pain, stress, discomfort, learned helplessness, welfare, or safety?",
+      "When should I stop where safe and use the responsible-person, qualified trainer, equine behaviour professional, veterinary, welfare, safety, or emergency route?",
     ],
     linkedCompetencies: ["welfare_awareness", "coaching_skills"],
   },
@@ -9804,62 +10246,88 @@ If a method causes fear, pain, or distress, it is not acceptable.`,
     category: "Equine Welfare & Ethics",
     sortOrder: 6,
     objectives: [
-      "Understand ethical end-of-life considerations",
-      "Know options: retirement, rehoming, euthanasia",
-      "Recognise when quality of life is unacceptable",
-      "Handle end-of-life with dignity",
+      "Recognise that end-of-life, retirement, rehoming, euthanasia, aftercare, legal, insurance, document, emergency, and welfare decisions require advance planning and individual veterinary, qualified-professional, responsible-person, and current local guidance",
+      "Understand that a generic lesson cannot choose or recommend retirement, rehoming, euthanasia, treatment, transport, aftercare, legal, insurance, or document decisions for an individual horse",
+      "Record factual welfare observations without assessing quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold",
+      "Know when to use the current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, or authorised local route",
     ],
-    content: `End-of-life decisions are among the most difficult an equestrian faces.
+    content: `End-of-life, retirement, rehoming, euthanasia, aftercare, legal, insurance, document, emergency, and welfare decisions can be deeply difficult and are individual to the horse, the responsible person, the professional advice available, the location, and current circumstances. This lesson is not a quality-of-life assessment, diagnosis, prognosis, pain or suffering assessment, treatment recommendation, euthanasia decision, euthanasia-method instruction, transport-fitness assessment, rehoming decision, retirement plan, legal advice, insurance advice, passport process, aftercare procedure, emergency plan, or substitute for veterinary, qualified-professional, responsible-person, welfare, legal, insurance, document, or emergency advice.
 
-## Quality of Life Assessment
+## Plan Before a Crisis
 
-Is the horse in chronic pain? Can it move comfortably? Does it enjoy eating and socialising? Is its condition deteriorating despite treatment?
+Reviewed welfare guidance supports making an end-of-life plan before an illness, accident, or emergency. The plan should be individual and maintained by the responsible person with the appropriate veterinary and qualified-professional support. It may identify responsible contacts, current professional routes, the horse’s existing records, welfare and safety information, emergency procedure, who can make or communicate decisions, and where to obtain current local guidance. A generic lesson cannot prepare, approve, replace, interpret, or execute that plan.
 
-## Retirement
+## Quality of Life and Professional Assessment
 
-Retired horses still need farrier, dental, vet care, social contact, and appropriate diet.
+Quality of life is important, but it is not a learner checklist or a single observation. Do not decide that a horse is in chronic pain, suffering, comfortable, deteriorating, fit or unfit for travel, suitable for retirement, suitable for rehoming, in an emergency, or at an end-of-life threshold from appetite, movement, behaviour, condition, social interaction, age, a diagnosis, an online rule, or another horse’s experience. The reviewed veterinary guidance explains that the attending veterinarian can assist in the determination, particularly regarding suffering, and the welfare sources state that every situation is different and veterinary or professional advice should be sought.
 
-## Rehoming
+Record only authorised factual observations through the current procedure, such as date, time, context, activity, visible behaviour, comfort-related observations, and any immediate safety concern. Do not infer a diagnosis, prognosis, pain level, quality of life, a treatment outcome, suitability, a decision, a cause, or a required action. If a welfare, health, pain, comfort, handling, transport, safety, or emergency concern is outside the current plan or unclear, use the current responsible-person, veterinary, qualified-professional, welfare, emergency, or authorised local route without delay.
 
-Responsible rehoming through reputable organisations protects the horse.
+## Retirement and Rehoming Boundary
 
-## Euthanasia
+Retirement and rehoming can require continuing care and careful planning, but neither is a generic solution. Welfare guidance encourages early exploration of rehoming options, accurate and up-to-date information, suitability consideration, written arrangements where relevant, contingency planning, and individual quality-of-life consideration. It also explains that rehoming may not be appropriate in some circumstances. A learner must not select a retirement setting, new owner, loan arrangement, organisation, transport, workload, turnout, management, treatment, document, contract, or legal or welfare outcome from this lesson. The responsible person, appropriate veterinary and qualified professionals, and current authorised legal/document routes must decide what is suitable for the individual horse.
 
-When quality of life cannot be maintained, euthanasia is the kindest option. It should be performed by a vet and can be done at home.`,
+## Euthanasia and Aftercare Boundary
+
+Euthanasia may be a responsible treatment option when it is best for the horse, but a learner must not determine need, timing, method, drugs, equipment, personnel, location, transport, safety, insurance, document handling, body collection, burial, cremation, or aftercare. These decisions depend on the individual horse, veterinary assessment, law, training, experience, safety, insurance, documents, final disposition, location, and current procedures. Do not delay required emergency veterinary or welfare support for insurance, logistics, convenience, emotion, or a generic lesson. Do not provide any euthanasia method, treatment, procedure, restraint, transport, aftercare, legal, insurance, or document instruction.
+
+## Respectful Escalation and Support
+
+If an immediate safety, injury, collapse, non-weight-bearing lameness, pain, welfare, health, road, transport, or emergency concern occurs, follow the current responsible-person, veterinary, welfare, emergency, safeguarding, incident, and authorised local procedure without delay. For non-urgent planning, use appropriate veterinary, qualified-professional, welfare, legal, insurance, document, and bereavement support routes. Personal grief and support needs can be significant; seek appropriate support without allowing it to replace required professional and emergency action.
+
+## Reflective Use
+
+Use this lesson to ask: what facts are known; what is unknown; who is responsible; which current plan and professional advice apply; what welfare and safety issue needs escalation; and what authorised route can provide support? The goal is informed planning and timely professional support, not learner diagnosis or self-directed decision-making.`,
     keyPoints: [
-      "Quality of life is the primary consideration",
-      "Retirement still requires full ongoing care",
-      "Responsible rehoming through reputable organisations",
-      "Euthanasia is compassionate when quality of life fails",
-      "These decisions should involve veterinary advice",
+      "End-of-life, retirement, rehoming, euthanasia, aftercare, legal, insurance, document, emergency, and welfare decisions are individual and require advance planning plus current veterinary, qualified-professional, responsible-person, and local guidance",
+      "A generic lesson cannot assess quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold",
+      "Retirement and rehoming are not generic solutions; suitability, accurate information, written arrangements where relevant, contingency planning, welfare, legal, document, and professional assessment are individual matters",
+      "Do not determine euthanasia need, timing, method, drugs, equipment, personnel, location, transport, safety, insurance, document handling, body collection, burial, cremation, or aftercare from this lesson",
+      "Use the current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, and authorised local route when a concern or plan requires support",
     ],
-    safetyNote: "Never delay euthanasia when a horse is clearly suffering. The horse's welfare comes before human emotion.",
-    practicalApplication: "Discuss with your vet what a quality-of-life assessment involves.",
+    safetyNote:
+      "Do not diagnose pain, suffering, quality of life, prognosis, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold. Do not select, recommend, perform, assist, instruct, delay, or arrange a treatment, euthanasia, transport, aftercare, legal, insurance, document, or body-disposal action from this lesson. Follow the current responsible-person, veterinary, welfare, emergency, and authorised local procedure without delay when required.",
+    practicalApplication:
+      "With the responsible person’s permission, identify the current horse-specific end-of-life, welfare, health, safety, emergency, contact, legal, insurance, document, aftercare, bereavement, and authorised local support procedures. Record only authorised factual information and ask who is responsible for decisions. Do not assess quality of life, diagnose, decide, recommend, treat, transport, rehome, retire, euthanise, arrange aftercare, or handle documents from this lesson alone.",
     commonMistakes: [
-      "Delaying because of emotional attachment",
-      "Rehoming without proper vetting",
-      "Assuming retirement needs no care",
-      "Not discussing with a vet until emergency",
-      "Passing elderly horses from owner to owner",
+      "Using a generic lesson, age, appetite, movement, behaviour, condition, social interaction, diagnosis, online rule, or another horse’s experience to assess quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold",
+      "Selecting a retirement setting, new owner, loan arrangement, organisation, transport, workload, turnout, management, treatment, document, contract, or legal or welfare outcome without individual responsible-person, veterinary, qualified-professional, and current authorised advice",
+      "Determining, recommending, performing, assisting, instructing, delaying, or arranging a euthanasia, treatment, transport, aftercare, legal, insurance, document, body-collection, burial, cremation, or other procedure from a generic lesson",
+      "Allowing insurance, logistics, convenience, emotion, or a generic lesson to delay required emergency veterinary, welfare, safety, or authorised local support",
+      "Failing to record authorised facts and use the current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, or authorised local route when a concern or plan requires escalation",
     ],
     knowledgeCheck: [
       {
-        question: "What should be the primary consideration in end-of-life decisions?",
-        options: ["Owner's emotions", "Financial value", "The horse's quality of life", "What others think"],
+        question:
+          "What can this generic Academy lesson determine about an individual horse’s end-of-life, retirement, rehoming, or euthanasia situation?",
+        options: [
+          "That quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, and the required action have been established",
+          "That a specific euthanasia method, transport, aftercare, legal, insurance, document, or body-disposal action is appropriate",
+          "Only that current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, and authorised local support may be required",
+          "That a learner should decide or act alone",
+        ],
         correctIndex: 2,
-        explanation: "Quality of life must always be the primary consideration.",
+        explanation:
+          "Every situation is individual. The lesson supports timely planning and authorised escalation, not learner diagnosis or self-directed decisions.",
       },
       {
-        question: "What does responsible rehoming require?",
-        options: ["Selling to anyone", "Finding a home through a reputable organisation", "Abandoning in a field", "Giving away online"],
-        correctIndex: 1,
-        explanation: "Reputable organisations vet new homes and monitor welfare.",
+        question:
+          "What is the appropriate boundary when retirement or rehoming is being considered?",
+        options: [
+          "Assume retirement or rehoming is always suitable and select a home from a generic lesson",
+          "Choose a loan, transport, workload, turnout, management, treatment, document, contract, or legal outcome without individual review",
+          "Use early planning, accurate information, suitability and contingency consideration, and current responsible-person, veterinary, qualified-professional, welfare, legal, document, and authorised advice for the individual horse",
+          "Delay emergency welfare support while searching for a new arrangement",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Rehoming may not be appropriate in every circumstance. Suitability and welfare require individual, current, authorised review.",
       },
     ],
     aiTutorPrompts: [
-      "How do I know when it's time for end-of-life?",
-      "What is a quality-of-life assessment?",
-      "What options after a horse has been put to sleep?",
+      "What current responsible-person, veterinary, qualified-professional, welfare, emergency, legal, insurance, document, bereavement, and authorised local route applies to this individual horse and situation?",
+      "How can I record authorised factual welfare and context observations without assessing quality of life, pain, prognosis, suffering, transport fitness, rehoming suitability, emergency status, or an end-of-life threshold?",
+      "What current authorised professional, legal, insurance, document, aftercare, bereavement, and local support route applies without selecting a procedure or action from this lesson?",
     ],
     linkedCompetencies: ["welfare_awareness", "horse_care"],
   },
@@ -9872,62 +10340,82 @@ When quality of life cannot be maintained, euthanasia is the kindest option. It 
     category: "Polework & Jump Foundations",
     sortOrder: 5,
     objectives: [
-      "Understand the purpose of grid work",
-      "Set up a basic bounce and one-stride grid",
-      "Know standard distances for grid components",
-      "Recognise how grids develop horse and rider",
+      "Recognise that gridwork and related-distance activity are qualified-coach decisions requiring individual horse/rider suitability, welfare, safety, current procedures, and supervision",
+      "Understand that a generic lesson cannot set up, measure, build, adjust, ride, jump, teach, assess, or progress a grid or related-distance exercise",
+      "Know that no universal grid, pole, fence, placing-pole, bounce, one-stride, height, distance, stride, track, approach, speed, equipment, or progression rule is suitable for every horse, rider, venue, surface, and circumstance",
+      "Record factual observations and use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route when a concern is outside the current plan or unclear",
     ],
-    content: `Grid work (gymnastics) is a series of fences at related distances, developing rhythm, balance, and confidence.
+    content: `Gridwork and related-distance activities can involve poles, fences, approaches, landing areas, tracks, rider balance, horse movement, equipment, speed, surfaces, space, weather, other people, and changing risks. This lesson provides an educational boundary only. It is not a procedure for building, measuring, placing, adjusting, dismantling, riding, jumping, teaching, coaching, supervising, progressing, modifying, or troubleshooting a grid, bounce, related distance, placing pole, fence, height, track, approach, stride, speed, distance, equipment, surface, horse, or rider.
 
-## Purpose
+## Qualified-Coach Scope
 
-Grids teach the horse to adjust stride and maintain balance. For riders, they develop secure position and quick reactions.
+Reviewed professional coaching guidance treats gridwork and related distances as qualified-coach content. The guidance requires risk assessment; suitability of horse and rider; consideration of horse welfare, participant needs, equipment, environment, and potential risks; appropriate measurement; adjustment where required; logical progression; safe supervision; incident response; and support or referral to an experienced coach or mentor. It does not provide a universal learner distance table, self-directed setup procedure, fixed component definition, height rule, approach rule, progression rule, or correction.
 
-## Components
+A qualified coach and the responsible person must decide whether an activity is appropriate; whether it can begin, continue, change, pause, or stop; what risk assessment, supervision, equipment, space, surface, rider, horse, warm-up, training, welfare, safety, and emergency arrangements apply; and which measurements, adjustments, or alternatives are suitable for the individual session. A generic lesson cannot determine suitability, fitness, soundness, pain, behaviour, balance, rider ability, horse ability, confidence, welfare, safety, equipment suitability, a cause, a correction, an outcome, or a stop threshold.
 
-Bounce: two fences with no stride between (3-3.6m). One stride: two fences with one canter stride (7.3-7.9m). Placing pole: ground pole before the first fence at trot distance (2.4-2.7m).
+## No Universal Distance or Setup Rule
 
-## Setting Up
+Do not use a generic chart, measurement, number of strides, distance, speed, height, placing-pole position, bounce, one-stride description, rider level, horse type, another horse’s setup, online example, video, or a previous session as a rule for this horse, rider, venue, surface, equipment, condition, weather, or day. Do not build, alter, ride, jump, measure, teach, supervise, raise, lower, widen, narrow, add, remove, reposition, or test an exercise based on this lesson alone.
 
-Build grids gradually from ground poles. Raise the last element first. Add height progressively. Accurate distances are critical.
+## Factual Observation and Escalation
 
-## Safety
+A learner may record authorised factual observations such as date, time, current activity, environment, surface, equipment present, people present, visible horse/rider behaviour, and any immediate safety concern. Do not diagnose lameness, pain, fear, stress, discomfort, fitness, ability, balance, welfare, a training problem, equipment failure, a distance issue, a cause, or a correction. Do not continue, repeat, increase, decrease, change, or troubleshoot the activity from a generic observation.
 
-Grid work should be supervised. Horses must be warmed up. Use appropriate jump fillers and falling cups.`,
+If a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear, stop where it is safe to do so and use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route. Do not delay required emergency support.
+
+## Reflective Use
+
+Use this lesson to ask: who is responsible; what current risk assessment and supervision apply; what individual suitability has been assessed by the authorised coach; what factual information is known; what is unknown; and what escalation route applies? The aim is safe, welfare-led recognition of professional scope, not self-directed gridwork.`,
     keyPoints: [
-      "Grid work develops rhythm, balance, and confidence",
-      "Bounce: 3-3.6m; one stride: 7.3-7.9m",
-      "Always build grids progressively",
-      "Accurate distances are critical for safety",
-      "Supervision by a qualified instructor is essential",
+      "Gridwork and related-distance activity are qualified-coach decisions that require individual horse/rider suitability, risk assessment, welfare, safety, current procedures, and supervision",
+      "There is no universal grid, pole, fence, placing-pole, bounce, one-stride, height, distance, stride, track, approach, speed, equipment, or progression rule for every horse, rider, venue, surface, and circumstance",
+      "Do not build, alter, ride, jump, measure, teach, supervise, raise, lower, widen, narrow, add, remove, reposition, test, or troubleshoot an activity from a generic lesson",
+      "A learner may record authorised factual observations but must not diagnose fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, safety, equipment suitability, a cause, or a correction",
+      "If a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear, use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route",
     ],
-    safetyNote: "Incorrect distances can cause crashes or loss of confidence. Always measure carefully.",
-    practicalApplication: "Set up a simple placing pole to crossrail to bounce grid under instruction.",
+    safetyNote:
+      "Do not use a generic chart, measurement, stride count, speed, height, placing-pole position, bounce, one-stride description, rider level, horse type, another horse’s setup, online example, video, or previous session to build or alter an exercise. Do not diagnose a grid, distance, safety, welfare, training, or performance issue; follow the current procedure and obtain qualified support.",
+    practicalApplication:
+      "With the responsible person’s permission, observe how an authorised qualified coach applies the current risk assessment, supervision, welfare, safety, equipment, incident, and escalation procedures. Record only authorised factual context and observations. Do not build, alter, ride, jump, measure, teach, supervise, assess, modify, or troubleshoot an activity from this lesson alone.",
     commonMistakes: [
-      "Distances too tight or wide",
-      "Making the grid too high too quickly",
-      "Approaching too fast",
-      "Leaning forward through the grid",
-      "Not warming up adequately",
+      "Treating a generic distance, stride count, component description, height, speed, placing-pole position, rider level, horse type, online example, video, previous session, or another horse’s setup as suitable for an individual activity",
+      "Building, altering, riding, jumping, measuring, teaching, supervising, raising, lowering, widening, narrowing, adding, removing, repositioning, testing, or troubleshooting an exercise without authorised qualified-coach direction",
+      "Diagnosing fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, safety, equipment suitability, a cause, or a correction from an observation",
+      "Continuing, repeating, increasing, decreasing, changing, or troubleshooting an activity when a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear",
+      "Failing to use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route when factual observations require escalation",
     ],
     knowledgeCheck: [
       {
-        question: "Approximate distance for a bounce?",
-        options: ["1-2 metres", "3-3.6 metres", "7-8 metres", "10 metres"],
-        correctIndex: 1,
-        explanation: "3-3.6 metres allows landing and immediate takeoff.",
+        question:
+          "What determines the appropriate setup, measurement, adjustment, and progression for a gridwork or related-distance activity?",
+        options: [
+          "A universal chart from a generic lesson",
+          "Another horse’s setup or an online example",
+          "The current responsible person and qualified coach using individual horse/rider suitability, risk assessment, welfare, safety, equipment, environment, supervision, and current procedures",
+          "A learner’s preferred height or speed",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Professional coaching guidance requires individual suitability, risk assessment, welfare, safety, appropriate measurement, adjustment where required, supervision, and escalation rather than a universal distance table.",
       },
       {
-        question: "Why build grids progressively?",
-        options: ["To save time", "To build confidence gradually", "It doesn't matter", "To confuse the horse"],
-        correctIndex: 1,
-        explanation: "Progressive building allows confidence and balance to develop.",
+        question:
+          "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, equipment, environment, supervision, incident, or safety concern is outside the current plan or unclear?",
+        options: [
+          "Independently change distance, height, speed, equipment, position, or the exercise",
+          "Diagnose the cause and continue to test a correction",
+          "Stop where it is safe to do so and use the current responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route",
+          "Use another horse’s setup as a solution",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Do not self-direct gridwork or diagnose a cause. Follow the current authorised procedure and obtain qualified support.",
       },
     ],
     aiTutorPrompts: [
-      "Difference between bounce and one-stride?",
-      "How to set up my first grid?",
-      "My horse rushes through grids — how to fix?",
+      "What current responsible-person, qualified-coach, risk-assessment, welfare, safety, equipment, supervision, incident, and escalation procedure applies before any gridwork or related-distance activity?",
+      "How can I record authorised factual horse, rider, environment, surface, equipment, supervision, and safety observations without deciding setup, suitability, measurement, adjustment, progression, or a correction?",
+      "When should I stop where safe and use the responsible-person, qualified coach, welfare, safety, veterinary, incident, or emergency route rather than self-directing a gridwork change?",
     ],
     linkedCompetencies: ["riding_position", "safety_awareness"],
   },
@@ -9940,62 +10428,82 @@ Grid work should be supervised. Horses must be warmed up. Use appropriate jump f
     category: "Polework & Jump Foundations",
     sortOrder: 6,
     objectives: [
-      "Walk a show jumping course effectively",
-      "Plan lines, turns, and approaches",
-      "Count strides between related fences",
-      "Apply course awareness to improve performance",
+      "Recognise that course walking, route, line, turn, pace, terrain, distance, footing, obstacle, and competition decisions require authorised qualified-coach, venue, current-rule, welfare, safety, and responsible-person oversight",
+      "Understand that a generic lesson cannot walk, assess, plan, select, ride, jump, alter, coach, supervise, or troubleshoot a course, route, line, turn, approach, track, pace, distance, stride, surface, obstacle, horse, rider, or venue",
+      "Know that no universal stride, line, pace, turn, recovery point, warm-up, equipment, footing, surface, obstacle, fitness, suitability, safety, welfare, rule, or performance decision applies to every course and combination",
+      "Record authorised factual observations and use the current responsible-person, qualified coach, venue, welfare, safety, veterinary, incident, emergency, and current-rule route when a concern is outside the current plan or unclear",
     ],
-    content: `At competition level, walking a course and riding an accurate plan is essential.
+    content: `Competition course awareness can involve course design, route, lines, turns, approaches, pace, distances, terrain, surfaces, obstacles, equipment, weather, venue conditions, rules, horse welfare, rider safety, individual ability, supervision, and changing risks. This lesson provides an educational boundary only. It is not a procedure for course walking, course design, route selection, line planning, turn planning, pace selection, stride counting, footing assessment, obstacle assessment, warm-up, equipment selection, fitness assessment, safety assessment, welfare assessment, riding, jumping, competing, coaching, supervising, changing a plan, or troubleshooting a horse, rider, course, surface, venue, or competition.
 
-## Walking the Course
+## Authorised Professional and Venue Scope
 
-Walk every fence in order. Stand at each and look from the horse's perspective. Check footing, fillers, and spooky elements.
+Reviewed professional course-walk and coaching material treats course design, course walking, safety, rider decision-making, pace, lines, terrain, welfare, materials, positioning, arena size, surface, and distance as expert-led content. Competition-welfare guidance requires welfare to take precedence over competitive interests, and requires fit, competent horse/rider combinations plus suitable and safe surfaces and obstacles. These sources do not create a universal learner procedure, a universal route/line/turn/stride/pace rule, a method for deciding fitness or safety, a claim that any plan will improve performance, or a right to override venue, official, responsible-person, welfare, safety, veterinary, or current-rule decisions.
 
-## Planning Lines
+The responsible person, authorised qualified coach, venue, officials, and current rules decide whether participation is appropriate; whether activity can begin, continue, change, pause, or stop; what route, course access, supervision, equipment, area, surface, horse, rider, welfare, safety, emergency, incident, and reporting arrangements apply; and what qualified support is needed. A generic lesson cannot determine fitness, competence, soundness, pain, behaviour, fear, stress, discomfort, welfare, rider ability, horse ability, confidence, surface safety, obstacle safety, weather risk, venue compliance, current rules, a cause, a correction, an outcome, or a stop threshold.
 
-Count strides between related fences on the actual track. Plan whether each section needs forward or steady canter. Identify recovery points.
+## No Universal Course Plan
 
-## Turns
+Do not use a generic line, turn, approach, track, pace, stride count, distance, recovery point, “horse perspective,” warm-up, equipment choice, footing observation, obstacle observation, online example, video, another combination, previous round, previous course, or a stated performance aim as a rule for the current horse, rider, surface, venue, weather, class, official instructions, or day. Do not walk, enter, ride, jump, measure, count, select, alter, rehearse, continue, repeat, speed up, slow down, shorten, lengthen, turn, correct, or test a route or course from this lesson alone.
 
-Well-planned turns give straight, balanced approaches. Cutting corners leads to run-outs and knockdowns.
+## Factual Observation and Escalation
 
-## Riding the Plan
+A learner may record authorised factual observations such as date, time, venue, class, current instruction, visible surface/obstacle context, equipment present, weather, people present, visible horse/rider behaviour, and any immediate safety concern. Do not diagnose lameness, pain, fear, stress, discomfort, fitness, ability, balance, welfare, surface safety, obstacle safety, rule compliance, a distance issue, a cause, a correction, a performance outcome, or an emergency status. Do not independently change a plan or continue activity from a generic observation.
 
-Commit to your plan once in the ring. Hesitation and last-minute changes are the most common causes of errors.`,
+If a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear, stop where safe to do so and use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route. Do not delay required emergency support or allow competitive pressure to override welfare.
+
+## Reflective Use
+
+Use this lesson to ask: who is responsible; what current venue/official instructions and rules apply; what authorised qualified-coach and welfare/safety oversight applies; what factual context is known; what is unknown; and which escalation route applies? The aim is safe recognition of professional and venue scope, not self-directed competition planning.`,
     keyPoints: [
-      "Walk every fence in order from the horse's perspective",
-      "Count strides between related fences",
-      "Well-planned turns create better approaches",
-      "Commit to your plan in the ring",
-      "Course walking improves with practice",
+      "Course walking, route, line, turn, pace, terrain, distance, footing, obstacle, and competition decisions require authorised qualified-coach, venue, current-rule, welfare, safety, and responsible-person oversight",
+      "There is no universal stride, line, pace, turn, recovery point, warm-up, equipment, footing, surface, obstacle, fitness, suitability, safety, welfare, rule, or performance decision for every horse, rider, course, venue, weather, and circumstance",
+      "Do not walk, enter, ride, jump, measure, count, select, alter, rehearse, continue, repeat, speed up, slow down, shorten, lengthen, turn, correct, or test a route or course from a generic lesson",
+      "A learner may record authorised factual observations but must not diagnose fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, surface safety, obstacle safety, rule compliance, a cause, a correction, or a performance outcome",
+      "If a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear, use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route",
     ],
-    safetyNote: "Never jump a course at height without proper warm-up and equipment check.",
-    practicalApplication: "Walk a course, plan your route, count strides, then ride it and compare plan vs reality.",
+    safetyNote:
+      "Do not use a generic route, line, turn, approach, track, pace, stride count, distance, recovery point, “horse perspective,” warm-up, equipment choice, footing observation, obstacle observation, online example, video, another combination, previous round, previous course, or performance aim as a rule for an individual course. Do not diagnose fitness, surface safety, obstacle safety, welfare, safety, rule compliance, or a course problem; follow the current procedure and obtain authorised qualified support.",
+    practicalApplication:
+      "With the responsible person’s permission, observe how authorised qualified coaches, venue staff, and officials use the current venue, welfare, safety, supervision, incident, emergency, and current-rule procedures. Record only authorised factual context and observations. Do not walk, enter, ride, jump, measure, count, select, alter, rehearse, supervise, assess, modify, or troubleshoot a course, route, line, turn, pace, stride, surface, obstacle, horse, rider, or venue from this lesson alone.",
     commonMistakes: [
-      "Not walking the course",
-      "Walking a shortcut instead of the actual track",
-      "Failing to plan first and last fences",
-      "Changing plan mid-course",
-      "Not accounting for ground conditions",
+      "Treating a generic route, line, turn, approach, track, pace, stride count, distance, recovery point, “horse perspective,” warm-up, equipment choice, footing observation, obstacle observation, online example, video, another combination, previous round, previous course, or performance aim as suitable for an individual course",
+      "Walking, entering, riding, jumping, measuring, counting, selecting, altering, rehearsing, continuing, repeating, speeding up, slowing down, shortening, lengthening, turning, correcting, or testing a route/course without authorised qualified-coach, venue, official, welfare, safety, and current-rule direction",
+      "Diagnosing fitness, soundness, pain, fear, stress, discomfort, ability, balance, welfare, surface safety, obstacle safety, rule compliance, a cause, a correction, a performance outcome, or an emergency status from an observation",
+      "Independently changing a plan or continuing when a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear",
+      "Failing to use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route when factual observations require escalation",
     ],
     knowledgeCheck: [
       {
-        question: "Why walk the exact track your horse will take?",
-        options: ["For exercise", "To count accurate strides and plan turns", "Because the judge watches", "It doesn't matter"],
-        correctIndex: 1,
-        explanation: "The exact track gives accurate stride counts and turn planning.",
+        question:
+          "What determines whether and how course walking, route, line, turn, pace, distance, surface, obstacle, and competition decisions are made?",
+        options: [
+          "A universal lesson procedure",
+          "Another rider’s plan or an online example",
+          "Current responsible-person, authorised qualified-coach, venue, official, welfare, safety, veterinary, incident, emergency, and current-rule oversight for the individual horse/rider/course/venue context",
+          "A learner’s preferred line or performance objective",
+        ],
+        correctIndex: 2,
+        explanation:
+          "The reviewed sources treat these as expert-led, individual, venue- and welfare-dependent decisions rather than a universal learner procedure.",
       },
       {
-        question: "Most common cause of show jumping errors?",
-        options: ["Horse too tired", "Last-minute plan changes and hesitation", "Course too high", "Bad luck"],
-        correctIndex: 1,
-        explanation: "Hesitation disrupts rhythm and balance.",
+        question:
+          "What should a learner do when a horse, rider, welfare, health, pain, comfort, surface, obstacle, equipment, weather, venue, official instruction, supervision, incident, safety, or rule concern is outside the current plan or unclear?",
+        options: [
+          "Independently change the route, line, turn, pace, stride count, equipment, surface, or course plan",
+          "Diagnose the cause and continue to test a correction",
+          "Stop where safe to do so and use the current responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and authorised current-rule route",
+          "Allow competitive pressure to override welfare",
+        ],
+        correctIndex: 2,
+        explanation:
+          "Do not self-direct a competition change or diagnose a cause. Follow the current authorised procedure and obtain appropriate support.",
       },
     ],
     aiTutorPrompts: [
-      "How to walk a show jumping course?",
-      "How to count strides between fences?",
-      "What to focus on when planning turns?",
+      "What current responsible-person, authorised qualified-coach, venue, official, welfare, safety, supervision, incident, emergency, and current-rule procedure applies before any course activity?",
+      "How can I record authorised factual horse, rider, venue, surface, obstacle, weather, equipment, supervision, and safety observations without deciding route, line, turn, pace, stride, suitability, correction, or performance?",
+      "When should I stop where safe and use the responsible-person, qualified coach, venue, official, welfare, safety, veterinary, incident, emergency, and current-rule route rather than self-directing a course change?",
     ],
     linkedCompetencies: ["riding_position", "competition_preparation"],
   },
@@ -10010,14 +10518,14 @@ Commit to your plan once in the ring. Hesitation and last-minute changes are the
     objectives: [
       "Identify situations requiring immediate vet attention",
       "Know what info to have ready",
-      "Distinguish emergencies from non-urgent conditions",
+      "Recognise that uncertainty should be escalated to a veterinary professional rather than self-triaged",
       "Take and record vital signs accurately",
     ],
     content: `Knowing when to call the vet is critical. Delay in emergencies costs lives.
 
 ## Always Call Immediately For
 
-Colic (rolling, pawing, sweating, not eating), severe lameness, wounds near joints or tendons, difficulty breathing, eye injuries, choke.
+Potential emergencies include signs of colic, a marked movement change, a wound, difficulty breathing, an eye concern or choke. Contact the veterinary practice promptly and follow its emergency instructions; do not wait to classify the condition yourself.
 
 ## Information to Have Ready
 
@@ -10025,45 +10533,54 @@ Your name, location, horse age and breed, observations, vital signs, and any fir
 
 ## Vital Signs
 
-Normal ranges: Temperature 37.0-38.5 C, Pulse 28-44 bpm, Respiration 8-16 breaths/min.
+For a healthy adult horse calmly at rest, World Horse Welfare lists temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min. Record the individual horse’s baseline and tell the veterinary team about concerning changes alongside the horse’s symptoms.
 
 ## The Golden Rule
 
 If in doubt, call. A vet would rather have a false alarm than be called too late.`,
     keyPoints: [
-      "Colic, severe lameness, joint wounds, eye injuries are always emergencies",
-      "Have details and vital signs ready when calling",
-      "Normal vitals: Temp 37-38.5, Pulse 28-44, Resp 8-16",
+      "Signs of colic, marked movement change, wounds, breathing difficulty, eye concerns or choke need prompt veterinary contact and the practice’s instructions",
+      "Have safe observations and the horse’s individual baseline information ready where this does not delay the call",
+      "Usual adult-at-rest reference: temperature 37.5–38.5°C, pulse 36–42 bpm and respiration 8–12 breaths/min; use the horse’s baseline and symptoms when speaking to the vet",
       "When in doubt, always call the vet",
       "Delay in emergencies can be fatal",
     ],
-    safetyNote: "Keep your vet's emergency number saved in your phone and posted at the yard.",
-    practicalApplication: "Practise taking a horse's temperature, pulse, and respiration. Record results.",
+    safetyNote:
+      "Keep your vet's emergency number saved in your phone and posted at the yard.",
+    practicalApplication:
+      "With a competent person, practise recording calm-at-rest observations using the approved yard procedure. Contact the veterinary practice first in an emergency; do not delay the call to collect extra information.",
     commonMistakes: [
       "Waiting to see if the horse improves",
       "Not knowing the emergency number",
-      "Failing to take vital signs before calling",
+      "Delaying a veterinary call in order to collect extra information",
       "Treating joint wounds without vet assessment",
       "Assuming colic will pass on its own",
     ],
     knowledgeCheck: [
       {
         question: "Normal resting heart rate for a horse?",
-        options: ["10-20 bpm", "28-44 bpm", "60-80 bpm", "100-120 bpm"],
+        options: ["10-20 bpm", "36-42 bpm", "60-80 bpm", "100-120 bpm"],
         correctIndex: 1,
-        explanation: "28-44 bpm is normal. Elevated rate suggests pain or illness.",
+        explanation:
+          "World Horse Welfare lists 36–42 bpm as the usual pulse range for a healthy adult horse calmly at rest. A concerning change from the individual baseline, particularly with symptoms, should be discussed with a vet.",
       },
       {
         question: "Which is always an emergency?",
-        options: ["Small scratch", "Mild dandruff", "A wound near a joint or tendon", "A loose shoe"],
+        options: [
+          "Small scratch",
+          "Mild dandruff",
+          "A wound near a joint or tendon",
+          "A loose shoe",
+        ],
         correctIndex: 2,
-        explanation: "Wounds near joints can allow infection into critical structures.",
+        explanation:
+          "A wound near a joint or tendon needs prompt veterinary assessment. Contact the veterinary practice and follow its instructions rather than attempting to assess depth or manage it yourself.",
       },
     ],
     aiTutorPrompts: [
-      "How to take a horse's temperature?",
-      "What does colic look like?",
-      "How to know if a wound is serious?",
+      "What observations may be useful to the veterinary practice when it is safe to collect them?",
+      "What should I do if I observe possible colic signs?",
+      "Why should I contact the veterinary practice rather than self-triage a wound?",
     ],
     linkedCompetencies: ["health_awareness", "safety_awareness"],
   },
@@ -10076,62 +10593,73 @@ If in doubt, call. A vet would rather have a false alarm than be called too late
     category: "Horse Health & First Response",
     sortOrder: 6,
     objectives: [
-      "Apply emergency first aid for common injuries",
-      "Control bleeding effectively",
-      "Manage colic while awaiting the vet",
-      "Assemble an equine first aid kit",
+      "Recognise that emergency first response is preparation and prompt veterinary escalation, not diagnosis or treatment",
+      "Keep people safe while obtaining professional emergency instructions",
+      "Record only safe observations that may assist the veterinary practice",
+      "Check that the yard’s approved emergency supplies and contact details are accessible",
     ],
-    content: `Emergency first aid can save a horse's life while waiting for the vet.
+    content: `Emergency first response is about keeping people safe, contacting the veterinary practice promptly and following the instructions given for the individual horse and situation. It does not replace veterinary assessment, diagnosis or treatment.
 
-## Bleeding Control
+## Immediate Response
 
-Apply firm pressure with a clean pad. If blood soaks through, add another pad on top — do not remove the first one.
+If you observe serious bleeding, signs of colic, an eye concern, a wound, marked movement change, breathing difficulty or another urgent welfare concern, keep yourself safe, contact the veterinary practice and follow its emergency instructions. Do not delay the call to complete a generic checklist, and do not undertake clinical procedures unless specifically directed.
 
-## Colic First Aid
+## Safe Preparation
 
-Remove all food. Walk gently if rolling violently. Note vital signs and onset time. Do not give medication without vet guidance.
+Record the time, observed changes, relevant history and any information the veterinary practice requests, where doing so does not increase risk or delay contact. Keep the horse and people as safe as the circumstances allow, following the yard’s emergency procedure. Do not force movement, apply a generic protocol or act independently in a clinical emergency.
 
-## Eye Injuries
+## Emergency Supplies and Contacts
 
-Cover the eye with a damp clean pad. Keep the horse calm and in a dark stable.
-
-## First Aid Kit
-
-Wound cleanser, non-stick dressings, cotton wool, cohesive bandages, scissors, thermometer, clean towels, torch, vet's number, notepad.`,
+Know the location of the yard’s approved emergency supplies, the veterinary practice contact details and the current yard emergency procedure. The contents, checks and use of any kit must be set by the responsible professionals and reviewed when procedures change.`,
     keyPoints: [
-      "Apply firm pressure to bleeding — don't remove soaked dressings",
-      "For colic: remove food, walk gently, note vitals, call vet",
-      "Cover eye injuries with a damp pad",
-      "Maintain a fully stocked first aid kit",
-      "First aid supports — not replaces — vet treatment",
+      "Emergency first response is prompt veterinary escalation and safe preparation, not learner diagnosis or treatment",
+      "In a potential emergency, keep people safe and follow the veterinary practice’s instructions for the individual horse",
+      "Do not delay calling to complete a generic protocol or gather information",
+      "Know the location of approved emergency supplies, contacts and the current yard procedure",
+      "Emergency preparation supports — and never replaces — veterinary assessment",
     ],
-    safetyNote: "Your own safety comes first. Never put yourself at risk treating a panicking horse.",
-    practicalApplication: "Check the first aid kit at your yard. Ensure all items are present and in-date.",
+    safetyNote:
+      "Your own safety comes first. Never put yourself at risk. Contact the veterinary practice promptly and follow the current yard emergency procedure; do not undertake clinical action without professional direction.",
+    practicalApplication:
+      "With the responsible person, locate the approved emergency supplies, veterinary contact details and current yard emergency procedure. Confirm who is authorised to review and replenish supplies.",
     commonMistakes: [
-      "Removing blood-soaked dressings",
-      "Giving pain medication during colic without vet advice",
-      "Not having a first aid kit",
-      "Panicking and not recording observations",
-      "Attempting complex wound treatment",
+      "Delaying veterinary contact while attempting a generic procedure",
+      "Acting independently in a clinical emergency",
+      "Not knowing the current yard emergency procedure or veterinary contact route",
+      "Putting yourself at risk around a distressed horse",
+      "Attempting to diagnose or manage a wound without professional direction",
     ],
     knowledgeCheck: [
       {
-        question: "What if a bandage becomes soaked with blood?",
-        options: ["Remove it", "Add another pad on top", "Pour water on it", "Leave uncovered"],
-        correctIndex: 1,
-        explanation: "Adding another pad maintains pressure without disrupting clot formation.",
+        question: "What is the first priority in a potential equine emergency?",
+        options: [
+          "Keep people safe, contact the veterinary practice promptly and follow its instructions",
+          "Apply a generic clinical procedure before calling",
+          "Wait for a fixed interval to see whether it improves",
+          "Attempt to diagnose the cause from one observation",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Emergency first response is prompt professional escalation and safe preparation. The veterinary practice directs action for the individual horse and situation.",
       },
       {
-        question: "First action for colic symptoms?",
-        options: ["Give painkillers", "Feed the horse", "Remove all food and call the vet", "Leave alone"],
-        correctIndex: 2,
-        explanation: "Removing food prevents further gut complications.",
+        question:
+          "What should a learner do while waiting for emergency guidance?",
+        options: [
+          "Follow the yard emergency procedure and veterinary instructions without acting independently",
+          "Try several home procedures until one works",
+          "Force the horse to move for a clearer diagnosis",
+          "Delay contact while assembling a generic kit",
+        ],
+        correctIndex: 0,
+        explanation:
+          "Keep people safe, avoid clinical action without direction and follow the current yard and veterinary emergency instructions.",
       },
     ],
     aiTutorPrompts: [
-      "What should be in a first aid kit?",
-      "How to apply a pressure bandage?",
-      "What to do while waiting for the vet during colic?",
+      "Where can I find the approved emergency supplies and veterinary contact route for this yard?",
+      "Why must emergency action follow the veterinary practice’s instructions for the individual horse?",
+      "What safe observations may I record while waiting for veterinary guidance?",
     ],
     linkedCompetencies: ["health_awareness", "safety_awareness"],
   },
@@ -10185,15 +10713,26 @@ Maintain a daily diary noting observations, vet visits, farrier dates, worming d
     knowledgeCheck: [
       {
         question: "Very first morning task?",
-        options: ["Mucking out", "Feeding", "Checking all horses are healthy and safe", "Tacking up"],
+        options: [
+          "Mucking out",
+          "Feeding",
+          "Checking all horses are healthy and safe",
+          "Tacking up",
+        ],
         correctIndex: 2,
         explanation: "A health check of every horse must come first.",
       },
       {
         question: "Why is a daily yard diary important?",
-        options: ["To impress visitors", "To track changes and maintain records", "It's not important", "To plan social events"],
+        options: [
+          "To impress visitors",
+          "To track changes and maintain records",
+          "It's not important",
+          "To plan social events",
+        ],
         correctIndex: 1,
-        explanation: "A diary tracks health changes and provides records for the vet.",
+        explanation:
+          "A diary tracks health changes and provides records for the vet.",
       },
     ],
     aiTutorPrompts: [
@@ -10241,8 +10780,10 @@ Under the Health and Safety at Work Act, yard owners have a duty of care to visi
       "Yard owners have legal safety responsibilities",
       "An evacuation plan must exist and be practised",
     ],
-    safetyNote: "Keep a headcollar and lead rope on every stable door at all times for fire evacuation.",
-    practicalApplication: "Walk around your yard and identify five potential hazards with control measures.",
+    safetyNote:
+      "Keep a headcollar and lead rope on every stable door at all times for fire evacuation.",
+    practicalApplication:
+      "Walk around your yard and identify five potential hazards with control measures.",
     commonMistakes: [
       "Storing hay adjacent to stables",
       "Not having fire extinguishers",
@@ -10253,13 +10794,23 @@ Under the Health and Safety at Work Act, yard owners have a duty of care to visi
     knowledgeCheck: [
       {
         question: "What should be on every stable door?",
-        options: ["A nameplate", "A headcollar and lead rope", "A mirror", "A bucket"],
+        options: [
+          "A nameplate",
+          "A headcollar and lead rope",
+          "A mirror",
+          "A bucket",
+        ],
         correctIndex: 1,
         explanation: "Headcollars allow fast evacuation in fire emergencies.",
       },
       {
         question: "Where should hay be stored?",
-        options: ["Inside the stables", "Away from stables and ignition sources", "In the tack room", "Outside uncovered"],
+        options: [
+          "Inside the stables",
+          "Away from stables and ignition sources",
+          "In the tack room",
+          "Outside uncovered",
+        ],
         correctIndex: 1,
         explanation: "Hay is highly flammable — store away from stables.",
       },
@@ -10309,8 +10860,10 @@ Maintain strong rhythmic canter. Sit up and look ahead. Ride positively — hesi
       "Maintain forward rhythm — hesitation causes refusals",
       "Horse fitness and rider confidence both critical",
     ],
-    safetyNote: "Never attempt cross-country without a properly fitted body protector.",
-    practicalApplication: "Walk a cross-country course and identify each fence type with approach plan.",
+    safetyNote:
+      "Never attempt cross-country without a properly fitted body protector.",
+    practicalApplication:
+      "Walk a cross-country course and identify each fence type with approach plan.",
     commonMistakes: [
       "Approaching too slowly",
       "Looking down at fences",
@@ -10321,15 +10874,26 @@ Maintain strong rhythmic canter. Sit up and look ahead. Ride positively — hesi
     knowledgeCheck: [
       {
         question: "Key difference between cross-country and show jumping?",
-        options: ["Cross-country fences are smaller", "Cross-country fences are solid and fixed", "No difference", "Show jumping is harder"],
+        options: [
+          "Cross-country fences are smaller",
+          "Cross-country fences are solid and fixed",
+          "No difference",
+          "Show jumping is harder",
+        ],
         correctIndex: 1,
         explanation: "Solid, fixed fences leave no margin for error.",
       },
       {
         question: "Compulsory cross-country safety equipment?",
-        options: ["Gloves only", "Body protector and certified helmet", "Knee pads", "Nothing specific"],
+        options: [
+          "Gloves only",
+          "Body protector and certified helmet",
+          "Knee pads",
+          "Nothing specific",
+        ],
         correctIndex: 1,
-        explanation: "Body protector and certified helmet are compulsory at all levels.",
+        explanation:
+          "Body protector and certified helmet are compulsory at all levels.",
       },
     ],
     aiTutorPrompts: [
@@ -10377,7 +10941,8 @@ Assess what went well and what needs improvement. Note specific exercises for ho
       "Be prepared for different horse behaviour",
       "Review every competition honestly",
     ],
-    safetyNote: "Always check your horse's soundness before loading for a competition.",
+    safetyNote:
+      "Always check your horse's soundness before loading for a competition.",
     practicalApplication: "Create a complete competition day checklist.",
     commonMistakes: [
       "Arriving late and rushing",
@@ -10389,13 +10954,23 @@ Assess what went well and what needs improvement. Note specific exercises for ho
     knowledgeCheck: [
       {
         question: "How to plan competition day timeline?",
-        options: ["Wing it", "Plan backwards from start time", "Arrive just before class", "Copy someone else"],
+        options: [
+          "Wing it",
+          "Plan backwards from start time",
+          "Arrive just before class",
+          "Copy someone else",
+        ],
         correctIndex: 1,
         explanation: "Planning backwards ensures enough time for every stage.",
       },
       {
         question: "What to do after a competition?",
-        options: ["Forget about it", "Review what went well and what to improve", "Only focus on what went wrong", "Immediately enter another"],
+        options: [
+          "Forget about it",
+          "Review what went well and what to improve",
+          "Only focus on what went wrong",
+          "Immediately enter another",
+        ],
         correctIndex: 1,
         explanation: "Balanced review helps learn from every experience.",
       },
@@ -10442,7 +11017,8 @@ Stretch daily for best results. Even 10 minutes a day makes a significant differ
       "Flexibility improves comfort and prevents injury",
     ],
     safetyNote: "Never stretch cold muscles aggressively. Warm up first.",
-    practicalApplication: "Create a 10-minute daily stretching routine for one week and note riding changes.",
+    practicalApplication:
+      "Create a 10-minute daily stretching routine for one week and note riding changes.",
     commonMistakes: [
       "Static stretching before riding without warmup",
       "Bouncing in stretches",
@@ -10453,7 +11029,12 @@ Stretch daily for best results. Even 10 minutes a day makes a significant differ
     knowledgeCheck: [
       {
         question: "What type of stretching before riding?",
-        options: ["Static held 60 seconds", "Dynamic like leg swings", "None", "Stretching while mounted"],
+        options: [
+          "Static held 60 seconds",
+          "Dynamic like leg swings",
+          "None",
+          "Stretching while mounted",
+        ],
         correctIndex: 1,
         explanation: "Dynamic stretches warm muscles with movement.",
       },
@@ -10461,7 +11042,8 @@ Stretch daily for best results. Even 10 minutes a day makes a significant differ
         question: "Most important flexibility area for riders?",
         options: ["Wrists", "Hips", "Ankles", "Neck"],
         correctIndex: 1,
-        explanation: "Hip flexibility directly affects seat, balance, and following the horse.",
+        explanation:
+          "Hip flexibility directly affects seat, balance, and following the horse.",
       },
     ],
     aiTutorPrompts: [
@@ -10509,8 +11091,10 @@ If anxiety severely impacts enjoyment, consider a sports psychologist or confide
       "Replace negative self-talk with positive statements",
       "Seek professional help if severely impacted",
     ],
-    safetyNote: "Never force yourself or allow others to force you into situations that feel dangerous.",
-    practicalApplication: "Write down your top three anxiety triggers with a small first step for each.",
+    safetyNote:
+      "Never force yourself or allow others to force you into situations that feel dangerous.",
+    practicalApplication:
+      "Write down your top three anxiety triggers with a small first step for each.",
     commonMistakes: [
       "Pushing through extreme fear",
       "Comparing to fearless riders",
@@ -10521,15 +11105,27 @@ If anxiety severely impacts enjoyment, consider a sports psychologist or confide
     knowledgeCheck: [
       {
         question: "Most effective approach to riding anxiety?",
-        options: ["Force the scariest thing first", "Gradual progressive exposure", "Ignore the fear", "Give up riding"],
+        options: [
+          "Force the scariest thing first",
+          "Gradual progressive exposure",
+          "Ignore the fear",
+          "Give up riding",
+        ],
         correctIndex: 1,
-        explanation: "Progressive exposure starting with safe activities builds lasting confidence.",
+        explanation:
+          "Progressive exposure starting with safe activities builds lasting confidence.",
       },
       {
         question: "Breathing technique for anxiety?",
-        options: ["Hold breath", "Breathe as fast as possible", "In for 4, hold for 4, out for 4", "Panting"],
+        options: [
+          "Hold breath",
+          "Breathe as fast as possible",
+          "In for 4, hold for 4, out for 4",
+          "Panting",
+        ],
         correctIndex: 2,
-        explanation: "Box breathing activates the parasympathetic nervous system.",
+        explanation:
+          "Box breathing activates the parasympathetic nervous system.",
       },
     ],
     aiTutorPrompts: [
@@ -10577,8 +11173,10 @@ Use professional communication channels. Do not share personal social media with
       "Record concerns factually",
       "Maintain professional boundaries",
     ],
-    safetyNote: "If a child tells you something concerning, listen calmly, reassure them, and report immediately. Never promise secrecy.",
-    practicalApplication: "Find out who the safeguarding officer is at your yard.",
+    safetyNote:
+      "If a child tells you something concerning, listen calmly, reassure them, and report immediately. Never promise secrecy.",
+    practicalApplication:
+      "Find out who the safeguarding officer is at your yard.",
     commonMistakes: [
       "Ignoring concerns because they seem minor",
       "Investigating yourself instead of reporting",
@@ -10589,15 +11187,26 @@ Use professional communication channels. Do not share personal social media with
     knowledgeCheck: [
       {
         question: "What to do if a child discloses something concerning?",
-        options: ["Promise secrecy", "Investigate yourself", "Listen, reassure, and report to safeguarding officer", "Ignore it"],
+        options: [
+          "Promise secrecy",
+          "Investigate yourself",
+          "Listen, reassure, and report to safeguarding officer",
+          "Ignore it",
+        ],
         correctIndex: 2,
         explanation: "Listen, reassure, report. Never promise secrecy.",
       },
       {
         question: "What does duty of care mean?",
-        options: ["Being friends with all riders", "Taking reasonable steps to ensure safety and wellbeing", "Winning competitions", "Providing free lessons"],
+        options: [
+          "Being friends with all riders",
+          "Taking reasonable steps to ensure safety and wellbeing",
+          "Winning competitions",
+          "Providing free lessons",
+        ],
         correctIndex: 1,
-        explanation: "Taking all reasonable steps to protect physical and emotional wellbeing.",
+        explanation:
+          "Taking all reasonable steps to protect physical and emotional wellbeing.",
       },
     ],
     aiTutorPrompts: [
@@ -10645,8 +11254,10 @@ Physically accessible, culturally welcoming, free from discrimination.`,
       "Para-equestrian offers competitive pathways",
       "An inclusive environment is welcoming and free from discrimination",
     ],
-    safetyNote: "When working with riders with specific needs, conduct thorough risk assessment. Additional helpers may be required.",
-    practicalApplication: "Plan a lesson for a fictional rider with a specific need.",
+    safetyNote:
+      "When working with riders with specific needs, conduct thorough risk assessment. Additional helpers may be required.",
+    practicalApplication:
+      "Plan a lesson for a fictional rider with a specific need.",
     commonMistakes: [
       "Assuming all people with a condition have the same needs",
       "Over-helping instead of allowing independence",
@@ -10657,15 +11268,27 @@ Physically accessible, culturally welcoming, free from discrimination.`,
     knowledgeCheck: [
       {
         question: "Core principle of inclusive coaching?",
-        options: ["Treating everyone exactly the same", "Adapting teaching to meet individual needs", "Only teaching riders without disabilities", "Lowering standards for everyone"],
+        options: [
+          "Treating everyone exactly the same",
+          "Adapting teaching to meet individual needs",
+          "Only teaching riders without disabilities",
+          "Lowering standards for everyone",
+        ],
         correctIndex: 1,
-        explanation: "Adapting methods ensures every rider can learn effectively.",
+        explanation:
+          "Adapting methods ensures every rider can learn effectively.",
       },
       {
         question: "UK organisation for working with disabled riders?",
-        options: ["The Jockey Club", "The BHA", "The Riding for the Disabled Association (RDA)", "The Kennel Club"],
+        options: [
+          "The Jockey Club",
+          "The BHA",
+          "The Riding for the Disabled Association (RDA)",
+          "The Kennel Club",
+        ],
         correctIndex: 2,
-        explanation: "The RDA provides training and standards for equestrian centres.",
+        explanation:
+          "The RDA provides training and standards for equestrian centres.",
       },
     ],
     aiTutorPrompts: [
@@ -10676,3 +11299,75 @@ Physically accessible, culturally welcoming, free from discrimination.`,
     linkedCompetencies: ["coaching_skills", "welfare_awareness"],
   },
 ];
+
+const VETERINARY_REVIEW_TOPIC =
+  /\b(colic|laminitis|wound|vital signs?|first aid|vaccin|worm|parasite|nutrition|supplement|dental|farrier)\b/i;
+const CURRENT_REQUIREMENTS_TOPIC =
+  /\b(transport|insurance|competition|legal|legislation|passport)\b/i;
+const SAFEGUARDING_REVIEW_TOPIC = /\bsafeguarding\b/i;
+
+function factualSafetyBoundary(lesson: LessonUnitData): string | null {
+  const searchable = [
+    lesson.title,
+    lesson.content,
+    lesson.safetyNote,
+    lesson.practicalApplication,
+    ...lesson.objectives,
+    ...lesson.keyPoints,
+    ...lesson.commonMistakes,
+    ...lesson.knowledgeCheck.flatMap((question) => [
+      question.question,
+      ...question.options,
+      question.explanation,
+    ]),
+    ...lesson.aiTutorPrompts,
+  ].join("\n");
+  const boundaries: string[] = [];
+  if (VETERINARY_REVIEW_TOPIC.test(searchable)) {
+    boundaries.push(
+      "This lesson supports observation and preparation only; obtain individual advice from a veterinarian or other appropriately qualified professional before diagnosing, treating, medicating, or changing a health plan.",
+    );
+  }
+  if (CURRENT_REQUIREMENTS_TOPIC.test(searchable)) {
+    boundaries.push(
+      "Transport, insurance, competition and legal requirements can change and depend on the activity, journey, policy and jurisdiction; verify the current official rules, organiser requirements and professional advice before acting.",
+    );
+  }
+  if (SAFEGUARDING_REVIEW_TOPIC.test(searchable)) {
+    boundaries.push(
+      "Follow your organisation's safeguarding policy and designated reporting route. In an immediate emergency, contact the relevant emergency services.",
+    );
+  }
+  return boundaries.length ? boundaries.join(" ") : null;
+}
+
+/**
+ * Applies teaching-depth supplements and lesson-aware professional boundaries
+ * by stable lesson slug. Some source lessons remain under factual review; the
+ * curriculum synchroniser independently withholds every such lesson from all
+ * learner and teacher queries until its binding review is accepted.
+ */
+export const LESSON_UNITS: LessonUnitData[] = BASE_LESSON_UNITS.map(
+  (lesson) => {
+    const factuallyReviewedLesson = applyFactualLessonRevision(lesson);
+    const enhancement = FACTUALLY_REVISED_LESSON_SLUGS.has(lesson.slug)
+      ? undefined
+      : LESSON_QUALITY_ENHANCEMENTS[lesson.slug];
+    const expandedLesson: LessonUnitData = enhancement
+      ? {
+          ...factuallyReviewedLesson,
+          content: `${factuallyReviewedLesson.content}\n\n${enhancement.contentExtension}`,
+          knowledgeCheck: [
+            ...factuallyReviewedLesson.knowledgeCheck,
+            enhancement.knowledgeCheck,
+          ],
+        }
+      : factuallyReviewedLesson;
+    const boundary = factualSafetyBoundary(expandedLesson);
+    if (!boundary) return expandedLesson;
+    return {
+      ...expandedLesson,
+      safetyNote: `${expandedLesson.safetyNote} ${boundary}`,
+    };
+  },
+);

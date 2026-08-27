@@ -2,14 +2,31 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, phase-1/small-medium-completion, release-candidate/final-core-2026-08-22]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, phase-1/small-medium-completion, release-candidate/final-core-2026-08-22]
 
 jobs:
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ROOT_PASSWORD: commerce-test-root
+          MARIADB_DATABASE: commerce_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      COMMERCE_TEST_DATABASE_URL: mysql://root:commerce-test-root@127.0.0.1:3306/commerce_test
 
     strategy:
       matrix:
@@ -17,10 +34,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -34,8 +51,21 @@ jobs:
       - name: Type check
         run: npm run check
 
-      - name: Run tests
-        run: npm test
+      - name: Audit Academy factual publication gate
+        run: npm run academy:factual:audit
+
+      - name: Provision and verify fresh final-Core schema
+        env:
+          DATABASE_URL: mysql://root:commerce-test-root@127.0.0.1:3306/commerce_test
+          JWT_SECRET: ci-migration-process-only-secret
+          ADMIN_UNLOCK_PASSWORD: CI-Migration-Process-Only
+        run: |
+          npm run db:provision-fresh
+          npx tsx scripts/audit-migration-baseline.ts > migration-inspection.json
+          node --input-type=module -e 'import fs from "node:fs"; const report=JSON.parse(fs.readFileSync("migration-inspection.json","utf8")); if(report.classification!=="CURRENT_NO_ACTION_REQUIRED") throw new Error(`Unexpected migration classification: ${report.classification}`); const differences=Object.values(report.differences).flat(); if(differences.length) throw new Error(`Schema differences remain: ${differences.join(", ")}`); console.log(`Migration gate: ${report.classification}; ${report.observed.tableCount} tables; zero differences`);'
+
+      - name: Run tests in deterministic single-fork mode
+        run: npx vitest run --pool=forks --no-file-parallelism --maxWorkers=1
 
       - name: Build application
         run: npm run build
@@ -55,7 +85,7 @@ jobs:
 
     steps:
       - name: Checkout full history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -87,7 +117,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - name: Reject high or critical production dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
@@ -97,7 +136,6 @@ jobs:
           scan-ref: "."
           format: "sarif"
           output: "trivy-results.sarif"
-          db-repository: "ghcr.io/aquasecurity/trivy-db"
 
       - name: Upload Trivy results to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
@@ -108,16 +146,16 @@ jobs:
 
   deploy:
     name: Deploy to Production
-    needs: [test, lint, ui-smoke-test]
+    needs: [test, lint, security, ui-smoke-test]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: "npm"
@@ -147,10 +185,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22.x
           cache: "npm"
@@ -164,9 +202,7 @@ jobs:
           NODE_ENV: production
 
       - name: Install Playwright browsers and package
-        run: |
-          npx playwright install chromium --with-deps
-          npm install --no-save playwright
+        run: npx playwright install chromium --with-deps
 
       - name: Start server and run UI smoke test
         run: |
@@ -192,3 +228,8 @@ jobs:
           JWT_SECRET: smoke-test-secret-min-32-chars-here
           ADMIN_UNLOCK_PASSWORD: Smoke!CI#Test99
           DATABASE_URL: mysql://smoke:smoke@127.0.0.1:3306/smoke_db
+
+      - name: Run authenticated Management browser acceptance
+        run: npm run acceptance:management
+        env:
+          NODE_ENV: test
