@@ -1,7 +1,7 @@
 # Client Workflow Assurance
 
-**Status:** Release candidate assurance note  
-**Product:** EquiProfile Core Management and Academy host applications  
+**Status:** Release candidate assurance note
+**Product:** EquiProfile Core Management and Academy host applications
 **Marketing relationship:** Signed connector only; no embedded Marketing engine.
 
 ## Management
