@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import {
   academyCurriculumSyncRuns,
   lessonPathways,
@@ -28,6 +28,21 @@ export type AcademyCurriculumSyncResult = {
   validationWarnings: number;
 };
 
+export type AcademyCurriculumSyncMode =
+  | "insert-only"
+  | "update-source-managed";
+
+export type AcademyCurriculumReadiness = {
+  ready: boolean;
+  curriculumVersion: string;
+  expectedPathways: number;
+  expectedPublishedLessons: number;
+  missingPathways: string[];
+  missingPublishedLessons: string[];
+  stalePathways: string[];
+  stalePublishedLessons: string[];
+};
+
 function orderedLessonsByPathway() {
   const lessons = new Map<string, LessonUnitData[]>();
   for (const lesson of LESSON_UNITS) {
@@ -52,7 +67,9 @@ function serialize(value: unknown) {
  * Reconciles source curriculum with the database using upserts. Existing
  * learner-completion rows are intentionally not read, changed, or deleted.
  */
-export async function syncAcademyCurriculum(): Promise<AcademyCurriculumSyncResult> {
+export async function syncAcademyCurriculum(
+  mode: AcademyCurriculumSyncMode = "insert-only",
+): Promise<AcademyCurriculumSyncResult> {
   const audit = auditAcademyCurriculum(LESSON_PATHWAYS, LESSON_UNITS);
   if (audit.summary.errors > 0) {
     throw new Error(
@@ -66,6 +83,24 @@ export async function syncAcademyCurriculum(): Promise<AcademyCurriculumSyncResu
   const db = await getDb();
   if (!db) {
     throw new Error("Academy curriculum sync requires a database connection");
+  }
+
+  if (mode === "insert-only") {
+    const [existingPathways, existingLessons] = await Promise.all([
+      db
+        .select({ slug: lessonPathways.slug })
+        .from(lessonPathways)
+        .where(inArray(lessonPathways.slug, LESSON_PATHWAYS.map((item) => item.slug))),
+      db
+        .select({ slug: lessonUnits.slug })
+        .from(lessonUnits)
+        .where(inArray(lessonUnits.slug, LESSON_UNITS.map((item) => item.slug))),
+    ]);
+    if (existingPathways.length || existingLessons.length) {
+      throw new Error(
+        "Academy insert-only bootstrap refused to overwrite existing canonical curriculum. Inspect readiness first; use the explicit update-source-managed mode only for an approved curriculum release.",
+      );
+    }
   }
 
   for (const pathway of LESSON_PATHWAYS) {
@@ -229,14 +264,75 @@ export async function syncAcademyCurriculum(): Promise<AcademyCurriculumSyncResu
   return result;
 }
 
-let activeSync: Promise<AcademyCurriculumSyncResult> | null = null;
+let activeReadiness: Promise<AcademyCurriculumReadiness> | null = null;
 let completedVersion: string | null = null;
 
 /**
- * Lazily reconcile once per process. Concurrent student requests share the same
- * operation, avoiding duplicate seed races while retaining an explicit sync API
- * for controlled maintenance jobs.
+ * Read-only readiness inspection. Learner traffic must never publish or replace
+ * curriculum content as a side effect; publication is an explicit operator step.
  */
+export async function inspectAcademyCurriculumReadiness(): Promise<AcademyCurriculumReadiness> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Academy curriculum readiness requires a database connection");
+  }
+  const expectedPublished = LESSON_UNITS.filter((lesson) =>
+    isAcademyLessonFactuallyAccepted(lesson.slug),
+  );
+  const [pathwayRows, lessonRows] = await Promise.all([
+    db
+      .select({
+        slug: lessonPathways.slug,
+        curriculumVersion: lessonPathways.curriculumVersion,
+        isPublished: lessonPathways.isPublished,
+      })
+      .from(lessonPathways)
+      .where(inArray(lessonPathways.slug, LESSON_PATHWAYS.map((item) => item.slug))),
+    db
+      .select({
+        slug: lessonUnits.slug,
+        curriculumVersion: lessonUnits.curriculumVersion,
+        isPublished: lessonUnits.isPublished,
+      })
+      .from(lessonUnits)
+      .where(inArray(lessonUnits.slug, expectedPublished.map((item) => item.slug))),
+  ]);
+  const pathwaysBySlug = new Map(pathwayRows.map((row) => [row.slug, row]));
+  const lessonsBySlug = new Map(lessonRows.map((row) => [row.slug, row]));
+  const missingPathways = LESSON_PATHWAYS.filter(
+    (item) => !pathwaysBySlug.has(item.slug),
+  ).map((item) => item.slug);
+  const missingPublishedLessons = expectedPublished
+    .filter((item) => !lessonsBySlug.has(item.slug))
+    .map((item) => item.slug);
+  const stalePathways = pathwayRows
+    .filter(
+      (row) =>
+        !row.isPublished || row.curriculumVersion !== ACADEMY_CURRICULUM_VERSION,
+    )
+    .map((row) => row.slug);
+  const stalePublishedLessons = lessonRows
+    .filter(
+      (row) =>
+        !row.isPublished || row.curriculumVersion !== ACADEMY_CURRICULUM_VERSION,
+    )
+    .map((row) => row.slug);
+  return {
+    ready:
+      missingPathways.length === 0 &&
+      missingPublishedLessons.length === 0 &&
+      stalePathways.length === 0 &&
+      stalePublishedLessons.length === 0,
+    curriculumVersion: ACADEMY_CURRICULUM_VERSION,
+    expectedPathways: LESSON_PATHWAYS.length,
+    expectedPublishedLessons: expectedPublished.length,
+    missingPathways,
+    missingPublishedLessons,
+    stalePathways,
+    stalePublishedLessons,
+  };
+}
+
 export async function ensureAcademyCurriculum(): Promise<AcademyCurriculumSyncResult> {
   if (completedVersion === ACADEMY_CURRICULUM_VERSION) {
     return {
@@ -248,17 +344,30 @@ export async function ensureAcademyCurriculum(): Promise<AcademyCurriculumSyncRe
       validationWarnings: 0,
     };
   }
-  if (!activeSync) {
-    activeSync = syncAcademyCurriculum()
-      .then((result) => {
-        completedVersion = result.curriculumVersion;
-        return result;
+  if (!activeReadiness) {
+    activeReadiness = inspectAcademyCurriculumReadiness()
+      .then((readiness) => {
+        if (!readiness.ready) {
+          throw new Error(
+            `Academy curriculum ${ACADEMY_CURRICULUM_VERSION} is not published. Run the explicit academy:curriculum:bootstrap release command before serving learner traffic.`,
+          );
+        }
+        completedVersion = readiness.curriculumVersion;
+        return readiness;
       })
       .finally(() => {
-        activeSync = null;
+        activeReadiness = null;
       });
   }
-  return activeSync;
+  const readiness = await activeReadiness;
+  return {
+    curriculumVersion: readiness.curriculumVersion,
+    pathwaysProcessed: readiness.expectedPathways,
+    lessonsProcessed: readiness.expectedPublishedLessons,
+    archivedLessons: 0,
+    archivedPathways: 0,
+    validationWarnings: 0,
+  };
 }
 
 /** Resolve canonical lesson metadata from the published database curriculum. */

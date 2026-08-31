@@ -24,6 +24,7 @@ import { ArrowLeft, Save, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { Link } from "wouter";
+import { trackMeasurementEvent } from "@/analytics";
 
 const disciplines = [
   "Dressage",
@@ -85,6 +86,9 @@ function HorseFormContent() {
 
   const createMutation = trpc.horses.create.useMutation({
     onSuccess: (data) => {
+      trackMeasurementEvent("horse_record_created", {
+        record_type: "horse_profile",
+      });
       utils.horses.list.invalidate();
       utils.user.getDashboardStats.invalidate();
       toast.success("Horse added successfully!");

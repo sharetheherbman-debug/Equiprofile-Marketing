@@ -15,6 +15,7 @@ import {
   Zap,
   ShieldCheck,
 } from "lucide-react";
+import { trackMeasurementEvent } from "@/analytics";
 
 /* ------------------------------------------------------------------ */
 /*  Animation helper                                                   */
@@ -117,6 +118,10 @@ export default function Contact() {
       });
 
       if (!res.ok) throw new Error("Request failed");
+
+      trackMeasurementEvent("generate_lead", {
+        lead_source: "management_contact",
+      });
 
       toast.success("Message sent!", {
         description: "We'll get back to you as soon as possible.",

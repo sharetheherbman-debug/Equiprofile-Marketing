@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle, GraduationCap, Loader2, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { trackMeasurementEvent } from "@/analytics";
 
 function useInviteToken() {
   const params = new URLSearchParams(
@@ -36,6 +37,9 @@ export default function AcademyInviteAccept() {
     onSuccess: (data) => {
       const destination =
         data.role === "teacher" ? "/teacher-dashboard" : "/student-dashboard";
+      trackMeasurementEvent("academy_enrollment", {
+        enrollment_type: data.role,
+      });
       toast.success("Academy invitation accepted.");
       navigate(destination);
     },

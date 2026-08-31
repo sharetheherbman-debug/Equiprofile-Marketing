@@ -3,6 +3,7 @@ import { ArrowUpRight, CheckCircle2, Loader2, RefreshCw, ShieldCheck, XCircle } 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { trackMeasurementEvent } from "@/analytics";
 
 interface MarketingStatus {
   available: boolean;
@@ -62,6 +63,7 @@ export function MarketingConnectionCard() {
       if (!response.ok || !payload.redirect_url) {
         throw new Error("Marketing is temporarily unavailable. Management is still fully available.");
       }
+      trackMeasurementEvent("marketing_opened", { entry_point: "owner_admin" });
       window.location.assign(String(payload.redirect_url));
     } catch {
       setError("Marketing is temporarily unavailable. Management is still fully available.");

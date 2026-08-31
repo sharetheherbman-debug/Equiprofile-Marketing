@@ -13,6 +13,7 @@ import {
   Layers,
   Loader2,
 } from "lucide-react";
+import { trackMeasurementEvent } from "@/analytics";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -85,6 +86,10 @@ export default function AcademyContact() {
       });
 
       if (!res.ok) throw new Error("Failed to send message");
+
+      trackMeasurementEvent("generate_lead", {
+        lead_source: "academy_contact",
+      });
 
       toast.success("Academy demo request sent", {
         description:

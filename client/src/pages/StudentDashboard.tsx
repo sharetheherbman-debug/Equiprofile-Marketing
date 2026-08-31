@@ -66,6 +66,7 @@ const S_CARD_CLASS =
 
 // ─── Re-export the ActiveView type from layout for internal use ──────────
 import type { StudentView as ActiveView } from "@/components/StudentDashboardLayout";
+import { trackMeasurementEvent } from "@/analytics";
 
 // ─── Sub-components ───────────────────────────────────────────
 
@@ -2723,18 +2724,39 @@ function LessonsView({
 
   const completedSlugs = new Set((progress ?? []).map((p) => p.lessonSlug));
 
+  useEffect(() => {
+    if (!selectedPathway) return;
+    trackMeasurementEvent("academy_course_view", {
+      course_id: selectedPathway,
+      pathway_id: selectedPathway,
+    });
+  }, [selectedPathway]);
+
   const handleComplete = async () => {
     if (!lessonDetail) return;
     const checks = (lessonDetail.knowledgeCheck ?? []) as Array<{
       correctIndex: number;
     }>;
-    await completeMutation.mutateAsync({
+    const result = await completeMutation.mutateAsync({
       lessonSlug: lessonDetail.slug,
       answers:
         checks.length > 0 && quizMode && quizSubmitted
           ? checks.map((_question, index) => quizAnswers[index])
           : undefined,
     });
+    if (!result.alreadyCompleted) {
+      trackMeasurementEvent("academy_lesson_complete", {
+        lesson_id: lessonDetail.slug,
+        pathway_id: lessonDetail.pathwaySlug,
+      });
+      if (typeof result.score === "number") {
+        trackMeasurementEvent("academy_assessment_complete", {
+          lesson_id: lessonDetail.slug,
+          score: result.score,
+          question_count: result.quizTotal ?? checks.length,
+        });
+      }
+    }
     utils.student.getLessonProgress.invalidate();
   };
 

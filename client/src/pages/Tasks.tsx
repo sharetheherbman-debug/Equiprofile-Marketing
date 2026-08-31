@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
 import { downloadCSV } from "@/lib/csvDownload";
 import { PageHeader } from "@/components/PageHeader";
+import { trackMeasurementEvent } from "@/analytics";
 
 function TasksContent() {
   const utils = trpc.useUtils();
@@ -115,6 +116,10 @@ function TasksContent() {
 
   const createMutation = trpc.tasks.create.useMutation({
     onSuccess: async () => {
+      trackMeasurementEvent("management_task_created", {
+        task_type: formData.taskType,
+        recurring: formData.isRecurring,
+      });
       setIsCreateOpen(false);
       resetForm();
       await utils.tasks.list.invalidate();

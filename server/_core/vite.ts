@@ -22,6 +22,13 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 import { getGeneratedStorageRoot } from "./storage/runtimeFileStorage";
+import {
+  getPublicOrigins,
+  injectSeoHtml,
+  resolveCanonicalRedirect,
+  sendRobots,
+  sendSitemap,
+} from "./acquisitionSeo";
 
 // ── Hostname detection ─────────────────────────────────────────────────────
 
@@ -134,6 +141,17 @@ export async function setupVite(app: Express, server: Server) {
     appType: "custom",
   });
 
+  app.get(["/robots.txt", "/sitemap.xml"], (req, res) => {
+    const detected = getSiteModeFromRequest(req.hostname || "");
+    const origins = getPublicOrigins();
+    if (detected === "school") {
+      return res.redirect(308, `${origins.academy}${req.path}`);
+    }
+    return req.path === "/robots.txt"
+      ? sendRobots(req, res, detected)
+      : sendSitemap(req, res, detected);
+  });
+
   app.use(vite.middlewares);
 
   // SPA fallback for development — serve index.html for non-static routes
@@ -156,6 +174,13 @@ export async function setupVite(app: Express, server: Server) {
     // selects that root; without it, host detection makes local product modes
     // observable and testable. Legacy School maps to Academy compatibility.
     const devSite = getDevelopmentFrontendMode(req.hostname || "");
+    const detectedSite = getSiteModeFromRequest(req.hostname || "");
+    const redirect = resolveCanonicalRedirect(
+      detectedSite,
+      req.path,
+      getPublicOrigins(),
+    );
+    if (redirect) return res.redirect(308, redirect);
     const clientTemplate = path.resolve(
       import.meta.dirname,
       "../..",
@@ -173,7 +198,14 @@ export async function setupVite(app: Express, server: Server) {
         );
 
         const rawPage = await vite.transformIndexHtml(url, template);
-        res.status(200).set({ "Content-Type": "text/html" }).end(rawPage);
+        const rendered = injectSeoHtml(rawPage, devSite, req.path);
+        res
+          .status(rendered.resolution.status)
+          .set({
+            "Content-Type": "text/html",
+            "X-Robots-Tag": rendered.resolution.robots,
+          })
+          .end(rendered.html);
       } catch (e) {
         vite.ssrFixStacktrace(e as Error);
         next(e);
@@ -203,11 +235,22 @@ export function serveStatic(app: Express, options: StaticServingOptions = {}) {
     academy: path.resolve(baseDist, "academy"),
     shop: path.resolve(baseDist, "shop"),
   };
+  const publicOrigins = getPublicOrigins();
   const academyPublicOrigin = (
     options.academyPublicOrigin ||
     process.env.ACADEMY_PUBLIC_ORIGIN ||
-    "https://academy.equiprofile.online"
+    publicOrigins.academy
   ).replace(/\/$/, "");
+
+  app.get(["/robots.txt", "/sitemap.xml"], (req, res) => {
+    const siteMode = getSiteModeFromRequest(req.hostname || "");
+    if (siteMode === "school") {
+      return res.redirect(308, `${academyPublicOrigin}${req.path}`);
+    }
+    return req.path === "/robots.txt"
+      ? sendRobots(req, res, siteMode)
+      : sendSitemap(req, res, siteMode);
+  });
 
   // Serve generated media assets at /media/generated/*
   // STORAGE_ROOT defaults to /var/equiprofile/storage (override: EQUIPROFILE_STORAGE_ROOT)
@@ -314,6 +357,12 @@ export function serveStatic(app: Express, options: StaticServingOptions = {}) {
     if (siteMode === "school") {
       return res.redirect(308, `${academyPublicOrigin}${req.originalUrl || "/"}`);
     }
+    const canonicalRedirect = resolveCanonicalRedirect(
+      siteMode,
+      req.path,
+      publicOrigins,
+    );
+    if (canonicalRedirect) return res.redirect(308, canonicalRedirect);
     return staticFrontends[siteMode](req, res, next);
   });
 
@@ -367,6 +416,13 @@ export function serveStatic(app: Express, options: StaticServingOptions = {}) {
       return res.status(503).type("text/plain").send("Frontend temporarily unavailable");
     }
 
-    res.sendFile(indexPath);
+    fs.promises
+      .readFile(indexPath, "utf8")
+      .then((template) => {
+        const rendered = injectSeoHtml(template, siteMode, req.path);
+        res.setHeader("X-Robots-Tag", rendered.resolution.robots);
+        res.status(rendered.resolution.status).type("html").send(rendered.html);
+      })
+      .catch((error) => next(error));
   });
 }

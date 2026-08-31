@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useLocation } from "wouter";
 import { useState, FormEvent } from "react";
+import { trackMeasurementEvent } from "@/analytics";
 import {
   Loader2,
   ArrowLeft,
@@ -207,6 +208,8 @@ export default function Register() {
         setIsLoading(false);
         return;
       }
+
+      trackMeasurementEvent("sign_up", { method: "email" });
 
       // New flow: backend returns requiresVerification=true, show verification screen
       if (data.requiresVerification) {

@@ -177,7 +177,11 @@ async function startServer() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "https://www.googletagmanager.com",
+          ],
           styleSrc: [
             "'self'",
             "'unsafe-inline'",
@@ -185,7 +189,14 @@ async function startServer() {
           ],
           fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
           imgSrc: ["'self'", "data:", "https:", "blob:"],
-          connectSrc: ["'self'"],
+          connectSrc: [
+            "'self'",
+            "https://www.googletagmanager.com",
+            "https://www.google-analytics.com",
+            "https://region1.google-analytics.com",
+            "https://www.googleadservices.com",
+            "https://googleads.g.doubleclick.net",
+          ],
           frameAncestors: ["'self'"],
           baseUri: ["'self'"],
           formAction: ["'self'"],

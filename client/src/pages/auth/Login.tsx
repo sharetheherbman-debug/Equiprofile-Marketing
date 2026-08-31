@@ -23,6 +23,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { AuthLayout } from "@/components/AuthLayout";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackMeasurementEvent } from "@/analytics";
 
 /**
  * Login page
@@ -126,6 +127,8 @@ export default function Login() {
         setIsLoading(false);
         return;
       }
+
+      trackMeasurementEvent("login", { method: "email" });
 
       // Redirect — honour ?redirect= (e.g. from stable invite link), otherwise go to role-correct dashboard
       if (postLoginUrl) {

@@ -30,8 +30,10 @@
     "build:server": "node scripts/build-target.mjs server",
     "build:fingerprint": "node scripts/build-fingerprint.mjs",
     "acceptance:management": "node scripts/management-browser-acceptance.mjs",
+    "acceptance:acquisition": "vitest run server/acquisitionSeo.test.ts client/src/analytics.test.ts --pool=forks --no-file-parallelism --maxWorkers=1",
     "academy:factual:evidence": "tsx scripts/generate-academy-factual-evidence.ts",
-    "academy:factual:audit": "tsx scripts/audit-academy-factual-evidence.ts"
+    "academy:factual:audit": "tsx scripts/audit-academy-factual-evidence.ts",
+    "academy:curriculum:bootstrap": "tsx scripts/bootstrap-academy-curriculum.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.984.0",

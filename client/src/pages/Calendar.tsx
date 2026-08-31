@@ -56,6 +56,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useRealtimeModule } from "@/hooks/useRealtime";
+import { trackMeasurementEvent } from "@/analytics";
 import { PageHeader } from "@/components/PageHeader";
 
 const EVENT_TYPE_COLORS: Record<string, string> = {
@@ -194,6 +195,9 @@ export default function CalendarPage() {
 
   const createEvent = trpc.calendar.createEvent.useMutation({
     onSuccess: () => {
+      trackMeasurementEvent("management_calendar_item_created", {
+        item_type: newEvent.eventType,
+      });
       toast.success("Event created");
       setIsAddDialogOpen(false);
       setNewEvent({ ...EMPTY_FORM });

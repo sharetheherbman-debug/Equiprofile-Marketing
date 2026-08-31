@@ -87,10 +87,20 @@ describe("production host serving", () => {
   it("serves the correct product shell for each canonical host", async () => {
     await expect(request(server, "equiprofile.online", "/dashboard"))
       .resolves.toMatchObject({ status: 200, body: expect.stringContaining("management-index") });
-    await expect(request(server, "academy.equiprofile.online", "/courses"))
+    await expect(request(server, "academy.equiprofile.online", "/student-dashboard"))
       .resolves.toMatchObject({ status: 200, body: expect.stringContaining("academy-index") });
-    await expect(request(server, "shop.equiprofile.online", "/catalogue"))
+    await expect(request(server, "shop.equiprofile.online", "/"))
       .resolves.toMatchObject({ status: 200, body: expect.stringContaining("shop-index") });
+  });
+
+  it("returns crawler-safe status and X-Robots behaviour", async () => {
+    const privateRoute = await request(server, "equiprofile.online", "/horses/42");
+    expect(privateRoute.status).toBe(200);
+    expect(privateRoute.headers["x-robots-tag"]).toBe("noindex, nofollow, noarchive");
+
+    const unknownRoute = await request(server, "equiprofile.online", "/not-a-real-page");
+    expect(unknownRoute.status).toBe(404);
+    expect(unknownRoute.headers["x-robots-tag"]).toBe("noindex, nofollow, noarchive");
   });
 
   it("keeps static assets isolated to the selected host build", async () => {
@@ -102,6 +112,20 @@ describe("production host serving", () => {
       .resolves.toMatchObject({ status: 404 });
     await expect(request(server, "shop.equiprofile.online", "/academy-assets/academy.js"))
       .resolves.toMatchObject({ status: 404 });
+  });
+
+  it("serves dynamic host-aware robots and sitemap endpoints", async () => {
+    const robots = await request(server, "equiprofile.online", "/robots.txt");
+    expect(robots.status).toBe(200);
+    expect(robots.headers["content-type"]).toContain("text/plain");
+    expect(robots.body).toContain("Disallow: /dashboard");
+
+    const sitemap = await request(server, "academy.equiprofile.online", "/sitemap.xml");
+    expect(sitemap.status).toBe(200);
+    expect(sitemap.headers["content-type"]).toContain("application/xml");
+    expect(sitemap.body).toContain("https://academy.equiprofile.online/academy");
+    expect(sitemap.body).not.toContain("student-dashboard");
+    expect(sitemap.body).not.toContain("/school");
   });
 
   it("redirects legacy School to canonical Academy without a fourth frontend", async () => {
