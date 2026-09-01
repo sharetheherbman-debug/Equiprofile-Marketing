@@ -215,7 +215,7 @@ describe("launch-critical routing boundaries", () => {
     expect(dashboardRoute).toContain("<ResolvedDashboard />");
   });
 
-  it("keeps the owner-only Marketing launcher and signed standalone SSO route intact", () => {
+  it("keeps controlled Marketing access and the signed standalone SSO route intact", () => {
     const connector = fs.readFileSync(
       path.resolve(process.cwd(), "server/marketingConnector.ts"),
       "utf8",
@@ -235,7 +235,9 @@ describe("launch-critical routing boundaries", () => {
     expect(api).toContain("registerMarketingConnectorRoutes(apiRouter)");
     expect(connector).toContain('router.post("/admin/marketing/sso"');
     expect(connector).toContain('context.user.role !== "admin"');
-    expect(connector).toContain("signedInEmail !== ownerEmail");
+    expect(connector).toContain(
+      "if (!isPrimaryOwner && !hasDelegatedMarketingAccess)",
+    );
     expect(connector).toContain('"X-Application-Signature"');
     expect(connector).toContain('"/application-connectors/sso/issue"');
     expect(connector).toContain(
