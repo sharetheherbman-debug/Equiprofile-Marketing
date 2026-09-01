@@ -12,12 +12,14 @@ import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { registerMarketingConnectorRoutes } from "./marketingConnector";
 import { registerAdminAccessRoutes } from "./adminAccessApi";
+import { registerBillingServiceRoutes } from "./billingServiceConnector";
 
 const apiRouter = Router();
 
 // Browser-session routes are registered before the public API-key guard.
 registerMarketingConnectorRoutes(apiRouter);
 registerAdminAccessRoutes(apiRouter);
+registerBillingServiceRoutes(apiRouter);
 
 // Middleware to verify API key
 async function verifyApiKey(req: Request, res: Response, next: NextFunction) {
@@ -261,7 +263,7 @@ apiRouter.get(
 apiRouter.get("/competitions/:horseId", async (req: Request, res: Response) => {
   try {
     const userId = (req as any).apiUserId;
-    const horseId = parseInt(req.params.horseId);
+    const horseId = parseInt(req.params.id);
 
     if (isNaN(horseId)) {
       return res.status(400).json({ error: "Invalid horse ID" });
