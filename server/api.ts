@@ -11,11 +11,13 @@ import {
 import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { registerMarketingConnectorRoutes } from "./marketingConnector";
+import { registerAdminAccessRoutes } from "./adminAccessApi";
 
 const apiRouter = Router();
 
-// Browser-session admin routes are registered before the public API-key guard.
+// Browser-session routes are registered before the public API-key guard.
 registerMarketingConnectorRoutes(apiRouter);
+registerAdminAccessRoutes(apiRouter);
 
 // Middleware to verify API key
 async function verifyApiKey(req: Request, res: Response, next: NextFunction) {
@@ -237,7 +239,7 @@ apiRouter.get(
         return res.status(403).json({ error: "Access denied" });
       }
 
-      const sessions = await dbInstance
+      const records = await dbInstance
         .select()
         .from(trainingSessions)
         .where(eq(trainingSessions.horseId, horseId))
@@ -245,8 +247,8 @@ apiRouter.get(
 
       res.json({
         success: true,
-        data: sessions,
-        count: sessions.length,
+        data: records,
+        count: records.length,
       });
     } catch (error) {
       console.error("Error fetching training sessions:", error);
