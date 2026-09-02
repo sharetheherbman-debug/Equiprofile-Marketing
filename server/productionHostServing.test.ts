@@ -144,4 +144,19 @@ describe("production host serving", () => {
     expect(api.headers["content-type"]).toContain("application/json");
     expect(api.body).toContain('"error":"Not found"');
   });
+
+  it.each([
+    "/wp-config.php",
+    "/config.php",
+    "/admin.php",
+    "/.env",
+    "/.git/config",
+    "/config/database.yml",
+    "/random-export.csv",
+  ])("returns a hard non-HTML 404 for file and sensitive probes: %s", async (probe) => {
+    const response = await request(server, "equiprofile.online", probe);
+    expect(response.status).toBe(404);
+    expect(response.body).not.toContain("management-index");
+    expect(response.headers["content-type"]).not.toContain("text/html");
+  });
 });

@@ -556,7 +556,7 @@ export default function SchoolPricing() {
                   size="lg"
                   className="bg-white text-[#1e3a5f] hover:bg-white/90 text-base px-8 py-6 rounded-xl font-semibold shadow-lg"
                 >
-                  Book Your Free Demo
+                  Contact Us
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>

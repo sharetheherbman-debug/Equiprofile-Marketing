@@ -15,9 +15,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
 import { ProtectedRoute, StableRoute } from "@/components/ProtectedRoute";
-import { SalesChatWidget } from "@/components/SalesChatWidget";
 import { CookieConsent } from "@/components/CookieConsent";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { getUIVersion } from "@/config/uiVersion";
 
 // Public EquiProfile product pages
@@ -482,8 +480,6 @@ function ManagementApp() {
           <TooltipProvider>
             <Toaster />
             <ManagementRouter />
-            <SalesChatWidget />
-            <PWAInstallPrompt />
             <CookieConsent />
           </TooltipProvider>
         </AdminViewProvider>

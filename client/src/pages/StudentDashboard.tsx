@@ -3383,7 +3383,7 @@ function LessonsView({
                     )}
                     {pwLessons.length === 0 && (
                       <span className="text-xs text-gray-400 italic">
-                        Coming soon
+                        No published lessons yet
                       </span>
                     )}
                   </div>

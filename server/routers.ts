@@ -515,7 +515,7 @@ function parseJsonSafe<T>(value: unknown, fallback: T): T {
   }
 }
 
-const SUPPORTED_AI_PROVIDERS = ["genx", "huggingface", "qwen"] as const;
+const SUPPORTED_AI_PROVIDERS = ["genx"] as const;
 
 function extractOutputText(output: unknown): string {
   if (typeof output === "string") return output;
@@ -747,7 +747,6 @@ function buildMarketingDraftContent(input: {
 
 const PROVIDER_BASE_URL_SETTING_KEYS = new Set([
   "genx_base_url",
-  "qwen_base_url",
 ]);
 const PROVIDER_MODEL_SETTING_KEYS = new Set([
   "genx_model",
@@ -761,79 +760,10 @@ const PROVIDER_MODEL_SETTING_KEYS = new Set([
   "genx_audio_model",
   "genx_tts_model",
   "genx_vision_model",
-  "qwen_model",
-  "qwen_text_model",
-  "qwen_vision_model",
-  "dashscope_wan_text_to_video_model",
-  "dashscope_wan_image_to_video_model",
-  "dashscope_image_model",
-  "dashscope_audio_model",
-  "qwen_image_model",
-  "qwen_video_model",
-  "qwen_audio_model",
-  "qwen_embedding_model",
-  "hf_use_default_text_generation",
-  "hf_use_default_text_to_image",
-  "hf_use_default_text_to_video",
-  "hf_use_default_text_to_speech",
-  "hf_use_default_automatic_speech_recognition",
-  "hf_use_default_image_to_text",
-  "hf_use_default_feature_extraction",
-  "hf_use_default_text_classification",
-  "hf_use_default_zero_shot_classification",
-  "hf_task_text_generation_model",
-  "hf_task_text_generation_models",
-  "hf_task_text_generation_fallbacks",
-  "hf_task_text_to_image_fallbacks",
-  "hf_task_text_to_video_fallbacks",
-  "hf_task_text_to_speech_fallbacks",
-  "hf_task_automatic_speech_recognition_model",
-  "hf_task_automatic_speech_recognition_models",
-  "hf_task_automatic_speech_recognition_fallbacks",
-  "hf_task_image_to_text_model",
-  "hf_task_image_to_text_models",
-  "hf_task_image_to_text_fallbacks",
-  "hf_task_feature_extraction_model",
-  "hf_task_feature_extraction_models",
-  "hf_task_feature_extraction_fallbacks",
-  "hf_task_text_classification_model",
-  "hf_task_text_classification_models",
-  "hf_task_text_classification_fallbacks",
-  "hf_task_zero_shot_classification_model",
-  "hf_task_zero_shot_classification_models",
-  "hf_task_zero_shot_classification_fallbacks",
-  "hf_task_text_to_image_model",
-  "hf_task_text_to_image_models",
-  "hf_task_text_to_video_model",
-  "hf_task_text_to_video_models",
-  "hf_task_image_to_video_model",
-  "hf_task_image_to_video_models",
-  "hf_task_avatar_video_model",
-  "hf_task_avatar_video_models",
-  "hf_task_text_to_speech_model",
-  "hf_task_text_to_speech_models",
-  "hf_task_speech_to_text_model",
-  "hf_task_speech_to_text_models",
-  "hf_task_image_captioning_model",
-  "hf_task_image_captioning_models",
-  "hf_task_embeddings_model",
-  "hf_task_embeddings_models",
-  "hf_task_moderation_model",
-  "hf_task_moderation_models",
-  "hf_task_classification_model",
-  "hf_task_classification_models",
-  "hf_task_copywriting_model",
-  "hf_task_copywriting_models",
-  "hf_task_chat_model",
-  "hf_task_chat_models",
 ]);
 const PROVIDER_SECRET_SETTING_KEYS = new Set([
   "genx_api_key",
-  "huggingface_api_key",
-  "qwen_api_key",
   "marketing_genx_api_key",
-  "marketing_huggingface_api_key",
-  "marketing_qwen_api_key",
   "marketing_pexels_api_key",
   "marketing_pixabay_api_key",
   "equiprofile_ai_genx_api_key",
@@ -841,22 +771,13 @@ const PROVIDER_SECRET_SETTING_KEYS = new Set([
 
 const MARKETING_PROVIDER_KEY_ALIASES = {
   genx: ["marketing_genx_api_key", "genx_api_key"] as const,
-  huggingface: [
-    "marketing_huggingface_api_key",
-    "huggingface_api_key",
-  ] as const,
-  qwen: ["marketing_qwen_api_key", "qwen_api_key"] as const,
   pexels: ["marketing_pexels_api_key"] as const,
   pixabay: ["marketing_pixabay_api_key"] as const,
 } as const;
 
 const MARKETING_PROVIDER_SAVE_KEY_MAP: Record<string, string> = {
   genx_api_key: "marketing_genx_api_key",
-  qwen_api_key: "marketing_qwen_api_key",
-  huggingface_api_key: "marketing_huggingface_api_key",
   marketing_genx_api_key: "marketing_genx_api_key",
-  marketing_qwen_api_key: "marketing_qwen_api_key",
-  marketing_huggingface_api_key: "marketing_huggingface_api_key",
   marketing_pexels_api_key: "marketing_pexels_api_key",
   marketing_pixabay_api_key: "marketing_pixabay_api_key",
 };
@@ -1133,16 +1054,12 @@ export const appRouter = router({
           };
         }
 
-        // Normal AI chat processing
-        if (!(await isAIConfigured())) {
-          return {
-            role: "assistant" as const,
-            status: "unavailable" as const,
-            content: "The AI assistant is currently unavailable while its service configuration is completed. Your horses, tasks and records have not been changed.",
-          };
-        }
-
         try {
+          // Keep configuration resolution inside the guarded provider path so a
+          // transient runtime lookup failure can never escape as a raw tRPC 500.
+          if (!(await isAIConfigured())) {
+            return unavailableManagementAiResponse();
+          }
           const [horsesForAssistant, dueCare, dueTasks, recentTraining] = await Promise.all([
             db.getHorsesByUserId(ctx.user.id),
             db.getUpcomingReminders(ctx.user.id, 14),
@@ -4634,16 +4551,6 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         MARKETING_PROVIDER_KEY_ALIASES.genx,
         "GENX_API_KEY",
       );
-      const marketingHfKey = pickSettingValue(
-        stored,
-        MARKETING_PROVIDER_KEY_ALIASES.huggingface,
-        "HUGGINGFACE_API_KEY",
-      );
-      const marketingQwenKey = pickSettingValue(
-        stored,
-        MARKETING_PROVIDER_KEY_ALIASES.qwen,
-        "QWEN_API_KEY",
-      );
       const marketingPexelsKey = pickSettingValue(
         stored,
         MARKETING_PROVIDER_KEY_ALIASES.pexels,
@@ -4652,6 +4559,35 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         stored,
         MARKETING_PROVIDER_KEY_ALIASES.pixabay,
       );
+
+      return {
+        genx: {
+          provider: "genx" as const,
+          configured: !!marketingGenxKey,
+          keyMasked: marketingGenxKey ? maskProviderSecret(marketingGenxKey) : null,
+          settings: {
+            genx_base_url: getVal("genx_base_url", "GENX_BASE_URL"),
+            genx_default_model: getVal("genx_default_model", "GENX_DEFAULT_MODEL"),
+            genx_model: getVal("genx_model", "GENX_MODEL"),
+            genx_text_model: getVal("genx_text_model", "GENX_TEXT_MODEL"),
+            genx_strategy_model: getVal("genx_strategy_model", "GENX_STRATEGY_MODEL"),
+            genx_image_model: getVal("genx_image_model", "GENX_IMAGE_MODEL"),
+            genx_video_model: getVal("genx_video_model", "GENX_VIDEO_MODEL"),
+            genx_avatar_model: getVal("genx_avatar_model", "GENX_AVATAR_MODEL"),
+            genx_voice_model: getVal("genx_voice_model", "GENX_VOICE_MODEL"),
+            genx_audio_model: getVal("genx_audio_model", "GENX_AUDIO_MODEL"),
+            genx_tts_model: getVal("genx_tts_model", "GENX_TTS_MODEL"),
+            genx_vision_model: getVal("genx_vision_model", "GENX_VISION_MODEL"),
+          },
+        },
+        pexels: { provider: "pexels" as const, configured: !!marketingPexelsKey, keyMasked: marketingPexelsKey ? maskProviderSecret(marketingPexelsKey) : null, settings: {} },
+        pixabay: { provider: "pixabay" as const, configured: !!marketingPixabayKey, keyMasked: marketingPixabayKey ? maskProviderSecret(marketingPixabayKey) : null, settings: {} },
+      };
+
+      /* Historical response code retained below for migration archaeology only;
+         it is unreachable and must not be exposed by the production route. */
+      const marketingHfKey = "";
+      const marketingQwenKey = "";
 
       return {
         genx: {
@@ -4988,6 +4924,12 @@ Format your response as JSON with keys: recommendation, explanation, precautions
     testAIProviderConnection: adminUnlockedProcedure
       .input(z.object({ provider: z.enum(["genx", "huggingface", "qwen"]) }))
       .mutation(async ({ input }) => {
+        if (input.provider !== "genx") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Core AI is GenX-only.",
+          });
+        }
         if (input.provider === "genx") {
           const conn = await testRawGenXConnection(12_000);
           const discovery =
@@ -5196,6 +5138,9 @@ Format your response as JSON with keys: recommendation, explanation, precautions
         }),
       )
       .mutation(async ({ input }) => {
+        if (input.provider !== "genx") {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Core AI is GenX-only." });
+        }
         const { executeAITask: execTask } = await import("./_core/ai");
         const taskEnum = input.task as import("./_core/ai/types").AITask;
         const startedAt = Date.now();

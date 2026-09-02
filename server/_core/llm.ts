@@ -1,6 +1,9 @@
 // Copyright (c) 2025-2026 Amarktai Network. All rights reserved.
-import { executeChatTask, isChatSetupNeeded } from "./ai/chatOrchestrator";
-import { getProviderHealth } from "./ai";
+import {
+  executeChatTask,
+  isChatProviderConfigured,
+  isChatSetupNeeded,
+} from "./ai/chatOrchestrator";
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -158,8 +161,10 @@ const extractTextContent = (output: unknown): string => {
 };
 
 export async function isAIConfigured(): Promise<boolean> {
-  const health = await getProviderHealth();
-  return health.some((item) => item.provider === "genx" && item.configured);
+  // Text chat has one configuration truth: the GenX chat orchestrator.
+  // Do not make customer chat depend on media catalogue discovery or the
+  // health of legacy providers that this path is forbidden to call.
+  return isChatProviderConfigured();
 }
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {

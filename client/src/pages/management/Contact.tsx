@@ -60,9 +60,9 @@ const benefits = [
   },
   {
     icon: ShieldCheck,
-    title: "Demo Available",
+    title: "Plans and product help",
     description:
-      "Want to see the platform before committing? We're happy to arrange a personalised walkthrough.",
+      "Ask about features, plans or getting started and the EquiProfile team will help.",
   },
   {
     icon: MessageSquare,
@@ -155,7 +155,7 @@ export default function Contact() {
               <span className="text-[#c5a55a]">hear from you</span>
             </>
           }
-          subtitle="Have a question, need a demo, or just want to say hello? Fill in the form and we'll be in touch quickly."
+          subtitle="Have a product question or just want to say hello? Fill in the form and we'll be in touch."
           minHeight="min-h-[500px] md:min-h-[560px]"
         />
 

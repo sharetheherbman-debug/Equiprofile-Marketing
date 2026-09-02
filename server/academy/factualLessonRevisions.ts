@@ -47,56 +47,48 @@ function reviewedBoundaryLesson(input: BoundaryLesson): FactualLessonRevision {
       `Record relevant facts without exceeding the learner role: ${learnerRole}`,
       `Use the current plan and refer decisions to ${decisionOwner}`,
     ],
-    content: `## What this lesson establishes
+    content: `## Evidence for ${title}
 
-${evidence} This lesson turns that reviewed material into a safe awareness and communication workflow. The learner role is limited to ${learnerRole}. Completion is not a practical qualification, clinical assessment, fitting approval, coaching licence or authority to change an individual plan.
+${evidence}
 
-The central distinction is between an observation and a decision. An observation states what was directly seen, heard, reported or recorded, with the relevant time and context. A decision interprets those facts, selects an intervention or declares something suitable, safe, healthy, fitted or complete. In this topic, those decisions belong to ${decisionOwner}. A confident guess does not become evidence because it is written in a lesson record.
+For **${title}**, use that evidence to ${learnerRole}. Completing this lesson shows that the learner can recognise the topic and communicate within scope; it does not confer a practical qualification or transfer decisions away from ${decisionOwner}.
 
-## Prepare from the current plan
+## What to notice and record
 
-Before participating, identify the responsible person, the current written or verbal instruction, the individual horse or participant, the authorised area, equipment and communication route, and the stop or emergency process. Check that the activity is within the learner's assigned role. Conditions, people, horses, equipment and rules can change, so an old routine, internet diagram or memory of another situation is not authority for today's activity.
+The observation brief for ${title} is: ${observations}. Put those topic-specific events in time order and identify whether each detail was witnessed, reported or taken from the current authorised record. Compare it only with the baseline that applies to the horse, rider, equipment or setting involved. If the meaning is uncertain, write the uncertainty down instead of inventing a label, cause or promised outcome.
 
-Do not fill gaps with universal numbers, fixed schedules or assumed cause and effect. If required information, supervision, competence or equipment is missing, pause and ask. A truthful “not known” is safer than an invented answer. Personal information and records must remain in the approved system and be shared only with people who need them for their role.
+Build a short ${title} handover with two headings: **Known facts** and **Questions for ${decisionOwner}**. Under the first, record what happened, when, where and under which instruction. Under the second, name the judgement that still needs the authorised decision owner. This division makes the evidence usable without pretending the learner has answered the unresolved question.
 
-## Observe and describe
+## Role and decision boundary
 
-Relevant factual observations for this lesson include ${observations}. Use neutral language: identify the subject, location, time, sequence and visible change. Separate a person's own report from what the learner directly witnessed. Preserve the original wording where it matters and avoid labels about motive, character, diagnosis or blame.
+During ${title}, the learner must not perform or recommend ${excluded}. The learner instead hands over the relevant ${title} evidence, confirms the instruction received and preserves the original factual entry if a later explanation changes the picture. When responsibility is unclear, the correct response is to pause and identify ${decisionOwner}; an unofficial solution would erase the very boundary this lesson is assessing.
 
-Compare only with an authorised individual baseline or current plan. A checklist can prompt observation, but it cannot prove comfort, fitness, competence, causation or absence of risk. One normal-looking sign does not cancel another concern. Do not provoke a response, repeat a difficult task, manipulate equipment, examine a body area or move closer merely to make the record more complete.
+## Applied ${title} exercise
 
-## Keep the decision with the right person
+${practice}
 
-${decisionOwner} reviews the individual facts, current standards and context. The learner supplies an accurate handover and follows the resulting instruction. The learner must not perform or recommend ${excluded}. Those exclusions matter because similar outward facts can have different causes and because an inappropriate intervention can increase risk or conceal a welfare, health, equipment, participation or safeguarding problem.
+Answer that ${title} exercise in four connected parts: identify the first relevant fact, state what remains unknown, name ${decisionOwner}, and give the safest next communication or authorised action. A passing response uses the supplied evidence rather than a generic routine, avoids diagnosis or blame, and makes the stop point unambiguous.
 
-If advice from two people appears inconsistent, stop and use the named escalation route rather than choosing the instruction that is easiest. Record who made the decision, what was authorised and what was actually done. Do not rewrite the earlier observation after a later explanation becomes available.
+## Stop point, handover and reflection
 
-## Stop, protect and escalate
+For ${title}, ${stopAndEscalate} Do not delay that topic-specific report merely to collect extra opinions. After the handover, monitor only the observations that are safe and expressly requested by ${decisionOwner}; if a relevant fact changes, add a new time-stamped entry instead of editing the earlier one.
 
-${stopAndEscalate} Protect people first, create space where appropriate, keep emergency access clear and contact the responsible route promptly. Do not delay an urgent report to collect extra measurements, images or opinions. Do not promise confidentiality, diagnosis, a particular outcome or a return time that the responsible professional has not given.
-
-After escalation, monitor only what is safe and requested. Follow case-specific instructions; generic treatment, exercise, equipment, confrontation or “try it once more” advice is outside this lesson. If the situation changes, report the new facts rather than assuming the original decision still applies.
-
-## Practise the boundary
-
-${practice} A strong response identifies the evidence source, states only the known facts, names the decision owner, records the instruction and explains what would trigger an immediate stop. A weak response invents a cause, applies a universal rule, acts outside authority or hides uncertainty.
-
-The intended outcome is disciplined participation: prepare, observe, report, follow the authorised decision and preserve a truthful record. That workflow is useful precisely because it respects the limits of written learning and keeps individual judgement with the competent person who can assess the real situation.`,
+Finish the ${title} lesson by writing one neutral handover phrase using ${observations}, one phrase that would overstep by attempting ${excluded}, and the real person or professional who fills the ${decisionOwner} role in your setting.`,
     keyPoints: [
       `${title} uses current individual context, not a universal recipe`,
       `The learner role is ${learnerRole}`,
       `Decisions remain with ${decisionOwner}`,
-      `Record observable facts, source, time, context and instruction without diagnosis or blame`,
-      `Missing information, changing conditions or concern requires pausing and escalation`,
+      `A ${title} record separates observable facts, source, time, context and instruction from diagnosis or blame`,
+      `Missing ${title} information, changing conditions or concern requires pausing and escalation to ${decisionOwner}`,
     ],
     safetyNote: `${stopAndEscalate} Do not perform or recommend ${excluded}. Stop if supervision, current instructions, suitable equipment or safe conditions are missing, and use the responsible professional or emergency route.`,
     practicalApplication: practice,
     commonMistakes: [
-      "Treating a checklist or old routine as proof of safety or suitability",
-      "Turning an observation into a diagnosis, motive or promised outcome",
-      `Taking a decision that belongs to ${decisionOwner}`,
-      "Continuing when authority, information, supervision or conditions are unclear",
-      "Editing the original factual record to match a later explanation",
+      `Treating a ${title} checklist or old routine as proof of current safety or suitability`,
+      `Turning the ${title} observations into a diagnosis, motive or promised outcome`,
+      `Taking the ${title} decision that belongs to ${decisionOwner}`,
+      `Continuing ${title} work when authority, information, supervision or conditions are unclear`,
+      `Editing the original ${title} record to match a later explanation`,
     ],
     knowledgeCheck: [
       {
@@ -111,7 +103,7 @@ The intended outcome is disciplined participation: prepare, observe, report, fol
         explanation: `The reviewed boundary limits learners to ${learnerRole}; individual decisions remain with ${decisionOwner}.`,
       },
       {
-        question: "What should a factual record separate?",
+        question: `What should a factual record for ${title} separate?`,
         options: [
           "Direct observation and reported information from interpretation and later decisions",
           "A diagnosis from the professional who might disagree",
@@ -124,7 +116,7 @@ The intended outcome is disciplined participation: prepare, observe, report, fol
       },
       {
         question:
-          "What should happen when required authority or information is missing?",
+          `What should happen in ${title} when required authority or information is missing?`,
         options: [
           "Pause and use the current responsible-person or professional escalation route",
           "Copy a procedure from another setting",

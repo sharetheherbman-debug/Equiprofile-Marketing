@@ -12,21 +12,20 @@ describe("providerCapabilities", () => {
     expect(categoryForTask("text_to_video")).toBe("text_to_video");
   });
 
-  it("ranks providers for copywriting with GenX first", async () => {
+  it("exposes GenX as the only copywriting provider", async () => {
     const ranked = await rankProvidersForCapability("copywriting");
-    expect(ranked[0]).toBe("genx");
-    expect(ranked).toContain("qwen");
+    expect(ranked).toEqual(["genx"]);
   });
 
-  it("resolves provider selection with fallback order", async () => {
+  it("resolves provider selection without vendor fallback", async () => {
     const selection = await resolveProviderSelectionForTask("text_to_image");
-    expect(selection.primaryProvider).toBeTruthy();
-    expect(selection.fallbackProviders.length).toBeGreaterThan(0);
+    expect(selection.primaryProvider).toBe("genx");
+    expect(selection.fallbackProviders).toEqual([]);
   });
 
   it("builds full provider registry with capability scores", async () => {
     const registry = await getProviderCapabilityRegistry();
     expect(registry.genx.capabilities.reasoning).toBeGreaterThan(0.5);
-    expect(registry.huggingface.capabilities.image_generation).toBeGreaterThan(0.5);
+    expect(registry.genx.capabilities.image_generation).toBeGreaterThan(0);
   });
 });

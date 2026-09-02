@@ -191,7 +191,7 @@ export async function scanBrandWebsite(input: {
     safeText
       .split(/[.!?]/)
       .map((line) => line.trim())
-      .filter((line) => /(offer|discount|trial|book|demo|launch|free)/i.test(line))
+      .filter((line) => /(offer|discount|trial|contact|launch|free)/i.test(line))
       .slice(0, 10),
   );
 

@@ -333,7 +333,7 @@ export default function SchoolAbout() {
             </h2>
             <p className="text-[#1e293b]/60 text-lg mb-8 max-w-2xl mx-auto">
               See how EquiProfile School can transform your equestrian education
-              with a free, personalised demo.
+              by creating an account or contacting our team.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link href="/contact">
@@ -341,7 +341,7 @@ export default function SchoolAbout() {
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg"
                 >
-                  Book a Free Demo
+                  Contact Us
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>

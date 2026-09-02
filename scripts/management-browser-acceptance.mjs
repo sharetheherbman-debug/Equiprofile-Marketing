@@ -436,9 +436,6 @@ async function withPage(
   const pageErrors = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
   try {
-    // The first Management request performs a production-sized Vite transform.
-    // Allow enough time on clean Windows/CI caches without weakening any UI
-    // assertion or hiding a failed HTTP response.
     const response = await page.goto(`${baseUrl}${route}`, {
       waitUntil: "domcontentloaded",
       timeout: 180000,
@@ -609,7 +606,7 @@ try {
   );
 
   await runCase(
-    "Billing renders current subscription surface on tablet",
+    "Billing renders current Management subscription surface on tablet",
     async () => {
       await withPage(
         {
@@ -618,8 +615,8 @@ try {
           viewport: { width: 820, height: 1180 },
         },
         async (page) => {
-          await expectVisible(page, "Billing & Subscription");
-          await expectVisible(page, "Current Plan");
+          await expectVisible(page, "Management Billing");
+          await expectVisible(page, "Current Management access");
           assert(page.url().endsWith("/billing"));
         },
       );

@@ -137,7 +137,7 @@ function ruleFallback(userMessage: string): string | null {
     return "EquiProfile has a 7-day free trial (no credit card needed!). After that, Pro is £10/month or £100/year (up to 5 horses), and Stable is £30/month or £300/year (up to 20 horses + team). Visit equiprofile.online/pricing for the full breakdown, or click 'Start Free Trial' to get going today!";
   }
 
-  if (/\b(trial|free|try|test|demo)\b/.test(lower)) {
+  if (/\b(trial|free|try|test|plans?|pricing)\b/.test(lower)) {
     return "Great news — EquiProfile offers a 7-day free trial with full access to ALL features for 1 horse. No credit card required. Sign up in seconds at equiprofile.online/register!";
   }
 

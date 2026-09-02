@@ -238,11 +238,11 @@ function OverviewView({
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-              Lesson Promotion Tools — Coming Soon
+              Learner communication
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              Lesson-promotion and learner communication tools are planned for
-              teachers with approval-first safeguards.
+              Use Messages, assignments and lesson feedback to support learners
+              between practical sessions.
             </p>
           </div>
         </div>

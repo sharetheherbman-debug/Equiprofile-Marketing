@@ -26,7 +26,7 @@ export default function StableLanding() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/register"><Button className="bg-[#c5a55a] text-[#0f1d2e] hover:bg-[#d4b468]">Start Stable Trial</Button></Link>
-            <Link href="/contact"><Button variant="outline">Book UK Demo</Button></Link>
+            <Link href="/contact"><Button variant="outline">Contact Us</Button></Link>
           </div>
         </div>
       </section>

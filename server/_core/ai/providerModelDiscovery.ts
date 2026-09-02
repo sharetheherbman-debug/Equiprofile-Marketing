@@ -1,7 +1,5 @@
 import { getRuntimeConfig } from "../../dynamicConfig";
 import { deriveGenXCapabilityFlags, discoverGenXModelCatalogue } from "./providers/genxProvider";
-import { resolveHuggingFaceTaskModelResolution } from "./providers/huggingFaceProvider";
-import { isQwenTaskExecutableViaCurrentRuntime, qwenUnsupportedTaskReason } from "./providers/qwenProvider";
 import {
   allowedTasksForGenXModel,
   compareCandidatesByTaskPolicy,
@@ -193,11 +191,7 @@ function tasksForCategories(provider: AIProviderName, modelId: string, categorie
     return allowedTasksForGenXModel(modelId);
   }
 
-  if (provider === "qwen") {
-    return tasks.filter((task) => isQwenTaskExecutableViaCurrentRuntime(task));
-  }
-
-  return Array.from(new Set(tasks));
+  return [];
 }
 
 function qualityTiersForModel(modelIdRaw: string, categories: CapabilityCategory[]): ProviderModelDescriptor["qualityTiers"] {
@@ -211,13 +205,7 @@ function qualityTiersForModel(modelIdRaw: string, categories: CapabilityCategory
 }
 
 function endpointForModel(provider: AIProviderName, task: AITask | null): ProviderModelDescriptor["endpointFamily"] {
-  if (provider === "huggingface") return "hf_inference";
   if (provider === "genx") return task && TEXT_TASKS.has(task) ? "openai_chat" : "genx_async_job";
-  if (provider === "qwen") {
-    if (task === "embeddings") return "dashscope_openai_embeddings";
-    if (task && isQwenTaskExecutableViaCurrentRuntime(task)) return "dashscope_openai_chat";
-    return "dashscope_native_media";
-  }
   return "unknown";
 }
 
@@ -247,14 +235,6 @@ function buildDescriptor(opts: {
       }
     }
   }
-  if (opts.provider === "qwen") {
-    for (const task of MEDIA_TASKS) {
-      if (!isQwenTaskExecutableViaCurrentRuntime(task)) {
-        unavailableReasonsByTask[task] = qwenUnsupportedTaskReason(task);
-      }
-    }
-  }
-
   return {
     id: opts.id,
     provider: opts.provider,
@@ -278,7 +258,7 @@ function scoreModelSuitability(modelIdRaw: string, categories: CapabilityCategor
   const modelId = modelIdRaw.toLowerCase();
   let score = 0.45;
 
-  if (modelId.includes("gpt-5") || modelId.includes("reasoner") || modelId.includes("qwen-plus")) score += 0.3;
+  if (modelId.includes("gpt-5") || modelId.includes("reasoner")) score += 0.3;
   if (modelId.includes("turbo") || modelId.includes("pro")) score += 0.15;
   if (categories.includes("text_to_video") || categories.includes("avatar_video")) score += 0.1;
   if (modelId.includes("schnell") || modelId.includes("mini")) score -= 0.05;
@@ -392,136 +372,6 @@ async function discoverGenXModels(timeoutMs = 12_000): Promise<ProviderModelDesc
   return Array.from(descriptors.values());
 }
 
-const HF_TASK_TO_CATEGORY: Partial<Record<AITask, CapabilityCategory>> = {
-  copywriting: "copywriting",
-  chat: "reasoning",
-  strategy: "strategy",
-  campaign_generation: "campaign_generation",
-  social_generation: "social_generation",
-  email_generation: "email_generation",
-  text_to_image: "image_generation",
-  image_edit: "image_editing",
-  image_to_video: "text_to_video",
-  text_to_video: "text_to_video",
-  avatar_video: "avatar_video",
-  text_to_speech: "text_to_speech",
-  speech_to_text: "speech_to_text",
-  image_captioning: "image_captioning",
-  embeddings: "embeddings",
-  moderation: "compliance_review",
-  classification: "analytics",
-  analytics: "analytics",
-};
-
-async function discoverHuggingFaceTaskModels(): Promise<ProviderModelDescriptor[]> {
-  const taskModels = await Promise.all(
-    Object.entries(HF_TASK_TO_CATEGORY).map(async ([task, category]) => {
-      if (!category) return null;
-      const resolution = await resolveHuggingFaceTaskModelResolution(task as AITask);
-      if (!resolution.models.length) return null;
-      return resolution.models.map((model) => {
-        const descriptor = buildDescriptor({
-          id: model,
-          provider: "huggingface",
-          source: resolution.source === "built_in_default" ? "default" : "task_config",
-          explicitTasks: [task as AITask],
-          routeReason: resolution.source === "built_in_default"
-            ? `Hugging Face built-in default model for ${task}`
-            : `Hugging Face task model configured for ${task}`,
-        });
-        descriptor.categories = Array.from(new Set([...descriptor.categories, category]));
-        descriptor.multimodal = isMultimodal(model, descriptor.categories);
-        descriptor.suitabilityScore = scoreModelSuitability(model, descriptor.categories);
-        return descriptor;
-      });
-    }),
-  );
-
-  const deduped = new Map<string, ProviderModelDescriptor>();
-  for (const itemGroup of taskModels) {
-    if (!itemGroup) continue;
-    for (const item of itemGroup) {
-      const existing = deduped.get(item.id);
-    if (!existing) {
-      deduped.set(item.id, item);
-      continue;
-    }
-    deduped.set(item.id, {
-      ...existing,
-      categories: Array.from(new Set([...existing.categories, ...item.categories])),
-      executableTasks: Array.from(new Set([...existing.executableTasks, ...item.executableTasks])),
-      suitabilityScore: Math.max(existing.suitabilityScore, item.suitabilityScore),
-      multimodal: existing.multimodal || item.multimodal,
-      qualityTiers: Array.from(new Set([...existing.qualityTiers, ...item.qualityTiers])),
-    });
-    }
-  }
-
-  return Array.from(deduped.values());
-}
-
-async function discoverQwenModels(): Promise<ProviderModelDescriptor[]> {
-  const keys: Array<{ task: AITask; setting: string; env: string }> = [
-    { task: "copywriting", setting: "qwen_text_model", env: "QWEN_TEXT_MODEL" },
-    { task: "strategy", setting: "qwen_text_model", env: "QWEN_TEXT_MODEL" },
-    { task: "campaign_generation", setting: "qwen_text_model", env: "QWEN_TEXT_MODEL" },
-    { task: "social_generation", setting: "qwen_text_model", env: "QWEN_TEXT_MODEL" },
-    { task: "email_generation", setting: "qwen_text_model", env: "QWEN_TEXT_MODEL" },
-    { task: "image_captioning", setting: "qwen_vision_model", env: "QWEN_VISION_MODEL" },
-    { task: "text_to_image", setting: "dashscope_image_model", env: "DASHSCOPE_IMAGE_MODEL" },
-    { task: "text_to_video", setting: "dashscope_wan_text_to_video_model", env: "DASHSCOPE_WAN_TEXT_TO_VIDEO_MODEL" },
-    { task: "image_to_video", setting: "dashscope_wan_image_to_video_model", env: "DASHSCOPE_WAN_IMAGE_TO_VIDEO_MODEL" },
-    { task: "text_to_speech", setting: "dashscope_audio_model", env: "DASHSCOPE_AUDIO_MODEL" },
-    { task: "text_to_image", setting: "qwen_image_model", env: "QWEN_IMAGE_MODEL" },
-    { task: "text_to_video", setting: "qwen_video_model", env: "QWEN_VIDEO_MODEL" },
-    { task: "text_to_speech", setting: "qwen_audio_model", env: "QWEN_AUDIO_MODEL" },
-    { task: "embeddings", setting: "qwen_embedding_model", env: "QWEN_EMBEDDING_MODEL" },
-    { task: "analytics", setting: "qwen_text_model", env: "QWEN_TEXT_MODEL" },
-  ];
-  const configured = await Promise.all(keys.map(async (entry) => ({
-    ...entry,
-    model: await getRuntimeConfig(entry.setting, entry.env),
-  })));
-  const baseModel = (await getRuntimeConfig("qwen_model", "QWEN_MODEL")) || "qwen-plus";
-  const models = [
-    { id: baseModel, task: "copywriting" as AITask, source: "fallback" as const },
-    ...configured
-      .filter((entry) => entry.model)
-      .map((entry) => ({ id: entry.model, task: entry.task, source: "task_config" as const })),
-  ];
-  const deduped = new Map<string, ProviderModelDescriptor>();
-  for (const model of models) {
-    const explicitTasks = isQwenTaskExecutableViaCurrentRuntime(model.task)
-      ? model.task === "copywriting"
-        ? ["chat", "copywriting", "strategy", "campaign_generation", "social_generation", "email_generation", "classification", "moderation", "analytics"] as AITask[]
-        : [model.task]
-      : [];
-    const descriptor = buildDescriptor({
-      id: model.id,
-      provider: "qwen",
-      source: model.source,
-      explicitTasks,
-      routeReason: explicitTasks.length
-        ? `Qwen ${model.task} model configured for executable OpenAI-compatible route`
-        : qwenUnsupportedTaskReason(model.task),
-    });
-    const existing = deduped.get(descriptor.id);
-    if (!existing) {
-      deduped.set(descriptor.id, descriptor);
-      continue;
-    }
-    deduped.set(descriptor.id, {
-      ...existing,
-      categories: Array.from(new Set([...existing.categories, ...descriptor.categories])),
-      executableTasks: Array.from(new Set([...existing.executableTasks, ...descriptor.executableTasks])),
-      qualityTiers: Array.from(new Set([...existing.qualityTiers, ...descriptor.qualityTiers])),
-      multimodal: existing.multimodal || descriptor.multimodal,
-      suitabilityScore: Math.max(existing.suitabilityScore, descriptor.suitabilityScore),
-    });
-  }
-  return Array.from(deduped.values());
-}
-
 export function resetProviderModelDiscoveryCacheForTests() {
   cachedDiscovery = null;
 }
@@ -532,10 +382,8 @@ export async function discoverProviderModels(forceRefresh = false): Promise<Prov
     return cachedDiscovery.value;
   }
 
-  // Core execution is GenX-only. Keep legacy provider keys in the snapshot for
-  // compatibility with diagnostics, but do not discover or configure them: eager
-  // fallback discovery would reintroduce disabled provider paths and can trigger
-  // unrelated runtime-config/database reads during startup and unit tests.
+  // GenX is the only executable provider. Empty legacy keys preserve the shape
+  // of historical telemetry snapshots without retaining alternate runtimes.
   const genx = await discoverGenXModels();
 
   const snapshot: ProviderModelDiscoverySnapshot = {
@@ -562,9 +410,11 @@ export function categoryForExecutableTask(task: AITask): CapabilityCategory {
 export async function resolveModelCandidatesForTask(task: AITask, forceRefresh = false): Promise<ProviderModelCandidate[]> {
   const snapshot = await discoverProviderModels(forceRefresh);
   const category = TASK_TO_CATEGORY[task];
-  const providerPreference: Record<AIProviderName, number> = TEXT_TASKS.has(task)
-    ? { genx: 100, qwen: 85, huggingface: 65 }
-    : { genx: 90, huggingface: 85, qwen: 60 };
+  const providerPreference: Record<AIProviderName, number> = {
+    genx: 100,
+    qwen: 0,
+    huggingface: 0,
+  };
 
   return (Object.values(snapshot.providers).flat() as ProviderModelDescriptor[])
     .filter((model) => model.executableTasks.includes(task))

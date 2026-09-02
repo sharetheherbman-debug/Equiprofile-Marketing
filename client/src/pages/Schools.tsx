@@ -330,7 +330,7 @@ export default function Schools() {
                     </Link>
                     <Link href="/contact">
                       <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 h-11 text-sm">
-                        Book a Demo
+                        Explore Academy
                       </Button>
                     </Link>
                   </div>

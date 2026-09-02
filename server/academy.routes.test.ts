@@ -171,22 +171,15 @@ describe("Academy guest and role route boundary", () => {
   });
 });
 
-describe("Academy TEST billing contract", () => {
+describe("Academy central billing contract", () => {
   const academyRouter = readRepoFile("server/academyRouter.ts");
   const bootstrap = readRepoFile("server/_core/index.ts");
   const academyBilling = readRepoFile("server/academy/billing.ts");
 
-  it("uses owner-authorized server-priced TEST checkout and a billing portal", () => {
-    expect(academyRouter).toContain(
-      "createBillingCheckout: academyOwnerProcedure",
-    );
-    expect(academyRouter).toContain("academyBillingConfig(");
-    expect(academyRouter).toContain("getAcademyStripe()");
-    expect(academyRouter).toContain('mode: "subscription"');
-    expect(academyRouter).toContain("subscription_data: { metadata }");
-    expect(academyRouter).toContain(
-      "createBillingPortal: academyOwnerProcedure",
-    );
+  it("does not expose the retired direct Academy checkout or portal", () => {
+    expect(academyRouter).not.toContain("createBillingCheckout:");
+    expect(academyRouter).not.toContain("createBillingPortal:");
+    expect(academyRouter).not.toContain("getAcademyStripe()");
     expect(academyRouter).not.toContain("STORE_STRIPE_SECRET_KEY");
   });
 

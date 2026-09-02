@@ -17,7 +17,7 @@ const templates: CampaignTemplate[] = [
     platformMix: ["Facebook", "Instagram", "Email"],
     deliverables: ["reels", "static_posts", "email_sequence"],
     schedulingLogic: "approval-first, weekday windows, launch-day burst",
-    ctaStyle: "book_demo",
+    ctaStyle: "contact_team",
     aiWorkflowChain: ["launch_campaign", "reel_generation", "email_campaign"],
   },
   {

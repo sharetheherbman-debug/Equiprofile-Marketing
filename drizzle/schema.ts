@@ -510,6 +510,23 @@ export const stripeEvents = mysqlTable("stripeEvents", {
   processedAt: timestamp("processedAt"),
 });
 
+// Signed, idempotent events received from the standalone Billing service.
+// Only hashes and non-secret identifiers are retained; connector credentials
+// and full payment payloads never enter this table.
+export const billingSyncEvents = mysqlTable("billingSyncEvents", {
+  id: int("id").autoincrement().primaryKey(),
+  applicationId: varchar("applicationId", { length: 80 }).notNull(),
+  eventId: varchar("eventId", { length: 160 }).notNull().unique(),
+  nonce: varchar("nonce", { length: 160 }).notNull().unique(),
+  product: varchar("product", { length: 32 }).notNull(),
+  externalUserId: int("externalUserId").notNull(),
+  organizationId: int("organizationId"),
+  billingStatus: varchar("billingStatus", { length: 32 }).notNull(),
+  payloadHash: varchar("payloadHash", { length: 64 }).notNull(),
+  processedAt: timestamp("processedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 // Message threads for stable communication
 export const messageThreads = mysqlTable("messageThreads", {
   id: int("id").autoincrement().primaryKey(),

@@ -23,9 +23,7 @@ import {
   StudentRoute,
   TeacherRoute,
 } from "@/components/ProtectedRoute";
-import { SalesChatWidget } from "@/components/SalesChatWidget";
 import { CookieConsent } from "@/components/CookieConsent";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { getUIVersion } from "@/config/uiVersion";
 
 // Canonical Academy public-page modules.
@@ -510,8 +508,6 @@ export default function AcademyApp() {
           <TooltipProvider>
             <Toaster />
             <AcademyRouter />
-            <SalesChatWidget />
-            <PWAInstallPrompt />
             <CookieConsent />
           </TooltipProvider>
         </AdminViewProvider>

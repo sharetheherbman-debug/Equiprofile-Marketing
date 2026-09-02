@@ -1,7 +1,7 @@
 /**
  * SchoolNavbar — Premium navigation for school.equiprofile.online
  *
- * Shows: About · Features · Pricing · Contact | Login · Book Demo
+ * Shows: About · Features · Pricing · Contact | Login · Start Free
  * Rich academic blue-green gradient background, aspirational feel.
  */
 import { useState, useEffect } from "react";
@@ -113,7 +113,7 @@ export function SchoolNavbar() {
                     size="sm"
                     className="bg-gradient-to-r from-[#2d6a4f] to-[#1e4d8c] hover:from-[#3a8d6b] hover:to-[#2563a8] text-white shadow-lg shadow-emerald-900/25 border-0"
                   >
-                    Book Demo
+                    Start Free
                   </Button>
                 </Link>
               </>
@@ -173,7 +173,7 @@ export function SchoolNavbar() {
                     </Link>
                     <Link href="/contact" onClick={() => setMobileOpen(false)}>
                       <Button className="w-full bg-gradient-to-r from-[#2d6a4f] to-[#1e4d8c] text-white">
-                        Book Demo
+                        Start Free
                       </Button>
                     </Link>
                   </>

@@ -462,14 +462,6 @@ export default function AcademyDashboard() {
     undefined,
     { enabled: Boolean(stats?.organization) },
   );
-  const { data: billingStatus } = trpc.academy.billingStatus.useQuery(
-    undefined,
-    { enabled: Boolean(stats?.organization) },
-  );
-  const billingPortal = trpc.academy.createBillingPortal.useMutation({
-    onSuccess: ({ portalUrl }) => window.location.assign(portalUrl),
-  });
-
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"teacher" | "student">(
@@ -616,39 +608,29 @@ export default function AcademyDashboard() {
                   billing
                 </h2>
                 <p className="text-sm text-white">
-                  Status: {billingStatus?.academyBillingStatus ?? "not started"}
+                  Status: {org.academyBillingStatus ?? "not started"}
                 </p>
                 <p className="mt-1 text-xs text-gray-400">
-                  TEST mode only ·{" "}
-                  {billingStatus?.billingConfigured
-                    ? "configured"
-                    : "disabled until TEST credentials are configured"}
+                  {org.academyBillingCurrentPeriodEndsAt
+                    ? `Renews ${new Date(org.academyBillingCurrentPeriodEndsAt).toLocaleDateString()}`
+                    : "Plan and renewal details appear when billing is active"}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setLocation("/academy/pricing")}
+                    onClick={() => setLocation("/billing")}
                     className="rounded-lg border border-indigo-400/30 px-3 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/10"
                   >
-                    Plans
+                    Billing details
                   </button>
                   <button
                     type="button"
-                    onClick={() => billingPortal.mutate()}
-                    disabled={
-                      !billingStatus?.billingConfigured ||
-                      billingPortal.isPending
-                    }
-                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
+                    onClick={() => setLocation("/billing")}
+                    className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/5"
                   >
-                    Billing portal
+                    Invoices and payment
                   </button>
                 </div>
-                {billingPortal.isError && (
-                  <p className="mt-2 text-xs text-amber-300" role="alert">
-                    {billingPortal.error.message}
-                  </p>
-                )}
               </Card>
             </div>
 

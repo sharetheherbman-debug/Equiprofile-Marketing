@@ -163,6 +163,7 @@ export async function rankProvidersForCapability(category: CapabilityCategory): 
   const registry = await getProviderCapabilityRegistry();
 
   return [...ALL_PROVIDERS]
+    .filter((provider) => provider === "genx")
     .sort((a, b) => {
       const scoreA = registry[a].capabilities[category] + registry[a].fallbackPriority / 1_000;
       const scoreB = registry[b].capabilities[category] + registry[b].fallbackPriority / 1_000;
@@ -188,7 +189,7 @@ export async function selectProviderOrderForTask(task: AITask): Promise<AIProvid
   const providers = Array.from(new Set(candidates.map((candidate) => candidate.provider)));
   const category = categoryForTask(task);
   const ranked = await rankProvidersForCapability(category);
-  return Array.from(new Set([...providers, ...ranked]));
+  return Array.from(new Set([...providers, ...ranked])).filter((provider) => provider === "genx");
 }
 
 export async function resolveProviderSelectionForTask(task: AITask): Promise<ProviderSelectionDecision> {
@@ -203,6 +204,6 @@ export async function resolveProviderSelectionForTask(task: AITask): Promise<Pro
     category,
     primaryProvider,
     primaryModel,
-    fallbackProviders: providers.slice(1),
+    fallbackProviders: [],
   };
 }

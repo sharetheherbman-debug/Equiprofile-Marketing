@@ -27,12 +27,19 @@ const connectionCard = readFileSync(
   "utf8",
 );
 
-describe("EquiProfile owner-only Marketing boundary", () => {
-  it("requires the primary owner identity as well as admin role", () => {
+describe("EquiProfile controlled Marketing access boundary", () => {
+  it("requires admin role plus either primary-owner identity or an explicit Marketing grant", () => {
     expect(connector).toContain("PRIMARY_ADMIN_EMAIL");
     expect(connector).toContain('context.user.role !== "admin"');
-    expect(connector).toContain("signedInEmail !== ownerEmail");
-    expect(connector).toContain("EquiProfile owner access required");
+    expect(connector).toMatch(
+      /isProductComplimentaryActive\(\s*context\.user\.preferences,\s*"marketing"/,
+    );
+    expect(connector).toContain(
+      "if (!isPrimaryOwner && !hasDelegatedMarketingAccess)",
+    );
+    expect(connector).toContain(
+      "Marketing access has not been granted to this administrator account",
+    );
     expect(connector).toContain("isTrustedCookieWrite(req)");
   });
 
@@ -52,13 +59,13 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(adminPage).not.toContain('value: "campaigns"');
   });
 
-  it("keeps the standalone connector disabled by default until Phase 2", () => {
+  it("keeps the standalone connector disabled by default until explicitly enabled", () => {
     expect(connector).toContain("MARKETING_CONNECTOR_ENABLED");
     expect(connector).toContain("current.enabled");
     expect(connector).toContain("Marketing connector is disabled or not configured");
   });
 
-  it("does not render the Marketing launcher for non-owner admins", () => {
+  it("hides the Marketing launcher when the server denies product access", () => {
     expect(connectionCard).toContain("response.status === 403");
     expect(connectionCard).toContain("setOwnerDenied(true)");
     expect(connectionCard).toContain("if (ownerDenied) return null");
@@ -75,9 +82,12 @@ describe("EquiProfile owner-only Marketing boundary", () => {
     expect(connectionCard).not.toContain("Twilio");
   });
 
-  it("uses a dedicated client administration data contract", () => {
+  it("uses the dedicated client-safe administration contract for customers, roles and grants", () => {
     expect(adminWrapper).toContain("trpc.admin.getStats.useQuery");
-    expect(adminWrapper).toContain("trpc.admin.getUsers.useQuery");
+    expect(adminWrapper).toContain('fetch("/api/v1/admin-access/users"');
+    expect(adminWrapper).toContain("/api/v1/admin-access/users/${user.id}/role");
+    expect(adminWrapper).toContain("/api/v1/admin-access/users/${grantUser.id}/grants");
+    expect(adminWrapper).toContain("/api/v1/admin-access/users/${user.id}/grants/${product}");
     expect(adminWrapper).not.toContain("getSiteSettings");
     expect(adminWrapper).not.toContain("getEnvHealth");
     expect(adminWrapper).not.toContain("getAIDiagnostics");

@@ -45,35 +45,34 @@ export function CookieConsent() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6"
+            className="fixed bottom-3 left-3 right-3 z-[9999] sm:left-auto sm:right-5 sm:w-[min(25rem,calc(100vw-2.5rem))]"
           >
-            <div className="max-w-3xl mx-auto bg-gray-900/95 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <p className="flex-1 text-sm text-gray-300 leading-relaxed">
-                Necessary storage keeps sign-in and security features working.
-                With your permission, optional measurement helps us understand
-                how EquiProfile is discovered and used. Rejecting it does not
-                affect the application. See our{" "}
+            <div className="rounded-2xl border border-slate-200 bg-white/98 p-4 shadow-[0_16px_48px_rgba(15,35,55,0.18)] backdrop-blur-md">
+              <h2 className="text-sm font-semibold text-[#102a43]">Privacy choices</h2>
+              <p className="mt-1.5 text-xs leading-5 text-slate-600">
+                We use essential cookies to keep EquiProfile secure and signed
+                in. With your permission, optional analytics help us improve
+                the experience. You can change this choice at any time. Read our{" "}
                 <Link
                   href="/privacy"
-                  className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
+                  className="font-medium text-[#2e6da4] underline underline-offset-2 transition-colors hover:text-[#245a8a]"
                 >
                   Privacy Policy
-                </Link>{" "}
-                for details.
+                </Link>.
               </p>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="mt-3 flex flex-wrap justify-end gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => persist("declined")}
-                  className="border-white/20 text-gray-300 hover:bg-white/10 hover:text-white"
+                  className="border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:text-[#102a43]"
                 >
                   Reject optional
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => persist("accepted")}
-                  className="bg-gradient-to-r from-[#2e86ab] to-[#5b8def] hover:from-[#3a93b8] hover:to-[#5b8def] text-white border-0"
+                  className="border-0 bg-[#2e6da4] text-white hover:bg-[#245a8a]"
                 >
                   Accept optional
                 </Button>
@@ -86,7 +85,7 @@ export function CookieConsent() {
         <button
           type="button"
           onClick={() => setVisible(true)}
-          className="fixed bottom-3 left-3 z-[9998] rounded-full border border-gray-300 bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="fixed bottom-3 left-3 z-[9998] rounded-full border border-slate-300 bg-white/95 px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2e6da4]"
           aria-label={`Privacy choices. Optional measurement is currently ${choice === "accepted" ? "accepted" : "rejected"}.`}
         >
           Privacy choices

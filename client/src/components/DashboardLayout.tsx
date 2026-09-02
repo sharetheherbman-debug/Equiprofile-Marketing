@@ -285,11 +285,6 @@ function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutCo
   const { viewMode, exitViewMode, isViewingAs, isAdmin: isAdminView } = useAdminViewMode();
   const isOnline = useOnlineStatus();
 
-  const { data: adminStatus } = trpc.adminUnlock.getStatus.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
-  });
-
   const { data: subscriptionStatus } = trpc.user.getSubscriptionStatus.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
   const managementPreferences = parseManagementPreferences(user?.preferences);
   const basePlanTier = subscriptionStatus?.planTier === "stable" || managementPreferences.planTier === "stable"
@@ -399,7 +394,7 @@ function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutCo
                 );
               })}
 
-              {adminStatus?.isUnlocked && (
+              {isAdmin && (
                 <>
                   <div className="my-2 px-2"><div className="h-px bg-sidebar-border" /></div>
                   {adminMenuItems.map((item) => {

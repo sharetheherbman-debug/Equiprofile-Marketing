@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import type { Request, Response, Router } from "express";
+import { isProductComplimentaryActive } from "../shared/productEntitlement";
 import { createContext } from "./_core/context";
 import { isTrustedCookieWrite } from "./_core/requestSecurity";
 
@@ -91,6 +92,13 @@ export function isMarketingConnectorConfigured(): boolean {
   );
 }
 
+/**
+ * Marketing is never opened merely because a user is signed in. The primary
+ * owner is always eligible; additional users must be explicit administrators
+ * and hold an active, audited Marketing complimentary grant. Billing-owned
+ * Marketing entitlements can replace that grant check when the central Billing
+ * service starts selling this product.
+ */
 async function requireOwner(req: Request, res: Response) {
   if (!isTrustedCookieWrite(req)) {
     res
@@ -101,7 +109,7 @@ async function requireOwner(req: Request, res: Response) {
 
   const context = await createContext({ req, res } as never);
   if (!context.user || context.user.role !== "admin") {
-    res.status(403).json({ error: "Owner access required" });
+    res.status(403).json({ error: "Administrator access required" });
     return null;
   }
 
@@ -117,8 +125,16 @@ async function requireOwner(req: Request, res: Response) {
   const signedInEmail = String(context.user.email || "")
     .trim()
     .toLowerCase();
-  if (!signedInEmail || signedInEmail !== ownerEmail) {
-    res.status(403).json({ error: "EquiProfile owner access required" });
+  const isPrimaryOwner = !!signedInEmail && signedInEmail === ownerEmail;
+  const hasDelegatedMarketingAccess = isProductComplimentaryActive(
+    context.user.preferences,
+    "marketing",
+  );
+  if (!isPrimaryOwner && !hasDelegatedMarketingAccess) {
+    res.status(403).json({
+      error:
+        "Marketing access has not been granted to this administrator account",
+    });
     return null;
   }
 
@@ -155,7 +171,7 @@ export function registerMarketingConnectorRoutes(router: Router): void {
       }
       if (!user.email) {
         return res.status(400).json({
-          error: "The owner account requires an email address",
+          error: "The administrator account requires an email address",
         });
       }
       const payload = {
