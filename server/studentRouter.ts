@@ -39,6 +39,7 @@ import {
   getPublishedLessonBySlug,
   parseAcademyJson,
 } from "./academy/curriculumPipeline";
+import { requireAcademyLearnerEntitlement } from "./academy/entitlement";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -79,26 +80,9 @@ function isWithheldLegacyVirtualHorseTask(task: {
 const VIRTUAL_HORSE_TASK_AVAILABILITY =
   "withheld_pending_factual_and_safety_review" as const;
 
-/**
- * Student procedure — extends protectedProcedure to check that the user has
- * selected the student experience OR is an admin.
- */
 const studentProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const user = await db.getUserById(ctx.user.id);
-  if (!user) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-  }
-  const prefs = parseUserPrefs(user.preferences);
-  const isAdmin = user.role === "admin";
-  const isStudent =
-    prefs.selectedExperience === "student" || prefs.planTier === "student";
-  if (!isAdmin && !isStudent) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "This feature requires the Student plan.",
-    });
-  }
-  return next({ ctx });
+  const academyEntitlement = await requireAcademyLearnerEntitlement(ctx.user.id);
+  return next({ ctx: { ...ctx, academyEntitlement } });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3010,16 +2994,6 @@ export const studentRouter = router({
         };
       }
 
-      // Check if AI is configured
-      if (!(await isAIConfigured())) {
-        return {
-          answer:
-            "⚠️ The AI Tutor is not yet configured. Please ask your Academy or check back later.",
-          tier: "unavailable" as const,
-          modelUsed: "none",
-        };
-      }
-
       const tier = shouldEscalate(input.question) ? "smart" : "standard";
       const user = await db.getUserById(ctx.user.id);
       const studentLevel =
@@ -3064,6 +3038,13 @@ export const studentRouter = router({
       messages.push({ role: "user", content: input.question });
 
       try {
+        if (!(await isAIConfigured())) {
+          return {
+            answer: "Tutor is temporarily unavailable. Your progress has been saved; please try again later.",
+            tier: "unavailable" as const,
+            modelUsed: "none",
+          };
+        }
         const response = await invokeLLM({
           messages,
           maxTokens: tier === "smart" ? 1024 : 512,
@@ -3093,7 +3074,7 @@ export const studentRouter = router({
           .values({
             userId: ctx.user.id,
             question: input.question,
-            answer: `Error: ${err?.message || "Unknown error"}`,
+            answer: "Tutor request failed safely.",
             modelUsed: "configured-server-model",
             tier,
             promptTokens: 0,

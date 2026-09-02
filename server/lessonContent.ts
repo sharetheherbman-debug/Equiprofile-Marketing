@@ -5034,7 +5034,7 @@ Equipment should never be used to mask a problem (e.g., using a stronger bit ins
   {
     slug: "walk-trot-transitions-developing",
     pathwaySlug: "developing-rider-skills",
-    title: "Walk to Trot Transitions",
+    title: "Refining Rhythm in Walk–Trot Transitions",
     level: "developing",
     category: "Flatwork",
     sortOrder: 1,

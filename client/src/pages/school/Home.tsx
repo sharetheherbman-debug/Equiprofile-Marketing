@@ -185,7 +185,7 @@ export default function SchoolHome() {
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg shadow-[#2d6a4f]/30"
                 >
-                  Book a Demo
+                  Explore Academy
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
@@ -474,7 +474,7 @@ export default function SchoolHome() {
                   size="lg"
                   className="bg-white text-[#1e3a5f] hover:bg-white/90 text-base px-8 py-6 rounded-xl font-semibold shadow-lg"
                 >
-                  Book Your Free Demo
+                  Create Account
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>

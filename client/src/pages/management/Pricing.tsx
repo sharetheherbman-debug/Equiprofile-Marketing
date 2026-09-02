@@ -178,6 +178,9 @@ const comingSoonProducts = [
       "Practical equestrian learning pathways, progress tracking and expert-led resources in one connected experience.",
     highlights: ["Guided learning pathways", "Progress and achievement tracking", "Resources for riders and yards"],
     icon: GraduationCap,
+    status: "Live",
+    href: "https://academy.equiprofile.online/academy",
+    action: "Explore Academy",
   },
   {
     name: "EquiProfile Shop",
@@ -185,6 +188,9 @@ const comingSoonProducts = [
       "A carefully organised place to discover useful equestrian products and services alongside your horse-management workflow.",
     highlights: ["Curated equestrian essentials", "Connected product discovery", "A simpler owner experience"],
     icon: ShoppingBag,
+    status: "Coming soon",
+    href: null,
+    action: "Coming soon",
   },
 ] as const;
 
@@ -510,19 +516,19 @@ export default function Pricing() {
         </section>
 
         {/* ================= CONNECTED PRODUCTS ================= */}
-        <section className="bg-[#0f1d2e] py-20 md:py-28" aria-labelledby="coming-soon-heading">
+        <section className="bg-[#0f1d2e] py-20 md:py-28" aria-labelledby="connected-products-heading">
           <div className="container mx-auto px-4">
             <AnimatedSection className="mx-auto mb-12 max-w-3xl text-center">
               <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#c5a55a]/25 bg-[#c5a55a]/10 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-[#e8d08a]">
                 <Sparkles className="h-4 w-4" aria-hidden="true" />
-                The EquiProfile experience is growing
+                Separate EquiProfile products
               </div>
-              <h2 id="coming-soon-heading" className="font-serif text-3xl font-bold text-white md:text-[42px]">
-                More ways to learn and shop are coming soon
+              <h2 id="connected-products-heading" className="font-serif text-3xl font-bold text-white md:text-[42px]">
+                Management, learning and Shop have clear boundaries
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-white/60">
-                Your current plan features are available as listed above. Academy and Shop are future
-                EquiProfile products and are not included or available for purchase yet.
+                Management plans include only the Management features listed above. Academy is live and
+                purchased separately. Shop is the only deferred public product.
               </p>
             </AnimatedSection>
 
@@ -534,8 +540,8 @@ export default function Pricing() {
                         <product.icon className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/70">
-                        <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
-                        Coming soon
+                        {product.status === "Coming soon" && <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />}
+                        {product.status}
                       </span>
                     </div>
                     <h3 className="mt-6 font-serif text-2xl font-bold text-white">{product.name}</h3>
@@ -548,12 +554,13 @@ export default function Pricing() {
                         </li>
                       ))}
                     </ul>
-                    <span
-                      aria-disabled="true"
-                      className="mt-7 inline-flex w-full cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/45"
-                    >
-                      Not available yet
-                    </span>
+                    {product.href ? (
+                      <a href={product.href} className="mt-7 inline-flex w-full items-center justify-center rounded-full bg-[#c5a55a] px-5 py-3 text-sm font-semibold text-[#0f1d2e] transition hover:bg-[#d6bb76]">
+                        {product.action} <ArrowRight className="ml-2 h-4 w-4" />
+                      </a>
+                    ) : (
+                      <span aria-disabled="true" className="mt-7 inline-flex w-full cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white/45">{product.action}</span>
+                    )}
                 </article>
               ))}
             </div>

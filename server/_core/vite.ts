@@ -82,7 +82,7 @@ const SENSITIVE_PATH_PATTERNS = [
   /^\/config\/(?:database\.yml|master\.key)$/i,
   /^\/(?:graphql|graphiql)$/i,
   /^\/(?:redirect|proxy|fetch)(?:[/?#]|$)/i,
-  /^\/(?:phpmyadmin|wp-admin|wp-config|wp-login|xmlrpc\.php)(?:[/?#]|$)/i,
+  /^\/(?:phpmyadmin|wp-admin|wp-config(?:\.php)?|wp-login|xmlrpc\.php)(?:[/?#]|$)/i,
   /^\/(?:cgi-bin|actuator|_profiler|solr|shell)(?:[/?#]|$)/i,
   /^\/(?:admin\.php|config\.php|info\.php|phpinfo|test\.php)(?:[/?#]|$)/i,
 ];
@@ -392,8 +392,8 @@ export function serveStatic(app: Express, options: StaticServingOptions = {}) {
       req.originalUrl.startsWith("/academy-assets/") ||
       req.originalUrl.startsWith("/shop-assets/") ||
       STATIC_FILE_EXTENSIONS.some((ext) => req.originalUrl.endsWith(ext));
-    if (isStaticFile) {
-      return res.status(404).send("Not Found");
+    if (isStaticFile || isFileLikePath(req.path)) {
+      return res.status(404).type("text/plain").send("Not Found");
     }
 
     // Determine which canonical frontend to serve based on hostname. School
@@ -425,4 +425,8 @@ export function serveStatic(app: Express, options: StaticServingOptions = {}) {
       })
       .catch((error) => next(error));
   });
+}
+
+export function isFileLikePath(pathname: string): boolean {
+  return /\/(?:[^/]+\.)[a-z0-9]{1,12}$/i.test(pathname);
 }

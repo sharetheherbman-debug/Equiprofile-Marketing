@@ -79,7 +79,7 @@ export default function AcademyContact() {
           schoolName: formData.schoolName,
           numberOfStudents: formData.numberOfStudents,
           message: formData.message,
-          subject: "EquiProfile Academy Demo Request",
+          subject: "EquiProfile Academy Enquiry",
           // Keep the established backend source identifier for compatibility.
           source: "academy",
         }),
@@ -91,7 +91,7 @@ export default function AcademyContact() {
         lead_source: "academy_contact",
       });
 
-      toast.success("Academy demo request sent", {
+      toast.success("Academy enquiry sent", {
         description:
           "We received your enquiry and can follow up using the email address you supplied.",
       });
@@ -164,7 +164,7 @@ export default function AcademyContact() {
             <motion.div {...fadeUp} className="lg:col-span-3">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
                 <h2 className="font-serif text-2xl font-bold text-[#1e293b] mb-2">
-                  Request an Academy Demo
+                  Contact the Academy Team
                 </h2>
                 <p className="text-[#1e293b]/60 text-sm mb-8">
                   Tell us about your riding school or equestrian organisation so
@@ -347,12 +347,12 @@ export default function AcademyContact() {
               <div className="bg-[#c5a55a]/5 border border-[#c5a55a]/20 rounded-2xl p-6 text-center">
                 <CheckCircle2 className="w-8 h-8 text-[#c5a55a] mx-auto mb-3" />
                 <p className="text-sm font-semibold text-[#1e293b] mb-1">
-                  No Fake Demo State
+                  A real contact form
                 </p>
                 <p className="text-xs text-[#1e293b]/60">
-                  This form submits through the application's existing contact
-                  endpoint. The page does not display invented bookings,
-                  customers, response-time guarantees, or support commitments.
+                  Your message is sent securely to the EquiProfile team. We do
+                  not display invented bookings, customers, response-time
+                  guarantees, or support commitments.
                 </p>
               </div>
             </motion.div>

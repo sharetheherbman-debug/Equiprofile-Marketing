@@ -1,21 +1,12 @@
 import { getRuntimeConfig, getRuntimeConfigDiagnostics } from "../../../dynamicConfig";
-import { executeGenXTask, testGenXTextGeneration, testRawGenXConnection } from "./genxProvider";
-import { checkHuggingFaceNetwork, executeHuggingFaceTask } from "./huggingFaceProvider";
-import { executeQwenTask, resolveQwenConfig, testQwenTextGeneration } from "./qwenProvider";
 import { aiUsageAnalytics } from "../analytics/usageAnalytics";
-import type { AIProviderName, AITask, TaskExecutionResult } from "../types";
+import { resolveModelCandidatesForTask, type ProviderModelCandidate } from "../modelRegistry";
 import { recordProviderTelemetry } from "../providerTelemetry";
-import { resolveGenXConfig } from "./genxProvider";
-import { resolveHuggingFaceTaskModel, testHuggingFaceMediaProviders, testHuggingFaceProvider } from "./huggingFaceProvider";
-import {
-  discoverProviderModels,
-  getProviderTaskUnavailableReason,
-  resolveModelCandidatesForTask,
-  type ProviderModelCandidate,
-} from "../modelRegistry";
+import type { AIProviderName, AITask, TaskExecutionResult } from "../types";
+import { executeGenXTask, resolveGenXConfig, testGenXTextGeneration, testRawGenXConnection } from "./genxProvider";
 
 type ProviderHealth = {
-  provider: AIProviderName;
+  provider: "genx";
   configured: boolean;
   status: "healthy" | "degraded" | "offline";
   message: string;
@@ -28,86 +19,37 @@ type ProviderHealth = {
   lastTestAt?: string;
   lastTestStatus?: "success" | "failed" | "skipped" | "missing_key" | "missing_base_url";
   lastStatusCode?: number | null;
+  lastMediaSuccessAt?: string;
   liveReady: boolean;
 };
 
-const executors: Record<AIProviderName, (task: AITask, input: Record<string, unknown>, timeoutMs: number) => Promise<TaskExecutionResult>> = {
-  genx: executeGenXTask,
-  huggingface: executeHuggingFaceTask,
-  qwen: executeQwenTask,
-};
-
-const providerRuntime: Record<AIProviderName, {
-  lastSuccessAt?: string;
-  lastErrorAt?: string;
-  lastError?: string;
-  lastLatencyMs?: number;
-  lastTestAt?: string;
-  lastTestStatus?: "success" | "failed" | "skipped" | "missing_key" | "missing_base_url";
-  lastStatusCode?: number | null;
-  lastResponseSummary?: string;
-  lastMediaSuccessAt?: string;
-}> = {
-  genx: {},
-  huggingface: {},
-  qwen: {},
-};
-
+const runtime: Omit<ProviderHealth, "provider" | "configured" | "status" | "message" | "liveReady"> = {};
 const LIVE_TEST_TTL_MS = 15 * 60 * 1000;
-const MEDIA_TASKS = new Set<AITask>(["text_to_image", "image_edit", "image_to_video", "text_to_video", "avatar_video", "text_to_speech", "speech_to_text", "image_captioning"]);
 
-function hasRecentLiveSuccess(provider: AIProviderName, kind: "text" | "media" = "text"): boolean {
-  const stamp = kind === "media"
-    ? providerRuntime[provider].lastMediaSuccessAt
-    : providerRuntime[provider].lastSuccessAt;
-  if (!stamp) return false;
-  return Date.now() - new Date(stamp).getTime() <= LIVE_TEST_TTL_MS;
+function hasRecentLiveSuccess() {
+  return Boolean(runtime.lastSuccessAt && Date.now() - new Date(runtime.lastSuccessAt).getTime() <= LIVE_TEST_TTL_MS);
+}
+
+function recordTest(result: Record<string, unknown>) {
+  const now = new Date().toISOString();
+  const success = result.status === "success";
+  runtime.lastTestAt = now;
+  runtime.lastTestStatus = (result.status as ProviderHealth["lastTestStatus"]) ?? (success ? "success" : "failed");
+  runtime.lastStatusCode = typeof result.statusCode === "number" ? result.statusCode : null;
+  if (success) {
+    runtime.lastSuccessAt = now;
+    runtime.lastLatencyMs = Number(result.latencyMs ?? 0);
+    runtime.lastError = undefined;
+    runtime.lastErrorAt = undefined;
+  } else {
+    runtime.lastSuccessAt = undefined;
+    runtime.lastErrorAt = now;
+    runtime.lastError = String(result.responseSummary ?? result.reason ?? result.error ?? "GenX test failed");
+  }
 }
 
 export function resetProviderRuntimeForTests() {
-  providerRuntime.genx = {};
-  providerRuntime.huggingface = {};
-  providerRuntime.qwen = {};
-}
-
-function recordProviderTest(provider: AIProviderName, result: Record<string, any>) {
-  const now = new Date().toISOString();
-  const success = result.status === "success";
-  const mediaOnly = result.mediaOnly === true;
-  providerRuntime[provider] = {
-    ...providerRuntime[provider],
-    lastTestAt: now,
-    lastTestStatus: result.status ?? (success ? "success" : "failed"),
-    lastStatusCode: typeof result.statusCode === "number" ? result.statusCode : null,
-    lastResponseSummary:
-      typeof result.responseSummary === "string"
-        ? result.responseSummary
-        : typeof result.reason === "string"
-          ? result.reason
-          : typeof result.error === "string"
-            ? result.error
-            : undefined,
-    ...(success && !mediaOnly
-      ? { lastSuccessAt: now, lastLatencyMs: Number(result.latencyMs ?? 0), lastError: undefined, lastErrorAt: undefined }
-      : !success
-        ? {
-          lastSuccessAt: undefined,
-          lastLatencyMs: undefined,
-          lastErrorAt: now,
-          lastError: String(result.responseSummary ?? result.reason ?? result.error ?? "Provider test failed"),
-        }
-        : {}),
-  };
-
-  const image = result.image as Record<string, unknown> | undefined;
-  const mediaResultType = typeof image?.resultType === "string" ? image.resultType : "";
-  if (
-    success &&
-    image?.status === "tested" &&
-    ["url", "base64", "file"].includes(mediaResultType)
-  ) {
-    providerRuntime[provider].lastMediaSuccessAt = now;
-  }
+  for (const key of Object.keys(runtime) as Array<keyof typeof runtime>) delete runtime[key];
 }
 
 export class ProviderSelectionError extends Error {
@@ -120,157 +62,51 @@ export class ProviderSelectionError extends Error {
   }
 }
 
-export function isCoreProductionProvider(provider: AIProviderName): boolean {
+export function isCoreProductionProvider(provider: AIProviderName): provider is "genx" {
   return provider === "genx";
 }
 
 export async function isConfigured(provider: AIProviderName): Promise<boolean> {
-  // Core production permits GenX only. Legacy modules may remain temporarily
-  // for compatibility work, but are unreachable through this registry.
-  if (!isCoreProductionProvider(provider)) return false;
-  if (provider === "genx") {
-    return !!(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"));
-  }
-  if (provider === "huggingface") {
-    return !!(await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"));
-  }
-  return !!(await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"));
+  return provider === "genx" && Boolean(await getRuntimeConfig("genx_api_key", "GENX_API_KEY"));
 }
 
 export async function isProviderAvailableForTask(provider: AIProviderName, task: AITask): Promise<boolean> {
-  if (!isCoreProductionProvider(provider)) return false;
-  if (!(await isConfigured(provider))) return false;
-  if (provider === "genx" && !(await resolveGenXConfig()).endpoint) return false;
-  const candidates = (await resolveModelCandidatesForTask(task)).filter((candidate) => candidate.provider === provider);
+  if (provider !== "genx" || !(await isConfigured(provider))) return false;
+  const config = await resolveGenXConfig();
+  if (!config.endpoint) return false;
+  const candidates = (await resolveModelCandidatesForTask(task)).filter((candidate) => candidate.provider === "genx");
   if (!candidates.length) return false;
-  if (provider === "huggingface" && MEDIA_TASKS.has(task)) {
-    const network = await checkHuggingFaceNetwork();
-    if (!network.ok) {
-      recordProviderTest("huggingface", { status: "failed", error: network.error });
-      return false;
-    }
-  }
-  if (provider === "huggingface" && (task === "copywriting" || task === "chat")) {
-    const model = await resolveHuggingFaceTaskModel(task);
-    if (!model) return false;
-    return hasRecentLiveSuccess("huggingface") || (await runProviderLiveTextTest("huggingface"));
-  }
-  if (provider === "genx" && (task === "copywriting" || task === "chat")) {
-    return hasRecentLiveSuccess("genx") || (await runProviderLiveTextTest("genx"));
-  }
-  if (provider === "qwen" && (task === "copywriting" || task === "chat")) {
-    return hasRecentLiveSuccess("qwen") || (await runProviderLiveTextTest("qwen"));
-  }
-  return true;
-}
-
-async function runProviderLiveTextTest(provider: AIProviderName): Promise<boolean> {
+  if (task !== "chat" && task !== "copywriting") return true;
+  if (hasRecentLiveSuccess()) return true;
   try {
-    if (provider === "genx") {
-      const result = await testGenXTextGeneration();
-      recordProviderTest("genx", result);
-      return result.status === "success";
-    }
-    if (provider === "qwen") {
-      const result = await testQwenTextGeneration();
-      recordProviderTest("qwen", result);
-      return result.status === "success";
-    }
-    const result = await testHuggingFaceProvider();
-    recordProviderTest("huggingface", result);
+    const result = await testGenXTextGeneration();
+    recordTest(result as Record<string, unknown>);
     return result.status === "success";
   } catch (error) {
-    recordProviderTest(provider, {
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
+    recordTest({ status: "failed", error: error instanceof Error ? error.message : String(error) });
     return false;
   }
 }
 
-async function getProviderEndpoint(provider: AIProviderName): Promise<string | undefined> {
-  if (provider === "genx") return (await resolveGenXConfig()).endpoint;
-  if (provider === "qwen") return (await resolveQwenConfig()).endpoint;
-  return "https://api-inference.huggingface.co/models/{model}";
-}
-
-async function getProviderModel(provider: AIProviderName): Promise<string | undefined> {
-  if (provider === "genx") return (await resolveGenXConfig()).model;
-  if (provider === "qwen") return (await resolveQwenConfig()).model;
-  return resolveHuggingFaceTaskModel("copywriting");
-}
-
 export function getProviderRuntimeDiagnostics() {
-  return {
-    mode: getRuntimeConfigDiagnostics(),
-    providers: { ...providerRuntime },
-  };
+  return { mode: getRuntimeConfigDiagnostics(), providers: { genx: { ...runtime } } };
 }
 
 export async function getProviderHealth(): Promise<ProviderHealth[]> {
-  const [genxConfigured, hfConfigured, qwenConfigured, genxEndpoint, hfModel, qwenEndpoint, genxModel, qwenModel] = await Promise.all([
-    isConfigured("genx"),
-    isConfigured("huggingface"),
-    isConfigured("qwen"),
-    getProviderEndpoint("genx"),
-    getProviderModel("huggingface"),
-    getProviderEndpoint("qwen"),
-    getProviderModel("genx"),
-    getProviderModel("qwen"),
-  ]);
-
-  const genxLiveReady = hasRecentLiveSuccess("genx");
-  const hfLiveReady = hasRecentLiveSuccess("huggingface");
-  const qwenLiveReady = hasRecentLiveSuccess("qwen");
-
-  return [
-    {
-      provider: "genx",
-      configured: genxConfigured,
-      status: genxLiveReady ? "healthy" : genxConfigured ? "degraded" : "offline",
-      message: genxLiveReady
-        ? "GenX live test passed recently"
-        : !genxConfigured
-          ? "Missing GENX_API_KEY / genx_api_key"
-          : !genxEndpoint
-            ? "GenX base URL not reachable. Use Developer Diagnostics if the default GenX route is unavailable."
-            : "GenX key is present, but a live text-generation test has not passed.",
-      endpoint: genxEndpoint,
-      model: genxModel,
-      liveReady: genxLiveReady,
-      ...providerRuntime.genx,
-    },
-    {
-      provider: "huggingface",
-      configured: hfConfigured,
-      status: hfLiveReady ? "healthy" : hfConfigured ? "degraded" : "offline",
-      message: hfLiveReady
-        ? "Hugging Face live test passed recently"
-        : !hfConfigured
-        ? "Missing HUGGINGFACE_API_KEY / huggingface_api_key"
-        : hfModel
-          ? "Hugging Face key/model present, but a live generation test has not passed."
-          : "Hugging Face key set, but HF_TASK_COPYWRITING_MODEL is missing",
-      endpoint: "https://api-inference.huggingface.co/models/{model}",
-      model: hfModel,
-      liveReady: hfLiveReady,
-      ...providerRuntime.huggingface,
-    },
-    {
-      provider: "qwen",
-      configured: qwenConfigured,
-      status: qwenLiveReady ? "healthy" : qwenConfigured ? "degraded" : "offline",
-      message: qwenLiveReady
-        ? "Qwen live test passed recently"
-        : qwenConfigured
-        ? "Qwen key is present, but a live test has not passed."
-        : "Optional provider; set QWEN_API_KEY / qwen_api_key to enable",
-      endpoint: qwenEndpoint,
-      model: qwenModel,
-      liveReady: qwenLiveReady,
-      ...providerRuntime.qwen,
-    },
-  ];
+  const [configured, config] = await Promise.all([isConfigured("genx"), resolveGenXConfig()]);
+  const liveReady = hasRecentLiveSuccess();
+  return [{
+    provider: "genx",
+    configured,
+    status: liveReady ? "healthy" : configured ? "degraded" : "offline",
+    message: liveReady ? "GenX live test passed recently" : configured
+      ? "GenX is configured, but a live text-generation test has not passed recently."
+      : "GenX is not configured.",
+    endpoint: config.endpoint,
+    model: config.model,
+    liveReady,
+    ...runtime,
+  }];
 }
 
 export async function executeWithProvider(
@@ -280,265 +116,64 @@ export async function executeWithProvider(
   timeoutMs: number,
   candidate?: ProviderModelCandidate,
 ): Promise<TaskExecutionResult> {
-  if (!isCoreProductionProvider(provider)) {
-    throw new ProviderSelectionError(
-      "provider_unavailable",
-      `Core production permits GenX only; provider "${provider}" is disabled for task "${task}"`,
-    );
+  if (provider !== "genx") {
+    throw new ProviderSelectionError("provider_unavailable", `Core production permits GenX only for task "${task}"`);
   }
   try {
-    const result = await executors[provider](
-      task,
-      candidate
-        ? {
-          ...input,
-          model: candidate.id,
-          routeReason: candidate.routeReason,
-          endpointFamily: candidate.endpointFamily,
-        }
-        : input,
-      timeoutMs,
-    );
-    const routedResult = {
-      ...result,
-      model: result.model || candidate?.id || "",
-      routeReason: result.routeReason ?? candidate?.routeReason,
-      endpointFamily: result.endpointFamily ?? candidate?.endpointFamily,
-    };
-    aiUsageAnalytics.recordUsage({
-      at: new Date().toISOString(),
-      provider,
-      task,
-      latencyMs: routedResult.latencyMs,
-      promptTokens: routedResult.usage?.promptTokens ?? 0,
-      completionTokens: routedResult.usage?.completionTokens ?? 0,
-    });
-    providerRuntime[provider] = {
-      ...providerRuntime[provider],
-      lastSuccessAt: new Date().toISOString(),
-      lastLatencyMs: routedResult.latencyMs,
-    };
-    await recordProviderTelemetry({
-      provider,
-      model: routedResult.model,
-      task,
-      tenantId: "global",
-      latencyMs: routedResult.latencyMs,
-      success: true,
-    });
-    return routedResult;
+    const result = await executeGenXTask(task, candidate ? {
+      ...input,
+      model: candidate.id,
+      routeReason: candidate.routeReason,
+      endpointFamily: candidate.endpointFamily,
+    } : input, timeoutMs);
+    const routed = { ...result, model: result.model || candidate?.id || "", routeReason: result.routeReason ?? candidate?.routeReason, endpointFamily: result.endpointFamily ?? candidate?.endpointFamily };
+    runtime.lastSuccessAt = new Date().toISOString();
+    runtime.lastLatencyMs = routed.latencyMs;
+    aiUsageAnalytics.recordUsage({ at: new Date().toISOString(), provider: "genx", task, latencyMs: routed.latencyMs, promptTokens: routed.usage?.promptTokens ?? 0, completionTokens: routed.usage?.completionTokens ?? 0 });
+    await recordProviderTelemetry({ provider: "genx", model: routed.model, task, tenantId: "global", latencyMs: routed.latencyMs, success: true });
+    return routed;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    providerRuntime[provider] = {
-      ...providerRuntime[provider],
-      lastErrorAt: new Date().toISOString(),
-      lastError: message,
-    };
-    await recordProviderTelemetry({
-      provider,
-      model: candidate?.id ?? "unknown",
-      task,
-      tenantId: "global",
-      success: false,
-      failureReason: message,
-    });
+    runtime.lastErrorAt = new Date().toISOString();
+    runtime.lastError = message;
+    await recordProviderTelemetry({ provider: "genx", model: candidate?.id ?? "unknown", task, tenantId: "global", success: false, failureReason: message });
     throw error;
   }
 }
 
 export async function executeWithFallback(
-  providers: AIProviderName[],
-  task: AITask,
-  input: Record<string, unknown>,
-  timeoutMs: number,
-  maxRetries = 1,
+  _providers: AIProviderName[], task: AITask, input: Record<string, unknown>, timeoutMs: number, maxRetries = 1,
 ): Promise<TaskExecutionResult> {
-  const availableProviders: AIProviderName[] = [];
-  const candidateMap = new Map<AIProviderName, ProviderModelCandidate[]>();
-  const allCandidates = await resolveModelCandidatesForTask(task);
-  // Ignore non-GenX input deterministically, including legacy callers that
-  // still pass an old fallback array during the transition period.
-  for (const provider of providers.filter(isCoreProductionProvider)) {
-    const providerCandidates = allCandidates.filter((candidate) => candidate.provider === provider);
-    candidateMap.set(provider, providerCandidates);
-    if (providerCandidates.length > 0 && await isProviderAvailableForTask(provider, task)) {
-      availableProviders.push(provider);
-      continue;
-    }
-    const reason = providerCandidates.length
-      ? "skipped: provider live test unavailable for task"
-      : `skipped: ${await getProviderTaskUnavailableReason(provider, task)}`;
-    aiUsageAnalytics.recordFailure({
-      at: new Date().toISOString(),
-      provider,
-      task,
-      error: reason,
-    });
+  if (!(await isProviderAvailableForTask("genx", task))) {
+    throw new ProviderSelectionError("provider_missing", `GenX is not available for task "${task}"`);
   }
-
-  if (availableProviders.length === 0) {
-    throw new ProviderSelectionError(
-      "provider_missing",
-      `No configured provider is available for task "${task}"`,
-    );
-  }
-
+  const candidates = (await resolveModelCandidatesForTask(task)).filter((candidate) => candidate.provider === "genx");
   let lastError: Error | null = null;
-
-  for (const provider of availableProviders) {
-    const candidates = candidateMap.get(provider) ?? [];
-    for (const candidate of candidates) {
-      for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
-        try {
-          return await executeWithProvider(provider, task, input, timeoutMs, candidate);
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          aiUsageAnalytics.recordFailure({
-            at: new Date().toISOString(),
-            provider,
-            task,
-            error: `model ${candidate.id} attempt ${attempt + 1}: ${message}`,
-          });
-          lastError = error instanceof Error ? error : new Error(message);
-        }
+  for (const candidate of candidates) {
+    for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+      try {
+        return await executeWithProvider("genx", task, input, timeoutMs, candidate);
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        aiUsageAnalytics.recordFailure({ at: new Date().toISOString(), provider: "genx", task, error: `model ${candidate.id} attempt ${attempt + 1}: ${lastError.message}` });
       }
     }
   }
-
-  if (lastError) {
-    throw new ProviderSelectionError("provider_unavailable", `All configured providers failed for this task: ${lastError.message}`);
-  }
-  throw new ProviderSelectionError("provider_unavailable", "AI provider execution failed");
+  throw new ProviderSelectionError("provider_unavailable", `GenX failed for task "${task}": ${lastError?.message ?? "no executable model"}`);
 }
 
 export async function runFullProviderSelfTest() {
-  const checks: Array<Record<string, unknown>> = [];
-  const storage: Record<string, unknown> = {};
-  const modelDiscovery = await discoverProviderModels(true);
-
+  const modelCandidates = await resolveModelCandidatesForTask("copywriting", true);
   try {
-    const configured = await isConfigured("genx");
-    if (!configured) {
-      checks.push({ provider: "genx", status: "skipped", reason: "Not configured" });
-    } else {
-      const rawResult = await testRawGenXConnection();
-      checks.push({ ...rawResult, test: "raw_connectivity" });
-      checks.push({
-        provider: "genx",
-        test: "model_discovery",
-        status: modelDiscovery.providers.genx.length > 0 ? "success" : "failed",
-        modelCount: modelDiscovery.providers.genx.length,
-        models: modelDiscovery.providers.genx.map((model) => ({
-          id: model.id,
-          executableTasks: model.executableTasks,
-          endpointFamily: model.endpointFamily,
-          unavailableReasonsByTask: model.unavailableReasonsByTask,
-        })),
-      });
-      const textResult = await testGenXTextGeneration();
-      recordProviderTest("genx", textResult);
-      checks.push({ ...textResult, test: "chat_copy_generation" });
+    if (!(await isConfigured("genx"))) {
+      return { checks: [{ provider: "genx", status: "skipped", reason: "Not configured" }], providers: await getProviderHealth() };
     }
+    const raw = await testRawGenXConnection();
+    const generated = await testGenXTextGeneration();
+    recordTest(generated as Record<string, unknown>);
+    return { checks: [{ ...raw, test: "raw_connectivity" }, { ...generated, test: "chat_copy_generation" }], modelCount: modelCandidates.length, providers: await getProviderHealth() };
   } catch (error) {
-    recordProviderTest("genx", {
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-    checks.push({
-      provider: "genx",
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
+    recordTest({ status: "failed", error: error instanceof Error ? error.message : String(error) });
+    return { checks: [{ provider: "genx", status: "failed", error: runtime.lastError }], providers: await getProviderHealth() };
   }
-
-  try {
-    const configured = await isConfigured("huggingface");
-    if (!configured) {
-      checks.push({ provider: "huggingface", status: "skipped", reason: "Not configured" });
-    } else {
-      const result = await testHuggingFaceProvider();
-      recordProviderTest("huggingface", result);
-      checks.push(result);
-      const mediaResult = await testHuggingFaceMediaProviders();
-      const mediaChecks = [mediaResult.image, mediaResult.video, mediaResult.avatar];
-      const playableMedia = mediaChecks.find((check: any) =>
-        check?.status === "tested" && ["url", "base64", "file"].includes(String(check.resultType ?? "")),
-      );
-      if (playableMedia) {
-        recordProviderTest("huggingface", { status: "success", mediaOnly: true, image: playableMedia });
-      }
-      checks.push(mediaResult);
-      checks.push({
-        provider: "huggingface",
-        test: "model_registry",
-        status: modelDiscovery.providers.huggingface.length > 0 ? "success" : "skipped",
-        models: modelDiscovery.providers.huggingface.map((model) => ({
-          id: model.id,
-          source: model.source,
-          executableTasks: model.executableTasks,
-          qualityTiers: model.qualityTiers,
-          routeReason: model.routeReason,
-        })),
-      });
-    }
-  } catch (error) {
-    recordProviderTest("huggingface", {
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-    checks.push({
-      provider: "huggingface",
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-
-  try {
-    const configured = await isConfigured("qwen");
-    if (!configured) {
-      checks.push({ provider: "qwen", status: "skipped", reason: "Optional provider not configured" });
-    } else {
-      const result = await testQwenTextGeneration();
-      recordProviderTest("qwen", result);
-      checks.push(result);
-      checks.push({
-        provider: "qwen",
-        test: "model_registry",
-        status: modelDiscovery.providers.qwen.length > 0 ? "success" : "skipped",
-        models: modelDiscovery.providers.qwen.map((model) => ({
-          id: model.id,
-          executableTasks: model.executableTasks,
-          unavailableReasonsByTask: model.unavailableReasonsByTask,
-        })),
-      });
-    }
-  } catch (error) {
-    recordProviderTest("qwen", {
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-    checks.push({
-      provider: "qwen",
-      status: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-
-  try {
-    const { ensureStorageDirs, writeTempFile, deleteAssetFile, getLocalMediaStorageRoot } = await import("../../storage/localMediaStorage");
-    await ensureStorageDirs();
-    const temp = await writeTempFile(Buffer.from("diagnostics"), "txt", "diag");
-    await deleteAssetFile(temp);
-    storage.status = "success";
-    storage.root = getLocalMediaStorageRoot();
-  } catch (error) {
-    storage.status = "failed";
-    storage.error = error instanceof Error ? error.message : String(error);
-  }
-
-  return {
-    ranAt: new Date().toISOString(),
-    checks,
-    storage,
-  };
 }

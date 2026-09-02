@@ -23,15 +23,15 @@ const fadeUp = {
 const benefits = [
   {
     icon: GraduationCap,
-    title: "Personalised Demo",
+    title: "Plan Guidance",
     description:
-      "We'll walk you through the platform tailored to your school's specific needs, size, and disciplines.",
+      "Ask about the Academy plan that fits your school's size, needs and disciplines.",
   },
   {
     icon: Clock,
     title: "Free 14-Day Trial",
     description:
-      "After your demo, start a full-access trial with no credit card required. Experience every feature first-hand.",
+      "Create an account and explore the available Academy experience with no credit card required.",
   },
   {
     icon: HeadphonesIcon,
@@ -98,16 +98,16 @@ export default function SchoolContact() {
           schoolName: formData.schoolName,
           numberOfStudents: formData.numberOfStudents,
           message: formData.message,
-          subject: "School Demo Request",
+          subject: "Academy School Enquiry",
           source: "school",
         }),
       });
 
       if (!res.ok) throw new Error("Failed to send message");
 
-      toast.success("Demo request sent!", {
+      toast.success("Enquiry sent", {
         description:
-          "We'll be in touch within 24 hours to schedule your personalised demo.",
+          "We received your message and will reply using the email address you supplied.",
       });
 
       setFormData({
@@ -157,8 +157,8 @@ export default function SchoolContact() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
           >
-            Book a{" "}
-            <span className="text-[#10b981]">Demo</span>
+            Contact the{" "}
+            <span className="text-[#10b981]">Academy team</span>
           </motion.h1>
 
           <motion.p
@@ -167,8 +167,8 @@ export default function SchoolContact() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed"
           >
-            See how EquiProfile School can transform your equestrian education.
-            Fill in the form below and we'll arrange a personalised walkthrough.
+            Ask how EquiProfile Academy can support your equestrian education.
+            Fill in the form below and tell us what your school needs.
           </motion.p>
         </div>
       </section>
@@ -184,11 +184,11 @@ export default function SchoolContact() {
             >
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10">
                 <h2 className="font-serif text-2xl font-bold text-[#1e293b] mb-2">
-                  Request Your Free Demo
+                  Send an Academy Enquiry
                 </h2>
                 <p className="text-[#1e293b]/60 text-sm mb-8">
-                  Tell us about your school and we'll tailor the demo to your
-                  needs. All fields are required.
+                  Tell us about your school and the learning support you need.
+                  All fields are required.
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -307,7 +307,7 @@ export default function SchoolContact() {
                     ) : (
                       <>
                         <Send className="mr-2 w-5 h-5" />
-                        Send Demo Request
+                        Send Enquiry
                       </>
                     )}
                   </Button>
@@ -392,8 +392,8 @@ export default function SchoolContact() {
                   No Obligation
                 </p>
                 <p className="text-xs text-[#1e293b]/60">
-                  Your demo is completely free with no commitment. We'll never
-                  pressure you into a plan.
+                  Sending an enquiry creates no commitment. We will not pressure
+                  you into a plan.
                 </p>
               </div>
             </motion.div>

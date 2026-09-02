@@ -49,7 +49,7 @@ const MANAGEMENT_PUBLIC_ROUTES: Record<string, SeoEntry> = {
   "/contact": {
     title: "Contact EquiProfile",
     description:
-      "Contact the EquiProfile team with product questions or to request a Management platform demonstration.",
+      "Contact the EquiProfile team with product and account questions.",
     canonicalPath: "/contact",
   },
   "/for-stables": {

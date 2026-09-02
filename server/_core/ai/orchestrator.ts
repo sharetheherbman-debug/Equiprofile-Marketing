@@ -11,8 +11,6 @@ import {
   isProviderAvailableForTask,
   ProviderSelectionError,
 } from "./providers/providerRegistry";
-import { orderCopywritingProviders } from "./providerRouting";
-import { selectProviderOrderForTask } from "./providerCapabilities";
 import { discoverProviderModels, resolveModelCandidatesForTask } from "./modelRegistry";
 import { rankProvidersForTask } from "./providerRanking";
 import { getTaskDefinition, listTaskDefinitions } from "./tasks/taskRegistry";
@@ -100,46 +98,13 @@ function getOriginForProbe(url?: string) {
 }
 
 async function resolveProviderForTask(task: AITask): Promise<AIProviderName> {
-  const def = getTaskDefinition(task);
-  if (task === "copywriting" || task === "chat") {
-    const preferred = (await getRuntimeConfig("copywriting_provider", "COPYWRITING_PROVIDER")).toLowerCase();
-    if (preferred === "qwen" && (await isProviderAvailableForTask("qwen", task))) return "qwen";
-    if (preferred === "genx" && (await isProviderAvailableForTask("genx", task))) return "genx";
-    if (preferred === "huggingface" && (await isProviderAvailableForTask("huggingface", task))) return "huggingface";
-
-    if (await isProviderAvailableForTask("genx", task)) return "genx";
-    if (await isProviderAvailableForTask("qwen", task)) return "qwen";
-    if (await isProviderAvailableForTask("huggingface", task)) return "huggingface";
-  }
-  return def.preferredProvider;
+  void task;
+  return "genx";
 }
 
 export async function resolveProvidersForTask(task: AITask): Promise<AIProviderName[]> {
-  const ranked = await rankProvidersForTask(task);
-  const rankedProviders = ranked.providers.map((item) => item.provider);
-  const discovered = await selectProviderOrderForTask(task);
-  const preferred = await getRuntimeConfig("copywriting_provider", "COPYWRITING_PROVIDER");
-  const availableProviders: AIProviderName[] = [];
-
-  for (const provider of Array.from(new Set([...rankedProviders, ...discovered]))) {
-    if (await isProviderAvailableForTask(provider, task)) {
-      availableProviders.push(provider);
-    }
-  }
-
-  if ((task === "copywriting" || task === "chat") && availableProviders.length > 0) {
-    return orderCopywritingProviders(
-      preferred,
-      (provider) => availableProviders.includes(provider),
-    );
-  }
-
-  if (availableProviders.length > 0) {
-    return availableProviders;
-  }
-
-  const taskDef = getTaskDefinition(task);
-  return [taskDef.preferredProvider, ...taskDef.fallbackProviders.filter((p) => p !== taskDef.preferredProvider)];
+  void task;
+  return ["genx"];
 }
 
 function matchesRequestedModel(candidateId: string, requestedModel: string) {
@@ -853,12 +818,8 @@ export async function getAIDiagnostics() {
     socialConnections = [];
   }
 
-  const aiCopyProvider = providerHealth.find((provider) =>
-    ["genx", "qwen", "huggingface"].includes(provider.provider) && provider.liveReady,
-  );
-  const configuredTextProvider = providerHealth.find((provider) =>
-    ["genx", "qwen", "huggingface"].includes(provider.provider) && provider.configured,
-  );
+  const aiCopyProvider = providerHealth.find((provider) => provider.provider === "genx" && provider.liveReady);
+  const configuredTextProvider = providerHealth.find((provider) => provider.provider === "genx" && provider.configured);
   const mediaLiveReady = providerHealth.some((provider) =>
     Boolean((provider as any)?.lastMediaSuccessAt && Date.now() - new Date((provider as any).lastMediaSuccessAt).getTime() <= 15 * 60 * 1000),
   );

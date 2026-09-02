@@ -338,7 +338,7 @@ describe("admin.setSiteSetting", () => {
 });
 
 describe("admin.listAIProviderSettings", () => {
-  it("returns configured=false for all providers when DB has no rows", async () => {
+  it("returns only GenX and reports it unconfigured when DB has no rows", async () => {
     const from = vi.fn().mockResolvedValue([]);
     const select = vi.fn(() => ({ from }));
     vi.mocked(getDb).mockResolvedValueOnce({ select } as any);
@@ -348,15 +348,13 @@ describe("admin.listAIProviderSettings", () => {
     const result = await caller.admin.listAIProviderSettings();
 
     expect(result.genx.configured).toBe(false);
-    expect(result.huggingface.configured).toBe(false);
-    expect(result.qwen.configured).toBe(false);
+    expect(result).not.toHaveProperty("huggingface");
+    expect(result).not.toHaveProperty("qwen");
   });
 
   it("masks API keys — never returns full key", async () => {
     const from = vi.fn().mockResolvedValue([
       { key: "genx_api_key", value: "sk-verylongapikey12345678" },
-      { key: "huggingface_api_key", value: "hf_abcdefghijklmnop" },
-      { key: "qwen_api_key", value: "qwen-secretkey-xyz" },
     ]);
     const select = vi.fn(() => ({ from }));
     vi.mocked(getDb).mockResolvedValueOnce({ select } as any);
@@ -370,13 +368,8 @@ describe("admin.listAIProviderSettings", () => {
     expect(result.genx.keyMasked).not.toBe("sk-verylongapikey12345678");
     expect(result.genx.keyMasked).toContain("•");
 
-    expect(result.huggingface.keyMasked).toBeTruthy();
-    expect(result.huggingface.keyMasked).not.toBe("hf_abcdefghijklmnop");
-    expect(result.huggingface.keyMasked).toContain("•");
-
-    expect(result.qwen.keyMasked).toBeTruthy();
-    expect(result.qwen.keyMasked).not.toBe("qwen-secretkey-xyz");
-    expect(result.qwen.keyMasked).toContain("•");
+    expect(result).not.toHaveProperty("huggingface");
+    expect(result).not.toHaveProperty("qwen");
   });
 
   it("returns configured=true when DB has a key stored", async () => {
@@ -391,16 +384,14 @@ describe("admin.listAIProviderSettings", () => {
     const result = await caller.admin.listAIProviderSettings();
 
     expect(result.genx.configured).toBe(true);
-    expect(result.huggingface.configured).toBe(false);
-    expect(result.qwen.configured).toBe(false);
+    expect(result).not.toHaveProperty("huggingface");
+    expect(result).not.toHaveProperty("qwen");
   });
 
   it("includes model settings in response", async () => {
     const from = vi.fn().mockResolvedValue([
       { key: "genx_api_key", value: "k" },
       { key: "genx_model", value: "gpt-5.4" },
-      { key: "hf_task_text_to_image_model", value: "flux-schnell" },
-      { key: "qwen_text_model", value: "qwen-plus" },
     ]);
     const select = vi.fn(() => ({ from }));
     vi.mocked(getDb).mockResolvedValueOnce({ select } as any);
@@ -410,8 +401,8 @@ describe("admin.listAIProviderSettings", () => {
     const result = await caller.admin.listAIProviderSettings();
 
     expect(result.genx.settings.genx_model).toBe("gpt-5.4");
-    expect(result.huggingface.settings.hf_task_text_to_image_model).toBe("flux-schnell");
-    expect(result.qwen.settings.qwen_text_model).toBe("qwen-plus");
+    expect(result).not.toHaveProperty("huggingface");
+    expect(result).not.toHaveProperty("qwen");
   });
 
   it("is admin-only — throws UNAUTHORIZED for non-admin", async () => {
@@ -510,7 +501,7 @@ describe("admin.saveAIProviderSettings", () => {
     expect(result.skipped).not.toContain("genx_api_key");
   });
 
-  it("saves Hugging Face API key", async () => {
+  it("rejects retired Hugging Face API settings", async () => {
     const execute = vi.fn().mockResolvedValue([]);
     vi.mocked(getDb).mockResolvedValueOnce({ execute } as any);
     const ctx = createAdminContext();
@@ -520,11 +511,12 @@ describe("admin.saveAIProviderSettings", () => {
       settings: { huggingface_api_key: "hf_newhfkey123" },
     });
 
-    expect(result.saved).toContain("marketing_huggingface_api_key");
-    expect(execute).toHaveBeenCalled();
+    expect(result.saved).toEqual([]);
+    expect(result.skipped).toContain("huggingface_api_key");
+    expect(execute).not.toHaveBeenCalled();
   });
 
-  it("saves Qwen API key", async () => {
+  it("rejects retired Qwen API settings", async () => {
     const execute = vi.fn().mockResolvedValue([]);
     vi.mocked(getDb).mockResolvedValueOnce({ execute } as any);
     const ctx = createAdminContext();
@@ -534,8 +526,9 @@ describe("admin.saveAIProviderSettings", () => {
       settings: { qwen_api_key: "qwen-newkey-abc" },
     });
 
-    expect(result.saved).toContain("marketing_qwen_api_key");
-    expect(execute).toHaveBeenCalled();
+    expect(result.saved).toEqual([]);
+    expect(result.skipped).toContain("qwen_api_key");
+    expect(execute).not.toHaveBeenCalled();
   });
 
   it("saves model settings and skips blank ones", async () => {
@@ -555,9 +548,9 @@ describe("admin.saveAIProviderSettings", () => {
 
     expect(result.saved).toContain("genx_model");
     expect(result.skipped).toContain("genx_text_model");
-    expect(result.saved).toContain("hf_task_text_to_image_model");
-    expect(result.saved).toContain("qwen_text_model");
-    expect(execute).toHaveBeenCalledTimes(3);
+    expect(result.skipped).toContain("hf_task_text_to_image_model");
+    expect(result.skipped).toContain("qwen_text_model");
+    expect(execute).toHaveBeenCalledTimes(1);
   });
 
   it("returns { saved, skipped } shape", async () => {
@@ -590,48 +583,38 @@ describe("admin.saveAIProviderSettings", () => {
 });
 
 describe("admin.testAIProviderConnection", () => {
-  it("returns missing_key status for huggingface when no key is configured", async () => {
-    // No DB rows, no env var → no key
-    const from = vi.fn().mockResolvedValue([]);
-    const select = vi.fn(() => ({ from }));
-    vi.mocked(getDb).mockResolvedValueOnce({ select } as any);
+  it("rejects the retired Hugging Face provider", async () => {
     const ctx = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.admin.testAIProviderConnection({ provider: "huggingface" });
-
-    expect(result.status).toBe("missing_key");
-    expect((result as any).keyPresent).toBe(false);
+    const err = await caller.admin.testAIProviderConnection({ provider: "huggingface" }).catch((e) => e);
+    expect(err).toBeInstanceOf(TRPCError);
+    expect((err as TRPCError).code).toBe("BAD_REQUEST");
   });
 
-  it("returns key_present status for huggingface when key is configured via env", async () => {
-    // getDb returns null (default) so getRuntimeConfig falls back to env var (no caching path)
+  it("does not re-enable Hugging Face from a legacy environment key", async () => {
     const original = process.env.HUGGINGFACE_API_KEY;
     process.env.HUGGINGFACE_API_KEY = "hf_test123";
     const ctx = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
     try {
-      const result = await caller.admin.testAIProviderConnection({ provider: "huggingface" });
-      expect(result.status).toBe("key_present");
-      expect((result as any).keyPresent).toBe(true);
+      const err = await caller.admin.testAIProviderConnection({ provider: "huggingface" }).catch((e) => e);
+      expect(err).toBeInstanceOf(TRPCError);
+      expect((err as TRPCError).code).toBe("BAD_REQUEST");
     } finally {
       if (original !== undefined) process.env.HUGGINGFACE_API_KEY = original;
       else delete process.env.HUGGINGFACE_API_KEY;
     }
   });
 
-  it("returns missing_key status for qwen when no key is configured", async () => {
-    const from = vi.fn().mockResolvedValue([]);
-    const select = vi.fn(() => ({ from }));
-    vi.mocked(getDb).mockResolvedValueOnce({ select } as any);
+  it("rejects the retired Qwen provider", async () => {
     const ctx = createAdminContext();
     const caller = appRouter.createCaller(ctx);
 
-    const result = await caller.admin.testAIProviderConnection({ provider: "qwen" });
-
-    expect(result.status).toBe("missing_key");
-    expect(result.configured).toBe(false);
+    const err = await caller.admin.testAIProviderConnection({ provider: "qwen" }).catch((e) => e);
+    expect(err).toBeInstanceOf(TRPCError);
+    expect((err as TRPCError).code).toBe("BAD_REQUEST");
   });
 
   it("is admin-only — throws UNAUTHORIZED for non-admin", async () => {
@@ -639,7 +622,7 @@ describe("admin.testAIProviderConnection", () => {
     const caller = appRouter.createCaller(ctx);
 
     const err = await caller.admin
-      .testAIProviderConnection({ provider: "huggingface" })
+      .testAIProviderConnection({ provider: "genx" })
       .catch((e) => e);
     expect(err).toBeInstanceOf(TRPCError);
     expect((err as TRPCError).code).toBe("FORBIDDEN");

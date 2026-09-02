@@ -13,6 +13,7 @@ import bcrypt from "bcryptjs";
 import { registerMarketingConnectorRoutes } from "./marketingConnector";
 import { registerAdminAccessRoutes } from "./adminAccessApi";
 import { registerBillingServiceRoutes } from "./billingServiceConnector";
+import { registerBillingEntitlementSyncRoutes } from "./billingEntitlementSync";
 
 const apiRouter = Router();
 
@@ -20,6 +21,7 @@ const apiRouter = Router();
 registerMarketingConnectorRoutes(apiRouter);
 registerAdminAccessRoutes(apiRouter);
 registerBillingServiceRoutes(apiRouter);
+registerBillingEntitlementSyncRoutes(apiRouter);
 
 // Middleware to verify API key
 async function verifyApiKey(req: Request, res: Response, next: NextFunction) {

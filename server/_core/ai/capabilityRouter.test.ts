@@ -10,11 +10,11 @@ describe("capabilityRouter", () => {
     })).toBe("facebook_reel");
   });
 
-  it("routes text strategy through GenX first with Qwen then Hugging Face fallback", async () => {
+  it("routes text strategy through GenX without vendor fallback", async () => {
     process.env.GENX_MODEL = "gpt-5.4";
     const plan = await getCapabilityPlan("email_campaign");
     expect(plan.primaryProvider).toBe("genx");
-    expect(plan.fallbackProviders).toEqual(expect.arrayContaining(["qwen", "huggingface"]));
+    expect(plan.fallbackProviders).toEqual([]);
     expect(plan.steps.map((step) => step.agentId)).toContain("StrategyAgent");
     expect(plan.steps.map((step) => step.agentId)).toContain("CopyAgent");
     delete process.env.GENX_MODEL;

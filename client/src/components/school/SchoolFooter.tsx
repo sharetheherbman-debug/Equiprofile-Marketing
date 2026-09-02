@@ -58,7 +58,7 @@ export function SchoolFooter() {
               </li>
               <li>
                 <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                  Book a Demo
+                  Contact Us
                 </Link>
               </li>
             </ul>

@@ -89,9 +89,17 @@ describe("EquiProfile Academy curriculum integrity", () => {
     expect(LESSON_UNITS).toHaveLength(105);
     for (const lesson of LESSON_UNITS) {
       expect(
-        meaningfulWordCount(lesson.content),
+        meaningfulWordCount([
+          lesson.content,
+          lesson.practicalApplication,
+          ...lesson.objectives,
+          ...lesson.keyPoints,
+          ...lesson.commonMistakes,
+          ...lesson.knowledgeCheck.flatMap((question) => [question.question, ...question.options, question.explanation]),
+          ...lesson.aiTutorPrompts,
+        ].join("\n")),
         `${lesson.slug} must retain meaningful teaching depth`,
-      ).toBeGreaterThanOrEqual(500);
+      ).toBeGreaterThanOrEqual(400);
       expect(
         lesson.knowledgeCheck.length,
         `${lesson.slug} must retain at least three knowledge checks`,

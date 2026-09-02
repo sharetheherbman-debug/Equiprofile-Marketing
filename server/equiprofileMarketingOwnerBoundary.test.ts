@@ -31,8 +31,8 @@ describe("EquiProfile controlled Marketing access boundary", () => {
   it("requires admin role plus either primary-owner identity or an explicit Marketing grant", () => {
     expect(connector).toContain("PRIMARY_ADMIN_EMAIL");
     expect(connector).toContain('context.user.role !== "admin"');
-    expect(connector).toContain(
-      'isProductComplimentaryActive(\n    context.user.preferences,\n    "marketing"',
+    expect(connector).toMatch(
+      /isProductComplimentaryActive\(\s*context\.user\.preferences,\s*"marketing"/,
     );
     expect(connector).toContain(
       "if (!isPrimaryOwner && !hasDelegatedMarketingAccess)",

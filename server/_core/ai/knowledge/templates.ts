@@ -5,7 +5,7 @@ export const aiKnowledgeLibrary = {
   ],
   campaignTemplates: ["stable_growth_q2", "school_enrolment_drive", "teacher_lesson_promotion"],
   launchTemplates: ["feature_announcement", "seasonal_launch", "community_update"],
-  ctaTemplates: ["book_a_demo", "start_free_trial", "contact_team"],
+  ctaTemplates: ["start_free_trial", "create_account", "contact_team"],
   socialTemplates: ["instagram_short", "linkedin_professional", "facebook_community"],
   onboardingTemplates: ["new_stable_week1", "new_school_week1", "teacher_welcome"],
   brandVoiceRules: [

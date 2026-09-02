@@ -393,7 +393,7 @@ export default function SchoolFeatures() {
               See It All in Action
             </h2>
             <p className="text-[#1e293b]/60 text-lg mb-8 max-w-2xl mx-auto">
-              Book a personalised demo and we'll walk you through every feature
+              Contact us to discuss the right Academy plan for your organisation
               tailored to your school's needs.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
@@ -402,7 +402,7 @@ export default function SchoolFeatures() {
                   size="lg"
                   className="bg-[#2d6a4f] hover:bg-[#236b45] text-white text-base px-8 py-6 rounded-xl shadow-lg"
                 >
-                  Book Your Free Demo
+                  Contact Us
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>

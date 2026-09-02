@@ -109,6 +109,16 @@ export function ManagementFooter({
                   Management Pricing
                 </Link>
               </li>
+              <li>
+                <a href="https://academy.equiprofile.online/academy" className="text-gray-500 hover:text-white transition-colors">
+                  Academy
+                </a>
+              </li>
+              <li>
+                <a href="https://shop.equiprofile.online" className="text-gray-500 hover:text-white transition-colors">
+                  Shop
+                </a>
+              </li>
             </ul>
           </div>
 

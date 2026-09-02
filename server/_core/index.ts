@@ -1033,15 +1033,6 @@ async function startServer() {
         process.env.GENX_API_KEY ||
         (await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
       );
-      const aiHuggingFace = !!(
-        process.env.HUGGINGFACE_API_KEY ||
-        (await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"))
-      );
-      const aiQwen = !!(
-        process.env.QWEN_API_KEY ||
-        (await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"))
-      );
-
       res.json({
         db: true, // If we got here the server started successfully
         smtp: smtpConfigured,
@@ -1049,9 +1040,7 @@ async function startServer() {
         uploads: uploadsReady,
         ai: {
           genx: aiGenX,
-          huggingface: aiHuggingFace,
-          qwen: aiQwen,
-          anyConfigured: aiGenX || aiHuggingFace || aiQwen,
+          anyConfigured: aiGenX,
         },
         weather: true, // Open-Meteo needs no key
         adminPasswordSet: !!process.env.ADMIN_UNLOCK_PASSWORD,
@@ -1096,14 +1085,6 @@ async function startServer() {
       const aiGenX = !!(
         process.env.GENX_API_KEY ||
         (await getRuntimeConfig("genx_api_key", "GENX_API_KEY"))
-      );
-      const aiHuggingFace = !!(
-        process.env.HUGGINGFACE_API_KEY ||
-        (await getRuntimeConfig("huggingface_api_key", "HUGGINGFACE_API_KEY"))
-      );
-      const aiQwen = !!(
-        process.env.QWEN_API_KEY ||
-        (await getRuntimeConfig("qwen_api_key", "QWEN_API_KEY"))
       );
       const weatherKey = !!process.env.WEATHER_API_KEY;
       const adminPasswordSet = !!process.env.ADMIN_UNLOCK_PASSWORD;
@@ -1153,12 +1134,12 @@ async function startServer() {
                 : "Set STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, VITE_STRIPE_PUBLIC_KEY to enable billing",
           },
           ai: {
-            status: toStatus(aiGenX || aiHuggingFace || aiQwen, true),
-            ok: aiGenX || aiHuggingFace || aiQwen,
+            status: toStatus(aiGenX, true),
+            ok: aiGenX,
             message:
-              aiGenX || aiHuggingFace || aiQwen
-                ? "AI configured"
-                : "Set GENX_API_KEY, HUGGINGFACE_API_KEY, or optional QWEN_API_KEY to enable AI features",
+              aiGenX
+                ? "GenX AI configured"
+                : "Set GENX_API_KEY to enable AI features",
           },
           weather: {
             status: "green",

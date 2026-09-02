@@ -2,7 +2,7 @@
  * Trial Lock Middleware
  *
  * Enforces 7-day hard trial lock across the application.
- * - Demo/trial accounts have full access for 7 days from created_at
+ * - Trial accounts have full access for 7 days from created_at
  * - After 7 days: HARD LOCK server-side (return 402/403)
  * - Frontend shows upgrade overlay
  * - Must be impossible to bypass by calling API directly
