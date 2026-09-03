@@ -93,7 +93,7 @@ export function TrialBanner() {
         </p>
       </div>
 
-      <Link href="/billing">
+      <a href="/api/v1/billing/launch?product=management&action=home">
         <Button
           size="sm"
           className={`shrink-0 text-white border-0 shadow-lg text-xs h-8 ${
@@ -105,7 +105,7 @@ export function TrialBanner() {
           {isTrialExpired ? "Subscribe" : "View Plans"}
           <ArrowRight className="w-3 h-3 ml-1" />
         </Button>
-      </Link>
+      </a>
     </motion.div>
   );
 }

@@ -3911,7 +3911,7 @@ function StudentSettingsView({
           Manage your student plan subscription.
         </p>
         <a
-          href="/billing"
+          href="/api/v1/billing/launch?product=academy&action=home"
           className="inline-flex items-center gap-2 text-sm text-[#2e6da4] hover:text-[#2e6da4]"
         >
           Manage billing <ChevronRight className="w-3.5 h-3.5" />

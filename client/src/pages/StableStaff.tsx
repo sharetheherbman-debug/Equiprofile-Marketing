@@ -509,12 +509,12 @@ export default function StableStaff() {
             Staff &amp; Team Management is exclusively for Stable plan
             subscribers. Upgrade to invite and manage your stable's team.
           </p>
-          <Link href="/billing">
+          <a href="/api/v1/billing/launch?product=management&action=home">
             <Button>
               Upgrade to Stable Plan
               <ChevronRight className="w-4 h-4 ml-1.5" />
             </Button>
-          </Link>
+          </a>
         </div>
       </DashboardLayout>
     );

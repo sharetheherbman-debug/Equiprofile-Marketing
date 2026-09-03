@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-25T13:28:08.271Z",
+  "generatedAt": "2026-09-02T17:09:35.079Z",
   "scope": "Per-lesson factual evidence mapping. SOURCE_MAPPED_REQUIRES_SPECIFIC_CLAIM_REVIEW is intentionally unresolved until a reviewer records source-to-claim verification or rewrites the claim as a variable professional principle.",
   "summary": {
     "lessonsRegistered": 105,
@@ -1548,27 +1548,20 @@
       "pathwaySlug": "horse-behaviour-welfare",
       "level": "beginner",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -1586,9 +1579,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now teach individual contextual observation, neutral behavioural records and veterinary or qualified-behaviour referral. Temperament labels, diagnosis, provocation, punishment and guaranteed interpretations were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now teach individual contextual observation, neutral behavioural records and veterinary or qualified-behaviour referral. Temperament labels, diagnosis, provocation, punishment and guaranteed interpretations were removed.",
@@ -1671,27 +1663,20 @@
       "pathwaySlug": "horse-behaviour-welfare",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -1710,8 +1695,7 @@
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "must",
-        "required",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now limit learners to authorised group observation and factual sequence records under the current management plan. Universal hierarchy claims, forced introductions, conflict entry and aggression diagnosis were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now limit learners to authorised group observation and factual sequence records under the current management plan. Universal hierarchy claims, forced introductions, conflict entry and aggression diagnosis were removed.",
@@ -1733,27 +1717,20 @@
       "pathwaySlug": "horse-behaviour-welfare",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -1771,9 +1748,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now treat behavioural checklists only as observation prompts and require stopping plus early veterinary referral. Learner pain scoring, ridden tests, palpation, medication, diagnosis and soundness declarations were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now treat behavioural checklists only as observation prompts and require stopping plus early veterinary referral. Learner pain scoring, ridden tests, palpation, medication, diagnosis and soundness declarations were removed.",
@@ -1930,7 +1906,6 @@
       "claimTopics": [
         "Nutrition, hydration, condition, feeding or supplements",
         "Transport, passports, export, ownership or current legal requirements",
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
@@ -1967,12 +1942,6 @@
           "checkedAt": "2026-08-21"
         },
         {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
           "organisation": "DEFRA / GOV.UK",
           "title": "Code of practice for the welfare of horses, ponies, donkeys and their hybrids",
           "url": "https://www.gov.uk/government/publications/code-of-practice-for-the-welfare-of-horses-ponies-donkeys-and-their-hybrids",
@@ -1994,9 +1963,8 @@
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "legal",
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now use welfare domains to organise individual facts and authorised reporting. Checklist verdicts, universal management, legal conclusions, confrontation, trespass and public allegations were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now use welfare domains to organise individual facts and authorised reporting. Checklist verdicts, universal management, legal conclusions, confrontation, trespass and public allegations were removed.",
@@ -2019,29 +1987,10 @@
       "pathwaySlug": "tack-equipment",
       "level": "beginner",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Horse Society",
           "title": "Make sure your tack is fitted correctly",
@@ -2057,9 +2006,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now separate component identification and visible condition reporting from qualified fit and suitability decisions. Universal measurements, learner fitting, repair and uncertain-equipment use were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now separate component identification and visible condition reporting from qualified fit and suitability decisions. Universal measurements, learner fitting, repair and uncertain-equipment use were removed.",
@@ -2081,29 +2029,10 @@
       "pathwaySlug": "tack-equipment",
       "level": "beginner",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "Penn State Extension",
           "title": "Safe Horse Handling",
@@ -2125,9 +2054,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require a calm supervised horse-specific approach, escape space and the current yard sequence. Fixed fitting measures, rope wrapping, force, improvised equipment and solo handling of a difficult horse were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require a calm supervised horse-specific approach, escape space and the current yard sequence. Fixed fitting measures, rope wrapping, force, improvised equipment and solo handling of a difficult horse were removed.",
@@ -2150,29 +2078,10 @@
       "pathwaySlug": "tack-equipment",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Horse Society",
           "title": "Make sure your tack is fitted correctly",
@@ -2189,8 +2098,7 @@
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "must",
-        "required",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now use material-specific manufacturer and owner instructions, condition records and qualified repair referral. Generic chemicals, soaking, heating, structural repair, part substitution and serviceability declarations were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now use material-specific manufacturer and owner instructions, condition records and qualified repair referral. Generic chemicals, soaking, heating, structural repair, part substitution and serviceability declarations were removed.",
@@ -2212,29 +2120,10 @@
       "pathwaySlug": "tack-equipment",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Horse Society",
           "title": "Make sure your tack is fitted correctly",
@@ -2250,9 +2139,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now reserve saddle fit and alteration for qualified fitters while learners make only visible pre-use and response observations. Fixed clearance rules, pad prescriptions, pain diagnosis and riding to test disputed fit were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now reserve saddle fit and alteration for qualified fitters while learners make only visible pre-use and response observations. Fixed clearance rules, pad prescriptions, pain diagnosis and riding to test disputed fit were removed.",
@@ -2312,27 +2200,20 @@
       "pathwaySlug": "tack-equipment",
       "level": "advanced",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -2370,31 +2251,24 @@
     },
     {
       "lessonSlug": "walk-trot-transitions-developing",
-      "title": "Walk to Trot Transitions",
+      "title": "Refining Rhythm in Walk–Trot Transitions",
       "pathwaySlug": "developing-rider-skills",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -2412,9 +2286,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now make aids, repetitions, progression and adaptation individual qualified-coach decisions. Universal aid sequences, punishment, biomechanical diagnosis, unsupervised repetition and teaching others were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now make aids, repetitions, progression and adaptation individual qualified-coach decisions. Universal aid sequences, punishment, biomechanical diagnosis, unsupervised repetition and teaching others were removed.",
@@ -2504,29 +2377,10 @@
       "pathwaySlug": "developing-rider-skills",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "University of Missouri Extension",
           "title": "Safe Riding: Practical Guidelines for Horse and Rider",
@@ -2542,9 +2396,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now use current coach-directed routes, traffic awareness, factual observations and welfare-led adaptation. Universal aid formulas, fixed geometry, force, resistance diagnosis and self-coaching through difficulty were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now use current coach-directed routes, traffic awareness, factual observations and welfare-led adaptation. Universal aid formulas, fixed geometry, force, resistance diagnosis and self-coaching through difficulty were removed.",
@@ -2695,9 +2548,7 @@
       "level": "beginner",
       "claimTopics": [
         "Veterinary health, vital signs, preventative health, hoof, dental or tack-fit care",
-        "Nutrition, hydration, condition, feeding or supplements",
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "Nutrition, hydration, condition, feeding or supplements"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
@@ -2726,12 +2577,6 @@
           "checkedAt": "2026-08-21"
         },
         {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
           "organisation": "British Horse Society",
           "title": "Implementing a fitness programme",
           "url": "https://www.bhs.org.uk/horse-care-and-welfare/health-care-management/horse-health/horse-fitness/implementing-a-fitness-programme/",
@@ -2752,9 +2597,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require gradual individual coach-led preparation and recovery with contextual observations and professional escalation. Fixed durations, numeric triage cut-offs, fitness diagnosis and forced exercise were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require gradual individual coach-led preparation and recovery with contextual observations and professional escalation. Fixed durations, numeric triage cut-offs, fitness diagnosis and forced exercise were removed.",
@@ -2777,24 +2621,10 @@
       "pathwaySlug": "developing-rider-skills",
       "level": "beginner",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Equestrian",
           "title": "Equine welfare fundamentals",
@@ -2822,9 +2652,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require verified identity, clothing, equipment, horse-rider suitability, area, briefing, supervision and emergency arrangements. Learner fitting, allocation, substitution and unapproved starts were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require verified identity, clothing, equipment, horse-rider suitability, area, briefing, supervision and emergency arrangements. Learner fitting, allocation, substitution and unapproved starts were removed.",
@@ -2879,9 +2708,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now separate factual session evidence, participant report and coach feedback, with authorised next steps. Horse blame, causal diagnosis, universal improvement deadlines and unsupervised progression were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now separate factual session evidence, participant report and coach feedback, with authorised next steps. Horse blame, causal diagnosis, universal improvement deadlines and unsupervised progression were removed.",
@@ -2901,7 +2729,6 @@
       "level": "advanced",
       "claimTopics": [
         "Transport, passports, export, ownership or current legal requirements",
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
@@ -2927,12 +2754,6 @@
         },
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
           "title": "Equine welfare fundamentals",
           "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
@@ -2952,10 +2773,9 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule",
-        "legal"
+        "legal",
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now reserve advanced movement terminology, aids, readiness and progression for appropriately qualified coaching. Forced outlines, fixed repetitions, universal aids, movement diagnosis and self-teaching were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now reserve advanced movement terminology, aids, readiness and progression for appropriately qualified coaching. Forced outlines, fixed repetitions, universal aids, movement diagnosis and self-teaching were removed.",
@@ -3074,24 +2894,10 @@
       "pathwaySlug": "polework-jump-foundations",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Equestrian",
           "title": "Equine welfare fundamentals",
@@ -3107,9 +2913,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now reserve measurement, construction, helper control, adjustment and progression for the qualified coach. Distance tables, stride formulas, personal pacing, learner setup and unauthorised line entry were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now reserve measurement, construction, helper control, adjustment and progression for the qualified coach. Distance tables, stride formulas, personal pacing, learner setup and unauthorised line entry were removed.",
@@ -3521,27 +3326,20 @@
       "pathwaySlug": "stable-management",
       "level": "beginner",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -3559,9 +3357,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now use a current site-specific welfare, material, tool, fire and waste procedure. Universal bedding types, depths and schedules plus learner chemical, contamination and disposal decisions were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now use a current site-specific welfare, material, tool, fire and waste procedure. Universal bedding types, depths and schedules plus learner chemical, contamination and disposal decisions were removed.",
@@ -3660,7 +3457,6 @@
       "claimTopics": [
         "Nutrition, hydration, condition, feeding or supplements",
         "Transport, passports, export, ownership or current legal requirements",
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making",
         "Competition and riding safety"
       ],
@@ -3697,12 +3493,6 @@
           "checkedAt": "2026-08-21"
         },
         {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
           "organisation": "DEFRA / GOV.UK",
           "title": "Code of practice for the welfare of horses, ponies, donkeys and their hybrids",
           "url": "https://www.gov.uk/government/publications/code-of-practice-for-the-welfare-of-horses-ponies-donkeys-and-their-hybrids",
@@ -3712,9 +3502,8 @@
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "legal",
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require current individual plans, time-stamped factual records, error transparency and prompt escalation. Universal schedules, copied records, backdating, diagnosis and unauthorised care or medication changes were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require current individual plans, time-stamped factual records, error transparency and prompt escalation. Universal schedules, copied records, backdating, diagnosis and unauthorised care or medication changes were removed.",
@@ -3736,9 +3525,7 @@
       "pathwaySlug": "stable-management",
       "level": "advanced",
       "claimTopics": [
-        "Infectious disease, hygiene or biosecurity",
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "Infectious disease, hygiene or biosecurity"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
@@ -3752,24 +3539,6 @@
           "organisation": "World Horse Welfare",
           "title": "Horse health essentials",
           "url": "https://www.worldhorsewelfare.org/advice/horse-health-essentials",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -3793,9 +3562,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require risk-based inspection, controlled access, competent maintenance and change review. Universal dimensions or intervals and learner structural, electrical, machinery, chemical or compliance decisions were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require risk-based inspection, controlled access, competent maintenance and change review. Universal dimensions or intervals and learner structural, electrical, machinery, chemical or compliance decisions were removed.",
@@ -4080,29 +3848,10 @@
       "pathwaySlug": "rider-fitness-mindset",
       "level": "beginner",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Horse Society",
           "title": "About the Rider Introduction award – coach guidance",
@@ -4118,9 +3867,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now frame rider fitness as individual preparation coordinated with qualified coaching and healthcare. Body judgement, diagnosis, mandatory targets, treatment claims and training through concerning symptoms were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now frame rider fitness as individual preparation coordinated with qualified coaching and healthcare. Body judgement, diagnosis, mandatory targets, treatment claims and training through concerning symptoms were removed.",
@@ -4210,29 +3958,10 @@
       "pathwaySlug": "rider-fitness-mindset",
       "level": "intermediate",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Horse Society",
           "title": "About the Rider Introduction award – coach guidance",
@@ -4249,8 +3978,7 @@
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
         "required",
-        "must",
-        "rule"
+        "must"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require individually approved activity and qualified exercise or healthcare direction. Prescribed sets, holds, loads and technique, weakness diagnosis, rehabilitation claims and exercise through pain were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require individually approved activity and qualified exercise or healthcare direction. Prescribed sets, holds, loads and technique, weakness diagnosis, rehabilitation claims and exercise through pain were removed.",
@@ -4364,9 +4092,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now teach duty of care, welfare, participant-centred communication, risk awareness, feedback and reflective boundaries through observation and simulation. Unsupervised coaching and qualification, clinical or safeguarding-authority claims were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now teach duty of care, welfare, participant-centred communication, risk awareness, feedback and reflective boundaries through observation and simulation. Unsupervised coaching and qualification, clinical or safeguarding-authority claims were removed.",
@@ -4567,9 +4294,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now centre qualified planning, participant safety, horse welfare, communication, adaptation, feedback and evaluation. Unsupervised delivery, horse allocation, clinical decisions and qualification claims were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now centre qualified planning, participant safety, horse welfare, communication, adaptation, feedback and evaluation. Unsupervised delivery, horse allocation, clinical decisions and qualification claims were removed.",
@@ -4588,8 +4314,7 @@
       "pathwaySlug": "coaching-teaching-skills",
       "level": "intermediate",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "Safeguarding and reporting"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
@@ -4606,12 +4331,6 @@
           "checkedAt": "2026-08-21"
         },
         {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
-        {
           "organisation": "British Horse Society",
           "title": "Stage 2 Coach Syllabus",
           "url": "https://www.bhs.org.uk/bhs-professional-qualifications-and-careers/bhs-qualifications-and-stages/stage-2/stage-2-coach-syllabus/",
@@ -4620,9 +4339,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now use risk, aims, equipment, suitability, preparation, adaptable activity, conclusion and evaluation as qualified-review categories. Fixed templates, self-authorised delivery and unassessed progression were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now use risk, aims, equipment, suitability, preparation, adaptable activity, conclusion and evaluation as qualified-review categories. Fixed templates, self-authorised delivery and unassessed progression were removed.",
@@ -4725,9 +4443,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require qualified group positioning, consistent expectations, individual adaptation, welfare, feedback and progression. Public ranking, forced progression, punishment, horse swaps and unsupervised instruction were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require qualified group positioning, consistent expectations, individual adaptation, welfare, feedback and progression. Public ranking, forced progression, punishment, horse swaps and unsupervised instruction were removed.",
@@ -6706,29 +6423,10 @@
       "pathwaySlug": "rider-fitness-mindset",
       "level": "developing",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "General descriptive educational content"
       ],
-      "riskClass": "HIGH_RISK",
+      "riskClass": "LOW_RISK_DESCRIPTIVE",
       "sources": [
-        {
-          "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "GOV.UK",
-          "title": "Keeping horses",
-          "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
-        },
         {
           "organisation": "British Horse Society",
           "title": "About the Rider Introduction award – coach guidance",
@@ -6744,9 +6442,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require individual healthcare-aware approval and comfortable non-forced participation. Fixed holds, ranges and repetitions, partner force, rehabilitation claims and stretching through pain were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require individual healthcare-aware approval and comfortable non-forced participation. Fixed holds, ranges and repetitions, partner force, rehabilitation claims and stretching through pain were removed.",
@@ -6768,27 +6465,20 @@
       "pathwaySlug": "rider-fitness-mindset",
       "level": "intermediate",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -6812,9 +6502,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now use participant choice, a safe pause, privacy, qualified coaching support and appropriate healthcare referral. Diagnosis, forced exposure, promised cures, pressure to continue and replacement of treatment were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now use participant choice, a safe pause, privacy, qualified coaching support and appropriate healthcare referral. Diagnosis, forced exposure, promised cures, pressure to continue and replacement of treatment were removed.",
@@ -6837,8 +6526,7 @@
       "pathwaySlug": "coaching-teaching-skills",
       "level": "intermediate",
       "claimTopics": [
-        "Safeguarding and reporting",
-        "Welfare, ethics, management or end-of-life decision-making"
+        "Safeguarding and reporting"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
@@ -6853,19 +6541,12 @@
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
           "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
-          "checkedAt": "2026-08-21"
         }
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require immediate-safety action, calm listening, exact contemporaneous records and prompt reporting through the current safeguarding route. Investigation, leading questions, confrontation, secret promises and learner verdicts were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require immediate-safety action, calm listening, exact contemporaneous records and prompt reporting through the current safeguarding route. Investigation, leading questions, confrontation, secret promises and learner verdicts were removed.",
@@ -6884,27 +6565,20 @@
       "pathwaySlug": "coaching-teaching-skills",
       "level": "advanced",
       "claimTopics": [
-        "Safeguarding and reporting",
         "Welfare, ethics, management or end-of-life decision-making"
       ],
       "riskClass": "HIGH_RISK",
       "sources": [
         {
           "organisation": "British Equestrian",
-          "title": "What is safeguarding?",
-          "url": "https://www.britishequestrian.org.uk/getInvolved/safeguarding/what-is-safeguarding",
+          "title": "Equine welfare fundamentals",
+          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
           "organisation": "GOV.UK",
           "title": "Keeping horses",
           "url": "https://www.gov.uk/keeping-horses",
-          "checkedAt": "2026-08-21"
-        },
-        {
-          "organisation": "British Equestrian",
-          "title": "Equine welfare fundamentals",
-          "url": "https://www.britishequestrian.org.uk/equine/ethics-and-welfare/equine-welfare-fundamentals",
           "checkedAt": "2026-08-21"
         },
         {
@@ -6916,9 +6590,8 @@
       ],
       "sourceCheckDate": "2026-08-22",
       "materialNumberOrRuleMentions": [
-        "required",
         "must",
-        "rule"
+        "required"
       ],
       "whatWasVerified": "REWRITTEN_AS_PRINCIPLE: The complete lesson and assessments now require participant-centred consent, respectful functional questions, competent adaptation, privacy and horse welfare. Medical assumptions, forced assistance, unqualified equipment modification and universal suitability promises were removed.",
       "lessonChangeMade": "Replaced the complete learner-facing lesson, assessments and Tutor prompts within this reviewed boundary: The complete lesson and assessments now require participant-centred consent, respectful functional questions, competent adaptation, privacy and horse welfare. Medical assumptions, forced assistance, unqualified equipment modification and universal suitability promises were removed.",

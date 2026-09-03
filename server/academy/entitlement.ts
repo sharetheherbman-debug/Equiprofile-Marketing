@@ -1,7 +1,10 @@
 import { and, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { organizationMembers, organizations } from "../../drizzle/schema";
-import { isProductComplimentaryActive } from "../../shared/productEntitlement";
+import {
+  isProductComplimentaryActive,
+  readProductComplimentaryGrant,
+} from "../../shared/productEntitlement";
 import { getDb, getUserById } from "../db";
 
 export type AcademyEntitlement = {
@@ -34,14 +37,26 @@ export function resolveIndividualAcademyEntitlement(user: {
     return { entitled: true, audience: "admin", source: "admin_role" };
   }
   const prefs = preferences(user.preferences);
+  const preferredAudience = (() => {
+    const value = String(prefs.academyPlan || prefs.selectedExperience || "").toLowerCase();
+    if (value === "teacher") return "teacher" as const;
+    if (value === "owner" || value === "school_owner") return "owner" as const;
+    return "rider" as const;
+  })();
   if (isProductComplimentaryActive(prefs, "academy")) {
-    return { entitled: true, audience: "rider", source: "complimentary_academy" };
+    const tier = String(readProductComplimentaryGrant(prefs, "academy")?.tier || "").toLowerCase();
+    const audience = tier === "teacher"
+      ? "teacher"
+      : tier === "owner" || tier.startsWith("school_")
+        ? "owner"
+        : preferredAudience;
+    return { entitled: true, audience, source: "complimentary_academy" };
   }
   const status = String(prefs.academyEntitlementStatus || "").toLowerCase();
   const plan = String(prefs.academyPlan || prefs.planTier || "").toLowerCase();
   const experience = String(prefs.selectedExperience || "").toLowerCase();
   if (["active", "trial", "trialing", "grace"].includes(status)) {
-    return { entitled: true, audience: "rider", source: "individual_academy" };
+    return { entitled: true, audience: preferredAudience, source: "individual_academy" };
   }
   if (plan === "student" || experience === "student") {
     // Compatibility for existing learners. New paid access is synchronized via
@@ -65,10 +80,11 @@ export async function getAcademyEntitlement(userId: number): Promise<AcademyEnti
   const user = await getUserById(userId);
   if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
   const individual = resolveIndividualAcademyEntitlement(user);
-  if (individual.entitled) return individual;
+  if (individual.source === "admin_role") return individual;
 
   const database = await getDb();
   if (!database) {
+    if (individual.entitled) return individual;
     throw new TRPCError({ code: "SERVICE_UNAVAILABLE", message: "Academy access could not be checked." });
   }
   const [membership] = await database
@@ -101,13 +117,20 @@ export async function getAcademyEntitlement(userId: number): Promise<AcademyEnti
   };
 }
 
-export async function requireAcademyLearnerEntitlement(userId: number): Promise<AcademyEntitlement> {
+export async function requireAcademyAudience(
+  userId: number,
+  allowed: AcademyEntitlement["audience"][],
+): Promise<AcademyEntitlement> {
   const entitlement = await getAcademyEntitlement(userId);
-  if (!entitlement.entitled || !["rider", "learner", "admin"].includes(entitlement.audience)) {
+  if (!entitlement.entitled || !allowed.includes(entitlement.audience)) {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "An active Academy learner plan or learner seat is required.",
+      message: "Your EquiProfile Academy entitlement does not include this area.",
     });
   }
   return entitlement;
+}
+
+export async function requireAcademyLearnerEntitlement(userId: number): Promise<AcademyEntitlement> {
+  return requireAcademyAudience(userId, ["rider", "learner", "admin"]);
 }

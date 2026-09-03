@@ -138,7 +138,6 @@ const dashboardModuleGroups = [
     labelColor: "text-slate-400",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
-      { icon: DollarSign, label: "Billing", path: "/billing" },
     ],
   },
 ];

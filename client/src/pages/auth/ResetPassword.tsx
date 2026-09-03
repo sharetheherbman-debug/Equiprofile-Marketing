@@ -21,8 +21,11 @@ import { AuthLayout } from "@/components/AuthLayout";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { motion } from "framer-motion";
+import { getCoreProductContext, getProductName } from "@/lib/productContext";
 
 export default function ResetPassword() {
+  const product = getCoreProductContext();
+  const productName = getProductName(product);
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,7 +64,7 @@ export default function ResetPassword() {
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ token, password, product }),
       });
 
       const data = await response.json().catch(() => ({}));
@@ -97,10 +100,10 @@ export default function ResetPassword() {
             <Card className="bg-[#0b1726]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
                 <div className="flex justify-center mb-2">
-                  <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
+                  <img src="/logo.png" alt={productName} className="h-14 w-auto object-contain" />
                 </div>
                 <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                  Reset your password
+                  Reset your {product === "academy" ? "EquiProfile Academy " : ""}password
                 </CardTitle>
                 <CardDescription className="text-center text-gray-400">
                   Enter your new password below

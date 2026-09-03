@@ -266,33 +266,43 @@ export async function sendAcademyInviteEmail(
   );
 }
 
-export async function sendWelcomeEmail(user: User): Promise<void> {
+export async function sendWelcomeEmail(
+  user: User,
+  product: "management" | "academy" = "management",
+): Promise<void> {
   if (!user.email) {
     console.warn("[Email] Cannot send welcome email - user has no email");
     return;
   }
 
-  const BASE_URL = process.env.BASE_URL || "https://equiprofile.online";
+  const baseUrl = product === "academy"
+    ? process.env.ACADEMY_BASE_URL || "https://academy.equiprofile.online"
+    : process.env.BASE_URL || "https://equiprofile.online";
+  const productName = product === "academy"
+    ? "EquiProfile Academy"
+    : "EquiProfile Management";
   const trialDays = user.trialEndsAt
     ? Math.ceil(
         (user.trialEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
       )
     : 7;
 
-  const subject = "Welcome to EquiProfile! 🐴";
+  const subject = `Welcome to ${productName}! 🐴`;
   const html = brandedEmail(`
     <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Welcome, ${user.name || "there"}!</h1>
     <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
-      You're now part of EquiProfile — the professional horse management platform trusted by yards, trainers, and horse owners.
+      ${product === "academy"
+        ? "Your EquiProfile account is verified. Continue to the Academy to access the learning experience available for your role and entitlement."
+        : "You're now part of EquiProfile Management — the professional horse management platform trusted by yards, trainers, and horse owners."}
     </p>
-    <div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
+    ${product === "management" ? `<div style="background:#f0f4ff;border-radius:10px;padding:20px 24px;margin:0 0 24px;border:1px solid #dde3f8;">
       <p style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a2340;">Your ${trialDays}-Day Free Trial includes:</p>
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
         ${["Health records &amp; vaccination tracking", "Training session management", "Feeding schedules &amp; nutrition plans", "Calendar &amp; event reminders", "AI-powered weather analysis", "Secure document storage"].map(f =>
           `<tr><td style="padding:5px 0;font-size:14px;color:#374151;">&#10003;&nbsp;&nbsp;${f}</td></tr>`).join("")}
       </table>
-    </div>
-    ${ctaBtn("Go to Dashboard →", `${BASE_URL}/dashboard`)}
+    </div>` : ""}
+    ${ctaBtn(product === "academy" ? "Open EquiProfile Academy →" : "Go to Management Dashboard →", product === "academy" ? `${baseUrl}/academy` : `${baseUrl}/dashboard`)}
     <p style="font-size:13px;color:#94a3b8;text-align:center;margin:8px 0 0;">Questions? Simply reply to this email — we're happy to help.</p>
   `);
 
@@ -306,15 +316,19 @@ export async function sendVerificationEmail(
   userEmail: string,
   token: string,
   userName?: string,
+  product: "management" | "academy" = "management",
 ): Promise<void> {
-  const baseUrl = process.env.BASE_URL || "https://equiprofile.online";
+  const baseUrl = product === "academy"
+    ? process.env.ACADEMY_BASE_URL || "https://academy.equiprofile.online"
+    : process.env.BASE_URL || "https://equiprofile.online";
   const verifyUrl = `${baseUrl}/verify-email?token=${encodeURIComponent(token)}`;
 
-  const subject = "Verify your EquiProfile email address";
+  const productName = product === "academy" ? "EquiProfile Academy" : "EquiProfile Management";
+  const subject = `Verify your ${productName} email address`;
   const html = brandedEmail(`
     <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Verify Your Email Address</h1>
     <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
-      Hi ${userName || "there"}, please verify your email to activate your account and start your free trial.
+      Hi ${userName || "there"}, please verify your email to activate your ${productName} account.
     </p>
     ${ctaBtn("Verify Email Address →", verifyUrl)}
     <div style="background:#f0f4ff;border-radius:8px;padding:16px 20px;margin:24px 0;border:1px solid #dde3f8;">
@@ -536,14 +550,19 @@ export async function sendPasswordResetEmail(
   email: string,
   resetToken: string,
   name?: string,
+  product: "management" | "academy" = "management",
 ): Promise<void> {
-  const resetUrl = `${process.env.BASE_URL || "https://equiprofile.online"}/reset-password?token=${resetToken}`;
+  const baseUrl = product === "academy"
+    ? process.env.ACADEMY_BASE_URL || "https://academy.equiprofile.online"
+    : process.env.BASE_URL || "https://equiprofile.online";
+  const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
+  const productName = product === "academy" ? "EquiProfile Academy" : "EquiProfile Management";
 
-  const subject = "Reset your EquiProfile password";
+  const subject = `Reset your ${productName} password`;
   const html = brandedEmail(`
     <h1 style="margin:0 0 8px;font-size:24px;color:#1a2340;font-weight:700;">Password Reset Request</h1>
     <p style="margin:0 0 20px;font-size:15px;color:#64748b;line-height:1.6;">
-      Hi ${name || "there"}, we received a request to reset your EquiProfile password. Click the button below to create a new one.
+      Hi ${name || "there"}, we received a request to reset your ${productName} password. Click the button below to create a new one.
     </p>
     ${ctaBtn("Reset Password →", resetUrl)}
     <div style="background:#fef2f2;border-radius:8px;padding:16px 20px;margin:24px 0;border:1px solid #fca5a5;">

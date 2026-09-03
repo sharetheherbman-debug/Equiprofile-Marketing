@@ -66,7 +66,6 @@ const BreedingManagement = lazy(() => import("@/pages/BreedingManagement"));
 const LessonScheduling = lazy(() => import("@/pages/LessonScheduling"));
 const ClientPortal = lazy(() => import("@/pages/ClientPortal"));
 const Settings = lazy(() => import("@/pages/Settings"));
-const BillingPage = lazy(() => import("@/pages/BillingPage"));
 
 // Additional Health & Management Pages
 const Appointments = lazy(() => import("@/pages/Appointments"));
@@ -418,13 +417,6 @@ function ManagementRouter() {
             <Route path="/settings">
               <ProtectedRoute>
                 <Settings />
-              </ProtectedRoute>
-            </Route>
-
-            {/* Billing */}
-            <Route path="/billing">
-              <ProtectedRoute>
-                <BillingPage />
               </ProtectedRoute>
             </Route>
 

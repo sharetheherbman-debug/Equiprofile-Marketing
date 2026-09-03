@@ -29,6 +29,7 @@ import {
   studentReports,
 } from "../drizzle/schema";
 import { ensureAcademyCurriculum } from "./academy/curriculumPipeline";
+import { requireAcademyAudience } from "./academy/entitlement";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -98,20 +99,8 @@ async function requireTeacherStudentMembership(
  * the teacher plan/experience OR is an admin.
  */
 const teacherProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const user = await db.getUserById(ctx.user.id);
-  if (!user)
-    throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-  const prefs = parseUserPrefs(user.preferences);
-  const isAdmin = user.role === "admin";
-  const isTeacher =
-    prefs.selectedExperience === "teacher" || prefs.planTier === "teacher";
-  if (!isAdmin && !isTeacher) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "This feature requires the Teacher plan.",
-    });
-  }
-  return next({ ctx });
+  const academyEntitlement = await requireAcademyAudience(ctx.user.id, ["teacher", "admin"]);
+  return next({ ctx: { ...ctx, academyEntitlement } });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

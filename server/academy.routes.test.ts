@@ -146,7 +146,7 @@ describe("Academy guest and role route boundary", () => {
     }
     const inviteRoute = routerSource.slice(
       routerSource.indexOf('path="/academy-invite"'),
-      routerSource.indexOf("{/* Onboarding"),
+      routerSource.indexOf('path="/student-dashboard"'),
     );
     expect(inviteRoute).not.toContain("ProtectedRoute");
   });
@@ -162,12 +162,18 @@ describe("Academy guest and role route boundary", () => {
     );
     const teacherDashboard = routerSource.slice(
       routerSource.indexOf('path="/teacher-dashboard"'),
-      routerSource.indexOf("{/* Canonical Academy dashboard"),
+      routerSource.indexOf('path="/academy-dashboard"'),
     );
 
-    expect(academyDashboard).toContain("ProtectedRoute");
-    expect(studentDashboard).toContain("StudentRoute");
-    expect(teacherDashboard).toContain("TeacherRoute");
+    expect(academyDashboard).toContain('AcademyProtectedRoute allow={["owner", "admin"]}');
+    expect(studentDashboard).toContain('AcademyProtectedRoute allow={["rider", "learner", "admin"]}');
+    expect(teacherDashboard).toContain('AcademyProtectedRoute allow={["teacher", "admin"]}');
+  });
+
+  it("does not compile Management or Stable routes into the Academy application", () => {
+    for (const route of ["/horses", "/health", "/training", "/stable", "/ai-chat", "/admin"]) {
+      expect(routerSource).not.toContain(`path="${route}"`);
+    }
   });
 });
 

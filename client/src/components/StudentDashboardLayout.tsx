@@ -87,17 +87,19 @@ function SidebarNav({
     <div className="flex flex-col h-full bg-white dark:bg-[#1a2435]">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-4 h-14 border-b border-gray-100 dark:border-gray-800 shrink-0">
+        <button type="button" onClick={() => { onNavigate("overview"); onClose?.(); }} className="flex items-center gap-2.5 min-w-0 text-left" aria-label="EquiProfile Academy student dashboard">
         <div className="w-8 h-8 rounded-lg bg-[#2e6da4] flex items-center justify-center shrink-0">
           <GraduationCap className="w-4 h-4 text-white" />
         </div>
         <div className="min-w-0">
           <span className="text-sm font-bold text-gray-900 dark:text-gray-100 tracking-tight truncate block font-serif">
-            EquiProfile
+            EquiProfile Academy
           </span>
           <span className="text-[10px] text-[#2e6da4] font-semibold uppercase tracking-wider">
             Student Portal
           </span>
         </div>
+        </button>
         {onClose && (
           <button
             onClick={onClose}
@@ -154,7 +156,7 @@ function SidebarNav({
         </button>
         {!isSchoolManaged && (
           <button
-            onClick={() => { setLocation("/billing"); onClose?.(); }}
+            onClick={() => { window.location.href = "/api/v1/billing/launch?product=academy&action=home"; onClose?.(); }}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg mb-0.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all text-left"
           >
             <CreditCard className="w-4 h-4 shrink-0 text-gray-400 dark:text-gray-500" />

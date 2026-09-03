@@ -54,7 +54,7 @@ describe("client handoff public contract", () => {
   it("routes Academy customer billing through the standalone service", () => {
     const dashboard = read("client/src/pages/AcademyDashboard.tsx");
     const academyRouter = read("server/academyRouter.ts");
-    expect(dashboard).toContain('setLocation("/billing")');
+    expect(dashboard).toContain('/api/v1/billing/launch?product=academy&action=home');
     expect(dashboard).not.toContain("createBillingPortal");
     expect(academyRouter).not.toContain("createBillingCheckout:");
     expect(academyRouter).not.toContain("createBillingPortal:");

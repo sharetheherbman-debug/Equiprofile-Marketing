@@ -606,7 +606,7 @@ try {
   );
 
   await runCase(
-    "Billing renders current Management subscription surface on tablet",
+    "Management no longer exposes a competing Billing page",
     async () => {
       await withPage(
         {
@@ -615,8 +615,8 @@ try {
           viewport: { width: 820, height: 1180 },
         },
         async (page) => {
-          await expectVisible(page, "Management Billing");
-          await expectVisible(page, "Current Management access");
+          await expectVisible(page, "Page Not Found");
+          assert.equal(await visible(page, "Management Billing"), 0);
           assert(page.url().endsWith("/billing"));
         },
       );
@@ -631,10 +631,12 @@ try {
         async (page) => {
           const disclaimer = page.getByRole("button", { name: "I understand — continue to AI Chat" });
           if (await disclaimer.isVisible().catch(() => false)) await disclaimer.click();
+          const rejectOptional = page.getByRole("button", { name: "Reject optional" });
+          if (await rejectOptional.isVisible().catch(() => false)) await rejectOptional.click();
 
           const input = page.getByPlaceholder("Ask about horse care, training, or management...");
           await input.fill("Remind me Friday to book Willow's farrier.");
-          await input.press("Enter");
+          await page.getByRole("button", { name: "Send message" }).click();
           await expectVisible(page, "Action preview");
           await expectVisible(page, "Nothing saved yet");
           await expectVisible(page, "Book Willow's farrier");

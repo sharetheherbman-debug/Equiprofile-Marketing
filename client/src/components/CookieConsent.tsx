@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  OPEN_PRIVACY_CHOICES_EVENT,
   readConsentChoice,
   updateConsent,
   type ConsentChoice,
@@ -24,6 +25,9 @@ export function CookieConsent() {
     const stored = readConsentChoice();
     setChoice(stored);
     setVisible(!stored);
+    const reopen = () => setVisible(true);
+    window.addEventListener(OPEN_PRIVACY_CHOICES_EVENT, reopen);
+    return () => window.removeEventListener(OPEN_PRIVACY_CHOICES_EVENT, reopen);
   }, []);
 
   const persist = (value: ConsentChoice) => {
@@ -81,16 +85,6 @@ export function CookieConsent() {
           </motion.div>
         )}
       </AnimatePresence>
-      {!visible && choice && (
-        <button
-          type="button"
-          onClick={() => setVisible(true)}
-          className="fixed bottom-3 left-3 z-[9998] rounded-full border border-slate-300 bg-white/95 px-3 py-2 text-xs font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2e6da4]"
-          aria-label={`Privacy choices. Optional measurement is currently ${choice === "accepted" ? "accepted" : "rejected"}.`}
-        >
-          Privacy choices
-        </button>
-      )}
     </>
   );
 }

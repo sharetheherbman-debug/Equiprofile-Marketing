@@ -111,7 +111,6 @@ const dashboardModuleGroups: Array<{
       { icon: Tag, label: "Tags", path: "/tags" },
       { icon: GitBranch, label: "Pedigree", path: "/pedigree" },
       { icon: Shield, label: "Equine Passport", path: "/equine-passport" },
-      { icon: DollarSign, label: "Billing", path: "/billing" },
       { icon: Settings, label: "Settings", path: "/settings" },
     ],
   },

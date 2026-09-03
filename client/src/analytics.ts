@@ -9,6 +9,7 @@
 export const COOKIE_CONSENT_KEY = "equiprofile_cookie_consent";
 const ATTRIBUTION_KEY = "equiprofile_acquisition_attribution";
 const CONSENT_EVENT = "equiprofile:consent-change";
+export const OPEN_PRIVACY_CHOICES_EVENT = "equiprofile:open-privacy-choices";
 const DUPLICATE_WINDOW_MS = 1_000;
 
 export type ConsentChoice = "accepted" | "declined";
@@ -249,6 +250,12 @@ export function updateConsent(choice: ConsentChoice) {
   window.gtag?.("consent", "update", consentState(choice === "accepted"));
   if (choice === "accepted") captureAttribution();
   window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: choice }));
+}
+
+/** Re-open the consent dialog from an intentional footer/settings control. */
+export function openPrivacyChoices() {
+  if (!hasBrowser()) return;
+  window.dispatchEvent(new CustomEvent(OPEN_PRIVACY_CHOICES_EVENT));
 }
 
 export function trackMeasurementEvent(

@@ -138,7 +138,6 @@ const stableModuleGroups = [
     labelColor: "text-slate-400",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
-      { icon: DollarSign, label: "Billing", path: "/billing" },
     ],
   },
 ];
@@ -242,12 +241,12 @@ function StableDashboardContent() {
           Upgrade to access full stable management, staff tools, client portal,
           and more.
         </p>
-        <Link href="/billing">
+        <a href="/api/v1/billing/launch?product=management&action=home">
           <Button>
             Upgrade to Stable Plan
             <ChevronRight className="w-4 h-4 ml-1.5" />
           </Button>
-        </Link>
+        </a>
       </div>
     );
   }

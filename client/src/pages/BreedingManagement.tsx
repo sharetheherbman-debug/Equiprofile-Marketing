@@ -903,12 +903,12 @@ export default function BreedingManagement() {
             Breeding Management is exclusively for Stable plan subscribers. Upgrade to
             access full breeding records, foal tracking, and more.
           </p>
-          <Link href="/billing">
+          <a href="/api/v1/billing/launch?product=management&action=home">
             <Button>
               Upgrade to Stable Plan
               <ChevronRight className="w-4 h-4 ml-1.5" />
             </Button>
-          </Link>
+          </a>
         </div>
       </DashboardLayout>
     );

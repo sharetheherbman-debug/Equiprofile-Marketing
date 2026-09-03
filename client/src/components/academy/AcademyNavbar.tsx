@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { resolveAcademyDashboard } from "@/lib/productContext";
 
 const navLinks = [
   { label: "About", path: "/academy/about" },
@@ -20,34 +21,14 @@ const navLinks = [
   { label: "Contact", path: "/academy/contact" },
 ];
 
-function resolveAcademyDashboard(preferences: unknown) {
-  if (typeof preferences !== "string" || !preferences) {
-    return "/student-dashboard";
-  }
-
-  try {
-    const parsed = JSON.parse(preferences) as {
-      planTier?: string;
-      selectedExperience?: string;
-    };
-    const experience = parsed.selectedExperience ?? parsed.planTier;
-    if (experience === "teacher") return "/teacher-dashboard";
-    if (experience === "school_owner") return "/academy-dashboard";
-  } catch {
-    // A malformed preference value must not break public navigation.
-  }
-
-  return "/student-dashboard";
-}
-
 export function AcademyNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const { isAuthenticated, user } = useAuth();
   const dashboardPath = useMemo(
-    () => resolveAcademyDashboard(user?.preferences),
-    [user?.preferences],
+    () => resolveAcademyDashboard(user),
+    [user],
   );
 
   useEffect(() => {

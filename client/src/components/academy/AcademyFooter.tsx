@@ -6,6 +6,7 @@
  */
 import { Link } from "wouter";
 import { Mail } from "lucide-react";
+import { openPrivacyChoices } from "@/analytics";
 
 export function AcademyFooter() {
   return (
@@ -131,6 +132,15 @@ export function AcademyFooter() {
                 >
                   Privacy Policy
                 </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openPrivacyChoices}
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
+                  Privacy choices
+                </button>
               </li>
               <li>
                 <Link

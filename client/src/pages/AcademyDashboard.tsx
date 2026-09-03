@@ -512,7 +512,7 @@ export default function AcademyDashboard() {
             </div>
             <div>
               <h1 className="text-lg font-bold text-white">
-                Academy Dashboard
+                 EquiProfile Academy Dashboard
               </h1>
               <p className="text-xs text-gray-500">
                 {org?.name ?? "Set up your Academy"}
@@ -618,14 +618,18 @@ export default function AcademyDashboard() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setLocation("/billing")}
+                    onClick={() => {
+                      window.location.href = "/api/v1/billing/launch?product=academy&action=home";
+                    }}
                     className="rounded-lg border border-indigo-400/30 px-3 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/10"
                   >
                     Billing details
                   </button>
                   <button
                     type="button"
-                    onClick={() => setLocation("/billing")}
+                    onClick={() => {
+                      window.location.href = "/api/v1/billing/launch?product=academy&action=home";
+                    }}
                     className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/5"
                   >
                     Invoices and payment

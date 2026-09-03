@@ -124,7 +124,6 @@ const stableModuleGroups = [
       { icon: TrendingUp, label: "Competitions", path: "/competitions" },
       { icon: Brain, label: "AI Assistant", path: "/ai-chat" },
       { icon: Settings, label: "Settings", path: "/settings" },
-      { icon: DollarSign, label: "Billing", path: "/billing" },
     ],
   },
 ];

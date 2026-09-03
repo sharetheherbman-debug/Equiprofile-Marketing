@@ -22,6 +22,10 @@ import { sendAcademyInviteEmail } from "./_core/email";
 import { resolveMarketingConsent } from "./_core/marketingConsent";
 import { publishMarketingEvent } from "./_core/marketingPublisher";
 import { ensureAcademyCurriculum } from "./academy/curriculumPipeline";
+import {
+  getAcademyEntitlement,
+  requireAcademyAudience,
+} from "./academy/entitlement";
 
 /** Safely parse user preferences JSON. */
 function parseUserPrefs(raw: string | null | undefined): Record<string, any> {
@@ -81,27 +85,15 @@ export function validateAcademyInviteState(
  * Stored `school_owner` values remain LEGACY_DATABASE_COMPAT_ONLY.
  */
 const academyOwnerProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const user = await db.getUserById(ctx.user.id);
-  if (!user) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
-  }
-  const prefs = parseUserPrefs(user.preferences);
-  const isAdmin = user.role === "admin";
-  // LEGACY_DATABASE_COMPAT_ONLY: historical persisted values are mapped to the
-  // canonical Academy owner concept without a destructive data migration.
-  const isAcademyOwner =
-    prefs.planTier === "school_owner" ||
-    prefs.selectedExperience === "school_owner";
-  if (!isAdmin && !isAcademyOwner) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "This feature requires the Academy Owner plan.",
-    });
-  }
-  return next({ ctx });
+  const academyEntitlement = await requireAcademyAudience(ctx.user.id, ["owner", "admin"]);
+  return next({ ctx: { ...ctx, academyEntitlement } });
 });
 
 export const academyRouter = router({
+  /** Product-level access truth used by the Academy application guard. */
+  getEntitlement: protectedProcedure.query(async ({ ctx }) =>
+    getAcademyEntitlement(ctx.user.id)),
+
   /** Create a new organization. */
   createOrganization: academyOwnerProcedure
     .input(

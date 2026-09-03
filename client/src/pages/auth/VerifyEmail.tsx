@@ -18,12 +18,14 @@ import {
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { AuthLayout } from "@/components/AuthLayout";
 import { motion } from "framer-motion";
+import { getCoreProductContext } from "@/lib/productContext";
 
 /**
  * Email verification page — handles the token from the verification link.
  * Also shows resend flow if the token is expired.
  */
 export default function VerifyEmail() {
+  const product = getCoreProductContext();
   const [status, setStatus] = useState<"verifying" | "success" | "error" | "expired">("verifying");
   const [message, setMessage] = useState("");
   const [resendEmail, setResendEmail] = useState("");
@@ -46,7 +48,7 @@ export default function VerifyEmail() {
     fetch("/api/auth/verify-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
+      body: JSON.stringify({ token, product }),
       credentials: "include",
     })
       .then(async (res) => {
@@ -57,7 +59,9 @@ export default function VerifyEmail() {
           // Auto-redirect after 3 seconds
           setTimeout(() => {
             // If user hasn't chosen an experience, send to onboarding
-            if (data.needsOnboarding) {
+            if (product === "academy") {
+              window.location.href = data.academyDestination || "/academy/pricing";
+            } else if (data.needsOnboarding) {
               window.location.href = "/onboarding";
             } else if (data.planTier === "student") {
               window.location.href = "/student-dashboard";
@@ -79,7 +83,7 @@ export default function VerifyEmail() {
         setStatus("error");
         setMessage("An error occurred. Please try again.");
       });
-  }, [token]);
+  }, [token, product]);
 
   const handleResend = async () => {
     if (!resendEmail) return;
@@ -89,7 +93,7 @@ export default function VerifyEmail() {
       const res = await fetch("/api/auth/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: resendEmail.trim().toLowerCase() }),
+        body: JSON.stringify({ email: resendEmail.trim().toLowerCase(), product }),
       });
 
       const data = await res.json();

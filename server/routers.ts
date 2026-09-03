@@ -1015,10 +1015,10 @@ export const appRouter = router({
         z.object({
           messages: z.array(
             z.object({
-              role: z.enum(["system", "user", "assistant"]),
-              content: z.string(),
+              role: z.enum(["user", "assistant"]),
+              content: z.string().min(1).max(4_000),
             }),
-          ),
+          ).min(1).max(20),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -1074,19 +1074,26 @@ export const appRouter = router({
           });
           const response = await invokeLLM({
             messages: [
-              ...input.messages.map((m) => ({ role: m.role, content: m.content })),
               {
                 role: "system" as const,
-                content: `LIVE MANAGEMENT WORKSPACE SNAPSHOT (owned by the signed-in user; use only this data for factual workspace claims):\n${JSON.stringify(workspaceContext)}\n\nWhen asked about upcoming care, due work, horses or training, answer from this snapshot and state clearly if the relevant data is absent. Do not diagnose health conditions, invent a record, or claim that an action was completed.\n\nFor an explicit request to create a task, reminder, or calendar item, return ONLY strict JSON in this shape: {"assistant_text":"Explain the proposed action and that confirmation is required.","proposed_action":{"type":"CREATE_TASK|CREATE_REMINDER|CREATE_CALENDAR_ITEM",...}}. The proposed_action must match the exact governed schema, use an owned horse id from the snapshot when a named horse is involved, and use ISO-8601 dates. Never claim it was saved. For all other questions return normal prose.`,
+                content: `You are the EquiProfile Management assistant. Give concise British-English help about the real Management product: dashboards, horses, health, training, feeding, tasks, calendar, weather, documents, reports, contacts, settings and the separate Billing centre. Never invent features, records or completed actions. Do not diagnose or replace an equine professional.\n\nLIVE MANAGEMENT WORKSPACE SNAPSHOT (owned by the signed-in user; use only this data for factual workspace claims):\n${JSON.stringify(workspaceContext)}\n\nWhen asked about upcoming care, due work, horses or training, answer from this snapshot and state clearly if the relevant data is absent. Do not diagnose health conditions, invent a record, or claim that an action was completed.\n\nFor an explicit request to create a task, reminder, or calendar item, return ONLY strict JSON in this shape: {"assistant_text":"Explain the proposed action and that confirmation is required.","proposed_action":{"type":"CREATE_TASK|CREATE_REMINDER|CREATE_CALENDAR_ITEM",...}}. The proposed_action must match the exact governed schema, use an owned horse id from the snapshot when a named horse is involved, and use ISO-8601 dates. Never claim it was saved. For all other questions return normal prose.`,
               },
+              ...input.messages.map((m) => ({ role: m.role, content: m.content })),
             ],
           });
 
           return normalizeManagementAiProviderResponse(response);
-        } catch {
+        } catch (error) {
           // Provider configuration, timeouts and response-shape failures are not
           // successful answers. Return a safe client state without leaking runtime
           // configuration, model details or internal error payloads.
+          const traceId = nanoid(12);
+          console.error("[Management AI] GenX chat failed", {
+            traceId,
+            userId: ctx.user.id,
+            errorClass: error instanceof Error ? error.name : "UnknownProviderFailure",
+            status: error instanceof Error ? error.message.match(/HTTP\s+(\d{3})/i)?.[1] ?? null : null,
+          });
           return unavailableManagementAiResponse();
         }
       }),

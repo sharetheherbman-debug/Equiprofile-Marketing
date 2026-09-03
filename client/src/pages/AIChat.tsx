@@ -84,7 +84,7 @@ function buildSystemMessage(): Message {
 EquiProfile is a comprehensive horse management platform. You help users navigate the app, manage their horses, and get the most out of every feature.
 
 SECTIONS & PAGES:
-Dashboard (Standard view for individual owners, Stable view for professional yards), Horses (profiles, photos, details), Health Records (veterinary visits, vaccinations, medications, farrier visits, dental, worming), Calendar (events, appointments, reminders), Tasks (to-do items with priorities and due dates), Appointments (vet, farrier, dentist bookings), Training (session logs, goals, progress tracking), Feeding & Nutrition (diet plans, feed schedules, supplements), GPS Ride Tracking (live route recording, distance, duration, pace), Documents (upload and organise files per horse), Weather (local forecast for planning), Reports (health summaries, training reports, exportable records), Analytics (trends, charts, insights across your horses), Contacts (vets, farriers, trainers, suppliers), Messages (in-app messaging), AI Chat (this conversation), Settings (account, preferences, notifications), Billing (subscription management).
+Dashboard (Standard view for individual owners, Stable view for professional yards), Horses (profiles, photos, details), Health Records (veterinary visits, vaccinations, medications, farrier visits, dental, worming), Calendar (events, appointments, reminders), Tasks (to-do items with priorities and due dates), Appointments (vet, farrier, dentist bookings), Training (session logs, goals, progress tracking), Feeding & Nutrition (diet plans, feed schedules, supplements), GPS Ride Tracking (live route recording, distance, duration, pace), Documents (upload and organise files per horse), Weather (local forecast for planning), Reports (health summaries, training reports, exportable records), Analytics (trends, charts, insights across your horses), Contacts (vets, farriers, trainers, suppliers), Messages (in-app messaging), AI Chat (this conversation), Settings (account, preferences, notifications), and the separate EquiProfile Billing centre for subscription management.
 
 KEY WORKFLOWS:
 - Creating a horse: go to Horses → Add Horse, fill in name, breed, age, colour, and photo.
@@ -134,7 +134,7 @@ function loadPersistedMessages(): Message[] {
 /** Save non-system messages to sessionStorage. */
 function persistMessages(messages: Message[]) {
   try {
-    const toSave = messages.filter((m) => m.role !== "system");
+    const toSave = messages.filter((m) => m.role !== "system").slice(-40);
     sessionStorage.setItem(CHAT_SESSION_KEY, JSON.stringify(toSave));
   } catch (err) {
     console.warn("[AIChat] Failed to persist chat session:", err);
@@ -489,6 +489,14 @@ export default function AIChat() {
       const msg = isTransformOrInternal
         ? "Could not reach the AI service. Please try again in a moment."
         : (error.message || "Something went wrong — please try again.");
+      setMessages((previous) => {
+        const next = [...previous, {
+          role: "assistant" as const,
+          content: `${msg} No records or reminders were changed.`,
+        }];
+        persistMessages(next);
+        return next;
+      });
       toast.error(msg);
     },
   });
@@ -557,7 +565,12 @@ export default function AIChat() {
       persistMessages(next);
       return next;
     });
-    chatMutation.mutate({ messages: [...messages, newMessage] });
+    chatMutation.mutate({
+      messages: [...messages, newMessage]
+        .filter((message): message is Message & { role: "user" | "assistant" } =>
+          message.role === "user" || message.role === "assistant")
+        .slice(-20),
+    });
   };
 
   const handlePasswordSubmit = () => {

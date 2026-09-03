@@ -108,7 +108,7 @@ export function SchoolFooter() {
           <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} EquiProfile School · Part of{" "}
             <a
-              href="https://amarktai.com"
+              href="https://amarktai.co.za"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-gray-300 transition-colors"

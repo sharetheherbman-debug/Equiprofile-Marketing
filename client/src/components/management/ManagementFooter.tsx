@@ -8,6 +8,7 @@
 import { Link } from "wouter";
 import { Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { openPrivacyChoices } from "@/analytics";
 
 export function ManagementFooter({
   hidePreFooterCta = false,
@@ -82,7 +83,7 @@ export function ManagementFooter({
                   href="/features"
                   className="text-gray-500 hover:text-white transition-colors"
                 >
-                  Management
+                  EquiProfile Management
                 </Link>
               </li>
               <li>
@@ -90,7 +91,7 @@ export function ManagementFooter({
                   href="https://academy.equiprofile.online/academy"
                   className="text-gray-500 hover:text-white transition-colors"
                 >
-                  Academy
+                  EquiProfile Academy
                 </a>
               </li>
               <li>
@@ -98,7 +99,7 @@ export function ManagementFooter({
                   href="https://shop.equiprofile.online"
                   className="text-gray-500 hover:text-white transition-colors"
                 >
-                  Shop · Coming Soon
+                  EquiProfile Shop · Coming Soon
                 </a>
               </li>
               <li>
@@ -108,16 +109,6 @@ export function ManagementFooter({
                 >
                   Management Pricing
                 </Link>
-              </li>
-              <li>
-                <a href="https://academy.equiprofile.online/academy" className="text-gray-500 hover:text-white transition-colors">
-                  Academy
-                </a>
-              </li>
-              <li>
-                <a href="https://shop.equiprofile.online" className="text-gray-500 hover:text-white transition-colors">
-                  Shop
-                </a>
               </li>
             </ul>
           </div>
@@ -166,6 +157,15 @@ export function ManagementFooter({
                 >
                   Privacy Policy
                 </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openPrivacyChoices}
+                  className="text-gray-500 hover:text-white transition-colors"
+                >
+                  Privacy choices
+                </button>
               </li>
               <li>
                 <Link

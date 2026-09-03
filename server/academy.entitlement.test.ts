@@ -14,6 +14,26 @@ describe("Academy product entitlement", () => {
     expect(resolveIndividualAcademyEntitlement({ preferences: JSON.stringify({ academyEntitlementStatus: "active", academyPlan: "rider" }) })).toMatchObject({ entitled: true, audience: "rider", source: "individual_academy" });
   });
 
+  it("keeps Academy and Management payment truth independent in both directions", () => {
+    const academyOnly = resolveIndividualAcademyEntitlement({
+      preferences: JSON.stringify({ academyEntitlementStatus: "active", academyPlan: "rider" }),
+    });
+    const managementOnly = resolveIndividualAcademyEntitlement({
+      preferences: JSON.stringify({ planTier: "stable", subscriptionStatus: "active" }),
+    });
+    expect(academyOnly).toMatchObject({ entitled: true, source: "individual_academy" });
+    expect(managementOnly).toMatchObject({ entitled: false, source: "none" });
+  });
+
+  it("preserves explicit teacher and owner Academy audiences without representing them as admin", () => {
+    expect(resolveIndividualAcademyEntitlement({
+      preferences: JSON.stringify({ academyEntitlementStatus: "active", academyPlan: "teacher" }),
+    })).toMatchObject({ entitled: true, audience: "teacher", source: "individual_academy" });
+    expect(resolveIndividualAcademyEntitlement({
+      preferences: JSON.stringify({ academyEntitlementStatus: "active", academyPlan: "owner" }),
+    })).toMatchObject({ entitled: true, audience: "owner", source: "individual_academy" });
+  });
+
   it("preserves existing Academy learner accounts during the product-aware migration", () => {
     expect(resolveIndividualAcademyEntitlement({ preferences: JSON.stringify({ selectedExperience: "student" }) })).toMatchObject({ entitled: true, audience: "rider", source: "legacy_academy" });
   });

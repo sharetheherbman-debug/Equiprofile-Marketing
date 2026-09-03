@@ -24,6 +24,12 @@ import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { AuthLayout } from "@/components/AuthLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { trackMeasurementEvent } from "@/analytics";
+import {
+  getCoreProductContext,
+  getProductName,
+  isSafeProductRedirect,
+  resolveAcademyDashboard,
+} from "@/lib/productContext";
 
 /**
  * Login page
@@ -39,6 +45,9 @@ export default function Login() {
   const [error, setError] = useState("");
   const { isAuthenticated, user } = useAuth();
   const [, setLocation] = useLocation();
+  const product = getCoreProductContext();
+  const academy = product === "academy";
+  const productName = getProductName(product);
 
   // Honour ?redirect= param so invite links work correctly.
   // SECURITY: only allow same-origin relative paths (must start with '/' and not '//').
@@ -50,7 +59,7 @@ export default function Login() {
     if (!redirectParam) return null;
     const decoded = decodeURIComponent(redirectParam);
     // Reject anything that looks like an absolute URL or protocol-relative URL
-    if (!decoded.startsWith("/") || decoded.startsWith("//")) return null;
+    if (!isSafeProductRedirect(decoded, product)) return null;
     return decoded;
   })();
 
@@ -59,8 +68,10 @@ export default function Login() {
     if (postLoginUrl) {
       setLocation(postLoginUrl);
     } else {
-      // Admin always goes to the admin panel, never to a user dashboard directly
-      if (user?.role === "admin") {
+      if (academy) {
+        setLocation(resolveAcademyDashboard(user));
+      // Admin always goes to the Management admin panel on Management.
+      } else if (user?.role === "admin") {
         setLocation("/admin");
       } else {
         let goToStable = false;
@@ -108,7 +119,11 @@ export default function Login() {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+          product,
+        }),
         credentials: "include",
       });
 
@@ -140,8 +155,10 @@ export default function Login() {
           window.location.href = "/dashboard";
         }
       } else {
-        // Admin always lands in the admin portal — never in a user dashboard
-        if (data.user?.role === "admin") {
+        if (academy) {
+          window.location.href = data.academyDestination || "/academy/pricing";
+        // Admin always lands in the Management admin portal on Management.
+        } else if (data.user?.role === "admin") {
           window.location.href = "/admin";
         } else if (data.needsOnboarding) {
           // New users who haven't completed experience selection go to onboarding
@@ -163,7 +180,7 @@ export default function Login() {
       await fetch("/api/auth/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), product }),
       });
       setVerificationResent(true);
     } catch {
@@ -196,8 +213,8 @@ export default function Login() {
               <CardHeader className="space-y-3 pb-2">
                 {/* Brand logo */}
                 <div className="flex flex-col items-center gap-1.5 mb-2">
-                  <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
-                  <span className="text-base font-bold text-white tracking-tight font-serif leading-none">EquiProfile</span>
+                  <img src="/logo.png" alt={productName} className="h-14 w-auto object-contain" />
+                  <span className="text-base font-bold text-white tracking-tight font-serif leading-none">{productName}</span>
                 </div>
 
                 {/* Step indicator */}
@@ -211,7 +228,7 @@ export default function Login() {
                 </div>
 
                 <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                  Welcome back
+                  Welcome back to {productName}
                 </CardTitle>
                 <CardDescription className="text-center text-gray-400">
                   {step === 1

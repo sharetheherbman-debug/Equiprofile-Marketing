@@ -10,10 +10,33 @@ import { ENV } from "./env";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./cookies";
 import { isTrustedCookieWrite } from "./requestSecurity";
+import { getAcademyEntitlement } from "../academy/entitlement";
 
 /** Hours before a verification token expires */
 const VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
 const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
+
+type AuthProduct = "management" | "academy";
+
+function authProduct(value: unknown): AuthProduct {
+  return value === "academy" ? "academy" : "management";
+}
+
+async function academyDestination(userId: number): Promise<string> {
+  try {
+    const entitlement = await getAcademyEntitlement(userId);
+    if (!entitlement.entitled) return "/academy/pricing";
+    if (entitlement.audience === "owner" || entitlement.audience === "admin") {
+      return "/academy-dashboard";
+    }
+    if (entitlement.audience === "teacher") return "/teacher-dashboard";
+    return "/student-dashboard";
+  } catch {
+    // Never redirect an Academy sign-in into Management when entitlement
+    // infrastructure is temporarily unavailable.
+    return "/academy/pricing";
+  }
+}
 
 /** Extract plan-related flags from a JSON preferences string. */
 function extractPlanInfo(preferences: string | null | undefined): {
@@ -142,6 +165,7 @@ const passwordResetLimiter = rateLimit({
 router.post("/signup", signupLimiter, async (req, res) => {
   try {
     const { email: rawEmail, password, name, planType } = req.body;
+    const product = authProduct(req.body.product);
 
     if (!rawEmail || !password) {
       return res.status(400).json({ error: "Email and password are required" });
@@ -178,6 +202,7 @@ router.post("/signup", signupLimiter, async (req, res) => {
             userEmail,
             verificationToken,
             existingUser.name || undefined,
+            product,
           )
           .catch((err) =>
             console.error("[Auth] Failed to send verification email:", err),
@@ -226,6 +251,19 @@ router.post("/signup", signupLimiter, async (req, res) => {
       verificationTokenExpiry,
     };
 
+    if (product === "academy") {
+      let prefs: Record<string, unknown> = {};
+      try {
+        prefs = user.preferences ? JSON.parse(user.preferences) : {};
+      } catch {
+        prefs = {};
+      }
+      userUpdates.preferences = JSON.stringify({
+        ...prefs,
+        registrationProduct: "academy",
+      });
+    }
+
     if (
       ENV.primaryAdminEmail &&
       userEmail === ENV.primaryAdminEmail &&
@@ -260,7 +298,7 @@ router.post("/signup", signupLimiter, async (req, res) => {
     await db.updateUser(user.id, userUpdates as any);
 
     email
-      .sendVerificationEmail(userEmail, verificationToken, name || undefined)
+      .sendVerificationEmail(userEmail, verificationToken, name || undefined, product)
       .catch((err) =>
         console.error("[Auth] Failed to send verification email:", err),
       );
@@ -285,6 +323,7 @@ router.post("/signup", signupLimiter, async (req, res) => {
 router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { email: rawEmail, password } = req.body;
+    const product = authProduct(req.body.product);
 
     if (!rawEmail || !password) {
       return res.status(400).json({ error: "Email and password are required" });
@@ -349,6 +388,8 @@ router.post("/login", loginLimiter, async (req, res) => {
       freeAccess,
       bothDashboardsUnlocked,
       needsOnboarding,
+      academyDestination:
+        product === "academy" ? await academyDestination(user.id) : undefined,
       user: {
         id: user.id,
         name: user.name,
@@ -366,6 +407,7 @@ router.post("/login", loginLimiter, async (req, res) => {
 router.post("/request-reset", passwordResetLimiter, async (req, res) => {
   try {
     const { email: rawEmail } = req.body;
+    const product = authProduct(req.body.product);
 
     if (!rawEmail) {
       return res.status(400).json({ error: "Email is required" });
@@ -398,6 +440,7 @@ router.post("/request-reset", passwordResetLimiter, async (req, res) => {
       userEmail,
       resetToken,
       user.name || undefined,
+      product,
     );
 
     res.json({
@@ -461,6 +504,7 @@ router.post("/reset-password", async (req, res) => {
 router.post("/verify-email", async (req, res) => {
   try {
     const { token } = req.body;
+    const product = authProduct(req.body.product);
 
     if (!token) {
       return res.status(400).json({ error: "Verification token is required" });
@@ -493,7 +537,7 @@ router.post("/verify-email", async (req, res) => {
     setSessionCookie(req, res, jwtToken);
 
     email
-      .sendWelcomeEmail(user)
+      .sendWelcomeEmail(user, product)
       .catch((err) =>
         console.error("[Auth] Failed to send welcome email:", err),
       );
@@ -508,6 +552,8 @@ router.post("/verify-email", async (req, res) => {
       freeAccess,
       bothDashboardsUnlocked,
       needsOnboarding,
+      academyDestination:
+        product === "academy" ? await academyDestination(user.id) : undefined,
       user: {
         id: user.id,
         name: user.name,
@@ -525,6 +571,7 @@ router.post("/verify-email", async (req, res) => {
 router.post("/resend-verification", resendLimiter, async (req, res) => {
   try {
     const { email: rawEmail } = req.body;
+    const product = authProduct(req.body.product);
 
     if (!rawEmail) {
       return res.status(400).json({ error: "Email is required" });
@@ -556,6 +603,7 @@ router.post("/resend-verification", resendLimiter, async (req, res) => {
       userEmail,
       verificationToken,
       user.name || undefined,
+      product,
     );
 
     res.json({

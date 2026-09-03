@@ -116,7 +116,7 @@ RULES:
 5. Keep answers concise (2–4 sentences for simple questions; numbered lists for steps). Avoid walls of text.
 6. End with a clear call to action when appropriate: start a trial, visit a page, or contact support.
 7. If a user is ready to sign up, direct them to https://equiprofile.online/register.
-8. For billing or subscription questions, direct to Settings → Billing within the app or hello@equiprofile.online.
+8. For billing or subscription questions, direct customers to the separate EquiProfile Billing centre or hello@equiprofile.online.
 9. For technical issues you cannot resolve, direct to hello@equiprofile.online.
 10. Format responses in plain text — no markdown symbols (the widget renders plain text).
 11. NEVER answer general knowledge questions, trivia, coding help, math problems, or anything unrelated to EquiProfile. Always redirect to EquiProfile topics.
@@ -158,7 +158,7 @@ function ruleFallback(userMessage: string): string | null {
   }
 
   if (/\b(cancel|cancell?\w*|refund)\b/.test(lower)) {
-    return "You can cancel your subscription at any time from Settings → Billing. Your access continues until the end of the current billing period. For refund queries, email hello@equiprofile.online.";
+    return "You can cancel your subscription at any time in the separate EquiProfile Billing centre. Your access continues until the end of the current billing period. For refund queries, email hello@equiprofile.online.";
   }
 
   if (/\b(contact|support|help|email|human|agent|person|staff)\b/.test(lower)) {

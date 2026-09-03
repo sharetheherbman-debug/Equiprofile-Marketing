@@ -100,7 +100,6 @@ const menuItems = [
   { icon: BarChart3, label: "Analytics", path: "/analytics" },
   { icon: BookOpen, label: "Reports", path: "/reports" },
   { icon: Users, label: "Contacts", path: "/contacts" },
-  { icon: DollarSign, label: "Billing", path: "/billing" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
@@ -120,7 +119,6 @@ const stableNavItems = [
   { icon: Cloud, label: "Weather", path: "/weather" },
   { icon: Home, label: "Stable Profile", path: "/stable" },
   { icon: Wrench, label: "Stable Setup", path: "/stable-setup" },
-  { icon: DollarSign, label: "Billing", path: "/billing" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
@@ -224,7 +222,6 @@ const moreModuleGroups: MoreModuleGroup[] = [
     label: "Account",
     items: [
       { icon: Settings, label: "Settings", path: "/settings" },
-      { icon: DollarSign, label: "Billing", path: "/billing" },
     ],
   },
 ];
@@ -349,7 +346,7 @@ function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutCo
 
   return (
     <>
-      <div className="relative" ref={sidebarRef}>
+      {!isMobile && <div className="relative" ref={sidebarRef}>
         <Sidebar collapsible="icon" className="border-r border-white/5 bg-sidebar" disableTransition={isResizing}>
           <SidebarHeader className="h-16 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
@@ -357,10 +354,10 @@ function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutCo
                 <PanelLeft className="h-4 w-4 text-sidebar-foreground/70" />
               </button>
               {!isCollapsed ? (
-                <div className="flex items-center gap-2.5 min-w-0">
+                <button type="button" onClick={() => setLocation("/dashboard")} className="flex items-center gap-2.5 min-w-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring" aria-label="EquiProfile Management dashboard">
                   <img src="/logo.png" alt="EquiProfile" className="h-10 w-auto object-contain shrink-0" />
-                  <span className="text-lg font-semibold tracking-tight text-sidebar-foreground truncate">EquiProfile</span>
-                </div>
+                  <span className="text-lg font-semibold tracking-tight text-sidebar-foreground truncate">EquiProfile Management</span>
+                </button>
               ) : null}
             </div>
           </SidebarHeader>
@@ -441,14 +438,16 @@ function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutCo
         </Sidebar>
 
         <div className={`absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors ${isCollapsed ? "hidden" : ""}`} onMouseDown={() => { if (!isCollapsed) setIsResizing(true); }} style={{ zIndex: 50 }} />
-      </div>
+      </div>}
 
       <SidebarInset className="min-w-0 bg-background">
         {isMobile && (
           <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur-md sticky top-0 z-40" style={{ paddingTop: 'var(--safe-area-top, 0px)' }}>
             <div className="flex items-center gap-2 min-w-0">
-              <SidebarTrigger className="h-11 w-11 rounded-lg bg-background shrink-0" />
-              <span className="tracking-tight text-foreground truncate">{activeMenuItem?.label ?? "Menu"}</span>
+              <button type="button" onClick={() => setLocation("/dashboard")} className="flex min-h-11 items-center gap-2 rounded-lg px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="EquiProfile Management dashboard">
+                <img src="/logo.png" alt="EquiProfile Management" className="h-8 w-auto object-contain" />
+                <span className="tracking-tight text-foreground truncate">{activeMenuItem?.label ?? "Dashboard"}</span>
+              </button>
             </div>
             <div className="flex items-center gap-1">
               <NotificationCenter />

@@ -21,8 +21,11 @@ import { AuthLayout } from "@/components/AuthLayout";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { motion } from "framer-motion";
+import { getCoreProductContext, getProductName } from "@/lib/productContext";
 
 export default function ForgotPassword() {
+  const product = getCoreProductContext();
+  const productName = getProductName(product);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +40,7 @@ export default function ForgotPassword() {
       const response = await fetch("/api/auth/request-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), product }),
       });
 
       const data = await response.json().catch(() => ({}));
@@ -78,10 +81,10 @@ export default function ForgotPassword() {
             <Card className="bg-[#0b1726]/70 backdrop-blur-xl border border-white/10 shadow-2xl">
               <CardHeader className="space-y-3 pb-2">
                 <div className="flex justify-center mb-2">
-                  <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
+                  <img src="/logo.png" alt={productName} className="h-14 w-auto object-contain" />
                 </div>
                 <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                  Forgot password?
+                  {product === "academy" ? "EquiProfile Academy password help" : "Forgot password?"}
                 </CardTitle>
                 <CardDescription className="text-center text-gray-400">
                   Enter your email and we'll send you a reset link

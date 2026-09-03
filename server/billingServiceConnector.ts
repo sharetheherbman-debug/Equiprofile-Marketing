@@ -114,7 +114,14 @@ export function registerBillingServiceRoutes(router: Router) {
   router.get("/billing/launch", async (req: Request, res: Response) => {
     try {
       if (!isBillingServiceConfigured()) {
-        return res.status(503).json({ error: "EquiProfile Billing is not configured" });
+        if (req.accepts(["html", "json"]) === "html") {
+          return res.status(503).type("html").send(`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EquiProfile Billing is coming online</title><meta name="robots" content="noindex,nofollow">
+<style>body{margin:0;background:#f4f7fb;color:#102a43;font:16px/1.6 system-ui,sans-serif;display:grid;min-height:100vh;place-items:center}.card{max-width:34rem;margin:1rem;padding:2rem;border:1px solid #d9e2ec;border-radius:1rem;background:#fff;box-shadow:0 18px 50px rgba(15,35,55,.1)}h1{font-family:Georgia,serif;line-height:1.2}a{color:#245a8a}</style></head>
+<body><main class="card"><h1>EquiProfile Billing is coming online</h1><p>Your account and product data are safe. The central Billing centre is temporarily unavailable while its service connection is completed.</p><p>Please return to EquiProfile and try again later, or contact <a href="mailto:hello@equiprofile.online">hello@equiprofile.online</a> if you need help.</p><p><a href="/">Return to EquiProfile</a></p></main></body></html>`);
+        }
+        return res.status(503).json({ error: "EquiProfile Billing is temporarily unavailable" });
       }
       const user = await sdk.authenticateRequest(req);
       if (!user.email) {

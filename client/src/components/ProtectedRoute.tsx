@@ -76,8 +76,7 @@ export function ProtectedRoute({
       (user?.subscriptionStatus === "cancelled" &&
         !!user?.subscriptionEndsAt &&
         new Date(user.subscriptionEndsAt).getTime() <= Date.now()));
-  const isBillingRecoveryRoute =
-    location.startsWith("/billing") || location.startsWith("/pricing");
+  const isBillingRecoveryRoute = location.startsWith("/pricing");
   const shouldShowPaywall =
     isAuthenticated &&
     (accessExpired || subscriptionLocked) &&
@@ -118,7 +117,7 @@ export function ProtectedRoute({
 
     if (stableOnly && !isStablePlan && !isAdmin) {
       toast.error("This feature requires the Stable plan. Upgrade to access.");
-      setLocation("/billing");
+      window.location.href = "/api/v1/billing/launch?product=management&action=home";
     }
 
     if (studentOnly && !isStudentPlan && !isAdmin) {
@@ -191,13 +190,13 @@ export function ProtectedRoute({
             </div>
             <div className="flex items-start gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-600" />
-              <span>Billing, account settings, and admin preview remain available.</span>
+              <span>Account settings and admin preview remain available.</span>
             </div>
           </div>
           <div className="mt-7 flex flex-col sm:flex-row justify-center gap-3">
             <button
               type="button"
-              onClick={() => setLocation("/billing")}
+              onClick={() => { window.location.href = "/api/v1/billing/launch?product=management&action=home"; }}
               className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
             >
               View Plans & Restore Access

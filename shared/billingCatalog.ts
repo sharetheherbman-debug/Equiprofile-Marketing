@@ -86,5 +86,5 @@ export function billingLaunchUrl(input: {
   });
   if (input.plan) params.set("plan", input.plan);
   if (input.interval) params.set("interval", input.interval);
-  return `/api/billing/launch?${params.toString()}`;
+  return `/api/v1/billing/launch?${params.toString()}`;
 }

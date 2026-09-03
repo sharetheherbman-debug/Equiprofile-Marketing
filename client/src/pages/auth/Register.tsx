@@ -28,6 +28,11 @@ import { AuthSplitLayout } from "@/components/AuthSplitLayout";
 import { AuthLayout } from "@/components/AuthLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { trpc } from "@/lib/trpc";
+import {
+  getCoreProductContext,
+  getProductName,
+  resolveAcademyDashboard,
+} from "@/lib/productContext";
 
 /**
  * Register page
@@ -54,6 +59,9 @@ export default function Register() {
   const [error, setError] = useState("");
   const { isAuthenticated, user } = useAuth();
   const [, setLocation] = useLocation();
+  const product = getCoreProductContext();
+  const academy = product === "academy";
+  const productName = getProductName(product);
 
   const [verificationSent, setVerificationSent] = useState(false);
 
@@ -63,6 +71,7 @@ export default function Register() {
   const intentInterval =
     (searchParams.get("interval") as "monthly" | "yearly") || "monthly";
   const hasSubscribeIntent =
+    !academy &&
     !!intentPlan &&
     (intentInterval === "monthly" || intentInterval === "yearly");
 
@@ -98,7 +107,7 @@ export default function Register() {
           }
         }
       } catch { /* ignore */ }
-      setLocation(destination);
+      setLocation(academy ? resolveAcademyDashboard(user) : destination);
       return null;
     }
   }
@@ -191,6 +200,7 @@ export default function Register() {
           email: email.trim().toLowerCase(),
           password,
           name,
+          product,
         }),
         credentials: "include",
       });
@@ -215,6 +225,11 @@ export default function Register() {
       if (data.requiresVerification) {
         setVerificationSent(true);
         setIsLoading(false);
+        return;
+      }
+
+      if (academy) {
+        window.location.href = "/academy/pricing";
         return;
       }
 
@@ -341,8 +356,8 @@ export default function Register() {
               <CardHeader className="space-y-3 pb-2">
                 {/* Brand logo */}
                 <div className="flex flex-col items-center gap-1.5 mb-2">
-                  <img src="/logo.png" alt="EquiProfile" className="h-14 w-auto object-contain" />
-                  <span className="text-base font-bold text-white tracking-tight font-serif leading-none">EquiProfile</span>
+                  <img src="/logo.png" alt={productName} className="h-14 w-auto object-contain" />
+                  <span className="text-base font-bold text-white tracking-tight font-serif leading-none">{productName}</span>
                 </div>
 
                 {/* Step progress indicator */}
@@ -366,7 +381,7 @@ export default function Register() {
                 </div>
 
                 <CardTitle className="text-3xl font-bold text-center bg-gradient-to-r from-[#5b8def] to-[#7dd3c0] bg-clip-text text-transparent">
-                  Create an account
+                  Create your {productName} account
                 </CardTitle>
                 <CardDescription className="text-center text-gray-400">
                   {step === 1
@@ -660,9 +675,11 @@ export default function Register() {
             </Card>
 
             <p className="text-xs text-center text-gray-500 mt-4">
-              Start your{" "}
-              <strong className="text-gray-400">7-day free trial</strong> - no
-              credit card required
+              {academy ? (
+                <>Create one secure account, then choose the EquiProfile Academy plan or invitation that gives you access.</>
+              ) : (
+                <>Start your <strong className="text-gray-400">7-day free trial</strong> - no credit card required</>
+              )}
             </p>
           </motion.div>
         </AuthSplitLayout>
