@@ -59,4 +59,3 @@ CI additionally provisions and verifies a disposable MariaDB schema and runs the
 Do not deploy as part of this source-completion job. After review, deploy Core before dependent SSO smoke tests, apply only reviewed additive migrations, then deploy Marketing and Billing and run cross-system launch acceptance. Preserve the previous application artifact and database backup so the application can be rolled back without reversing additive schema history.
 
 Do not casually reintroduce Management routes into Academy, a local billing UI, client-provided AI system prompts, non-GenX remote AI execution, transactional Shop claims, or consent-before-choice tracking.
-

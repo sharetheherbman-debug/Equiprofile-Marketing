@@ -43,4 +43,3 @@ Rollback assumes the previous application artifacts and database backups remain 
 - Paid GenX live acceptance requires a real tenant session, model/request fixture, a bounded credit ceiling, and the exact explicit cost-consent environment flag. It was not spent or bypassed here.
 - Social publication acceptance requires tenant-owned third-party credentials.
 - No VPS deployment, production migration, DNS update, production restart, or GTM publication was performed.
-
