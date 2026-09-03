@@ -9,6 +9,7 @@ on:
         phase-1/small-medium-completion,
         release-candidate/final-core-2026-08-22,
         release-candidate/seo-google-acquisition-2026-08-31,
+        chatgpt/final-client-handover-2026-09-02,
       ]
   pull_request:
     branches:
