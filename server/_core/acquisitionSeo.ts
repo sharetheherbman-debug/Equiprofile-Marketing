@@ -477,7 +477,14 @@ export function robotsText(
   origins: PublicOrigins,
 ): string {
   if (site === "shop") {
-    return "User-agent: *\nDisallow: /\n";
+    return [
+      "User-agent: AmarktAI-Marketing-KnowledgeBot",
+      "Allow: /",
+      "",
+      "User-agent: *",
+      "Disallow: /",
+      "",
+    ].join("\n");
   }
   const sitemapOrigin = origins[site];
   return [
